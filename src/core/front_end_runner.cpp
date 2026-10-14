@@ -102,6 +102,10 @@ void set_record_byte(unirally::OnePlayerRecords& records, std::uint32_t offset, 
         write_word(records.statistics[index / 8][(index % 8) / 2], offset & ~1U);
         return;
     }
+    if (offset >= 0x02b2 && offset < 0x02b2 + 2 * records.league_members.size()) {
+        write_word(records.league_members[(offset - 0x02b2) / 2], offset & ~1U);
+        return;
+    }
     if (offset >= 0x02c0 && offset < 0x02c0 + 32 * records.league_scores.size()) {
         const auto index = offset - 0x02c0;
         auto& value = index % 4 >= 2 ? records.league_scores[index / 32][(index % 32) / 4]

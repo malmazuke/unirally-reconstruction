@@ -13,6 +13,15 @@ struct TextMap {
     std::array<std::uint16_t, 1024> words{};
 };
 
+// Control codes, dispatched through `$80:C3DC` by 0xFF - code (`$80:C3C6-C3D9`), for code that
+// builds a stream: the end, a place (column, row), a five-digit number and a rider's name (a word's
+// address), centring on a row, nothing, a tilemap attribute, the current league's name.
+namespace print_code {
+inline constexpr std::uint8_t end = 0xff, place = 0xfe, number = 0xfd, centre = 0xfc,
+                              nothing = 0xfb, attribute = 0xf9, rider_name = 0xf8,
+                              league_name = 0xf6;
+} // namespace print_code
+
 // Where the printer writes and with which tilemap attribute: `$009F` (row * 32 + column) and `$00B0`.
 struct TextCursor {
     unsigned position{};

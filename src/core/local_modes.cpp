@@ -64,25 +64,12 @@ std::array<std::uint8_t, 16> versus_ranking(const OnePlayerRecords& records) {
 }
 
 // $80:F974-F98F, `$83:9D80`: a rider's VS wins as a percentage of its VS races, 0 without a win.
-// Wins of 655 and more are halved with the races until below it, so that 100 times them fits a
-// word (`$83:956D`); the division is `$80:9719`'s, unsigned, 0xFFFF for no races. The words are
-// left in `$77:10F9` and `$77:10FB`.
+// The words are left in `$77:10F9` and `$77:10FB`.
 std::uint16_t versus_percentage(OnePlayerRecords& records, unsigned rider) {
-    constexpr std::uint16_t largest_wins = 0x028e, percent = 100, no_races = 0xffff;
     records.versus_percentage_races = records.versus_races[rider];
     const auto wins = records.versus_wins[rider];
     if (wins == 0) return 0;
-    records.versus_percentage_wins = wins;
-    while (records.versus_percentage_wins > largest_wins) {
-        records.versus_percentage_wins =
-            static_cast<std::uint16_t>(records.versus_percentage_wins >> 1U);
-        records.versus_percentage_races =
-            static_cast<std::uint16_t>(records.versus_percentage_races >> 1U);
-    }
-    const auto scaled = static_cast<std::uint16_t>(records.versus_percentage_wins * percent);
-    return records.versus_percentage_races == 0
-             ? no_races
-             : static_cast<std::uint16_t>(scaled / records.versus_percentage_races);
+    return cartridge_percentage(records, records.versus_races[rider], wins);
 }
 
 // $80:F949-F9BD, one row a frame: the rider's colours at 0x80 + 16 x row (the row's icon, entry

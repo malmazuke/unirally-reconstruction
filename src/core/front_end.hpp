@@ -173,16 +173,30 @@ struct RiderMenu {
     // its own slot, with its own pad (`$83:952E`/`$83:9543`); the winner cannot be picked.
     bool challenger{};
     bool challenger_for_rider_one{}; // the player won: pad 2 picks rider 1 (`$017F`)
-    RiderMenuPurpose purpose{};      // OPTIONS reuses the picker for an existing player
+    // $0010 bit 0: a choice (B, Start or A) or Y or X is not taken until all five are released
+    // ($80:CD1E-CD2B). Only the league's member picker sets it, from its start ($80:9D11) and
+    // after each mark ($80:9D72, $80:9D96).
+    bool choice_latched{};
+    RiderMenuPurpose purpose{}; // OPTIONS reuses the picker for an existing player
 };
 
 // $80:A1F2-A529: the shared four-row name keyboard. Offsets are signed pixel steps;
 // the reference keeps the input buffer in work RAM $00DC and leaves its stale tail intact.
 struct KeyboardEditor {
-    std::array<std::uint8_t, 12> scratch{};
-    std::int16_t offset_x{-96}, offset_y{-24};
-    std::uint8_t length{};
-    std::uint16_t previous_buttons{};
+    // $00DC-$00EE: the name, its FF FF end and what the buffer held before; a league's commit
+    // copies all 19 bytes ($80:9E9D-9EA2), a rider's name the first 8 ($80:D4A0-D4B1).
+    std::array<std::uint8_t, 19> scratch{};
+    std::int16_t offset_x{-96}, offset_y{-24}; // $007C, $007E
+    std::uint8_t length{};                     // $008D
+    // $004B: one more than the longest name, 9 for a rider ($80:D487), 18 for a league
+    // ($80:9E78); a character is typed only while length + 1 is below it ($80:A44C-A451).
+    std::uint8_t length_limit{9};
+    // $008F as the keyboard uses it: a bit per input held since it last acted, Left 0x01, Right
+    // 0x02, Down 0x04, Up 0x08, a choice 0x10, Y or X 0x20; a frame with none of the keyboard's
+    // inputs held clears it. The keyboard starts with the choice's bit set ($80:A1F4).
+    std::uint8_t latches{0x10};
+    // $0076: frames before a held Left or Right moves again, 18 after its press, then 6.
+    std::uint8_t repeat_wait{};
 };
 
 // DEFINE LEAGUE ($80:9BC4-9EBC): six slots, each with a 16-rider membership mask.
@@ -203,14 +217,37 @@ struct LeagueSetup {
     bool awards_press_seen{}, awards_left{}; // `$80:C206`'s press on two frames running
 };
 
+// Where PLAYER SCORES (`$80:DACF`) and GROUP TABLES (`$80:DDFC`) are (R-0097).
+enum class ScoresPhase : std::uint8_t {
+    entering,  // the print and the forward slide, fixed frames
+    slid_in,   // PLAYER SCORES' window, icon and first figures, fixed frames
+    reprinted, // the figures printed again: the rider's colours and the text next ($80:DB8F)
+    releasing, // `$80:C24C`: both pads released before the loop goes on
+    running,   // the loop: the bars and the pad tests
+    pressing,  // `$80:C206` on PLAYER SCORES' way out
+    leaving,   // the way back to RECORDS, the back slide
+};
+
 struct RecordsDetail {
     std::uint8_t category{};            // the RECORDS menu's 0-3 choice
-    std::uint8_t rider{};               // PLAYER SCORES' selected rider
+    std::uint8_t rider{};               // TRACK RECORDS' column
     std::uint8_t tour{};                // TRACK RECORDS' first visible tour
     std::uint16_t track_scroll{0x01e7}; // BG2's grid offset during the records HDMA band
     std::uint8_t track_scroll_step{};   // 0 idle, otherwise the next easing-table step
     bool track_scroll_up{};
     bool returning{}; // the detail view slides back into the category menu
+    // PLAYER SCORES and GROUP TABLES (R-0097). Their rider is `FrontEndState::options_rider`
+    // (`$00CA`) and their league `LeagueSetup::slot` (`$00CC`): both screens start on the last.
+    ScoresPhase phase{};
+    std::uint32_t phase_start{}; // the script frame the phase began on
+    // $0151 + row (PLAYER SCORES), $0175 + row (GROUP TABLES): each bar's end object's x target.
+    std::array<std::uint8_t, 8> bar_targets{};
+    std::uint8_t window_left{}, window_right{}; // $007A, $007B: the bars' object window
+    // The hidden half (`$00A8`) the loops set aside while they upload to the half on screen
+    // through it ($80:DB18-DB1D, $80:DED4-DED9) and put back to leave ($80:DC15, $80:DFA3).
+    std::uint16_t hidden_half{};
+    bool press_seen{};      // `$80:C206` saw a press on its last frame
+    bool group_reprinted{}; // GROUP TABLES printed again: the next frame uploads the text
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
@@ -236,6 +273,7 @@ struct OnePlayerRecords {
     std::array<std::uint8_t, 6> league_tracks{};                       // $77:067E, current event
     bool league_cycle_complete{}; // $77:0742 bit 13: podium before the next tour
     bool league_naming{};         // $77:0742 bit 1 while the league keyboard is active
+    bool group_table_shown{};     // $77:0742 bit 5 while GROUP TABLES shows (`$80:DEA9`, R-0097)
     std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
     std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
     std::array<std::uint8_t, 50> tracks_done{}; // $77:1075 + track: won in the current run
@@ -590,9 +628,11 @@ struct FrontEndState {
     LeagueSetup league{};
     RecordsDetail records_detail{};
     WipeRamMenu wipe_ram{};
-    std::array<std::uint8_t, 256> options_upper_palette{}; // pre-picker CGRAM colours $80-$FF
-    bool options_palette_saved{};
     std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)
+    // $00CA: the rider OPTIONS works on: DEFINE or RENAME PLAYER's pick ($80:C139, $80:D457),
+    // which leaves `$017D` (`RiderMenu::rider`) as it was, and PLAYER SCORES' rider, which starts
+    // from it ($80:DACF) and changes with Up and Down (R-0097).
+    std::uint8_t options_rider{};
     // $77:0742 bits 9 and 10, the menus' pad gate: the pad tests (`$80:B6D3-B82B`, `$80:B8F1`)
     // skip pad 1 while bit 9 is set and pad 2 while bit 10 is. `$83:9543` leaves pad 1 alone,
     // `$83:952E` pad 2 alone, `$83:9558` lets both in: the main menu opens both ($80:ABC8); a

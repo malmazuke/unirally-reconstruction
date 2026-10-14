@@ -8,11 +8,13 @@ namespace unirally {
 namespace {
 
 // Control codes, dispatched through `$80:C3DC` by 0xFF - code (`$80:C3C6-C3D9`).
-constexpr std::uint8_t end_of_text = 0xff, position = 0xfe, number = 0xfd, centre = 0xfc,
-                       nothing = 0xfb, attribute = 0xf9, rider_name = 0xf8, track_name = 0xf7,
-                       race_time = 0xf1, two_digits = 0xf0, place_object = 0xef, capitals = 0xee,
+constexpr std::uint8_t end_of_text = print_code::end, position = print_code::place,
+                       number = print_code::number, centre = print_code::centre,
+                       nothing = print_code::nothing, attribute = print_code::attribute,
+                       rider_name = print_code::rider_name, track_name = 0xf7, race_time = 0xf1,
+                       two_digits = 0xf0, place_object = 0xef, capitals = 0xee,
                        first_control = 0xee;
-constexpr std::uint8_t league_slot_name = 0xf3, league_current_name = 0xf6;
+constexpr std::uint8_t league_slot_name = 0xf3, league_current_name = print_code::league_name;
 constexpr std::uint8_t row_code = 0xf2; // positions F7's name alone, like FC
 constexpr std::uint16_t priority_bit = 0x2000;
 constexpr std::uint8_t small_glyph = 0x80;

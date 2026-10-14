@@ -1168,6 +1168,24 @@
   ]
  },
  {
+  "address": "$80:9041",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809041",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/front_end_screens.hpp:best_lap",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:90AF",
   "class": "observed",
   "comment": "instruction start",
@@ -1183,6 +1201,24 @@
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:90D9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8090D9",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
+   "src/core/lap_result.cpp:saved_word_under_opponent_best",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -1645,10 +1681,13 @@
   "comment": "routine start",
   "label": "sub_809719",
   "native": [
-   "src/core/local_modes.cpp:versus_percentage"
+   "src/core/front_end_screens.hpp:divide_word",
+   "src/core/records_scores.cpp:bar_share"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -1663,6 +1702,19 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:9759",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809759",
+  "native": [
+   "src/core/tour_menu.cpp:show_medal_entries"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -1882,8 +1934,13 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8099E8",
+  "native": [
+   "src/core/now_playing.cpp:race_fade_frame"
+  ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -2005,7 +2062,20 @@
   "comment": "routine start",
   "label": "sub_809AB2",
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9AE2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_809AE2",
+  "native": [
+   "src/core/records_scores.cpp:bar_share"
+  ],
+  "source_records": [
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -2089,17 +2159,208 @@
   ]
  },
  {
-  "address": "$80:9D0B",
+  "address": "$80:9BE8",
   "class": "observed",
   "comment": "instruction start",
-  "label": "loc_809D0B",
+  "label": "loc_809BE8",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/options_menu.cpp:league_warning_entry_frame",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9C07",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809C07",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/options_menu.cpp:WarningAnswer",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:9C34",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809C34",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:enter_rider_menu",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9C46",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809C46",
   "native": [
    "src/core/front_end.hpp:LeagueSetup",
    "src/core/options_menu.cpp:league_warning_frame",
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9C8E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809C8E",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9CEF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809CEF",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:open_rider_menu",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9D0B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809D0B",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:open_rider_menu",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9D11",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809D11",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/front_end.hpp:RiderMenu::choice_latched",
+   "src/core/options_menu.cpp:league_warning_frame",
+   "src/core/rider_menu.cpp:open_rider_menu",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9D1B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809D1B",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:open_rider_menu",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9D66",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809D66",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:mark_league_member",
+   "src/core/rider_menu.cpp:read_league_members_pad",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9D72",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809D72",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/front_end.hpp:RiderMenu::choice_latched",
+   "src/core/rider_menu.cpp:mark_league_member",
+   "src/core/rider_menu.cpp:read_league_members_pad",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9D96",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809D96",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/front_end.hpp:RiderMenu::choice_latched",
+   "src/core/rider_menu.cpp:mark_league_member",
+   "src/core/rider_menu.cpp:read_league_members_pad",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9DD5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809DD5",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:read_league_members_pad",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9DF2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_809DF2",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:read_league_members_pad",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2110,10 +2371,13 @@
   "native": [
    "src/core/front_end.hpp:LeagueSetup",
    "src/core/options_menu.cpp:enter_league_editor",
+   "src/core/rider_menu.cpp:mark_league_member",
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -2125,10 +2389,12 @@
    "src/core/front_end.hpp:LeagueSetup",
    "src/core/front_end.hpp:LeagueSetup::marker_column, LeagueSetup::marker_row",
    "src/core/options_menu.cpp:enter_league_editor",
+   "src/core/rider_menu.cpp:mark_league_member",
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2146,6 +2412,35 @@
   ]
  },
  {
+  "address": "$80:9E78",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809E78",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor::length_limit",
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/options_menu.cpp:enter_league_editor",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9E9D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809E9D",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor::scratch",
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:9EF7",
   "class": "observed",
   "comment": "routine start",
@@ -2155,6 +2450,19 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:9F09",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809F09",
+  "native": [
+   "src/core/options_menu.cpp:enter_league_slots",
+   "src/core/options_menu.cpp:league_slots_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2180,6 +2488,19 @@
   ],
   "source_records": [
    "docs/research/R-0090-save-files.md"
+  ]
+ },
+ {
+  "address": "$80:9F74",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809F74",
+  "native": [
+   "src/core/options_menu.cpp:league_slot_count"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -2337,7 +2658,21 @@
    "src/core/front_end.hpp:KeyboardEditor"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:A1F4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A1F4",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/front_end.hpp:KeyboardEditor::latches"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2347,10 +2682,12 @@
   "label": "loc_80A207",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:enter_rename_editor"
+   "src/core/options_menu.cpp:enter_rename_editor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2360,7 +2697,9 @@
   "label": "loc_80A212",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:initialize_keyboard_cursor"
+   "src/core/options_menu.cpp:enter_rename_editor",
+   "src/core/options_menu.cpp:initialize_keyboard_cursor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
@@ -2381,16 +2720,56 @@
   ]
  },
  {
+  "address": "$80:A25F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A25F",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:KeyboardInput"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:A297",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A297",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:read_keyboard_pad"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:A29B",
   "class": "observed",
   "comment": "inside the instruction at $80:A29A",
   "label": "mid_80A29B",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:read_keyboard_pad"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A2A0",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80A2A0",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:held_key_repeats"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2400,10 +2779,23 @@
   "label": "loc_80A2BA",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:step_key_column"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A2DF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A2DF",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:held_key_repeats"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2413,10 +2805,23 @@
   "label": "loc_80A2F9",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:step_key_column"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A31C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A31C",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:first_press"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2426,10 +2831,23 @@
   "label": "loc_80A326",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:step_key_row"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A340",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A340",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:first_press"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2439,10 +2857,23 @@
   "label": "loc_80A34A",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:step_key_row"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A364",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A364",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:first_press"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2452,10 +2883,26 @@
   "label": "loc_80A3A0",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:choose_key",
+   "src/core/options_menu.cpp:first_press"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A3BF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A3BF",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:choose_key",
+   "src/core/options_menu.cpp:first_press",
+   "src/core/options_menu.cpp:latches_after_choice"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2465,7 +2912,9 @@
   "label": "loc_80A416",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:erase_keyboard_character"
+   "src/core/options_menu.cpp:choose_key",
+   "src/core/options_menu.cpp:erase_keyboard_character",
+   "src/core/options_menu.cpp:first_press"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -2478,7 +2927,9 @@
   "label": "loc_80A420",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:erase_keyboard_character"
+   "src/core/options_menu.cpp:choose_key",
+   "src/core/options_menu.cpp:erase_keyboard_character",
+   "src/core/options_menu.cpp:first_press"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -2491,10 +2942,39 @@
   "label": "loc_80A449",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:choose_key",
+   "src/core/options_menu.cpp:first_press"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A44C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A44C",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/front_end.hpp:KeyboardEditor::length_limit",
+   "src/core/options_menu.cpp:choose_key",
+   "src/core/options_menu.cpp:first_press"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:A491",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A491",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:press_keyboard_ok"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2504,7 +2984,7 @@
   "label": "loc_80A493",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:press_keyboard_ok"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -2517,10 +2997,34 @@
   "label": "loc_80A495",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:press_keyboard_ok"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A4B8",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80A4B8",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:A4C9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A4C9",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2581,7 +3085,7 @@
   "comment": "unknown",
   "label": "unk_80A52A",
   "native": [
-   "src/core/options_menu.cpp:rename_keyboard_frame"
+   "src/core/options_menu.cpp:choose_key"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
@@ -2712,11 +3216,13 @@
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_nintendo_screen",
-   "src/core/front_end_screens.hpp:reload_menu_palette"
+   "src/core/front_end_screens.hpp:reload_menu_palette",
+   "src/core/records_scores.cpp:player_scores_leaving"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -3529,6 +4035,7 @@
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -3624,6 +4131,7 @@
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md",
    "tasks/MODE-AUDIO.md"
   ]
@@ -3749,7 +4257,8 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -3912,6 +4421,18 @@
   ]
  },
  {
+  "address": "$80:B4C0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B4C0",
+  "native": [
+   "src/core/now_playing.cpp:move_now_playing_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:B4D4",
   "class": "observed",
   "comment": "instruction start",
@@ -4010,6 +4531,19 @@
   ]
  },
  {
+  "address": "$80:B5C0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B5C0",
+  "native": [
+   "src/core/now_playing.cpp:note_named_riders"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
   "address": "$80:B612",
   "class": "observed",
   "comment": "routine start",
@@ -4043,8 +4577,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B63C",
+  "native": [
+   "src/core/options_menu.cpp:open_options_choices"
+  ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4103,6 +4641,7 @@
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
    "src/core/stunt_result.cpp:tally_pass",
    "src/core/stunt_result.cpp:tally_press"
@@ -4112,7 +4651,35 @@
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0077-one-player-audio.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:B6F8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B6F8",
+  "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
+   "src/core/front_end_screens.hpp:gated_pads",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/records_scores.cpp:player_scores_running",
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -4128,11 +4695,13 @@
    "src/core/front_end.hpp:HunterEnding::both_pads",
    "src/core/front_end_screens.hpp:any_button_pressed",
    "src/core/front_end_screens.hpp:gated_pads",
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:keyboard_input",
    "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
    "src/core/stunt_result.cpp:tally_pass",
    "src/core/stunt_result.cpp:tally_press",
@@ -4141,7 +4710,8 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4156,11 +4726,13 @@
    "src/core/front_end.hpp:HunterEnding::both_pads",
    "src/core/front_end_screens.hpp:any_button_pressed",
    "src/core/front_end_screens.hpp:gated_pads",
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:keyboard_input",
    "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
    "src/core/stunt_result.cpp:tally_pass",
    "src/core/stunt_result.cpp:tally_press",
@@ -4168,7 +4740,8 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4188,13 +4761,15 @@
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
    "src/core/stunt_result.cpp:tally_pass",
    "src/core/stunt_result.cpp:tally_press"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4210,11 +4785,12 @@
    "src/core/front_end.hpp:HunterEnding::both_pads",
    "src/core/front_end_screens.hpp:any_button_pressed",
    "src/core/front_end_screens.hpp:gated_pads",
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
    "src/core/stunt_result.cpp:tally_pass",
    "src/core/stunt_result.cpp:tally_press"
@@ -4223,6 +4799,99 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:B7B9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B7B9",
+  "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
+   "src/core/front_end_screens.hpp:gated_pads",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:keyboard_input",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:B7DE",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B7DE",
+  "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
+   "src/core/front_end_screens.hpp:gated_pads",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:keyboard_input",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:B803",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B803",
+  "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
+   "src/core/front_end_screens.hpp:gated_pads",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:keyboard_input",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:B830",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B830",
+  "native": [
+   "src/core/options_menu.cpp:keyboard_input"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -4231,8 +4900,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B8C4",
+  "native": [
+   "src/core/rider_menu.cpp:read_league_members_pad"
+  ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -4246,7 +4919,8 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4254,8 +4928,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B916",
+  "native": [
+   "src/core/options_menu.cpp:keyboard_input"
+  ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -4268,7 +4946,8 @@
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/local_modes.cpp:open_local_continue",
-   "src/core/options_menu.cpp:options_entry_frame",
+   "src/core/options_menu.cpp:open_options_choices",
+   "src/core/options_menu.cpp:reopen_records_menu",
    "src/core/wipe_ram.cpp:aim_at_entry",
    "src/core/wipe_ram.cpp:first_row_y, row_height",
    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -4277,7 +4956,29 @@
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0092-wipe-ram.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:B93E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B93E",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/local_modes.cpp:open_local_continue",
+   "src/core/options_menu.cpp:league_slots_entry_frame",
+   "src/core/options_menu.cpp:open_options_choices",
+   "src/core/options_menu.cpp:reopen_records_menu",
+   "src/core/wipe_ram.cpp:aim_at_entry",
+   "src/core/wipe_ram.cpp:first_row_y, row_height",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4290,7 +4991,8 @@
    "src/core/local_modes.cpp:last_choice",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/local_modes.cpp:open_local_continue",
-   "src/core/options_menu.cpp:options_entry_frame",
+   "src/core/options_menu.cpp:open_options_choices",
+   "src/core/options_menu.cpp:reopen_records_menu",
    "src/core/wipe_ram.cpp:aim_at_entry",
    "src/core/wipe_ram.cpp:first_row_y, row_height",
    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -4310,7 +5012,8 @@
   ],
   "source_records": [
    "docs/research/R-0092-wipe-ram.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4551,6 +5254,20 @@
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:BBBE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BBBE",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select",
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -5420,6 +6137,7 @@
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -5514,6 +6232,21 @@
   ]
  },
  {
+  "address": "$80:C139",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C139",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::options_rider",
+   "src/core/options_menu.cpp:enter_define_player_warning",
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
   "address": "$80:C13D",
   "class": "observed",
   "comment": "instruction start",
@@ -5524,6 +6257,46 @@
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:C15C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C15C",
+  "native": [
+   "src/core/options_menu.cpp:define_player_warning_entry_frame",
+   "src/core/options_menu.cpp:enter_define_player_warning"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:C17B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C17B",
+  "native": [
+   "src/core/options_menu.cpp:WarningAnswer",
+   "src/core/options_menu.cpp:enter_define_player_warning"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:C1A8",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80C1A8",
+  "native": [
+   "src/core/options_menu.cpp:define_player_warning_frame",
+   "src/core/options_menu.cpp:enter_define_player_warning"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -5576,6 +6349,8 @@
    "src/core/front_end.hpp:HunterEnding::press_seen",
    "src/core/front_end.hpp:LeagueSetup::awards_press_seen, LeagueSetup::awards_left",
    "src/core/front_end.hpp:RaceResult::press_seen",
+   "src/core/front_end.hpp:RecordsDetail::press_seen",
+   "src/core/front_end.hpp:ScoresPhase",
    "src/core/front_end.hpp:WipeRamMenu",
    "src/core/front_end.hpp:WipeRamMenu::press_seen",
    "src/core/front_end_screens.hpp:wait_for_result_press",
@@ -5587,6 +6362,8 @@
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:pressed",
    "src/core/race_result.cpp:wait_for_result_press",
+   "src/core/records_scores.cpp:player_scores_leaving",
+   "src/core/records_scores.cpp:press_seen_twice",
    "src/core/stunt_result.cpp:after_tally_frame",
    "src/core/wipe_ram.cpp:waited_for_press"
   ],
@@ -5594,7 +6371,9 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0092-wipe-ram.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -5626,6 +6405,7 @@
    "src/core/local_modes.cpp:vs_rematch_frame",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/records_scores.cpp:press_seen_twice",
    "src/core/wipe_ram.cpp:hide_entries_30_to_35"
   ],
   "source_records": [
@@ -5640,19 +6420,25 @@
   "label": "sub_80C24C",
   "native": [
    "src/core/front_end.hpp:RaceResult::released",
+   "src/core/front_end.hpp:ScoresPhase",
    "src/core/front_end.hpp:WipeRamMenu",
    "src/core/front_end.hpp:WipeRamMenu::released",
    "src/core/front_end_screens.hpp:wait_for_result_press",
    "src/core/local_modes.cpp:vs_rematch_frame",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:wait_for_result_press",
+   "src/core/records_scores.cpp:player_scores_running",
+   "src/core/records_scores.cpp:scores_frame",
+   "src/core/records_scores.cpp:show_player_figures",
    "src/core/stunt_result.cpp:after_tally_frame",
    "src/core/wipe_ram.cpp:waited_for_press"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0067-stunt-result.md",
-   "docs/research/R-0092-wipe-ram.md"
+   "docs/research/R-0092-wipe-ram.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -5690,7 +6476,8 @@
   "comment": "instruction start",
   "label": "loc_80C3C6",
   "native": [
-   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control"
+   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control",
+   "src/core/text_printer.hpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -5702,7 +6489,8 @@
   "comment": "unknown",
   "label": "unk_80C3DC",
   "native": [
-   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control"
+   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control",
+   "src/core/text_printer.hpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
@@ -6393,12 +7181,14 @@
   "native": [
    "src/core/rider_menu.cpp:open_rider_menu",
    "src/core/rider_menu.cpp:picks_second_in_place",
+   "src/core/rider_menu.cpp:read_league_members_pad",
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0091-mode-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md",
    "tasks/TWO-HUMAN-STUNTS.md"
   ]
@@ -6502,6 +7292,18 @@
   ]
  },
  {
+  "address": "$80:CD14",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CD14",
+  "native": [
+   "src/core/rider_menu.cpp:read_rider_menu_pad"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:CD46",
   "class": "observed",
   "comment": "instruction start",
@@ -6594,6 +7396,18 @@
   ]
  },
  {
+  "address": "$80:CFA9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CFA9",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:CFB9",
   "class": "observed",
   "comment": "instruction start",
@@ -6616,6 +7430,18 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:D00F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D00F",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7004,10 +7830,12 @@
   "comment": "routine start",
   "label": "sub_80D420",
   "native": [
-   "src/core/now_playing.cpp:hide_icons"
+   "src/core/now_playing.cpp:hide_icons",
+   "src/core/records_scores.cpp:player_scores_leaving"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7017,6 +7845,20 @@
   "label": "loc_80D448",
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D457",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D457",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::options_rider",
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -7045,6 +7887,18 @@
   ]
  },
  {
+  "address": "$80:D487",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D487",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor::length_limit"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:D494",
   "class": "observed",
   "comment": "instruction start",
@@ -7054,6 +7908,19 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D4A0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D4A0",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:KeyboardEditor::scratch"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7083,8 +7950,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80D503",
+  "native": [
+   "src/core/records_scores.cpp:close_scores"
+  ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7097,7 +7968,8 @@
    "src/core/options_menu.cpp:enter_records_menu"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7105,8 +7977,26 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80D53F",
+  "native": [
+   "src/core/front_end_screens.hpp:reopen_records_menu",
+   "src/core/options_menu.cpp:records_entry_frame",
+   "src/core/records_scores.cpp:close_scores"
+  ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:D54B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D54B",
+  "native": [
+   "src/core/options_menu.cpp:records_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7146,6 +8036,20 @@
   "source_records": [
    "docs/research/R-0072-options.md",
    "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:D70F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D70F",
+  "native": [
+   "src/core/options_menu.cpp:print_track_records",
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -7200,6 +8104,19 @@
   ]
  },
  {
+  "address": "$80:D9B2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D9B2",
+  "native": [
+   "src/core/options_menu.cpp:print_high_scores",
+   "src/core/options_menu.cpp:records_detail_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:D9B7",
   "class": "observed",
   "comment": "inside the instruction at $80:D9B5",
@@ -7231,10 +8148,51 @@
   "comment": "instruction start",
   "label": "loc_80DACF",
   "native": [
-   "src/core/options_menu.cpp:print_player_scores"
+   "src/core/front_end.hpp:FrontEndState::options_rider",
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/records_scores.cpp:(file)",
+   "src/core/records_scores.cpp:print_player_screen"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:DB12",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DB12",
+  "native": [
+   "src/core/records_scores.cpp:scores_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DB18",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DB18",
+  "native": [
+   "src/core/front_end.hpp:RecordsDetail::hidden_half"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DB26",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DB26",
+  "native": [
+   "src/core/records_scores.cpp:player_scores_slid_in"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7243,7 +8201,8 @@
   "comment": "inside the instruction at $80:DB29",
   "label": "mid_80DB2B",
   "native": [
-   "src/core/options_menu.cpp:print_player_scores"
+   "src/core/records_scores.cpp:open_bar_window",
+   "src/core/records_scores.cpp:player_scores_slid_in"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
@@ -7255,10 +8214,49 @@
   "comment": "inside the instruction at $80:DB4C",
   "label": "mid_80DB4E",
   "native": [
-   "src/core/options_menu.cpp:print_player_scores"
+   "src/core/records_scores.cpp:player_scores_slid_in"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DB56",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DB56",
+  "native": [
+   "src/core/records_scores.cpp:player_scores_slid_in"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DB59",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DB59",
+  "native": [
+   "src/core/records_scores.cpp:player_scores_slid_in",
+   "src/core/records_scores.cpp:print_player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DB8F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DB8F",
+  "native": [
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/records_scores.cpp:player_scores_slid_in",
+   "src/core/records_scores.cpp:show_player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7267,10 +8265,37 @@
   "comment": "instruction start",
   "label": "loc_80DB9E",
   "native": [
-   "src/core/options_menu.cpp:print_player_scores"
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/records_scores.cpp:player_scores_slid_in",
+   "src/core/records_scores.cpp:show_player_figures"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DBAC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DBAC",
+  "native": [
+   "src/core/records_scores.cpp:step_bar"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DBE7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DBE7",
+  "native": [
+   "src/core/records_scores.cpp:player_scores_running",
+   "src/core/records_scores.cpp:step_bar"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7279,8 +8304,8 @@
   "comment": "instruction start",
   "label": "loc_80DBF8",
   "native": [
-   "src/core/options_menu.cpp:print_player_scores",
-   "src/core/options_menu.cpp:records_detail_frame"
+   "src/core/records_scores.cpp:player_scores_running",
+   "src/core/records_scores.cpp:step_bar"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -7292,11 +8317,61 @@
   "comment": "instruction start",
   "label": "loc_80DC05",
   "native": [
-   "src/core/options_menu.cpp:print_player_scores",
-   "src/core/options_menu.cpp:records_detail_frame"
+   "src/core/records_scores.cpp:player_scores_running",
+   "src/core/records_scores.cpp:step_bar"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:DC15",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DC15",
+  "native": [
+   "src/core/front_end.hpp:RecordsDetail::hidden_half",
+   "src/core/records_scores.cpp:step_bar"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DC74",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DC74",
+  "native": [
+   "src/core/records_scores.cpp:BarLayout::hide_at_scroll",
+   "src/core/records_scores.cpp:slide_bars_in"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DC9A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80DC9A",
+  "native": [
+   "src/core/records_scores.cpp:slide_bars_in"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DCB6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DCB6",
+  "native": [
+   "src/core/records_scores.cpp:slide_bars_out"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7304,12 +8379,50 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80DDE3",
-  "native": [
-   "src/core/options_menu.cpp:print_player_scores",
-   "src/core/options_menu.cpp:set_bar_objects"
-  ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DDE4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DDE4",
+  "native": [
+   "src/core/records_scores.cpp:BarLayout::first_x, BarLayout::first_y, BarLayout::tile, BarLayout::attributes"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DDFC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DDFC",
+  "native": [
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/records_scores.cpp:(file)",
+   "src/core/records_scores.cpp:print_group_screen"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:DE16",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DE16",
+  "native": [
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/records_scores.cpp:(file)",
+   "src/core/records_scores.cpp:place_bar_objects",
+   "src/core/records_scores.cpp:print_group_screen"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7318,10 +8431,50 @@
   "comment": "instruction start",
   "label": "loc_80DE2E",
   "native": [
-   "src/core/options_menu.cpp:print_group_scores"
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/records_scores.cpp:(file)",
+   "src/core/records_scores.cpp:print_group_screen"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DE38",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DE38",
+  "native": [
+   "src/core/records_scores.cpp:print_group_table"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DE9B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DE9B",
+  "native": [
+   "src/core/records_scores.cpp:scores_entry_frame",
+   "src/core/records_scores.cpp:scores_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DEA9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DEA9",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::group_table_shown",
+   "src/core/records_scores.cpp:scores_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7330,10 +8483,51 @@
   "comment": "inside the instruction at $80:DEB3",
   "label": "mid_80DEB5",
   "native": [
-   "src/core/options_menu.cpp:print_group_scores"
+   "src/core/front_end.hpp:OnePlayerRecords::group_table_shown",
+   "src/core/records_scores.cpp:open_bar_window",
+   "src/core/records_scores.cpp:scores_entry_frame"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DEDB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DEDB",
+  "native": [
+   "src/core/records_scores.cpp:group_tables_running"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DEEF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DEEF",
+  "native": [
+   "src/core/records_scores.cpp:group_tables_running",
+   "src/core/records_scores.cpp:step_bar"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DF04",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DF04",
+  "native": [
+   "src/core/records_scores.cpp:BarLayout::first_text_row",
+   "src/core/records_scores.cpp:group_tables_running",
+   "src/core/records_scores.cpp:step_bar"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7342,10 +8536,12 @@
   "comment": "instruction start",
   "label": "loc_80DF37",
   "native": [
-   "src/core/options_menu.cpp:print_group_scores"
+   "src/core/records_scores.cpp:group_tables_input",
+   "src/core/records_scores.cpp:group_tables_running"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -7355,10 +8551,12 @@
   "comment": "instruction start",
   "label": "loc_80DF46",
   "native": [
-   "src/core/options_menu.cpp:print_group_scores"
+   "src/core/records_scores.cpp:group_tables_input",
+   "src/core/records_scores.cpp:group_tables_running"
   ],
   "source_records": [
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7367,10 +8565,61 @@
   "comment": "instruction start",
   "label": "loc_80DF6C",
   "native": [
-   "src/core/options_menu.cpp:print_group_scores"
+   "src/core/records_scores.cpp:group_tables_input",
+   "src/core/records_scores.cpp:group_tables_running"
   ],
   "source_records": [
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DF99",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DF99",
+  "native": [
+   "src/core/records_scores.cpp:group_tables_input"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DFC2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DFC2",
+  "native": [
+   "src/core/records_scores.cpp:BarLayout::hide_at_scroll",
+   "src/core/records_scores.cpp:slide_bars_in"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DFE8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80DFE8",
+  "native": [
+   "src/core/records_scores.cpp:slide_bars_in"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:E010",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E010",
+  "native": [
+   "src/core/records_scores.cpp:slide_bars_out"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7379,10 +8628,58 @@
   "comment": "inside the instruction at $80:E042",
   "label": "mid_80E043",
   "native": [
-   "src/core/options_menu.cpp:set_bar_objects"
+   "src/core/records_scores.cpp:slide_bars_out"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:E04B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E04B",
+  "native": [
+   "src/core/records_scores.cpp:BarLayout::first_x, BarLayout::first_y, BarLayout::tile, BarLayout::attributes"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:E12B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E12B",
+  "native": [
+   "src/core/records_scores.cpp:print_group_table"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:E184",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E184",
+  "native": [
+   "src/core/records_scores.cpp:print_group_table"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:E1B1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E1B1",
+  "native": [
+   "src/core/records_scores.cpp:print_group_table"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7422,6 +8719,30 @@
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$80:E29F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E29F",
+  "native": [
+   "src/core/options_menu.cpp:options_return_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:E2A2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E2A2",
+  "native": [
+   "src/core/records_scores.cpp:leave_scores_pass"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7526,6 +8847,18 @@
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$80:E449",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E449",
+  "native": [
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -8141,7 +9474,7 @@
   "native": [
    "src/core/front_end_screens.hpp:turn_markers",
    "src/core/local_modes.cpp:local_continue_frame",
-   "src/core/options_menu.cpp:options_entry_frame",
+   "src/core/options_menu.cpp:open_options_choices",
    "src/core/options_menu.cpp:options_menu_frame",
    "src/core/track_menu.cpp:turn_markers",
    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -8151,6 +9484,7 @@
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0092-wipe-ram.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -8266,12 +9600,16 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/options_menu.cpp:enter_options_menu",
+   "src/core/options_menu.cpp:league_slots_entry_frame",
    "src/core/options_menu.cpp:options_entry_frame",
+   "src/core/options_menu.cpp:options_return_frame",
+   "src/core/options_menu.cpp:records_entry_frame",
    "src/core/wipe_ram.cpp:print_wipe_ram_menu"
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
-   "docs/research/R-0092-wipe-ram.md"
+   "docs/research/R-0092-wipe-ram.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -8304,7 +9642,7 @@
   "comment": "routine start",
   "label": "sub_80EF89",
   "native": [
-   "src/core/options_menu.cpp:print_group_scores"
+   "src/core/records_scores.cpp:GroupStanding"
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
@@ -8318,11 +9656,14 @@
   "label": "sub_80EFD4",
   "native": [
    "src/core/audio_cpu_menu_league.cpp:sort_ranking",
-   "src/core/league_menu.cpp:standings_order"
+   "src/core/league_menu.cpp:standings_order",
+   "src/core/records_scores.cpp:sort_group_rows"
   ],
   "source_records": [
    "docs/research/R-0073-league.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -8528,6 +9869,23 @@
   ]
  },
  {
+  "address": "$80:F227",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F227",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_setup.cpp:stunt_stable_result",
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:end_tally",
+   "src/core/stunt_result.cpp:start_stunt_result"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:F249",
   "class": "observed",
   "comment": "instruction start",
@@ -8598,6 +9956,23 @@
   "source_records": [
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:F2AC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F2AC",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_setup.cpp:stunt_stable_result",
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:end_tally",
+   "src/core/stunt_result.cpp:start_stunt_result"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -8821,7 +10196,8 @@
    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -8832,12 +10208,14 @@
   "native": [
    "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads",
    "src/core/options_menu.cpp:rename_commit_frame",
+   "src/core/records_scores.cpp:close_scores",
    "src/core/rider_menu.cpp:main_menu_return_frame",
    "src/core/wipe_ram.cpp:cancel_reset"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -9592,7 +10970,9 @@
   "comment": "instruction start",
   "label": "loc_80FBEE",
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -19048,6 +20428,16 @@
   ]
  },
  {
+  "address": "$83:84D9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8384D9",
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
   "address": "$83:8535",
   "class": "unknown",
   "comment": "unknown",
@@ -19055,6 +20445,15 @@
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$83:8537",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838537",
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -19080,6 +20479,15 @@
    "tasks/FRONT-END-1P-CONTINUATION.md",
    "tasks/FRONT-END-1P-SETUP.md",
    "tasks/FRONT-END-TOUR-END.md"
+  ]
+ },
+ {
+  "address": "$83:879E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83879E",
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -19683,15 +21091,59 @@
   ]
  },
  {
+  "address": "$83:8EFE",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_838EFE",
+  "native": [
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$83:8F2F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_838F2F",
+  "native": [
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:bar_share",
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
   "address": "$83:8FDE",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_838FDE",
   "native": [
-   "src/core/options_menu.cpp:score_bar_targets"
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:player_figures"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$83:8FEC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838FEC",
+  "native": [
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -19734,6 +21186,20 @@
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
    "tasks/FIFTH-WIN-COMPLETION.md"
+  ]
+ },
+ {
+  "address": "$83:91D0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8391D0",
+  "native": [
+   "src/core/front_end_screens.hpp:cartridge_percentage",
+   "src/core/records_scores.cpp:part_of_races"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -20038,7 +21504,7 @@
    "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
    "src/core/front_end.hpp:RiderMenu::challenger",
    "src/core/front_end_screens.hpp:gate_pads",
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
    "src/core/rider_menu.cpp:enter_vs_challenger"
   ],
   "source_records": [
@@ -20068,7 +21534,7 @@
   "comment": "routine start",
   "label": "sub_83956D",
   "native": [
-   "src/core/local_modes.cpp:versus_percentage"
+   "src/core/front_end_screens.hpp:cartridge_percentage"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -20147,7 +21613,8 @@
   "comment": "routine start",
   "label": "sub_8396BE",
   "native": [
-   "src/core/audio_cpu_menu_league.cpp:reorder_members"
+   "src/core/audio_cpu_menu_league.cpp:reorder_members",
+   "src/core/records_scores.cpp:GroupStanding"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
@@ -20160,6 +21627,18 @@
   "label": "loc_8396FB",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$83:97BD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8397BD",
+  "native": [
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -20422,10 +21901,13 @@
   "label": "sub_839D80",
   "native": [
    "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
+   "src/core/front_end_screens.hpp:cartridge_percentage",
    "src/core/local_modes.cpp:versus_percentage"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {

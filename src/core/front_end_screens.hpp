@@ -73,8 +73,8 @@ inline constexpr std::size_t pair_tiles = 0x00, cycle_tiles = 0x08, left_sway = 
 // counts Select where `$80:B794` tests it. Choose is B, Start or A (`$80:B71D`); back is Y or X
 // (`$80:B74A`).
 inline constexpr std::uint16_t pad_up = 0x0800, pad_down = 0x0400, pad_left = 0x0200,
-                               pad_right = 0x0100, pad_select = 0x2000, pad_a = 0x0080,
-                               pad_r = 0x0010;
+                               pad_right = 0x0100, pad_select = 0x2000, pad_start = 0x1000,
+                               pad_a = 0x0080, pad_r = 0x0010;
 inline constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
 // $80:B6D3: any of pad 1's twelve buttons, and of pad 2's while `$77:0742` bit 10 is clear (the
 // main menu's code, HUNTER-ENDING); in one-player play bit 10 is set and pad 2 is ignored.
@@ -134,6 +134,13 @@ void restore_menu_screen(FrontEndState& state, const FrontEndContent& content);
 void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose);
 // $80:C6D5, the printer's EF: entry 104 + `object` at the text map word `position`.
 void place_printed_object(FrontEndState& state, unsigned object, unsigned position);
+// $80:9719: an unsigned word division, 0xFFFF for a divisor of 0.
+std::uint16_t divide_word(std::uint16_t dividend, std::uint16_t divisor);
+// $83:9D80 on `$77:10F9` (the whole) and `$77:10FB` (the part): the part as a percentage of the
+// whole, both halved until the part is below 655 so that 100 times it fits a word ($83:956D), and
+// left so in the cartridge RAM. VS CHAMPIONS (R-0095) and PLAYER SCORES (`$83:91D0`, R-0097).
+std::uint16_t cartridge_percentage(OnePlayerRecords& records, std::uint16_t whole,
+                                   std::uint16_t part);
 // $80:98A4: the arrow flies off the left edge.
 void send_arrow_off(FrontEndState& state);
 
@@ -252,7 +259,8 @@ void rename_commit_frame(FrontEndState& state, const FrontEndContent& content);
 void rename_return_frame(FrontEndState& state, const FrontEndContent& content);
 void enter_define_player_warning(FrontEndState& state, const FrontEndContent& content);
 void define_player_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
-void define_player_warning_frame(FrontEndState& state, FrontEndPads pads);
+void define_player_warning_frame(FrontEndState& state, const FrontEndContent& content,
+                                 FrontEndPads pads);
 void define_player_after_confirm_frame(FrontEndState& state, const FrontEndContent& content);
 void reset_league(FrontEndState&);
 void record_league_result(FrontEndState&);
@@ -274,8 +282,10 @@ void enter_league_slots(FrontEndState& state, const FrontEndContent& content);
 void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
-void league_warning_frame(FrontEndState& state, FrontEndPads pads);
+void league_warning_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void enter_league_editor(FrontEndState& state, const FrontEndContent& content);
+// The RECORDS menu's loop again after PLAYER SCORES or GROUP TABLES (`$80:D53F`): no new print.
+void reopen_records_menu(FrontEndState& state, const FrontEndContent& content);
 void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void records_detail_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void records_detail_exit_frame(FrontEndState& state, const FrontEndContent& content);
@@ -304,6 +314,14 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
 // $80:EB23, before each frame wait of PICK TRACK and the two-entry menus: the done-track markers
 // turn (`$77:10A7`).
 void turn_markers(FrontEndState& state, const FrontEndContent& content);
+
+// records_scores.cpp: PLAYER SCORES and GROUP TABLES, RECORDS' choices 2 and 3 (R-0072, R-0097).
+inline constexpr std::uint8_t player_scores_category = 2, group_tables_category = 3;
+bool shows_scores(const FrontEndState& state);
+// Whether the entry's frame `next` starts after a frame wait.
+bool scores_frame_waits(const FrontEndState& state, std::uint32_t next);
+void scores_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void scores_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 // now_playing.cpp: NOW PLAYING after a track is chosen, and Race's fade.
 void enter_now_playing(FrontEndState& state);

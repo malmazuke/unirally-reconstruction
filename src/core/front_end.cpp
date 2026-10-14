@@ -264,7 +264,8 @@ bool waits_for_frame(const FrontEndState& state) {
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
-    if (state.screen == FrontEndScreen::records_detail_entry && next == 1) return false;
+    if (state.screen == FrontEndScreen::records_detail_entry)
+        return shows_scores(state) ? scores_frame_waits(state, next) : next != 1;
     if (state.screen == FrontEndScreen::league_podium_entry) return next <= 7;
     if (state.screen == FrontEndScreen::league_podium) return false;
     if (state.screen == FrontEndScreen::wipe_ram_answer) return wipe_ram_answer_waits(state);
@@ -621,6 +622,25 @@ void place_printed_object(FrontEndState& state, unsigned object, unsigned positi
     const auto entry = first_printed_object + object;
     oam_byte(state, entry, 0) = static_cast<std::uint8_t>((position % row_words) * 8 - 1);
     oam_byte(state, entry, 1) = static_cast<std::uint8_t>((position / row_words) * 8 - 1);
+}
+
+std::uint16_t divide_word(std::uint16_t dividend, std::uint16_t divisor) {
+    return divisor == 0 ? std::uint16_t{0xffff} : static_cast<std::uint16_t>(dividend / divisor);
+}
+
+std::uint16_t cartridge_percentage(OnePlayerRecords& records, std::uint16_t whole,
+                                   std::uint16_t part) {
+    constexpr std::uint16_t largest_part = 0x028e, percent = 100;
+    records.versus_percentage_races = whole;
+    records.versus_percentage_wins = part;
+    while (records.versus_percentage_wins > largest_part) {
+        records.versus_percentage_wins =
+            static_cast<std::uint16_t>(records.versus_percentage_wins >> 1U);
+        records.versus_percentage_races =
+            static_cast<std::uint16_t>(records.versus_percentage_races >> 1U);
+    }
+    const auto scaled = static_cast<std::uint16_t>(records.versus_percentage_wins * percent);
+    return divide_word(scaled, records.versus_percentage_races);
 }
 
 void send_arrow_off(FrontEndState& state) {
@@ -1185,7 +1205,9 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::define_player_warning_entry:
         define_player_warning_entry_frame(state, content);
         break;
-    case FrontEndScreen::define_player_warning: define_player_warning_frame(state, physical); break;
+    case FrontEndScreen::define_player_warning:
+        define_player_warning_frame(state, content, physical);
+        break;
     case FrontEndScreen::define_player_after_confirm:
         define_player_after_confirm_frame(state, content);
         break;
@@ -1200,7 +1222,7 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::league_continue_entry: league_continue_entry_frame(state, content); break;
     case FrontEndScreen::league_continue: league_continue_frame(state, content, physical); break;
     case FrontEndScreen::league_warning_entry: league_warning_entry_frame(state, content); break;
-    case FrontEndScreen::league_warning: league_warning_frame(state, physical); break;
+    case FrontEndScreen::league_warning: league_warning_frame(state, content, physical); break;
     case FrontEndScreen::records_detail_entry: records_detail_entry_frame(state, content); break;
     case FrontEndScreen::records_detail: records_detail_frame(state, content, physical); break;
     case FrontEndScreen::records_detail_exit: records_detail_exit_frame(state, content); break;

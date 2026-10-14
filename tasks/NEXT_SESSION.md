@@ -1,5 +1,23 @@
 # Next session
 
+**14 October 2026: MENU-INPUT is accepted (tier 1, #79) and integrated by merge commit.**
+The menus now take input as the original reads it where native differed:
+- **The keyboard.** Start goes straight to OK, Left and Right repeat while held (19 frames, then
+  every 7), inputs are tested in the original's order, and a league's name takes 17 characters.
+- **The league member picker.** A or Start finishes; B, Y or X mark; the choice is latched.
+- **PLAYER SCORES and GROUP TABLES** run frame by frame: Up first, Select as Down, GROUP TABLES'
+  Up and Down change the league, LOST as 100 less WON% and FAILED%, the original's sort and bars.
+- **OPTIONS.** Every way back turns the hidden markers, the two warnings leave on any other
+  button, and the rider words `$00CA` and `$017D` are written where the original writes them.
+- VS refusing the champion, the continuation's wrap, the second pick and the awards' press were
+  already native; new captures confirm them.
+
+Results: 22 captures of the original (12 the task's, 10 the review's) equal on every picture
+but four: `league-name` and `rv-kb` (the long-name lag), `rv-records` (HIGH SCORES) and
+`awards-press` (the awards' slide, as main). Sound schedules equal but the long-name lag's 5
+frames and the awards' 1, as main. Every gate and sweep equals main. Queued: RECORD-SCREENS and
+NAME-CHECK. [R-0097](../docs/research/R-0097-menu-input.md) and [MENU-INPUT](MENU-INPUT.md) define the domain.
+
 **12 October 2026: DEMO-AUDIO is accepted (tier 1, #77) and integrated by merge commit.**
 The idle demos now have native sound, and the app's audio producer runs through them and back to
 the menus. The demo turns out to have its own sound set (driver 50, the award's tables, score 56,

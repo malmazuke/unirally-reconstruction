@@ -57,6 +57,15 @@ std::uint8_t race_kind(const FrontEndState& state) {
     return place < 3 ? place : static_cast<std::uint8_t>(place - 3);
 }
 
+// $80:B5C0: each name line's real rider goes to `$00CA` (the rider, the opponent, the record's
+// holder); the last one stays (R-0097).
+void note_named_riders(FrontEndState& state, bool opponent) {
+    const auto& now = state.now_playing;
+    for (const auto rider :
+         {state.rider_menu.rider, opponent ? now.opponent : someone, now.record_holder})
+        if (rider < someone) state.options_rider = rider;
+}
+
 // $80:B57E: a rider's line, "FC 09" (the caller sets the row), the name to its first blank, the
 // icon (`EF n`) and, for a real rider, the best on this track in brackets.
 Text name_line(const FrontEndState& state, const FrontEndContent& content, std::uint8_t rider,
@@ -192,6 +201,7 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
                      race_kind(state) == stunt_event ? hi_score_at : record_at);
     record.push_back(blank);
     const auto holder = name_line(state, content, now.record_holder, 2);
+    note_named_riders(state, race_kind(state) != stunt_event || now.opponent < someone);
     record.insert(record.end(), holder.begin() + 2, holder.end());
     print(record);
     print(stream_at(content, race_exit_at));
@@ -337,6 +347,7 @@ void race_fade_frame(FrontEndState& state, const FrontEndContent& content) {
     state.registers.brightness = static_cast<std::uint8_t>(13 - 2 * step);
     if (state.script_frame < fade_frames) return;
     state.registers.force_blank = true;
+    state.options_rider = state.rider_menu.rider; // $80:99E8-99EB, before the menus are saved
     // $80:99B7-99BE: the race fades the menu music (rate -112 * 8) and sends it at once. Its
     // exception, `$77:10AD` = 5, is never set from NOW PLAYING.
     constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;
