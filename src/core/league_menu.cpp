@@ -356,13 +356,26 @@ void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
 
 namespace {
 
+// The awards' frames by the rows printed (N, `award_rows_printed`): the first pass prints a row a
+// frame from frame 1, the back slide (`$80:8B28`, `$80:E27E`) starts with its sound on frame N + 1
+// and shows the awards on frame N + 40, the second pass prints a row a frame after it and ends on
+// frame 2N + 40, the decorations step from frame 2N + 41, and the result's sound (`$80:B051`)
+// comes 41 frames after the pass. Measured with two rows (tours-a) and three (odd-tours, R-0098).
+struct AwardsFrames {
+    std::uint32_t slide_start, passes_end, result;
+};
+AwardsFrames awards_frames(const FrontEndState& state) {
+    unsigned rows = 0;
+    for (const auto row : state.league.award_rows)
+        if (state.league.award_riders[row] != someone) ++rows;
+    constexpr std::uint32_t slide_frames = 39, result_wait = 41;
+    return {rows + 1, 2 * rows + slide_frames + 1, 2 * rows + slide_frames + 1 + result_wait};
+}
+
 // $80:B05B-B079 (R-0095): after the result's sound `$80:C206` waits for a press of any button of
 // either pad on two frames running, each frame copying the OAM and stepping the decorations; then
 // the icons 104-111 hidden and, after a frame wait, the text and object palettes again and an OAM
 // copy, and the table printed (`$80:A547`) in that frame.
-// The awards' frames: the back slide's end (`$80:8B28`) and the result's sound (`$80:B051`).
-constexpr std::uint32_t awards_slid_in_frame = 45, awards_result_frame = 85;
-
 void leave_league_awards(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     constexpr unsigned menu_text_palette = 28;
     auto& league = state.league;
@@ -373,7 +386,7 @@ void leave_league_awards(FrontEndState& state, const FrontEndContent& content, F
         enter_league_table(state, content);
         return;
     }
-    if (state.script_frame <= awards_result_frame) {
+    if (state.script_frame <= awards_frames(state).result) {
         league.awards_press_seen = false;
         return;
     }
@@ -385,48 +398,48 @@ void leave_league_awards(FrontEndState& state, const FrontEndContent& content, F
     league.awards_press_seen = press;
 }
 
+// $80:AFF5-B015 at the second pass's end: the icons shown, the pairing reordered, the cursor back
+// to the first pair and the next track (R-0073, R-0098).
+void end_award_passes(FrontEndState& state) {
+    const auto slot = state.league.slot;
+    show_award_icons(state);
+    reorder_league(state);
+    state.records.league_pair_cursor[slot] = 0;
+    state.records.league_tracks[slot] =
+        static_cast<std::uint8_t>((state.records.league_tracks[slot] + 1) % 44);
+    // $80:B00F-B011: the next track becomes the menus' track (`$00CE`) and `$83:9983` derives its
+    // tour (`$00D0`), where a podium's PICK TOUR puts its cursor (R-0098).
+    state.tour_menu.track = state.records.league_tracks[slot];
+    state.tour_menu.tour = static_cast<std::uint8_t>(state.tour_menu.track / tracks_per_tour);
+    if (state.records.league_tracks[slot] % tracks_per_tour == 0)
+        state.records.league_cycle_complete = true;
+}
+
 } // namespace
 
+// The awards are printed to the hidden half and slide in; the bonus line and the second pass
+// follow the slide and reach the screen with the result's sound. The back slide steps no
+// decorations: they step from the passes' end on (R-0095, R-0098).
 void league_awards_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
-    // The awards are printed to the hidden half and slide in (`$80:8B28`, `$80:E27E`), the back
-    // slide starting with its sound on the third frame and showing them on the 42nd; the result's
-    // sound follows 41 frames after the tally ($80:B051). The back slide steps no decorations:
-    // they step from its end on (R-0095, R-0098).
-    constexpr std::uint32_t slide_start_frame = 3, slid_in_frame = awards_slid_in_frame,
-                            result_frame = awards_result_frame;
     const auto frame = state.script_frame;
+    const auto frames = awards_frames(state);
     if (state.league.awards_left) { // the frame after the press: no decorations
         copy_oam(state);
         leave_league_awards(state, content, pads);
         return;
     }
-    if (frame > slide_start_frame && state.slide.countdown >= 0) {
+    if (frame > frames.slide_start && state.slide.countdown >= 0) {
         if (slide_frame(state, content)) print_award_bonus(state, content); // copies the OAM
     } else {
         copy_oam(state);
     }
-    if (frame >= slid_in_frame) step_decorations(state, content);
-    if (frame == slide_start_frame) start_slide(state, content, true);
-    if (frame == result_frame) {
+    if (frame > frames.passes_end) step_decorations(state, content);
+    if (frame == frames.slide_start) start_slide(state, content, true);
+    if (frame == frames.result) {
         play_menu_sound(state, MenuSound::result);
         load_text(state, state.slide.shown_half);
     }
-    // $80:AFF5-B015 in the frame before the decorations start: the pairing reordered, the cursor
-    // back to the first pair and the next track (R-0073, R-0098).
-    if (frame + 1 == slid_in_frame) {
-        const auto slot = state.league.slot;
-        show_award_icons(state);
-        reorder_league(state);
-        state.records.league_pair_cursor[slot] = 0;
-        state.records.league_tracks[slot] =
-            static_cast<std::uint8_t>((state.records.league_tracks[slot] + 1) % 44);
-        // $80:B00F-B011: the next track becomes the menus' track (`$00CE`) and `$83:9983` derives
-        // its tour (`$00D0`), where a podium's PICK TOUR puts its cursor (R-0098).
-        state.tour_menu.track = state.records.league_tracks[slot];
-        state.tour_menu.tour = static_cast<std::uint8_t>(state.tour_menu.track / tracks_per_tour);
-        if (state.records.league_tracks[slot] % tracks_per_tour == 0)
-            state.records.league_cycle_complete = true;
-    }
+    if (frame == frames.passes_end) end_award_passes(state);
     leave_league_awards(state, content, pads);
 }
 
