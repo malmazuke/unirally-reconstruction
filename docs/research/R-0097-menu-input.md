@@ -260,6 +260,9 @@ and GROUP TABLES frame by frame (the `player-scores-*`, `group-tables*` and
 - `$80:FBEE`'s menu (the league's continuation after the podium) runs the generic list loop, so
   it also turns the hidden markers and plays the move's sound; native's does neither. Not
   captured.
+- PLAYER SCORES on a record whose wins equal its races but whose failed count is above 0: the
+  original skips the FAILED figure, native computes it (review round 2). A played game does not
+  write such a record.
 - The buffer's tail (`$00E8-$00EE`) before a league's naming: underscores in every capture, the
   writer not identified.
 

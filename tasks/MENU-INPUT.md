@@ -2,9 +2,11 @@
 
 ## Assignment
 
-- Status: **claimed** 14 October 2026 on main `e304868` (Claude Code desktop app, Claude Opus 5.5
-  `claude-opus-5-5`; coordinator and integrator; a worker subagent implements). Queued 10 October
-  2026 by [MODE-AUDIO](MODE-AUDIO.md) (R-0091). Weekly usage at claim 14%.
+- Status: **accepted** 14 October 2026 (tier 1, [#79](https://github.com/malmazuke/unirally-reconstruction/pull/79),
+  approved in review round 2 at `84036e7`), integrated by merge commit. Claimed 14 October 2026 on
+  main `e304868` (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and
+  integrator; a worker subagent implements, a fresh subagent reviews). Queued 10 October 2026 by
+  [MODE-AUDIO](MODE-AUDIO.md) (R-0091). Weekly usage at claim 14%.
 - Choice: the oldest queued row and native game behaviour still missing (the full-coverage goal);
   ahead of R-0089's LEAGUE-TOURS, CARTRIDGE-OPTION-BITS and RACE-LISTING-BRANCHES and of
   GATES-AGAINST-MAIN, which are larger or infrastructure. No other session holds a claim.
@@ -158,3 +160,44 @@ as before (W5 3800/3800, `kb-input` 2100/2100, `league-pick` 2400/2400, `league-
 `scores-carry` 3100/3100, `vs-challenger` 700/700, `twop-quit` 1000/1000, `awards-press` 615/700),
 sound schedules 0 frames differing but `league-name` 5 and `awards-press` 1 (as recorded); the
 review's `rv-pick` 2200/2200, `rv-warn` 6700/6700, `rv-kb` 1879/2300.
+
+## Gates - head `84036e7` (main `local/evidence/menu-input/gates-84036e7.out`)
+
+Same script, 05:00-08:01 UTC 14 October 2026, against main `e304868`'s binaries. The worker's
+round-1 fixes ran 56 min (harness-measured).
+- Four presets build, ctest 41 of 41 each; synthetic suite passed on app-debug and lab-debug; v1
+  contracts, hidden app runs and the front end passed; fuzz as on main (40 aborts, recorded
+  non-pass).
+- Eleven differential gates passed with main's row digests; race sweep 432 runs, 0 differences;
+  every pause, two-pad, race-end, look, restart, restore, track-sweep, idle-demo, CREDITS-NAME,
+  WIPE-RAM, TWO-HUMAN-STUNTS, DEMO-AUDIO, MODE-AUDIO, R-0077 and R-0076 result as at `9cbff08`.
+- `checks.sh`: the task's twelve captures as before; the review's `rv-ca` 3400/3400, `rv-scores`
+  2300/2300, `rv-bars` 1400/1400, `rv-pick` 2200/2200, `rv-warn` 6700/6700, `rv-kb` 1879/2300
+  (the long-name lag), `rv-records` 1141/2100 (HIGH SCORES, Not covered; main 1060). Sound
+  schedules 0 frames differing but `league-name` 5 and `awards-press` 1, as recorded.
+- Tooling tests 576 passed; functions over 80 lines 0; native symbols current. Hosted CI green.
+
+## Review round 2 (approved)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/79#pullrequestreview-5514984092)
+  of `84036e7`: approved. Every round-1 fix checked against the ROM; three new captures equal on
+  every picture: `rv-ca3` 2700/2700 (2P NOW PLAYING writes `$00CA` = 2, then PLAYER SCORES),
+  `rv-figs` 2300/2300 (figures above 255, 700 of 1000, a three-way tie), `rv-ca2` 2600/2600.
+  Evidence in main `local/evidence/menu-input-review/`.
+- Advisories: HIGH SCORES' exit (`$80:C206`, recorded in Not covered and queued with
+  [RECORD-SCREENS](RECORD-SCREENS.md)); a corrupt record's FAILED figure, added to R-0097's Not
+  covered. The commit after `84036e7` changes records only.
+
+## Handoff (closeout)
+
+- Commits on `task/menu-input`: the claim `693f99d`; the worker's `b5c8ff5`, `05e172a`,
+  `b8e3e8b`, `7ce9cfa`, `adb6356`, `9cbff08`; `85b3c18` (GCC include); `d4d9554` (gates);
+  round 1 `36028c2`, `cc2e2bf`, `c197ef6`, `84036e7`; then this closing record.
+- The closing session moves the worktree's `artifacts/menu-input/` (gate logs, checks, synthetic
+  reruns) to main `artifacts/menu-input-integration/` with `closeout.json`, deletes the two
+  worktrees' build output and removes `.worktrees/menu-input` and `.worktrees/menu-input-review`
+  and the local branch. Captures stay in main `local/evidence/menu-input/` and
+  `local/evidence/menu-input-review/` (a merged task's, kept under D-0011).
+- Queued: [RECORD-SCREENS](RECORD-SCREENS.md) (HIGH SCORES and TRACK RECORDS frame by frame,
+  `$80:FBEE`'s menu, the result screens' `$00CA` writers) and [NAME-CHECK](NAME-CHECK.md) (the
+  keyboard's word check and the long-name lag).
