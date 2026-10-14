@@ -53,6 +53,7 @@ void eight_members_and_integer_wrap(const Content& content) {
     records.league_played[5][0] = 0xffff;
     for (unsigned pair = 0; pair < 4; ++pair) {
         require(records.league_pair_cursor[5] == 2 * pair, "advance each disjoint pair");
+        count_league_pair(state);
         finish_league_pair(state, content.view);
         if (pair < 3)
             require(state.screen == FrontEndScreen::league_table_entry,
@@ -64,7 +65,8 @@ void eight_members_and_integer_wrap(const Content& content) {
     for (unsigned row = 1; row < 8; ++row)
         require(records.league_played[5][row] == 1, "one race each");
     require(records.league_scores[0][0] == 0, "slot isolation");
-    state.script_frame = 45;
+    // R-0098: eight rows printed, so the second pass ends on frame 2 x 8 + 40.
+    state.script_frame = 56;
     records.league_tracks[5] = 43;
     league_awards_frame(state, content.view, {});
     require(records.league_tracks[5] == 0 && records.league_pair_cursor[5] == 0,
@@ -80,6 +82,7 @@ void odd_pair_and_result_order(const Content& content) {
     state.race_result.times = {3293, 3290, false};
     state.race_result.times.league_tricks = {5, 3};
     record_league_result(state);
+    store_league_race_totals(state); // with the result's rows (R-0098)
     require(state.records.league_event_totals[1][0] == 3290
                 && state.records.league_event_totals[1][1] == 3293,
             "totals follow pairing order");
@@ -88,6 +91,7 @@ void odd_pair_and_result_order(const Content& content) {
     require(state.rider_menu.rider == 9 && state.second_rider == 7
                 && state.race_result.times.player_total == 3290,
             "result swaps whole pairing");
+    count_league_pair(state);
     finish_league_pair(state, content.view);
     require(state.records.league_pair_cursor[1] == 2 && state.records.league_scores[1][0] == 0,
             "odd event awaits final human");
@@ -95,6 +99,8 @@ void odd_pair_and_result_order(const Content& content) {
     state.second_rider = state.now_playing.opponent = someone;
     state.race_result.times = {5277, 3358, false};
     record_league_result(state);
+    store_league_race_totals(state);
+    count_league_pair(state);
     finish_league_pair(state, content.view);
     require(state.records.league_scores[1][0] == 9 && state.records.league_scores[1][1] == 10
                 && state.records.league_scores[1][2] == 7,
@@ -119,12 +125,39 @@ void bonus_comparisons() {
     require(state.records.league_best[0] == 2 && state.records.league_best_holder[0] == 9,
             "fewest-wipeout equality replaces with later human");
 }
+// R-0098: a stunt event's totals wait for the end of its tallies; against the computer only the
+// player's word is stored (`$80:F275-F27F`, Y = 0xFFFF).
+void stunt_totals_after_the_tallies() {
+    auto state = league(2, 0x0500);
+    state.rider_menu.rider = 7;
+    state.second_rider = state.now_playing.opponent = 9;
+    state.records.league_pairings[2][0] = 7;
+    state.records.league_pairings[2][1] = 9;
+    state.records.league_event_totals[2] = {11, 12, 13, 0, 0, 0, 0, 0};
+    state.race_result.times = {60000, 60000, false};
+    state.race_result.times.stunt_event = true;
+    state.race_result.times.player_score = 21;
+    state.race_result.times.opponent_score = 22;
+    record_league_result(state);
+    require(state.records.league_event_totals[2][0] == 11, "no totals as the result starts");
+    store_league_stunt_totals(state, false);
+    require(state.records.league_event_totals[2][0] == 21
+                && state.records.league_event_totals[2][1] == 22,
+            "both scores after rider 1's tally");
+    state.records.league_pair_cursor[2] = 2;
+    state.race_result.times.player_score = 31;
+    store_league_stunt_totals(state, true);
+    require(state.records.league_event_totals[2][2] == 31
+                && state.records.league_event_totals[2][3] == 0,
+            "against the computer only the player's word");
+}
 } // namespace
 int main() try {
     const Content content;
     eight_members_and_integer_wrap(content);
     odd_pair_and_result_order(content);
     bonus_comparisons();
+    stunt_totals_after_the_tallies();
     return 0;
 } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';

@@ -643,7 +643,7 @@
   {
    "address": "$80:9107",
    "native": [
-    "src/core/league_menu.cpp:record_league_result"
+    "src/core/league_menu.cpp:store_league_race_totals"
    ],
    "region": "rom"
   },
@@ -2297,7 +2297,8 @@
   {
    "address": "$80:AF54",
    "native": [
-    "src/core/league_menu.cpp:count_league_pair"
+    "src/core/league_menu.cpp:count_league_pair",
+    "src/core/race_result.cpp:race_result_exit_frame"
    ],
    "range_ends": [
     "$80:AFEF"
@@ -4216,7 +4217,7 @@
   {
    "address": "$80:D15F",
    "native": [
-    "src/core/league_menu.cpp:record_league_result"
+    "src/core/league_menu.cpp:store_league_race_totals"
    ],
    "region": "rom"
   },
@@ -21697,8 +21698,6 @@
   },
   "src/core/league_menu.cpp:record_league_result": {
    "rom": [
-    "$80:9107",
-    "$80:D15F",
     "$80:F88D"
    ]
   },
@@ -21721,6 +21720,12 @@
   "src/core/league_menu.cpp:standings_order": {
    "rom": [
     "$80:EFD4"
+   ]
+  },
+  "src/core/league_menu.cpp:store_league_race_totals": {
+   "rom": [
+    "$80:9107",
+    "$80:D15F"
    ]
   },
   "src/core/league_menu.cpp:store_league_stunt_totals": {
@@ -23634,6 +23639,7 @@
    "rom": [
     "$80:A858",
     "$80:ADE3",
+    "$80:AF54",
     "$80:BD98",
     "$80:C051",
     "$80:C786",
@@ -28070,7 +28076,7 @@
  "totals": {
   "addresses": 2009,
   "io_addresses": 11,
-  "native_symbols": 1472,
+  "native_symbols": 1473,
   "rom_addresses": 1579,
   "sram_addresses": 63,
   "wram_addresses": 356

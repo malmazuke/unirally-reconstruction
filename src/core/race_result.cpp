@@ -625,15 +625,18 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
         start_result(state, content);
         return;
     }
+    const bool league = state.mode == FrontEndMode::league;
     if (frame == rows_frame) {
         if (result.times.lap_race)
             print_lap_result(state, content);
         else
             print_result(state, content);
+        if (league && result.times.lap_race) store_league_race_totals(state);
         return;
     }
     if (frame == icons_frame) {
         show_icons(state, content);
+        if (league && !result.times.lap_race) store_league_race_totals(state);
         return;
     }
     copy_oam(state);
@@ -683,8 +686,11 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
             return;
         }
     }
+    // $80:AF54 counts the pair in the frame before the awards' (R-0098: `tours-a` 11465 after
+    // two record placings, 22585 after a stunt event with none).
+    if (frame + 1 == result_scoring_frame(state) && state.mode == FrontEndMode::league)
+        count_league_pair(state);
     if (frame == 1) return;
-    if (frame == 2 && state.mode == FrontEndMode::league) count_league_pair(state);
     if (frame < scoring) return; // `$80:C786`'s overrun: no wait, no OAM copy
     copy_oam(state);
     if (state.mode != FrontEndMode::one_player) {

@@ -165,15 +165,20 @@ void store_league_stunt_totals(FrontEndState& state, bool against_computer) {
     store_league_totals(state, times.player_score, times.opponent_score, !against_computer);
 }
 
-// Race totals are held in pairing order ($80:F88D); bonuses examine player then opponent. A lap or
-// one-run race's totals are stored as its result starts (`$80:9107`, `$80:D15F`), a stunt event's
-// after its tallies (store_league_stunt_totals).
+// A lap or one-run race's totals reach the event totals with its result's rows: the lap result's
+// second frame (`$80:9107`), the one-run result's third (`$80:D15F`) (R-0098).
+void store_league_race_totals(FrontEndState& state) {
+    const auto& times = state.race_result.times;
+    if (league_race_quit(times)) return;
+    store_league_totals(state, times.player_total, times.opponent_total, true);
+}
+
+// Race totals are held in pairing order ($80:F88D), stored by the result (store_league_race_totals,
+// store_league_stunt_totals); bonuses examine player then opponent as the race returns.
 void record_league_result(FrontEndState& state) {
     const auto slot = state.league.slot;
     const auto& times = state.race_result.times;
     if (league_race_quit(times)) return;
-    if (!times.stunt_event)
-        store_league_totals(state, times.player_total, times.opponent_total, true);
     auto& best = state.records.league_best[slot];
     auto& holder = state.records.league_best_holder[slot];
     const auto consider = [&](unsigned index, unsigned rider) {

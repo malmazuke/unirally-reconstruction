@@ -509,7 +509,7 @@
     "src/core/lap_result.cpp:opponent_dots, record_line, record_line_entries",
     "src/core/lap_result.cpp:print_lap_result",
     "src/core/lap_result.cpp:saved_word_under_opponent_best",
-    "src/core/league_menu.cpp:record_league_result",
+    "src/core/league_menu.cpp:store_league_race_totals",
     "src/core/race_result.cpp:insert_stunt_record",
     "src/core/race_result.cpp:start_result"
    ],
@@ -1962,7 +1962,8 @@
     "src/core/league_menu.cpp:AwardsFrames",
     "src/core/league_menu.cpp:count_league_pair",
     "src/core/league_menu.cpp:end_award_passes",
-    "src/core/league_menu.cpp:leave_league_awards"
+    "src/core/league_menu.cpp:leave_league_awards",
+    "src/core/race_result.cpp:race_result_exit_frame"
    ],
    "observed_entries": {},
    "start": "$80:AF54",
@@ -19151,19 +19152,19 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2078,
+  "cited_addresses": 2108,
   "cited_by_class": {
    "data": 16,
-   "inferred": 93,
-   "observed": 1777,
-   "unknown": 192
+   "inferred": 94,
+   "observed": 1804,
+   "unknown": 194
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1390,
+   "loc": 1417,
    "mid": 30,
-   "sub": 450,
-   "unk": 192
+   "sub": 451,
+   "unk": 194
   },
   "conflicts": 0,
   "data": 74,

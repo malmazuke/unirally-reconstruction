@@ -133,9 +133,8 @@ std::uint8_t opponent_for(const FrontEndState& state) {
     return opponent > last_medal_opponent ? last_medal_opponent : opponent;
 }
 
-// $80:B19A-B3DA: the marks' places, then the text map, all in one frame.
-void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
-    auto& now = state.now_playing;
+// The 1P and 2P marks' rows and colours, all hidden for now.
+void place_now_playing_marks(FrontEndState& state) {
     for (const unsigned group : {96U, first_mark, 112U}) high_bits(state, group) = four_hidden;
     for (const unsigned entry : {first_mark, first_mark + 2}) {
         oam_byte(state, entry, 1) = mark_1p_y;
@@ -145,6 +144,12 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         oam_byte(state, entry, 1) = mark_2p_y;
         oam_byte(state, entry, 3) = mark_2p_attributes;
     }
+}
+
+// $80:B19A-B3DA: the marks' places, then the text map, all in one frame.
+void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
+    auto& now = state.now_playing;
+    place_now_playing_marks(state);
     state.text.words.fill(cleared_text);
     std::uint16_t qualifying_score{}; // `$00B6`, the stunt events' FD
     // $80:B297-B2B9: 2P's NOW PLAYING prints this session's wins (`$77:10A9`, `$77:10AB`) through
