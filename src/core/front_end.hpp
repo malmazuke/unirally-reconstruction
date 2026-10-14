@@ -711,6 +711,9 @@ RgbFrame render_front_end(const FrontEndState& state);
 // The race NOW PLAYING chose: its track, the rider PICK YOUR UNI chose against NOW PLAYING's
 // opponent, and the tutorial hints unless the records hold the rider's bit (R-0061).
 ClassicRaceScenario one_player_race_scenario(const FrontEndState& state);
+// The race of two humans (2P, VS, a league pair): the riders the menus paired, their tutorial
+// hints, and the first rider's medal on the tour for a stunt event's qualifying score.
+ClassicRaceScenario local_race_scenario(const FrontEndState& state);
 // $82:D978: the race now starting (from NOW PLAYING or the idle demo) runs HUNTER's tag effects
 // and tier on any track, because `$77:111A-111B` is not zero (the name "faedine", R-0094).
 bool hunter_races_running(const FrontEndState& state);

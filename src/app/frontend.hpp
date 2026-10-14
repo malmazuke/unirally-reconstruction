@@ -179,16 +179,8 @@ public:
                              (hunter_races_running(state_) && !demo_split_race());
       return scenario;
     }
-    auto scenario =
-        local_race()
-            ? classic_local_race_scenario(
-                  ClassicRaceTrack{state_.tour_menu.track},
-                  {state_.rider_menu.rider, state_.second_rider},
-                  ((state_.records.tutorial_bits >> state_.rider_menu.rider) &
-                   1U) == 0,
-                  ((state_.records.tutorial_bits >> state_.second_rider) &
-                   1U) == 0)
-            : one_player_race_scenario(state_);
+    auto scenario = local_race() ? local_race_scenario(state_)
+                                 : one_player_race_scenario(state_);
     scenario.race_counter =
         state_.race_song; // `$77:10B1` after this race's count (R-0084)
     // `$82:D978`: the name "faedine" gives any track HUNTER's effects (R-0094).

@@ -757,6 +757,18 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
     return scenario;
 }
 
+ClassicRaceScenario local_race_scenario(const FrontEndState& state) {
+    const auto rider = state.rider_menu.rider, second = state.second_rider;
+    auto scenario =
+        classic_local_race_scenario(ClassicRaceTrack{state.tour_menu.track}, {rider, second},
+                                    ((state.records.tutorial_bits >> rider) & 1U) == 0,
+                                    ((state.records.tutorial_bits >> second) & 1U) == 0);
+    // $80:99E8-99F1: the stunt event's qualifying score by the first rider's medal on the tour
+    // (`$83:9EEB`), in every mode (R-0098: HUNTER's medals are 2 in a cold image).
+    scenario.best_medal = front_end_screens::best_medal(state);
+    return scenario;
+}
+
 // Nine tours of five tracks: every track the one-player menus reach.
 constexpr std::size_t classic_race_tracks =
     (front_end_screens::hunter + 1U) * front_end_screens::tracks_per_tour;

@@ -156,7 +156,7 @@ void advance_clocks(ZoomZooState& next, const ControllerButtons& buttons) {
 // $82:AAE2-AAFB: B drives the jump ($0331), Y the brake ($0325), the shoulders the
 // rotations. Returns whether A is pressed. $82:AC5A-ACA7: the HUNTER's control reversal
 // swaps left and right, the two rotations, and Y with A; it swaps the opponent's port-2
-// words too, which the AI then overwrites.
+// words too, which the AI then overwrites and a second human's pad uses (read_second_pad).
 bool read_player_buttons(ZoomZooState& next, const ControllerButtons& buttons, bool reversed) {
     auto& input = next.reflection[0];
     input.brake_input = buttons.y;
@@ -802,9 +802,9 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     const auto geometry = track_geometry(sampling.track);
     const auto samples = sample_track(sampling, points, rider.motion.x, rider.motion.y,
                                       geometry.coarse_columns, geometry.whole_height);
-    const auto summary = summarize_vertical_contact(
-        content.movement.flat_contact, points, samples, rider.motion.x, rider.motion.y,
-        classic_race_scenario(state.track).neon_lighting);
+    const auto summary =
+        summarize_vertical_contact(content.movement.flat_contact, points, samples, rider.motion.x,
+                                   rider.motion.y, neon_lighting_runs(state));
     if (content.slope_coefficients.size() != 18 && content.slope_coefficients.size() != 128)
         throw std::invalid_argument("ZOOM ZOO slope coefficients missing");
     const bool surface_mode = next.surface[index].mode != 0;
@@ -921,8 +921,11 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
 // The second rider's controls for one update: the demo's scripted pads, a second human's pad,
 // an absent stunt opponent or the opponent AI. Returns whether the AI is off this update.
 // A two-pad race's second rider: pad 2's direction and buttons.
+// Port 2's words for a second human ($82:AB91-AC4F). On HUNTER's tour control reversal
+// ($82:AC84-ACA4) swaps them as it swaps the player's: left and right (`$031B`), the rotations
+// (`$032B`, `$032F`) and Y with A (`$0327`, `$031F`), so a tag reverses both humans (R-0098).
 void read_second_pad(ZoomZooState& next, const ControllerButtons& opponent_buttons,
-                     DemoTrickButtons& demo_buttons) {
+                     DemoTrickButtons& demo_buttons, bool reversed = false) {
     const auto sample = sample_controller(opponent_buttons);
     next.opponent_horizontal = sample.horizontal;
     auto& input = next.reflection[1];
@@ -932,6 +935,11 @@ void read_second_pad(ZoomZooState& next, const ControllerButtons& opponent_butto
     input.rotate_positive_input = opponent_buttons.right_shoulder;
     demo_buttons.a[1] = opponent_buttons.a;
     demo_buttons.x[1] = opponent_buttons.x;
+    if (!reversed) return;
+    next.opponent_horizontal = static_cast<std::uint8_t>(2U - next.opponent_horizontal);
+    std::swap(input.rotate_negative_input, input.rotate_positive_input);
+    input.brake_input = opponent_buttons.a;
+    demo_buttons.a[1] = opponent_buttons.y;
 }
 
 bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& scenario,
@@ -952,7 +960,8 @@ bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& s
         // after its demo controls. The split demo suppresses that second pass.
         if (!next.split_screen) ai_off = update_opponent_controller(next);
     } else if (next.split_screen) {
-        read_second_pad(next, opponent_buttons, demo_buttons);
+        read_second_pad(next, opponent_buttons, demo_buttons,
+                        next.hunter.effect[hunter_effect::control_reversed] != 0);
     } else if (scenario.stunt_event)
         release_absent_opponent(next);
     else

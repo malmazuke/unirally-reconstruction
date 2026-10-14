@@ -264,6 +264,7 @@ void define_player_warning_frame(FrontEndState& state, const FrontEndContent& co
 void define_player_after_confirm_frame(FrontEndState& state, const FrontEndContent& content);
 void reset_league(FrontEndState&);
 void record_league_result(FrontEndState&);
+void store_league_stunt_totals(FrontEndState&, bool against_computer);
 void restore_league_pair(FrontEndState&);
 void finish_league_pair(FrontEndState&, const FrontEndContent&);
 void league_awards_frame(FrontEndState&, const FrontEndContent&, FrontEndPads);

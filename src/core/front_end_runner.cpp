@@ -382,13 +382,8 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         front_end.mode == unirally::FrontEndMode::two_player
         || front_end.mode == unirally::FrontEndMode::versus
         || (front_end.mode == unirally::FrontEndMode::league && front_end.second_rider < 16);
-    auto scenario =
-        local ? unirally::classic_local_race_scenario(
-                    unirally::ClassicRaceTrack{front_end.tour_menu.track},
-                    {front_end.rider_menu.rider, front_end.second_rider},
-                    ((front_end.records.tutorial_bits >> front_end.rider_menu.rider) & 1U) == 0,
-                    ((front_end.records.tutorial_bits >> front_end.second_rider) & 1U) == 0)
-              : unirally::one_player_race_scenario(front_end);
+    auto scenario = local ? unirally::local_race_scenario(front_end)
+                          : unirally::one_player_race_scenario(front_end);
     scenario.race_counter = front_end.race_song; // `$77:10B1` after this race's count (R-0084)
     // `$82:D978` (R-0094): the name "faedine" gives any track HUNTER's effects and tier.
     scenario.hunter_tour = scenario.hunter_tour || unirally::hunter_races_running(front_end);

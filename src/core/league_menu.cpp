@@ -134,20 +134,46 @@ void restore_league_pair(FrontEndState& state) {
     std::swap(times.league_wipeouts[0], times.league_wipeouts[1]);
 }
 
-// Race totals are held in pairing order ($80:F88D); bonuses examine player then opponent.
-void record_league_result(FrontEndState& state) {
+namespace {
+bool league_race_quit(const RaceTimes& times) {
+    return times.player_total == 0xea62 || times.opponent_total == 0xea62;
+}
+
+// $80:F88D: the pair's totals at the cursor, in pairing order; the second is not stored when the
+// caller passes 0xFFFF ($80:F8A9-F8AF), which only a stunt event against the computer does.
+void store_league_totals(FrontEndState& state, std::uint16_t first, std::uint16_t second,
+                         bool store_second) {
     const auto slot = state.league.slot;
     const auto cursor = state.records.league_pair_cursor[slot];
     if (cursor >= league_rows) throw std::invalid_argument("invalid league cursor");
-    const auto& times = state.race_result.times;
-    if (times.player_total == 0xea62 || times.opponent_total == 0xea62) return;
     auto& totals = state.records.league_event_totals[slot];
     const bool swapped = state.records.league_pairings[slot][cursor] != state.rider_menu.rider;
-    totals[cursor] = times.stunt_event ? times.player_score : times.player_total;
-    if (cursor + 1U < league_rows) {
-        totals[cursor + 1] = times.stunt_event ? times.opponent_score : times.opponent_total;
+    totals[cursor] = first;
+    if (store_second && cursor + 1U < league_rows) {
+        totals[cursor + 1] = second;
         if (swapped) std::swap(totals[cursor], totals[cursor + 1]);
     }
+}
+} // namespace
+
+// A stunt event's scores reach the event totals at the end of its result's tallies: after rider
+// 1's tally (`$80:F2DC-F2E6`), or against the computer after the player's with no second word
+// (`$80:F275-F27F`).
+void store_league_stunt_totals(FrontEndState& state, bool against_computer) {
+    const auto& times = state.race_result.times;
+    if (league_race_quit(times)) return;
+    store_league_totals(state, times.player_score, times.opponent_score, !against_computer);
+}
+
+// Race totals are held in pairing order ($80:F88D); bonuses examine player then opponent. A lap or
+// one-run race's totals are stored as its result starts (`$80:9107`, `$80:D15F`), a stunt event's
+// after its tallies (store_league_stunt_totals).
+void record_league_result(FrontEndState& state) {
+    const auto slot = state.league.slot;
+    const auto& times = state.race_result.times;
+    if (league_race_quit(times)) return;
+    if (!times.stunt_event)
+        store_league_totals(state, times.player_total, times.opponent_total, true);
     auto& best = state.records.league_best[slot];
     auto& holder = state.records.league_best_holder[slot];
     const auto consider = [&](unsigned index, unsigned rider) {
@@ -338,6 +364,10 @@ void league_awards_frame(FrontEndState& state, const FrontEndContent& content, F
         state.records.league_pair_cursor[slot] = 0;
         state.records.league_tracks[slot] =
             static_cast<std::uint8_t>((state.records.league_tracks[slot] + 1) % 44);
+        // $80:B00F-B011: the next track becomes the menus' track (`$00CE`) and `$83:9983` derives
+        // its tour (`$00D0`), where a podium's PICK TOUR puts its cursor (R-0098).
+        state.tour_menu.track = state.records.league_tracks[slot];
+        state.tour_menu.tour = static_cast<std::uint8_t>(state.tour_menu.track / tracks_per_tour);
         if (state.records.league_tracks[slot] % tracks_per_tour == 0)
             state.records.league_cycle_complete = true;
     }

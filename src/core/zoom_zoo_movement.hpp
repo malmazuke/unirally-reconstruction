@@ -256,6 +256,9 @@ ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePair
                                                 bool tutorial_hints = true,
                                                 bool opponent_tutorial_hints = false);
 bool classic_race_has_scenario(ClassicRaceTrack track);
+struct ZoomZooState;
+// `$12D1` in a race: NEON (track 42) with one view; two views leave it clear (R-0098).
+bool neon_lighting_runs(const ZoomZooState& state);
 // $81:A304-A51B: decoded track byte 13 selects one of the fixed playfields of
 // 16,384 64-unit coarse cells. Zero selects 1,024 columns (DRAGSTER) and 0x40
 // selects 256 (ZOOM ZOO); x wraps with `$0D4F`, columns * 64 - 1. The same arm

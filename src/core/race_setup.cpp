@@ -197,6 +197,9 @@ ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePair
     auto scenario = classic_race_scenario(track);
     scenario.pairing = pairing;
     scenario.two_humans = true;
+    // $82:D98F-D9AF, $82:DC2E-DC3A: with two views (`$77:0750` bit 3) track 42 sets `$131F`, not
+    // `$12D1`: no NEON lighting or scenery 14, and the tag effects run (R-0098).
+    scenario.neon_lighting = false;
     scenario.tutorial_hints = tutorial_hints;
     scenario.opponent_tutorial_hints = opponent_tutorial_hints;
     return scenario;
@@ -226,6 +229,10 @@ OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
     const auto limit = static_cast<std::uint8_t>(base - tier.catch_up);
     tier.adjustment_limit = (limit & 0x80U) ? base : limit;
     return tier;
+}
+
+bool neon_lighting_runs(const ZoomZooState& state) {
+    return classic_race_scenario(state.track).neon_lighting && !state.split_screen;
 }
 
 bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track, unsigned rider) {

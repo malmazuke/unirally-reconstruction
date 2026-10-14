@@ -305,8 +305,9 @@ void start_second_tally(FrontEndState& state, const FrontEndContent& content) {
 // The frames after a tally (see end_tally). After the player's, a frame wait (`$80:F249`) and the
 // text; then against the computer (`$77:0749` from 0x10) the qualifying score (`$80:F24F-F272`,
 // not in a league, `$77:10AD` = 4), a frame wait and the text, and `$80:F88D`'s score history
-// and checksums, which native does not keep (R-0067); against a second human its tally
-// (`$80:F283`). After rider 1's, a frame wait (`$80:F2D4`), the text and `$80:F88D`. Then the
+// and checksums, which native does not keep (R-0067) but for a league's event total; against a
+// second human its tally (`$80:F283`). After rider 1's, a frame wait (`$80:F2D4`), the text and
+// `$80:F88D` (a league's event totals). Then the
 // one-run result's waits (`$80:C24C`, `$80:C206`).
 void after_tally_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     auto& result = state.race_result;
@@ -319,6 +320,8 @@ void after_tally_frame(FrontEndState& state, const FrontEndContent& content, Fro
     const bool qualifying_line = !second && state.mode != FrontEndMode::league;
     if (after == 2) {
         load_text(state, state.slide.shown_half);
+        if (state.mode == FrontEndMode::league && (second || against_computer(state)))
+            store_league_stunt_totals(state, !second);
         if (!second && !against_computer(state)) {
             start_second_tally(state, content);
         } else if (qualifying_line) {
