@@ -238,18 +238,58 @@ void award_points(FrontEndState& state, const FrontEndContent& content) {
     }
 }
 
-void print_awards(FrontEndState& state, const FrontEndContent& content) {
+// $80:8A70-8B03, one pass of the rows in award order: the rider, the event total and the points,
+// with the holder's extra point only on the second pass (`$77:10F3` bit 0, `$80:8AC4-8AD3`).
+void print_award_rows(FrontEndState& state, const FrontEndContent& content, bool bonus_pass) {
     const auto slot = state.league.slot;
+    const auto holder = state.records.league_best_holder[slot];
     TextVariables variables;
-    variables.league_names = state.records.league_names;
     variables.rider_names = state.records.rider_names;
     variables.time_words = content.time_words;
     unsigned row = 0;
     variables.word = [&](std::uint16_t at) -> std::uint16_t {
-        if (at == 0x00cc) return slot;
-        if (at == 0x00b2) return state.league.award_riders[row];
+        const auto rider = state.league.award_riders[row];
+        if (at == 0x00b2) return rider;
         if (at == 0x00b4) return state.records.league_event_totals[slot][row];
-        if (at == 0x00b6) return state.league.award_points[row];
+        if (at == 0x00b6)
+            return static_cast<std::uint16_t>(state.league.award_points[row]
+                                              - (!bonus_pass && rider == holder ? 1U : 0U));
+        throw std::invalid_argument("unknown league award operand");
+    };
+    unsigned shown = 0;
+    for (const auto ordered : state.league.award_rows) {
+        row = ordered;
+        const auto rider = state.league.award_riders[row];
+        if (rider == someone) continue;
+        auto stream = content.league_awards_text.subspan(177, 21);
+        std::vector<std::uint8_t> line(stream.begin(), stream.end());
+        for (unsigned at : {4U, 10U, 16U}) line[at] = static_cast<std::uint8_t>(9 + 2 * shown);
+        if (state.race_result.times.stunt_event) line[11] = 0xfd;
+        print_text(state.text, state.printer, line, content.character_table, &variables);
+        load_cgram(state, asset(content, first_rider_palette + rider), 0x80 + 0x10 * shown);
+        ++shown;
+    }
+}
+
+// The riders' icons 104-111 shown, one a printed row, once the second pass has ended (R-0098:
+// two rows, the frame before the decorations start).
+void show_award_icons(FrontEndState& state) {
+    unsigned shown = 0;
+    for (const auto row : state.league.award_rows) {
+        if (state.league.award_riders[row] == someone) continue;
+        high_bits(state, 104 + (shown / 4) * 4) &=
+            static_cast<std::uint8_t>(~hidden_bit(104 + shown));
+        ++shown;
+    }
+}
+
+// The first pass ($80:8A02): the header and the rows without the bonus point, to the hidden half
+// the awards slide in from.
+void print_awards(FrontEndState& state, const FrontEndContent& content) {
+    TextVariables variables;
+    variables.league_names = state.records.league_names;
+    variables.word = [&](std::uint16_t at) -> std::uint16_t {
+        if (at == 0x00cc) return state.league.slot;
         throw std::invalid_argument("unknown league award operand");
     };
     variables.place_object = [&](unsigned object, unsigned position) {
@@ -262,30 +302,23 @@ void print_awards(FrontEndState& state, const FrontEndContent& content) {
     print(content.league_awards_text);
     if (state.race_result.times.stunt_event) print(content.league_awards_text.subspan(168));
     high_bits(state, 104) = high_bits(state, 108) = four_hidden;
-    unsigned shown = 0;
-    for (const auto ordered : state.league.award_rows) {
-        row = ordered;
-        const auto rider = state.league.award_riders[row];
-        if (rider == someone) continue;
-        auto stream = content.league_awards_text.subspan(177, 21);
-        std::vector<std::uint8_t> line(stream.begin(), stream.end());
-        for (unsigned at : {4U, 10U, 16U}) line[at] = static_cast<std::uint8_t>(9 + 2 * shown);
-        if (state.race_result.times.stunt_event) line[11] = 0xfd;
-        print(line);
-        load_cgram(state, asset(content, first_rider_palette + rider), 0x80 + 0x10 * shown);
-        high_bits(state, 104 + (shown / 4) * 4) &=
-            static_cast<std::uint8_t>(~hidden_bit(104 + shown));
-        ++shown;
-    }
-    // $80:8B3F-8B6C prints the bonus holder before repainting rows with its extra point.
-    row = 0;
-    const auto holder = state.records.league_best_holder[slot];
+    print_award_rows(state, content, false);
+    load_text(state, state.slide.hidden_half); // slid in by league_awards_frame
+}
+
+// After the slide ($80:8B2B-8B6C): the bonus line by the race mode (`$77:074B`: 0 the most stunt
+// bonus, 1 the best lap's, 2 the least wipeouts') with its holder, then the rows again with the
+// holder's point. The text reaches the screen with the result's sound (league_awards_frame).
+void print_award_bonus(FrontEndState& state, const FrontEndContent& content) {
+    const auto holder = state.records.league_best_holder[state.league.slot];
+    TextVariables variables;
+    variables.rider_names = state.records.rider_names;
     variables.word = [&](std::uint16_t) { return holder; };
-    const auto bonus = state.race_result.times.stunt_event ? 141U
-                     : state.race_result.times.lap_race    ? 119U
-                                                           : 95U;
-    print(content.league_awards_text.subspan(bonus));
-    load_text(state, state.slide.shown_half);
+    const auto& times = state.race_result.times;
+    const auto bonus = times.stunt_event ? 141U : times.lap_race ? 119U : 95U;
+    print_text(state.text, state.printer, content.league_awards_text.subspan(bonus),
+               content.character_table, &variables);
+    print_award_rows(state, content, true);
 }
 } // namespace
 
@@ -345,21 +378,34 @@ void leave_league_awards(FrontEndState& state, const FrontEndContent& content, F
 } // namespace
 
 void league_awards_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
-    // The awards slide in at $80:8B28 (`$80:E27E`, its sound on the third frame; native prints
-    // them in place), and the result's sound follows 41 frames after the tally ($80:B051). The
-    // back slide steps no decorations: they step from its end on (R-0095).
-    constexpr std::uint32_t slide_sound_frame = 3, slid_in_frame = awards_slid_in_frame,
+    // The awards are printed to the hidden half and slide in (`$80:8B28`, `$80:E27E`), the back
+    // slide starting with its sound on the third frame and showing them on the 42nd; the result's
+    // sound follows 41 frames after the tally ($80:B051). The back slide steps no decorations:
+    // they step from its end on (R-0095, R-0098).
+    constexpr std::uint32_t slide_start_frame = 3, slid_in_frame = awards_slid_in_frame,
                             result_frame = awards_result_frame;
-    copy_oam(state);
+    const auto frame = state.script_frame;
     if (state.league.awards_left) { // the frame after the press: no decorations
+        copy_oam(state);
         leave_league_awards(state, content, pads);
         return;
     }
-    if (state.script_frame >= slid_in_frame) step_decorations(state, content);
-    if (state.script_frame == slide_sound_frame) play_menu_sound(state, MenuSound::back_slide);
-    if (state.script_frame == result_frame) play_menu_sound(state, MenuSound::result);
-    if (state.script_frame == slid_in_frame) {
+    if (frame > slide_start_frame && state.slide.countdown >= 0) {
+        if (slide_frame(state, content)) print_award_bonus(state, content); // copies the OAM
+    } else {
+        copy_oam(state);
+    }
+    if (frame >= slid_in_frame) step_decorations(state, content);
+    if (frame == slide_start_frame) start_slide(state, content, true);
+    if (frame == result_frame) {
+        play_menu_sound(state, MenuSound::result);
+        load_text(state, state.slide.shown_half);
+    }
+    // $80:AFF5-B015 in the frame before the decorations start: the pairing reordered, the cursor
+    // back to the first pair and the next track (R-0073, R-0098).
+    if (frame + 1 == slid_in_frame) {
         const auto slot = state.league.slot;
+        show_award_icons(state);
         reorder_league(state);
         state.records.league_pair_cursor[slot] = 0;
         state.records.league_tracks[slot] =

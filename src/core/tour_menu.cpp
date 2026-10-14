@@ -363,9 +363,11 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
         if (back && state.league.after_podium) {
             // $80:BECE-BED0: Y or X after a podium goes back to `$80:BE16` (the palettes, the badge
             // tiles and, the pair cursor being 0, PICK TOUR again), whose choice shows the
-            // standings before the race (R-0098).
+            // standings before the race. `$00AC` is still 1 from the continuation (`$80:FBD7`; the
+            // A loaded at `$80:BECE` is not stored), so it slides back (R-0098).
             state.league.after_podium = false;
             enter_tour_menu(state);
+            menu.slides_back = true;
         } else if (back) {
             enter_league_slots(state, content); // $80:BE34
         } else {
