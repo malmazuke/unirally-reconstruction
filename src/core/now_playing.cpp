@@ -151,11 +151,16 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         line[1] = row;
         print(line);
     };
+    // $80:B5C0: each line's real rider goes to `$00CA`; the last one stays (R-0097).
+    const auto note_rider = [&](std::uint8_t rider) {
+        if (rider < someone) state.options_rider = rider;
+    };
     print(stream_at(content, title_at));
     print(race_line(state, content));
     draw_tour_picture(state, content, state.tour_menu.tour,
                       word_at(content.now_playing_text, picture_place_at) / 2U);
     print_line(name_line(state, content, state.rider_menu.rider, 0), rider_row);
+    note_rider(state.rider_menu.rider);
     const bool session_wins = state.mode == FrontEndMode::two_player;
     constexpr std::uint8_t wins_column = 0x19;
     if (session_wins) {
@@ -179,6 +184,7 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         if (state.mode == FrontEndMode::one_player && state.tour_menu.tour >= hunter)
             now.opponent = anti_uni;
         print_line(name_line(state, content, now.opponent, 1), opponent_row);
+        note_rider(now.opponent);
         if (session_wins) {
             const std::array<std::uint8_t, 7> count{
                 0xfe, wins_column, opponent_row, 0xfd, opponent_wins_at, 0x00, 0xff};
@@ -192,6 +198,7 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
                      race_kind(state) == stunt_event ? hi_score_at : record_at);
     record.push_back(blank);
     const auto holder = name_line(state, content, now.record_holder, 2);
+    note_rider(now.record_holder);
     record.insert(record.end(), holder.begin() + 2, holder.end());
     print(record);
     print(stream_at(content, race_exit_at));
@@ -337,6 +344,7 @@ void race_fade_frame(FrontEndState& state, const FrontEndContent& content) {
     state.registers.brightness = static_cast<std::uint8_t>(13 - 2 * step);
     if (state.script_frame < fade_frames) return;
     state.registers.force_blank = true;
+    state.options_rider = state.rider_menu.rider; // $80:99E8-99EB, before the menus are saved
     // $80:99B7-99BE: the race fades the menu music (rate -112 * 8) and sends it at once. Its
     // exception, `$77:10AD` = 5, is never set from NOW PLAYING.
     constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;

@@ -134,6 +134,13 @@ void restore_menu_screen(FrontEndState& state, const FrontEndContent& content);
 void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose);
 // $80:C6D5, the printer's EF: entry 104 + `object` at the text map word `position`.
 void place_printed_object(FrontEndState& state, unsigned object, unsigned position);
+// $80:9719: an unsigned word division, 0xFFFF for a divisor of 0.
+std::uint16_t divide_word(std::uint16_t dividend, std::uint16_t divisor);
+// $83:9D80 on `$77:10F9` (the whole) and `$77:10FB` (the part): the part as a percentage of the
+// whole, both halved until the part is below 655 so that 100 times it fits a word ($83:956D), and
+// left so in the cartridge RAM. VS CHAMPIONS (R-0095) and PLAYER SCORES (`$83:91D0`, R-0097).
+std::uint16_t cartridge_percentage(OnePlayerRecords& records, std::uint16_t whole,
+                                   std::uint16_t part);
 // $80:98A4: the arrow flies off the left edge.
 void send_arrow_off(FrontEndState& state);
 

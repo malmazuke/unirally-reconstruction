@@ -57,10 +57,12 @@ std::uint8_t& level_of(FrontEndState& state) {
     return state.records.tour_levels[state.rider_menu.rider & 0x0fU];
 }
 
-// $80:974B's first lines: the medals' entries shown, small; 9-11 hidden.
+// $80:974B's first lines: the medals' entries shown, small; 9-11 hidden; the rider in `$00CA`
+// ($80:9759-975C, R-0097).
 void show_medal_entries(FrontEndState& state) {
     high_bits(state, 0) = high_bits(state, 4) = four_shown;
     high_bits(state, 8) = static_cast<std::uint8_t>(four_hidden & ~hidden_bit(8));
+    state.options_rider = state.rider_menu.rider;
 }
 
 // $80:E553-E560: with a reveal pending, PICK TOUR is drawn at the level below it first.

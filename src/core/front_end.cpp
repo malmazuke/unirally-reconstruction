@@ -624,6 +624,25 @@ void place_printed_object(FrontEndState& state, unsigned object, unsigned positi
     oam_byte(state, entry, 1) = static_cast<std::uint8_t>((position / row_words) * 8 - 1);
 }
 
+std::uint16_t divide_word(std::uint16_t dividend, std::uint16_t divisor) {
+    return divisor == 0 ? std::uint16_t{0xffff} : static_cast<std::uint16_t>(dividend / divisor);
+}
+
+std::uint16_t cartridge_percentage(OnePlayerRecords& records, std::uint16_t whole,
+                                   std::uint16_t part) {
+    constexpr std::uint16_t largest_part = 0x028e, percent = 100;
+    records.versus_percentage_races = whole;
+    records.versus_percentage_wins = part;
+    while (records.versus_percentage_wins > largest_part) {
+        records.versus_percentage_wins =
+            static_cast<std::uint16_t>(records.versus_percentage_wins >> 1U);
+        records.versus_percentage_races =
+            static_cast<std::uint16_t>(records.versus_percentage_races >> 1U);
+    }
+    const auto scaled = static_cast<std::uint16_t>(records.versus_percentage_wins * percent);
+    return divide_word(scaled, records.versus_percentage_races);
+}
+
 void send_arrow_off(FrontEndState& state) {
     state.arrow.target_x = parked_x;
     state.arrow.target_y = parked_y;

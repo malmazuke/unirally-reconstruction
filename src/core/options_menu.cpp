@@ -638,7 +638,8 @@ void update_track_records(FrontEndState& state, const FrontEndContent& content, 
     constexpr std::uint32_t wipe_result_frame = 6;
     if (state.script_frame == wipe_result_frame) play_menu_sound(state, MenuSound::result);
     constexpr std::array<std::uint8_t, 12> scroll_steps{1, 2, 2, 3, 4, 5, 4, 4, 2, 2, 2, 1};
-    const auto pad = pads.one;
+    // Its tests read either pad the gate lets in ($80:E449-E4B7, $80:D70F-D714; R-0097).
+    const auto pad = gated_pads(state, pads);
     const bool down = (pad & (pad_down | pad_select)) != 0;
     const bool up = !down && (pad & pad_up) != 0;
     if (!down && !up) state.latches.moved = false;

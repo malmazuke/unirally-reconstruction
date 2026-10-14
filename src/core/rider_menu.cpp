@@ -508,6 +508,10 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
     state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
     if (pick_plays_select(state)) play_menu_sound(state, MenuSound::select);
+    // $80:C139-C13B, $80:D457-D459: an OPTIONS picker stores `$009B` in `$00CA` for Y too, bit 7
+    // set (PLAYER SCORES masks it, R-0097).
+    if (state.rider_menu.back && state.rider_menu.purpose != RiderMenuPurpose::normal)
+        state.options_rider = state.menu.selection;
     if (!state.rider_menu.back) {
         if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
         if (state.rider_menu.second
@@ -526,6 +530,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
             state.rider_menu.rider = state.menu.selection;
             state.now_playing.opponent = someone; // $80:BBC3
             if (state.mode == FrontEndMode::one_player) {
+                state.options_rider = state.menu.selection; // $80:BBBE-BBC1, R-0097
                 // $80:BBD6-BBE5: a new run, no track done, three tries (R-0057).
                 state.records.tracks_done.fill(0);
                 state.records.tries = 3;

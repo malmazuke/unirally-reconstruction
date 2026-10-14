@@ -104,14 +104,14 @@ void step_bar(FrontEndState& state, const FrontEndContent& content, const BarLay
     if (((x & 7U) == 0) != layout.redraws_on_tile) return;
     const auto column = static_cast<std::uint8_t>(x >> 3U);
     if (column < layout.first_column || column >= layout.last_column) return;
-    constexpr std::uint8_t place = 0xfe, filled = 0x7b, empty = 0x7c, end = 0xff;
+    constexpr std::uint8_t filled = 0x7b, empty = 0x7c;
     const std::array<std::uint8_t, 6> edge{
-        place,
+        print_code::place,
         static_cast<std::uint8_t>(column + 1U),
         static_cast<std::uint8_t>(layout.first_text_row + 2 * row),
         filled,
         empty,
-        end};
+        print_code::end};
     print_text(state.text, state.printer, edge, content.character_table);
 }
 
@@ -156,25 +156,71 @@ std::uint32_t phase_frame(const FrontEndState& state) {
 
 // ---- PLAYER SCORES ----
 
-// The rider's figures as the printer reads them ($80:DB6C-DB7E and `$83:8EFE`'s percentages).
-struct PlayerFigures {
-    std::uint16_t races{}, won{}, lost{}, failed{}, score{};
-};
-
-PlayerFigures player_figures(const OnePlayerRecords& records, unsigned rider) {
-    const auto& stats = records.statistics[rider];
-    const unsigned races = stats[0], wins = stats[1], failed = stats[2];
-    const auto percent = [&](unsigned value) {
-        return static_cast<std::uint16_t>(races == 0 ? 0U : 100U * value / races);
-    };
-    return {stats[0], percent(wins), percent(races - wins - failed), percent(failed), stats[3]};
+// $83:8F2F-8F5D, $80:9AE2-9B0B: a bar's share of 128 pixels, the value's of the largest. Both
+// are shifted left until one has bit 15, and the value's high byte (times 256) is divided by the
+// largest's (`$80:9719`) and halved: exact below 256, a little short of the share above.
+std::uint8_t bar_share(std::uint16_t value, std::uint16_t largest) {
+    constexpr std::uint8_t whole_bar = 0x80;
+    if (value == 0) return 0;
+    if (value == largest) return whole_bar;
+    while (!(largest & 0x8000U) && !(value & 0x8000U)) {
+        largest = static_cast<std::uint16_t>(largest << 1U);
+        value = static_cast<std::uint16_t>(value << 1U);
+    }
+    const auto quotient = divide_word(static_cast<std::uint16_t>(value & 0xff00U),
+                                      static_cast<std::uint16_t>(largest >> 8U));
+    return static_cast<std::uint8_t>(quotient >> 1U);
 }
 
-TextVariables player_variables(FrontEndState& state) {
+// The rider's figures as the printer reads them (`$00B2-$00BA`) and the bars' shares (`$000A-$000E`),
+// as `$83:8EFE` computes them.
+struct PlayerFigures {
+    std::uint16_t races{}, won{}, lost{}, failed{}, score{};
+    std::array<std::uint8_t, 5> shares{};
+};
+
+// $83:8F72-8FDC: WON and FAILED as percentages of the races (`$83:91D0`), all of them 100 and the
+// whole bar, none 0.
+void part_of_races(OnePlayerRecords& records, std::uint16_t races, std::uint16_t part,
+                   std::uint16_t& percent, std::uint8_t& share) {
+    constexpr std::uint16_t all = 100;
+    if (part == 0) return;
+    if (part == races) {
+        percent = all;
+        share = 0x80;
+        return;
+    }
+    percent = cartridge_percentage(records, races, part);
+    share = static_cast<std::uint8_t>(divide_word(static_cast<std::uint16_t>(percent << 7U), all));
+}
+
+// $83:8EFE-9045. LOST is what WON and FAILED leave: 100 less both percentages (`$83:8FEC-8FF5`)
+// and 128 less both shares (`$83:8FDE-8FE8`); with no race every figure but the score is 0. The
+// largest races and score are `$83:97BD`'s, from RECORDS' entry.
+PlayerFigures player_figures(OnePlayerRecords& records, unsigned rider) {
+    const auto& stats = records.statistics[rider];
+    std::uint16_t most_races = 0, best_score = 0;
+    for (const auto& other : records.statistics) {
+        most_races = std::max(most_races, other[0]);
+        best_score = std::max(best_score, other[3]);
+    }
+    PlayerFigures figures;
+    figures.races = stats[0];
+    figures.score = stats[3];
+    figures.shares[0] = bar_share(stats[0], most_races);
+    figures.shares[4] = bar_share(stats[3], best_score);
+    if (stats[0] == 0) return figures;
+    part_of_races(records, stats[0], stats[1], figures.won, figures.shares[1]);
+    part_of_races(records, stats[0], stats[2], figures.failed, figures.shares[3]);
+    figures.shares[2] = static_cast<std::uint8_t>(0x80 - figures.shares[1] - figures.shares[3]);
+    figures.lost = static_cast<std::uint16_t>(100 - figures.won - figures.failed);
+    return figures;
+}
+
+TextVariables player_variables(FrontEndState& state, const PlayerFigures& figures) {
     TextVariables variables;
     variables.rider_names = state.records.rider_names;
-    variables.word = [&state](std::uint16_t address) -> std::uint16_t {
-        const auto figures = player_figures(state.records, state.options_rider);
+    variables.word = [&state, figures](std::uint16_t address) -> std::uint16_t {
         switch (address) {
         case 0x00ca: return state.options_rider;
         case 0x00b2: return figures.races;
@@ -191,28 +237,6 @@ TextVariables player_variables(FrontEndState& state) {
     return variables;
 }
 
-// $83:8EFE and `$80:DB5D-DB66`: each bar's end at 48 plus 128 pixels times the figure's share of
-// the largest rider's (races, score) or of 100 (percentages). LOST gets what WON and FAILED,
-// each truncated, leave of the 128 (`$83:8FDE-8FE8`).
-void aim_player_bars(FrontEndState& state) {
-    const auto figures = player_figures(state.records, state.options_rider);
-    unsigned most_races = 0, best_score = 0;
-    for (const auto& stats : state.records.statistics) {
-        most_races = std::max<unsigned>(most_races, stats[0]);
-        best_score = std::max<unsigned>(best_score, stats[3]);
-    }
-    constexpr unsigned left = 48, length = 128;
-    const auto share = [&](unsigned value, unsigned whole) {
-        return whole == 0 ? 0U : length * value / whole;
-    };
-    const unsigned won = share(figures.won, 100), failed = share(figures.failed, 100);
-    const std::array<unsigned, 5> ends{left + share(figures.races, most_races), left + won,
-                                       left + (figures.races == 0 ? 0U : length - won - failed),
-                                       left + failed, left + share(figures.score, best_score)};
-    for (unsigned row = 0; row < ends.size(); ++row)
-        state.records_detail.bar_targets[row] = static_cast<std::uint8_t>(ends[row]);
-}
-
 // $80:DB8F-DB9E: the rider's colours and the text's upload, then `$80:C24C`.
 void show_player_figures(FrontEndState& state, const FrontEndContent& content) {
     load_cgram(state, asset(content, first_rider_palette + state.options_rider), 0x80);
@@ -220,10 +244,15 @@ void show_player_figures(FrontEndState& state, const FrontEndContent& content) {
     begin_phase(state, ScoresPhase::releasing);
 }
 
-// $80:DB59-DB8C: the targets and the rider's figures, with the decorations' step.
+// $80:DB59-DB8C: the figures, each bar's end at 48 plus its share (`$80:DB5D-DB66`), the
+// figures printed, and the decorations' step.
 void print_player_figures(FrontEndState& state, const FrontEndContent& content) {
-    aim_player_bars(state);
-    const auto variables = player_variables(state);
+    const auto figures = player_figures(state.records, state.options_rider);
+    constexpr std::uint8_t left = 48;
+    for (unsigned row = 0; row < figures.shares.size(); ++row)
+        state.records_detail.bar_targets[row] =
+            static_cast<std::uint8_t>(left + figures.shares[row]);
+    const auto variables = player_variables(state, figures);
     print_text(state.text, state.printer, content.player_scores_values, content.character_table,
                &variables);
     step_decorations(state, content);
@@ -235,7 +264,7 @@ void print_player_screen(FrontEndState& state, const FrontEndContent& content) {
     load_cgram(state, asset(content, bar_colours_asset), 0xe0);
     place_bar_objects(state, player_bars);
     state.text.words.fill(cleared_text);
-    const auto variables = player_variables(state);
+    const auto variables = player_variables(state, PlayerFigures{});
     print_text(state.text, state.printer, content.player_scores_text, content.character_table,
                &variables);
 }
@@ -287,21 +316,38 @@ void player_scores_running(FrontEndState& state, const FrontEndContent& content,
 
 // ---- GROUP TABLES ----
 
-// $80:EF89 and its sort: the league's eight rows by score, highest first, and the rider each
-// row's member is (16 for none), its members in rider order.
+// $80:EF89-EFD3: the league's eight rows (index, score), sorted, and the rider each row's member
+// is (16 for none; its members in rider order, `$83:96BE`).
 struct GroupStanding {
-    std::array<unsigned, 8> order{};
-    std::array<std::uint8_t, 8> riders{};
-    unsigned top_score{};
+    std::array<std::uint8_t, 8> order{}, riders{};
+    std::array<std::uint16_t, 8> scores{};
 };
+
+// $80:EFD4-F024: a selection sort, highest score first. Each pass takes the last row of the
+// lowest score among rows 0 to n (from 0x7FFF, so a tie goes to the later row) and swaps it with
+// row n; tied rows therefore do not keep their members' order.
+void sort_group_rows(GroupStanding& standing) {
+    for (auto last = static_cast<unsigned>(standing.scores.size()); last-- > 0;) {
+        std::uint16_t lowest = 0x7fff;
+        unsigned at = 0;
+        for (unsigned row = 0; row <= last; ++row)
+            if (standing.scores[row] <= lowest) {
+                lowest = standing.scores[row];
+                at = row;
+            }
+        std::swap(standing.scores[at], standing.scores[last]);
+        std::swap(standing.order[at], standing.order[last]);
+    }
+}
 
 GroupStanding group_standing(const FrontEndState& state) {
     const auto slot = state.league.slot;
-    const auto& scores = state.records.league_scores[slot];
     GroupStanding standing;
-    std::iota(standing.order.begin(), standing.order.end(), 0U);
-    std::stable_sort(standing.order.begin(), standing.order.end(),
-                     [&](unsigned a, unsigned b) { return scores[a] > scores[b]; });
+    for (unsigned row = 0; row < standing.order.size(); ++row) {
+        standing.order[row] = static_cast<std::uint8_t>(row);
+        standing.scores[row] = state.records.league_scores[slot][row];
+    }
+    sort_group_rows(standing);
     std::array<std::uint8_t, 8> members{};
     members.fill(someone);
     unsigned count = 0;
@@ -310,7 +356,6 @@ GroupStanding group_standing(const FrontEndState& state) {
             members[count++] = static_cast<std::uint8_t>(rider);
     for (unsigned row = 0; row < standing.riders.size(); ++row)
         standing.riders[row] = members[standing.order[row]];
-    standing.top_score = scores[standing.order[0]];
     return standing;
 }
 
@@ -319,15 +364,14 @@ GroupStanding group_standing(const FrontEndState& state) {
 // times the row's share of the highest score. Nothing is cleared first.
 void print_group_table(FrontEndState& state, const FrontEndContent& content) {
     const auto standing = group_standing(state);
-    const auto& scores = state.records.league_scores[state.league.slot];
-    for (unsigned row = 0; row < standing.order.size(); ++row) {
-        const unsigned score = scores[standing.order[row]];
-        state.records_detail.bar_targets[row] = static_cast<std::uint8_t>(
-            88U + (standing.top_score == 0 ? 0U : 128U * score / standing.top_score));
-    }
+    const auto top_score = standing.scores[0];
+    constexpr std::uint8_t left = 88; // $80:9B20-9B23
+    for (unsigned row = 0; row < standing.scores.size(); ++row)
+        state.records_detail.bar_targets[row] =
+            static_cast<std::uint8_t>(left + bar_share(standing.scores[row], top_score));
     // `$00B2`: the highest score for the name line ($80:DE3F-DE42), then each row's rider
     // ($80:DE7E-DE80).
-    std::uint16_t shown_value = static_cast<std::uint16_t>(standing.top_score);
+    std::uint16_t shown_value = top_score;
     TextVariables variables;
     variables.rider_names = state.records.rider_names;
     variables.league_names = state.records.league_names;
@@ -336,19 +380,24 @@ void print_group_table(FrontEndState& state, const FrontEndContent& content) {
         if (address == 0x00b2) return shown_value;
         throw std::invalid_argument("unknown GROUP TABLES text operand");
     };
+    namespace code = print_code;
     constexpr unsigned name_line_blanks = 30;
-    std::vector<std::uint8_t> name_line{0xfe, 0x02, 0x04};
+    constexpr std::uint8_t league_word = 0xcc, value_word = 0xb2, name_row = 4, score_column = 24,
+                           score_row = 7;
+    std::vector<std::uint8_t> name_line{code::place, 2, name_row};
     name_line.insert(name_line.end(), name_line_blanks, '_');
     name_line.insert(name_line.end(),
-                     {0xf6, 0xcc, 0x00, 0xfc, 0x04, 0xfe, 0x18, 0x07, 0xfd, 0xb2, 0x00, 0xff});
+                     {code::league_name, league_word, 0, code::centre, name_row, code::place,
+                      score_column, score_row, code::number, value_word, 0, code::end});
     print_text(state.text, state.printer, name_line, content.character_table, &variables);
     print_text(state.text, state.printer, content.group_scores_empty, content.character_table);
     std::uint8_t text_row = 9;
     for (const auto rider : standing.riders) {
         if (rider >= someone) continue;
         shown_value = rider;
-        const std::array<std::uint8_t, 9> name{0xf9, 0x07, 0xfe, 0x02, text_row,
-                                               0xf8, 0xb2, 0x00, 0xff};
+        const std::array<std::uint8_t, 9> name{
+            code::attribute,  7,          code::place, 2,        text_row,
+            code::rider_name, value_word, 0,           code::end};
         print_text(state.text, state.printer, name, content.character_table, &variables);
         text_row = static_cast<std::uint8_t>(text_row + 2);
     }
