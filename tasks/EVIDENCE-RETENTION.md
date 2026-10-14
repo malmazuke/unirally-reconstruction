@@ -101,3 +101,45 @@ follow-up that would retire most of the remaining original captures:
   `inventory.json` (every deleted file) and `stage.py`.
 - Next: [GATES-AGAINST-MAIN](GATES-AGAINST-MAIN.md), tier 1, after the TWO-HUMAN-STUNTS lane.
   The 32 folders without a recipe (14.2 GB) wait for the user.
+
+## Second pass - 14 October 2026
+
+The user asked again to free disk space ("anything no longer used from the Unirally data") after
+MENU-INPUT merged. The session that ran MENU-INPUT (Claude Opus 5.5) applied D-0011 more finely.
+The scripts and lists are in main `local/evidence/evidence-retention/`, all dated 2026-10-14:
+`inventory-2026-10-14.py`, `gate-closure-2026-10-14.py` and `stage-2026-10-14.json`, which lists
+every deleted file.
+
+- **Inside gate-read folders.** The folder-level inventory left 137 GB untouchable, because a
+  gate reads some part of each folder. `gate-closure-2026-10-14.py` follows the scripts
+  MENU-INPUT's gates execute and resolves their path variables. A variable appended with a
+  computed suffix (`$OPP/$c-a`) keeps its whole folder. It then lists large files in subfolders
+  that neither those scripts nor any tracked file under `tests/`, `tools/` or `src/` names.
+  The result was 71.2 GB, for example M4-16's `continued-controls`, `held-controls` and
+  `ordinary-controls`, and the `raw/` event files of `audio-one-player`. Its schedules are
+  derived text, which stays.
+  - **Kept.** `visual-original-a`/`b` stay because a tracked presentation manifest names them.
+- **Folders listed as "no recipe".** These were 13.8 GB of work-RAM and cartridge-RAM dumps in
+  `m4-15-review`, `m4-14-review`, `dragster-controls-review` and similar folders. Each has a JSON
+  report beside it with the case's inputs and the dump's digests, which is its recipe. The
+  dumps went and the reports stay.
+- **Also deleted:**
+  - the inventory's `rolling-contact` candidates (0.8 GB), with the core-check seeds kept;
+  - two leaked comparison temp folders in `split-captions`.
+- **Recently merged tasks stay whole.** That is MENU-INPUT, DEMO-AUDIO, TWO-HUMAN-STUNTS, the
+  ACCESS tasks, CREDITS-NAME, WIPE-RAM, MODE-AUDIO, SAVE-FILES, DATA-COVERAGE and COVERAGE-GAPS.
+  The static map's raw inputs, the `core_check` captures and the emulator builds stay too.
+
+**Verification.** All 3,642 files were staged, and MENU-INPUT's full gates ran on main `b081087`
+(main `local/evidence/evidence-retention/gates-b081087-staged.out`). Every line equals the
+`84036e7` run except two:
+- **The pause-exit pictures.** `classic-pause-menu/pictures.py` reads
+  `race-pause-exits/decode/wram-*` relative to each capture, which the scan cannot see. The
+  seven files were restored, and the three checks then gave 206, 271 and 184 equal, as before.
+- **The league frozen pictures.** `league_frozen.py` reads `../../local/evidence/league` relative
+  to a worktree, so it fails when the gates run from the main checkout. Nothing of `league/`
+  was staged. Rerun from a detached worktree at `b081087`, it passed with the same pictures.
+
+**Result.** 3,635 files (86.2 GB) were deleted. Free space went from 64 GiB to 110 GiB, and
+`local/evidence` is now 78 GB. A later task that needs one of these captures regenerates it from
+its recipe and checks the recorded digests (D-0011).
