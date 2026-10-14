@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <numeric>
+#include <stdexcept>
 #include <vector>
 
 namespace unirally::front_end_screens {
