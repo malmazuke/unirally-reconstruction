@@ -322,7 +322,10 @@ void print_award_bonus(FrontEndState& state, const FrontEndContent& content) {
 }
 } // namespace
 
-void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
+// $80:AF54-AFEF in the result's way out, the frame before a long record placing pushes the rest
+// on (R-0098): each rider of the pair has played once more, and with another pair to race the
+// cursor moves to it.
+void count_league_pair(FrontEndState& state) {
     const auto slot = state.league.slot;
     const auto cursor = state.records.league_pair_cursor[slot];
     const auto members = league_members(state);
@@ -333,8 +336,15 @@ void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
                                                - members.begin());
         ++state.records.league_played[slot][row];
     }
-    if (cursor < 6 && state.records.league_pairings[slot][cursor + 2] != someone) {
+    state.league.more_pairs =
+        cursor < 6 && state.records.league_pairings[slot][cursor + 2] != someone;
+    if (state.league.more_pairs)
         state.records.league_pair_cursor[slot] = static_cast<std::uint8_t>(cursor + 2);
+}
+
+// Then the standings for the next pair, or the awards ($80:8917).
+void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
+    if (state.league.more_pairs) {
         enter_league_table(state, content);
         return;
     }
@@ -432,8 +442,9 @@ void choose_league_slot(FrontEndState& state, const FrontEndContent& content) {
 }
 
 void enter_league_table(FrontEndState& state, const FrontEndContent& content) {
+    // `$80:A547` leaves entries 104-111 as they were: the awards' way out and NOW PLAYING's back
+    // hide them themselves, PICK TOUR and the slots leave them shown off screen (R-0098).
     print_table(state, content);
-    high_bits(state, 104) = high_bits(state, 108) = four_hidden;
     state.screen = FrontEndScreen::league_table_entry;
     state.latches = {};
     state.league.previous_buttons = 0;

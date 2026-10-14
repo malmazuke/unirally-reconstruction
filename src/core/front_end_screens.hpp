@@ -266,6 +266,7 @@ void reset_league(FrontEndState&);
 void record_league_result(FrontEndState&);
 void store_league_stunt_totals(FrontEndState&, bool against_computer);
 void restore_league_pair(FrontEndState&);
+void count_league_pair(FrontEndState&);
 void finish_league_pair(FrontEndState&, const FrontEndContent&);
 void league_awards_frame(FrontEndState&, const FrontEndContent&, FrontEndPads);
 void choose_league_slot(FrontEndState& state, const FrontEndContent& content);

@@ -187,8 +187,13 @@ void load_other_track_presentation_content(ClassicRacePresentationContent& conte
     // The result screen follows the race mode's accepted track (the
     // DRAGSTER assets for a one-run race, titled with the track's own
     // name); EAST's and FLAT FUN's results were compared with the original.
-    // $82:DC22-DC40: NEON's scenery is 14, past the other thirteen (R-0068).
-    const auto scenery = scenario.neon_lighting ? neon_scenery : track.index % 14U;
+    // $82:DC22-DC40: NEON's scenery is 14, past the other thirteen (R-0068). With two views the
+    // test leaves `$77:0750` in A, 8 (12 in VS), and that is the scenery (R-0098).
+    constexpr std::uint8_t neon_track = 42;
+    const auto scenery = scenario.neon_lighting ? neon_scenery
+                       : track.index == neon_track && scenario.two_humans
+                           ? (scenario.versus ? 12U : 8U)
+                           : track.index % 14U;
     const auto name =
         std::string("scenery.") + char('0' + scenery / 10U) + char('0' + scenery % 10U) + '.';
     content.track_name = classic_track_name(pack, track);

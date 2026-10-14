@@ -215,6 +215,7 @@ struct LeagueSetup {
     std::uint16_t podium_phase{};
     bool after_podium{}; // $80:BEC6-BEE2: a tour choice goes straight to NOW PLAYING
     bool awards_press_seen{}, awards_left{}; // `$80:C206`'s press on two frames running
+    bool more_pairs{}; // `$80:AFC3-AFE7`: another pair races before the awards
 };
 
 // Where PLAYER SCORES (`$80:DACF`) and GROUP TABLES (`$80:DDFC`) are (R-0097).

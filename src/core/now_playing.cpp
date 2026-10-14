@@ -18,7 +18,8 @@ constexpr std::uint8_t end_of_text = 0xff, blank = '_';
 
 // `front-end.now-playing-text` ($80:B4F6-B57D): its streams by offset.
 constexpr std::size_t title_at = 0x00, versus_at = 0x0f, record_at = 0x27, hi_score_at = 0x3b,
-                      qualifying_at = 0x47, race_exit_at = 0x79, picture_place_at = 0x86;
+                      qualifying_at = 0x47, league_stunt_blank_at = 0x71, race_exit_at = 0x79,
+                      picture_place_at = 0x86;
 // `front-end.race-kind-words` ($80:B205): "racing_on", "over", "_laps_on", "doing_stunts_on".
 constexpr std::size_t racing_at = 0, over_at = 10, laps_on_at = 15, stunts_at = 24;
 
@@ -120,10 +121,15 @@ Text race_line(const FrontEndState& state, const FrontEndContent& content) {
     return line;
 }
 
-// The opponent: in 1P the medal to race for picks BRONSEN, SILVIA or GOLDWYN ($80:B31F-B346);
-// on HUNTER's races ANTI-UNI ($80:B361).
+// The opponent: in 1P the medal to race for picks BRONSEN, SILVIA or GOLDWYN ($80:B31F-B346); a
+// league's computer opponent takes the rider's best medal on the tour, read again
+// (`$80:B336-B345`, R-0098); on HUNTER's races ANTI-UNI ($80:B361).
 std::uint8_t opponent_for(const FrontEndState& state) {
-    const auto opponent = static_cast<std::uint8_t>(state.tour_menu.medal + first_computer);
+    const auto medal =
+        state.mode == FrontEndMode::one_player
+            ? state.tour_menu.medal
+            : state.records.medals[state.tour_menu.tour * 16U + (state.rider_menu.rider & 0x0fU)];
+    const auto opponent = static_cast<std::uint8_t>(medal + first_computer);
     return opponent > last_medal_opponent ? last_medal_opponent : opponent;
 }
 
@@ -177,7 +183,12 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
                     || (state.mode == FrontEndMode::league && state.second_rider >= someone))
                      ? opponent_for(state)
                      : state.second_rider;
-    if (race_kind(state) == stunt_event && now.opponent >= someone) {
+    if (race_kind(state) == stunt_event && now.opponent >= someone
+        && state.mode == FrontEndMode::league) {
+        // $80:B359-B35F, $80:B390: a league's computer opponent in a stunt event: the "VS" row
+        // blanked, no opponent and no qualifying score (R-0098).
+        print(stream_at(content, league_stunt_blank_at));
+    } else if (race_kind(state) == stunt_event && now.opponent >= someone) {
         // The qualifying score in place of the opponent (`$83:9EEB`: by tour and best medal).
         const auto best = state.records.medals[state.tour_menu.tour * 16U + state.rider_menu.rider];
         const auto level = (best & 3U) == 3 ? 2U : best & 3U;
@@ -185,8 +196,8 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
             word_at(content.qualifying_scores, (state.tour_menu.tour * 3U + level) * 2);
         print(stream_at(content, qualifying_at));
     } else {
-        if (state.mode == FrontEndMode::one_player && state.tour_menu.tour >= hunter)
-            now.opponent = anti_uni;
+        // $80:B361-B369: a computer opponent on HUNTER's tour, in 1P or a league, is ANTI-UNI.
+        if (now.opponent >= someone && state.tour_menu.tour >= hunter) now.opponent = anti_uni;
         print_line(name_line(state, content, now.opponent, 1), opponent_row);
         if (session_wins) {
             const std::array<std::uint8_t, 7> count{

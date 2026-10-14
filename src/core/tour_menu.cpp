@@ -376,8 +376,12 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
             if (state.league.after_podium) {
                 state.league.after_podium = false;
                 choose_league_pair(state);
-            } else
+            } else {
+                // $80:BE36-BE57: the standings' print copies the OAM in this frame, the arrow
+                // already turned back (`$80:C1EB`, R-0098).
+                copy_oam(state);
                 enter_league_table(state, content);
+            }
         }
         return;
     }

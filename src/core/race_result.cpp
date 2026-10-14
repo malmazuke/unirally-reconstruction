@@ -684,6 +684,7 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
         }
     }
     if (frame == 1) return;
+    if (frame == 2 && state.mode == FrontEndMode::league) count_league_pair(state);
     if (frame < scoring) return; // `$80:C786`'s overrun: no wait, no OAM copy
     copy_oam(state);
     if (state.mode != FrontEndMode::one_player) {
@@ -766,6 +767,7 @@ ClassicRaceScenario local_race_scenario(const FrontEndState& state) {
     // $80:99E8-99F1: the stunt event's qualifying score by the first rider's medal on the tour
     // (`$83:9EEB`), in every mode (R-0098: HUNTER's medals are 2 in a cold image).
     scenario.best_medal = front_end_screens::best_medal(state);
+    scenario.versus = state.mode == FrontEndMode::versus;
     return scenario;
 }
 
