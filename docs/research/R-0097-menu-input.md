@@ -201,22 +201,28 @@ Right, A, X, L, R). [L]
 | `twop-quit` | 7,600 | 1,000 of 1,000 from 6600 / 1,000 | R-0095's result frame, as main | `rv-twop-quit`'s 9,434 equal |
 | `awards-press` | 11,200 | 615 of 700 from 10500 / 615 | the awards' slide 10604-10688 and its words, as main | 1 frame: a frame wait at 10603, as main |
 
+Review round 1's captures (`local/evidence/menu-input-review/`), at `cc2e2bf`: `rv-ca` 3,400 of
+3,400 (main 2,271), `rv-scores` 2,300 of 2,300 (text 1, GROUP TABLES' first print), `rv-bars`
+1,400 of 1,400 (main 828), `rv-pick` 2,200 of 2,200, `rv-warn` 6,700 of 6,700, `rv-kb` 1,879 of
+2,300 (the long-name lag from 1832), `rv-records` 1,141 of 2,100 (main 1,060; HIGH SCORES and
+TRACK RECORDS, Not covered); sound `rv-pick` and `rv-scores` equal.
+
 Main's runner refuses the league members `scores-input` and `scores-carry` write after frame 800
 (n/a). Native's cue lists hold the same lines from frame 620 as the original's.
 
 The front-end sweep against main (every front-end manifest in `local/evidence`, main's and
 native's runner state on every frame and a picture every 500 frames, `fe_equivalence.py`):
 179 manifests, 1,269,921 frames: 108 equal, 71 differ, none with a different exit
-(`sweep/fe-equivalence-adb6356.json`). `classify.py` (`sweep/classify-adb6356.json`) compares the
-545 frame images the differing manifests' folders hold: 64 change, in 12 manifests, each closer to
-the original (61 now equal, 3 fewer pixels: `league/organic-slot-selector` 2000), none further. The
-fields that differ are this task's: the hidden markers' OAM in OPTIONS, RECORDS and the league slots
-(every OPTIONS and league manifest); `$017D`, the league picker's logo and `$009B` (the league
-manifests, which define a league first); OPTIONS' way back two frames shorter (`screen`, `script`);
-the decorations' delay in RECORDS; the league slots' arrow column (`organic-slot-two`,
-`organic-slot-selector`); PLAYER SCORES and GROUP TABLES frame by frame (the `player-scores-*`,
-`group-tables*` and `defined-league-group-populated` manifests); the keyboard's Start
-(`rename-start-default`).
+(`sweep/fe-equivalence-cc2e2bf.json`; the same counts at `adb6356`). `classify.py`
+(`sweep/classify-cc2e2bf.json`) compares the 545 frame images the differing manifests' folders hold:
+64 change, in 12 manifests, each closer to the original (63 now equal, 1 with fewer pixels:
+`league/organic-slot-selector` 2000, 49,353 to 505), none further. The fields that differ are this
+task's: the hidden markers' OAM in OPTIONS, RECORDS and the league slots (every OPTIONS and league
+manifest); `$017D`, the league picker's logo and `$009B` (the league manifests, which define a
+league first); OPTIONS' way back two frames shorter (`screen`, `script`); the decorations' delay in
+RECORDS; the league slots' arrow column (`organic-slot-two`, `organic-slot-selector`); PLAYER SCORES
+and GROUP TABLES frame by frame (the `player-scores-*`, `group-tables*` and
+`defined-league-group-populated` manifests); the keyboard's Start (`rename-start-default`).
 
 ## Not covered
 

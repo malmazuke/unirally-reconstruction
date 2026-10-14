@@ -1686,7 +1686,8 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -1712,7 +1713,8 @@
    "src/core/tour_menu.cpp:show_medal_entries"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -1937,7 +1939,8 @@
   ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -2061,6 +2064,18 @@
   "source_records": [
    "docs/research/R-0072-options.md",
    "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9AE2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_809AE2",
+  "native": [
+   "src/core/records_scores.cpp:bar_share"
+  ],
+  "source_records": [
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -4524,7 +4539,8 @@
    "src/core/now_playing.cpp:note_named_riders"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -4810,7 +4826,8 @@
    "src/core/stunt_result.cpp:tally_press"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -4874,7 +4891,8 @@
    "src/core/options_menu.cpp:keyboard_input"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -5248,7 +5266,8 @@
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -6223,7 +6242,8 @@
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -7837,7 +7857,8 @@
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -8027,7 +8048,8 @@
    "src/core/options_menu.cpp:update_track_records"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -9640,7 +9662,8 @@
   "source_records": [
    "docs/research/R-0073-league.md",
    "docs/research/R-0075-title-menu-audio.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -21091,7 +21114,8 @@
    "src/core/records_scores.cpp:player_figures"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -21118,7 +21142,8 @@
    "src/core/records_scores.cpp:player_figures"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -21173,7 +21198,8 @@
    "src/core/records_scores.cpp:part_of_races"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -21880,7 +21906,8 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {

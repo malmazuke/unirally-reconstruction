@@ -117,3 +117,47 @@ gates on main `e304868`'s binaries `base-e304868/`, pack v39 on both sides, plus
 - Tooling tests 576 passed; functions over 80 lines 0; native symbols current.
 - Hosted CI on `9cbff08`: Linux GCC failed, `std::invalid_argument` without `<stdexcept>` in
   `records_scores.cpp` (found by the reviewer). Fixed in `85b3c18`; CI green on all three checks.
+
+## Review round 1 (returned on `9cbff08`) - the worker's fixes
+
+Review: https://github.com/malmazuke/unirally-reconstruction/pull/79#pullrequestreview-5512919917
+(main `local/evidence/menu-input-review/review-9cbff08.md`). Fixes in `36028c2` and `cc2e2bf`;
+results from `checks.sh` at `cc2e2bf` (`artifacts/menu-input/checks-cc2e2bf.out` in the worktree),
+which now also runs the review's seven captures and its two sound schedules.
+
+1. Linux build (`<stdexcept>`): fixed by the coordinator in `85b3c18`.
+2. PLAYER SCORES' first rider (`$00CA`): fixed in `36028c2`. Native now writes it where the
+   original does: the 1P pick (`$80:BBBE-BBC1`), an OPTIONS picker's Y with bit 7 (`$80:C139-C13B`,
+   `$80:D457-D459`), NOW PLAYING's name lines (`$80:B5C0`, traced in `twop-quit`, `vs-challenger`,
+   `awards-press`), PICK TOUR's medals (`$80:9759-975C`) and the race's setup (`$80:99E8-99EB`).
+   `rv-ca` 3400/3400 (was 2904). The result screens' writers (one-run rows traced: they leave the
+   first rider; lap and stunt rows, the 1P scoring, NOW PLAYING's Race) and the VS challenger's
+   NOW PLAYING print are recorded in R-0097's Not covered.
+3. LOST percentage: fixed in `36028c2` (100 less WON% and FAILED%, `$83:8FEC-8FF5`; the
+   percentages through `$83:91D0`/`$83:9D80`, which also leave `$77:10F9`/`$10FB`). `rv-scores`
+   2300/2300 (was 1721), one text frame (GROUP TABLES' first print, as R-0097).
+4. GROUP TABLES' tie order: fixed in `36028c2` (`$80:EFD4`'s selection sort). `rv-scores` as above.
+5. Bar ends at 256 or more: fixed in `36028c2` (`$83:8F2F-8F5D` and `$80:9AE2-9B0B`'s
+   normalisation, `$80:9719`'s division). `rv-bars` 1400/1400 (was 1064).
+6. HIGH SCORES and TRACK RECORDS' pad 2: TRACK RECORDS reads either pad through the gate now
+   (`36028c2`; its tests are the gated `$80:B7B9`-`$80:B830`, `$80:D70F-D714`): `rv-records`
+   1141/2100 (was 1060, main 1060). HIGH SCORES waits with `$80:C206` (any button of either pad on
+   two frames running), not the gated tests; its screen was not recaptured, so it stays in
+   R-0097's Not covered.
+7. Long-name lag at a full rider name: R-0097 says so (`rv-kb` from 1832).
+8. Sweep numbers: rerun at `cc2e2bf`: 108 of 179 equal, 71 differ; 64 of 545 captured frames
+   change, 63 now equal, 1 closer (`organic-slot-selector` 2000), none further. R-0097 corrected.
+9. Printer codes: `text_printer.hpp` names them (`print_code`), used by `records_scores.cpp`'s
+   streams and `text_printer.cpp`.
+
+Also: `print_now_playing` stayed under 80 lines (`note_named_riders`). Checks at `cc2e2bf`: ctest
+app-debug and lab-debug 41/41, clang-tidy clean (function size), clang-format clean,
+`coverage native-symbols --check` 0 uncited (1553 cited), tooling tests OK; the task's captures
+as before (W5 3800/3800, `kb-input` 2100/2100, `league-pick` 2400/2400, `league-name` 2143/2400,
+`opt-backs` 2300/2300, `warnings` 3200/3200, `records-input` 1650/1650, `scores-input` 1950/1950,
+`scores-carry` 3100/3100, `vs-challenger` 700/700, `twop-quit` 1000/1000, `awards-press` 615/700),
+sound schedules 0 frames differing but `league-name` 5 and `awards-press` 1 (as recorded); the
+review's `rv-pick` 2200/2200, `rv-warn` 6700/6700, `rv-kb` 1879/2300. Note: the review's
+`rv-scores.record-writes.txt` gives its bytes in decimal while `--record-write` reads hex (the
+copied `schedule.py` bug, fixed in `menu-input/schedule.py`); it only affects that schedule's
+native figures, not its sounds.
