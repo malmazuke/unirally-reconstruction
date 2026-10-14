@@ -1414,6 +1414,10 @@
    ],
    "native": [
     "src/core/front_end.hpp:LeagueSetup",
+    "src/core/options_menu.cpp:WarningAnswer",
+    "src/core/options_menu.cpp:league_warning_entry_frame",
+    "src/core/options_menu.cpp:league_warning_frame",
+    "src/core/rider_menu.cpp:enter_rider_menu",
     "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/track_menu.cpp:print_track_menu"
    ],
@@ -1436,10 +1440,13 @@
    ],
    "native": [
     "src/core/front_end.hpp:LeagueSetup",
+    "src/core/front_end.hpp:RiderMenu::choice_latched",
     "src/core/options_menu.cpp:league_warning_frame",
     "src/core/rider_menu.cpp:mark_league_member",
+    "src/core/rider_menu.cpp:open_rider_menu",
     "src/core/rider_menu.cpp:read_league_members_pad",
-    "src/core/rider_menu.cpp:rider_menu_entry_frame"
+    "src/core/rider_menu.cpp:rider_menu_entry_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:9C8E",
@@ -1461,9 +1468,12 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.hpp:KeyboardEditor::length_limit",
+    "src/core/front_end.hpp:KeyboardEditor::scratch",
     "src/core/front_end.hpp:LeagueSetup",
     "src/core/front_end.hpp:LeagueSetup::marker_column, LeagueSetup::marker_row",
     "src/core/options_menu.cpp:enter_league_editor",
+    "src/core/rider_menu.cpp:mark_league_member",
     "src/core/rider_menu.cpp:rider_menu_entry_frame"
    ],
    "observed_entries": {},
@@ -1486,6 +1496,7 @@
    ],
    "native": [
     "src/core/options_menu.cpp:enter_league_slots",
+    "src/core/options_menu.cpp:league_slots_entry_frame",
     "src/core/options_menu.cpp:league_slots_frame"
    ],
    "observed_entries": {},
@@ -1606,9 +1617,16 @@
    ],
    "native": [
     "src/core/front_end.hpp:KeyboardEditor",
+    "src/core/front_end.hpp:KeyboardEditor::latches",
+    "src/core/options_menu.cpp:KeyboardInput",
     "src/core/options_menu.cpp:enter_rename_editor",
+    "src/core/options_menu.cpp:first_press",
+    "src/core/options_menu.cpp:held_key_repeats",
     "src/core/options_menu.cpp:initialize_keyboard_cursor",
-    "src/core/options_menu.cpp:rename_keyboard_frame"
+    "src/core/options_menu.cpp:read_keyboard_pad",
+    "src/core/options_menu.cpp:rename_keyboard_frame",
+    "src/core/options_menu.cpp:step_key_column",
+    "src/core/options_menu.cpp:step_key_row"
    ],
    "observed_entries": {},
    "start": "$80:A1F2",
@@ -1770,7 +1788,8 @@
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:load_nintendo_screen",
-    "src/core/front_end_screens.hpp:reload_menu_palette"
+    "src/core/front_end_screens.hpp:reload_menu_palette",
+    "src/core/records_scores.cpp:player_scores_leaving"
    ],
    "observed_entries": {},
    "start": "$80:A8A8",
@@ -2237,7 +2256,8 @@
     "src/core/audio_cpu_boot.cpp:clear_vram",
     "src/core/front_end.cpp:soft_reset",
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/options_menu.cpp:enter_options_menu"
+    "src/core/options_menu.cpp:enter_options_menu",
+    "src/core/options_menu.cpp:open_options_choices"
    ],
    "observed_entries": {},
    "start": "$80:B612",
@@ -2294,6 +2314,7 @@
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press"
@@ -2326,6 +2347,8 @@
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/records_scores.cpp:player_scores_running",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press"
@@ -2364,11 +2387,13 @@
     "src/core/front_end.hpp:HunterEnding::both_pads",
     "src/core/front_end_screens.hpp:any_button_pressed",
     "src/core/front_end_screens.hpp:gated_pads",
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:keyboard_input",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press",
@@ -2436,11 +2461,13 @@
     "src/core/front_end.hpp:HunterEnding::both_pads",
     "src/core/front_end_screens.hpp:any_button_pressed",
     "src/core/front_end_screens.hpp:gated_pads",
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:keyboard_input",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press",
@@ -2480,6 +2507,7 @@
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press"
@@ -2514,11 +2542,12 @@
     "src/core/front_end.hpp:HunterEnding::both_pads",
     "src/core/front_end_screens.hpp:any_button_pressed",
     "src/core/front_end_screens.hpp:gated_pads",
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press"
@@ -2554,7 +2583,9 @@
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:keyboard_input",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press"
@@ -2590,7 +2621,9 @@
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:keyboard_input",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press"
@@ -2625,7 +2658,9 @@
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:keyboard_input",
     "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/stunt_result.cpp:tally_pass",
     "src/core/stunt_result.cpp:tally_press"
@@ -2650,6 +2685,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/options_menu.cpp:keyboard_input"
+   ],
    "observed_entries": {},
    "start": "$80:B830",
    "static_entries": {
@@ -2666,6 +2704,9 @@
    "end": "$80:B8F0",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/rider_menu.cpp:read_league_members_pad"
    ],
    "observed_entries": {},
    "start": "$80:B8C4",
@@ -2704,6 +2745,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/options_menu.cpp:keyboard_input"
+   ],
    "observed_entries": {},
    "start": "$80:B916",
    "static_entries": {
@@ -2729,7 +2773,8 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/local_modes.cpp:open_local_continue",
-    "src/core/options_menu.cpp:options_entry_frame",
+    "src/core/options_menu.cpp:open_options_choices",
+    "src/core/options_menu.cpp:reopen_records_menu",
     "src/core/wipe_ram.cpp:aim_at_entry",
     "src/core/wipe_ram.cpp:first_row_y, row_height",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -2757,7 +2802,9 @@
     "src/core/local_modes.cpp:last_choice",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/local_modes.cpp:open_local_continue",
-    "src/core/options_menu.cpp:options_entry_frame",
+    "src/core/options_menu.cpp:league_slots_entry_frame",
+    "src/core/options_menu.cpp:open_options_choices",
+    "src/core/options_menu.cpp:reopen_records_menu",
     "src/core/wipe_ram.cpp:aim_at_entry",
     "src/core/wipe_ram.cpp:first_row_y, row_height",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -2784,8 +2831,10 @@
    "native": [
     "src/core/local_modes.cpp:last_choice",
     "src/core/local_modes.cpp:move_continue_cursor",
+    "src/core/options_menu.cpp:league_slots_frame",
     "src/core/options_menu.cpp:move_choice",
     "src/core/options_menu.cpp:options_menu_frame",
+    "src/core/options_menu.cpp:records_menu_frame",
     "src/core/wipe_ram.cpp:aim_at_entry",
     "src/core/wipe_ram.cpp:move_entry"
    ],
@@ -2927,6 +2976,8 @@
     "src/core/front_end.hpp:HunterEnding::press_seen",
     "src/core/front_end.hpp:LeagueSetup::awards_press_seen, LeagueSetup::awards_left",
     "src/core/front_end.hpp:RaceResult::press_seen",
+    "src/core/front_end.hpp:RecordsDetail::press_seen",
+    "src/core/front_end.hpp:ScoresPhase",
     "src/core/front_end.hpp:WipeRamMenu",
     "src/core/front_end.hpp:WipeRamMenu::press_seen",
     "src/core/front_end_screens.hpp:wait_for_result_press",
@@ -2941,6 +2992,8 @@
     "src/core/race_result.cpp:lap_graph_frame",
     "src/core/race_result.cpp:pressed",
     "src/core/race_result.cpp:wait_for_result_press",
+    "src/core/records_scores.cpp:player_scores_leaving",
+    "src/core/records_scores.cpp:press_seen_twice",
     "src/core/stunt_result.cpp:after_tally_frame",
     "src/core/wipe_ram.cpp:hide_entries_30_to_35",
     "src/core/wipe_ram.cpp:waited_for_press"
@@ -2966,12 +3019,16 @@
    ],
    "native": [
     "src/core/front_end.hpp:RaceResult::released",
+    "src/core/front_end.hpp:ScoresPhase",
     "src/core/front_end.hpp:WipeRamMenu",
     "src/core/front_end.hpp:WipeRamMenu::released",
     "src/core/front_end_screens.hpp:wait_for_result_press",
     "src/core/local_modes.cpp:vs_rematch_frame",
     "src/core/race_result.cpp:(file)",
     "src/core/race_result.cpp:wait_for_result_press",
+    "src/core/records_scores.cpp:player_scores_running",
+    "src/core/records_scores.cpp:scores_frame",
+    "src/core/records_scores.cpp:show_player_figures",
     "src/core/stunt_result.cpp:after_tally_frame",
     "src/core/wipe_ram.cpp:waited_for_press"
    ],
@@ -3625,10 +3682,12 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:RiderMenu::choice_latched",
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:choose_next_picture",
     "src/core/rider_menu.cpp:open_rider_menu",
     "src/core/rider_menu.cpp:picks_second_in_place",
+    "src/core/rider_menu.cpp:read_league_members_pad",
     "src/core/rider_menu.cpp:read_rider_menu_pad",
     "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/rider_menu.cpp:set_arrow_palette",
@@ -3880,10 +3939,15 @@
    "native": [
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:FrontEndState::options_rider",
+    "src/core/front_end.hpp:KeyboardEditor::length_limit",
+    "src/core/front_end.hpp:KeyboardEditor::scratch",
     "src/core/now_playing.cpp:hide_icons",
     "src/core/options_menu.cpp:enter_rename_editor",
     "src/core/options_menu.cpp:rename_commit_frame",
-    "src/core/rider_menu.cpp:pick_plays_select"
+    "src/core/records_scores.cpp:player_scores_leaving",
+    "src/core/rider_menu.cpp:pick_plays_select",
+    "src/core/rider_menu.cpp:rider_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:D420",
@@ -3906,7 +3970,11 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/options_menu.cpp:enter_records_menu"
+    "src/core/front_end_screens.hpp:reopen_records_menu",
+    "src/core/options_menu.cpp:enter_records_menu",
+    "src/core/options_menu.cpp:records_entry_frame",
+    "src/core/options_menu.cpp:records_menu_frame",
+    "src/core/records_scores.cpp:close_scores"
    ],
    "observed_entries": {},
    "start": "$80:D503",
@@ -3926,7 +3994,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/options_menu.cpp:print_player_scores"
+    "src/core/records_scores.cpp:slide_bars_in",
+    "src/core/records_scores.cpp:slide_bars_out"
    ],
    "observed_entries": {},
    "start": "$80:DC9A",
@@ -3946,8 +4015,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/options_menu.cpp:print_group_scores",
-    "src/core/options_menu.cpp:set_bar_objects"
+    "src/core/records_scores.cpp:slide_bars_in",
+    "src/core/records_scores.cpp:slide_bars_out"
    ],
    "observed_entries": {},
    "start": "$80:DFE8",
@@ -4060,6 +4129,10 @@
    "end": "$80:E2CE",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:options_return_frame",
+    "src/core/records_scores.cpp:leave_scores_pass"
    ],
    "observed_entries": {},
    "start": "$80:E29C",
@@ -4345,7 +4418,7 @@
    "native": [
     "src/core/front_end_screens.hpp:turn_markers",
     "src/core/local_modes.cpp:local_continue_frame",
-    "src/core/options_menu.cpp:options_entry_frame",
+    "src/core/options_menu.cpp:open_options_choices",
     "src/core/options_menu.cpp:options_menu_frame",
     "src/core/track_menu.cpp:turn_markers",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -4451,7 +4524,10 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/local_modes.cpp:return_to_local_continue",
     "src/core/options_menu.cpp:enter_options_menu",
+    "src/core/options_menu.cpp:league_slots_entry_frame",
     "src/core/options_menu.cpp:options_entry_frame",
+    "src/core/options_menu.cpp:options_return_frame",
+    "src/core/options_menu.cpp:records_entry_frame",
     "src/core/wipe_ram.cpp:print_wipe_ram_menu",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
    ],
@@ -4473,7 +4549,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/options_menu.cpp:print_group_scores"
+    "src/core/records_scores.cpp:GroupStanding"
    ],
    "observed_entries": {},
    "start": "$80:EF89",
@@ -4678,6 +4754,7 @@
    "native": [
     "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads",
     "src/core/options_menu.cpp:rename_commit_frame",
+    "src/core/records_scores.cpp:close_scores",
     "src/core/rider_menu.cpp:main_menu_return_frame",
     "src/core/wipe_ram.cpp:cancel_reset"
    ],
@@ -14064,7 +14141,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/options_menu.cpp:score_bar_targets"
+    "src/core/records_scores.cpp:PlayerFigures",
+    "src/core/records_scores.cpp:aim_player_bars"
    ],
    "observed_entries": {},
    "start": "$83:8EFE",
@@ -14600,7 +14678,7 @@
     "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
     "src/core/front_end.hpp:RiderMenu::challenger",
     "src/core/front_end_screens.hpp:gate_pads",
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
     "src/core/rider_menu.cpp:enter_vs_challenger"
    ],
    "observed_entries": {},
@@ -19019,19 +19097,19 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 1980,
+  "cited_addresses": 2059,
   "cited_by_class": {
    "data": 16,
-   "inferred": 87,
-   "observed": 1693,
-   "unknown": 184
+   "inferred": 91,
+   "observed": 1760,
+   "unknown": 192
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1313,
+   "loc": 1373,
    "mid": 30,
-   "sub": 437,
-   "unk": 184
+   "sub": 448,
+   "unk": 192
   },
   "conflicts": 0,
   "data": 74,
@@ -19050,9 +19128,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 86837,
-  "routine_bytes_cited_by_native_code": 71195,
+  "routine_bytes_cited_by_native_code": 71365,
   "routines": 759,
-  "routines_cited_by_native_code": 554,
+  "routines_cited_by_native_code": 558,
   "unknown": 31424,
   "unknown_share": 0.2397
  }

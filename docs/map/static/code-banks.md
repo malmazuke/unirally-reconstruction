@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Instructions from observed | 35,735 |
 | Instructions from table | 65 |
 | Routines | 759 |
-| Routines cited by native code | 554 |
-| Routine bytes cited by native code | 71,195 |
+| Routines cited by native code | 558 |
+| Routine bytes cited by native code | 71,365 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-1980 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1313, mid 30, sub 437, unk 184 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 87, observed 1693, unknown 184.
+2059 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1373, mid 30, sub 448, unk 192 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 91, observed 1760, unknown 192.
 
 Cited addresses in `unknown` bytes:
 
@@ -80,7 +80,9 @@ Cited addresses in `unknown` bytes:
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:9E0F | docs/research/R-0072-options.md |
+| $80:9E0F | docs/research/R-0072-options.md, docs/research/R-0097-menu-input.md, tasks/MENU-INPUT.md |
+| $80:9F74 | docs/research/R-0097-menu-input.md, tasks/MENU-INPUT.md |
+| $80:A4C9 | docs/research/R-0097-menu-input.md |
 | $80:A4DD | docs/research/R-0072-options.md |
 | $80:A4F1 | docs/research/R-0072-options.md |
 | $80:A501 | docs/research/R-0072-options.md |
@@ -134,6 +136,11 @@ Cited addresses in `unknown` bytes:
 | $80:D4C5 | docs/research/R-0072-options.md |
 | $80:D9D8 | docs/research/R-0072-options.md |
 | $80:DDE3 | docs/research/R-0072-options.md |
+| $80:DDE4 | docs/research/R-0097-menu-input.md |
+| $80:E04B | docs/research/R-0097-menu-input.md |
+| $80:E12B | docs/research/R-0097-menu-input.md |
+| $80:E184 | docs/research/R-0097-menu-input.md |
+| $80:E1B1 | docs/research/R-0097-menu-input.md |
 | $80:E37B | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $80:E3A1 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $80:E708 | docs/research/R-0056-tour-track-now-playing.md |
@@ -190,6 +197,7 @@ Cited addresses in `unknown` bytes:
 | $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md, docs/research/R-0090-save-files.md, tasks/NEXT_SESSION.md, tasks/SAVE-FILES.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
+| $83:8537 | docs/research/R-0097-menu-input.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |
 | $83:88F7 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0067-stunt-result.md |
 | $83:88FD | docs/research/R-0057-one-run-result.md, docs/research/R-0059-tour-completion.md, docs/research/R-0062-gold-endings.md, tasks/FRONT-END-ENDINGS.md, tasks/FRONT-END-TOUR-END.md |

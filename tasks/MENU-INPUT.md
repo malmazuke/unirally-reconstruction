@@ -41,3 +41,48 @@ elsewhere.
 - DEFINE PLAYER's pick writes the rider word `$017D` natively (2) but not in the original (0), so
   the next 1P rider menu starts on another rider (W5 from frame 2943). Capture:
   `local/evidence/two-human-stunts-review/` W5.
+
+## Checkpoint - 14 October 2026 (implementation worker, Claude Opus 5.5)
+
+Record: [R-0097](../docs/research/R-0097-menu-input.md). Evidence: main `local/evidence/menu-input/`
+(twelve probe captures `probe-*`, eleven sound schedules `*.cues.txt` with their `*-disp1/2`
+captures, `checks.sh`, the sweep in `sweep/`, the baseline `base-e304868/`). Results below are
+`checks.sh` at `adb6356` (`artifacts/menu-input/checks-adb6356.out` in the worktree): pictures
+equal against the original, native and main.
+
+| Item | Native before | Native after | Captures and result |
+|---|---|---|---|
+| Keyboard: Start to OK, held Left/Right repeat | Start ignored, no repeat, edge-detected presses | `$80:A25F-A297` order and `$008F` latches, repeat 19 then 7 frames, Start OK without latch; league names 17 characters | `kb-input` 2100/2100 (main 920); `league-name` 2143/2400 (long-name lag, Not covered); cues equal |
+| League picker: A finishes, B/Y/X mark | Start only, Y/B marks, pad 1 | `$80:B8C4`, choice latch `$0010` bit 0, marks through `$80:9E0F`, shown next frame, logo and shadow timing | `league-pick` 2400/2400 (main 1280); cues 2247 equal |
+| VS refuses the winner | native since TWO-HUMAN-STUNTS | unchanged | `vs-challenger` 700/700 from 6600; cues 9129 equal |
+| Awards press after `$80:B051` | native since TWO-HUMAN-STUNTS | unchanged | `awards-press` presses at 10640 and 10720 ignored, 10760 leaves; 615/700 as main (awards slide residual) |
+| Continuation wraps | native since TWO-HUMAN-STUNTS | unchanged | `twop-quit` 1000/1000; `rv-twop-quit` cues 9434 equal |
+| Second pick does not slide | native since TWO-HUMAN-STUNTS | unchanged | both 2P/VS captures' rider menus equal on every frame |
+| GROUP TABLES Up/Down | none; screen not frame-exact | `records_scores.cpp`: `$80:DDFC` frame by frame, Up/Down/Select change `$00CC` with the result's sound | `records-input` 1650/1650 (main 770), `scores-input` 1950/1950, `scores-carry` 3100/3100; cues equal |
+| PLAYER SCORES Up first, Select as Down | Down first, latched, pad 1, exits Y/X/choice/Right | `$80:DACF` frame by frame: Up, Down/Select, `$80:C24C`, `$80:B6F8` exits incl. L/R, `$80:C206`, rider `$00CA` | same captures |
+| OPTIONS hidden markers after the keyboard | 939 OAM frames on W5 | every return runs the loop from the slide's end; RECORDS and league slots turn markers | `w5` 3800/3800 (main 2592), `opt-backs` 2300/2300 |
+| DEFINE PLAYER writes `$017D` | written (2 vs 0) | picks go to `$00CA`; league picker no longer writes 7 | `w5`, `kb-input`, `league-pick` rider word equal |
+| Found on the way | warnings had no way out; entries copied OAM early; league slot columns all 2; `$0089` reset; picker colours restored | `$80:C17B`/`$80:9C07` answers; no early OAM copy; `$80:9F74`; delay kept; colours kept | `warnings` 3200/3200 (main 1345), `scores-carry` |
+
+Remaining differences (R-0097 Not covered): the name check `$83:84D9` (no refusal of listed
+words, and its run time: a long name's OK frame lags a frame in the original), one-frame text
+buffer overruns (OK's OPTIONS print, GROUP TABLES' first print), the awards' slide and a frame
+wait at the result's way out (as main), HIGH SCORES/TRACK RECORDS not recaptured, `$80:FBEE`'s
+menu not captured.
+
+## Handoff (worker)
+
+- Branch `task/menu-input`, head after this record's commit (see `git log`); base claim `693f99d`
+  on main `e304868`. Commits: `b5c8ff5` (keyboard, league picker, OPTIONS returns, `$017D`),
+  `05e172a` (PLAYER SCORES and GROUP TABLES), `b8e3e8b` (league name length), `7ce9cfa` (the
+  warnings), `adb6356` (OPTIONS' entries, slot columns, colours), then the record, R-0097 and the
+  regenerated `docs/map/static/`.
+- Checks run: `ctest` app-debug 41/41 and lab-debug 41/41; `clang-tidy` (LLVM 19) clean on the
+  changed files; `clang-format` applied; `coverage native-symbols --check` 0 uncited, the
+  tooling tests OK (`regen.sh` with the five raw coverage inputs). Synthetic suite and the
+  coordinator's gates not run by the worker.
+- Commands: `zsh local/evidence/menu-input/checks.sh` (under `heavy-run.sh`), the sweep
+  `fe_equivalence.py` and `classify.py` (R-0097 Reproduction).
+- Next: the coordinator's gates (`local/evidence/menu-input/gates.sh`, which calls `checks.sh`)
+  and review. Follow-ups worth queueing: the name check's refusal and cycle timing; HIGH SCORES
+  and TRACK RECORDS frame by frame; `$80:FBEE`'s menu.
