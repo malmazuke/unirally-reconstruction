@@ -157,7 +157,4 @@ as before (W5 3800/3800, `kb-input` 2100/2100, `league-pick` 2400/2400, `league-
 `opt-backs` 2300/2300, `warnings` 3200/3200, `records-input` 1650/1650, `scores-input` 1950/1950,
 `scores-carry` 3100/3100, `vs-challenger` 700/700, `twop-quit` 1000/1000, `awards-press` 615/700),
 sound schedules 0 frames differing but `league-name` 5 and `awards-press` 1 (as recorded); the
-review's `rv-pick` 2200/2200, `rv-warn` 6700/6700, `rv-kb` 1879/2300. Note: the review's
-`rv-scores.record-writes.txt` gives its bytes in decimal while `--record-write` reads hex (the
-copied `schedule.py` bug, fixed in `menu-input/schedule.py`); it only affects that schedule's
-native figures, not its sounds.
+review's `rv-pick` 2200/2200, `rv-warn` 6700/6700, `rv-kb` 1879/2300.
