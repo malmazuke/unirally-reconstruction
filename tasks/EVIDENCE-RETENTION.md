@@ -141,5 +141,5 @@ every deleted file.
   was staged. Rerun from a detached worktree at `b081087`, it passed with the same pictures.
 
 **Result.** 3,635 files (86.2 GB) were deleted. Free space went from 64 GiB to 110 GiB, and
-`local/evidence` is now 74 GB. A later task that needs one of these captures regenerates it from
+`local/evidence` is now 78 GB. A later task that needs one of these captures regenerates it from
 its recipe and checks the recorded digests (D-0011).
