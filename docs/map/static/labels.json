@@ -1168,6 +1168,24 @@
   ]
  },
  {
+  "address": "$80:9041",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809041",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/front_end_screens.hpp:best_lap",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:90AF",
   "class": "observed",
   "comment": "instruction start",
@@ -1183,6 +1201,24 @@
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:90D9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8090D9",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
+   "src/core/lap_result.cpp:saved_word_under_opponent_best",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -1645,10 +1681,12 @@
   "comment": "routine start",
   "label": "sub_809719",
   "native": [
-   "src/core/local_modes.cpp:versus_percentage"
+   "src/core/front_end_screens.hpp:divide_word",
+   "src/core/records_scores.cpp:bar_share"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -1663,6 +1701,18 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:9759",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809759",
+  "native": [
+   "src/core/tour_menu.cpp:show_medal_entries"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -1882,8 +1932,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8099E8",
+  "native": [
+   "src/core/now_playing.cpp:race_fade_frame"
+  ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -2005,7 +2059,8 @@
   "comment": "routine start",
   "label": "sub_809AB2",
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4187,7 +4242,8 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -4350,6 +4406,18 @@
   ]
  },
  {
+  "address": "$80:B4C0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B4C0",
+  "native": [
+   "src/core/now_playing.cpp:move_now_playing_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:B4D4",
   "class": "observed",
   "comment": "instruction start",
@@ -4445,6 +4513,18 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:B5C0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B5C0",
+  "native": [
+   "src/core/now_playing.cpp:note_named_riders"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -5156,6 +5236,19 @@
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:BBBE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BBBE",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select",
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -6363,7 +6456,8 @@
   "comment": "instruction start",
   "label": "loc_80C3C6",
   "native": [
-   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control"
+   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control",
+   "src/core/text_printer.hpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -6375,7 +6469,8 @@
   "comment": "unknown",
   "label": "unk_80C3DC",
   "native": [
-   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control"
+   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control",
+   "src/core/text_printer.hpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
@@ -7281,6 +7376,18 @@
   ]
  },
  {
+  "address": "$80:CFA9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CFA9",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:CFB9",
   "class": "observed",
   "comment": "instruction start",
@@ -7303,6 +7410,18 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:D00F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D00F",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -7899,6 +8018,19 @@
   ]
  },
  {
+  "address": "$80:D70F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D70F",
+  "native": [
+   "src/core/options_menu.cpp:print_track_records",
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:D7CD",
   "class": "observed",
   "comment": "instruction start",
@@ -7947,6 +8079,19 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D9B2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D9B2",
+  "native": [
+   "src/core/options_menu.cpp:print_high_scores",
+   "src/core/options_menu.cpp:records_detail_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -8680,6 +8825,18 @@
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$80:E449",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E449",
+  "native": [
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -9477,11 +9634,13 @@
   "label": "sub_80EFD4",
   "native": [
    "src/core/audio_cpu_menu_league.cpp:sort_ranking",
-   "src/core/league_menu.cpp:standings_order"
+   "src/core/league_menu.cpp:standings_order",
+   "src/core/records_scores.cpp:sort_group_rows"
   ],
   "source_records": [
    "docs/research/R-0073-league.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -9687,6 +9846,23 @@
   ]
  },
  {
+  "address": "$80:F227",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F227",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_setup.cpp:stunt_stable_result",
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:end_tally",
+   "src/core/stunt_result.cpp:start_stunt_result"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$80:F249",
   "class": "observed",
   "comment": "instruction start",
@@ -9757,6 +9933,23 @@
   "source_records": [
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:F2AC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F2AC",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_setup.cpp:stunt_stable_result",
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:end_tally",
+   "src/core/stunt_result.cpp:start_stunt_result"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -20266,6 +20459,15 @@
   ]
  },
  {
+  "address": "$83:879E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83879E",
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
   "address": "$83:87B6",
   "class": "observed",
   "comment": "instruction start",
@@ -20872,7 +21074,21 @@
   "label": "sub_838EFE",
   "native": [
    "src/core/records_scores.cpp:PlayerFigures",
-   "src/core/records_scores.cpp:aim_player_bars"
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$83:8F2F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_838F2F",
+  "native": [
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:bar_share",
+   "src/core/records_scores.cpp:player_figures"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md"
@@ -20884,10 +21100,24 @@
   "comment": "instruction start",
   "label": "loc_838FDE",
   "native": [
-   "src/core/records_scores.cpp:aim_player_bars"
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:player_figures"
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
+   "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$83:8FEC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838FEC",
+  "native": [
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
    "docs/research/R-0097-menu-input.md"
   ]
  },
@@ -20931,6 +21161,19 @@
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
    "tasks/FIFTH-WIN-COMPLETION.md"
+  ]
+ },
+ {
+  "address": "$83:91D0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8391D0",
+  "native": [
+   "src/core/front_end_screens.hpp:cartridge_percentage",
+   "src/core/records_scores.cpp:part_of_races"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -21265,7 +21508,7 @@
   "comment": "routine start",
   "label": "sub_83956D",
   "native": [
-   "src/core/local_modes.cpp:versus_percentage"
+   "src/core/front_end_screens.hpp:cartridge_percentage"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -21344,7 +21587,8 @@
   "comment": "routine start",
   "label": "sub_8396BE",
   "native": [
-   "src/core/audio_cpu_menu_league.cpp:reorder_members"
+   "src/core/audio_cpu_menu_league.cpp:reorder_members",
+   "src/core/records_scores.cpp:GroupStanding"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
@@ -21357,6 +21601,18 @@
   "label": "loc_8396FB",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$83:97BD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8397BD",
+  "native": [
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {
@@ -21619,10 +21875,12 @@
   "label": "sub_839D80",
   "native": [
    "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
+   "src/core/front_end_screens.hpp:cartridge_percentage",
    "src/core/local_modes.cpp:versus_percentage"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0097-menu-input.md"
   ]
  },
  {

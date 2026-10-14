@@ -95,8 +95,13 @@ Right, A, X, L, R). [L]
      action leaves the other bars unmoved for that frame. Y or X or a choice leaves.
    - A change prints the table again without clearing (`$80:DE38-DE96`): the name line and
      highest score (`$80:E184`), the rows' dashes (`$80:E12B`), each member's name (`$80:E1B1`,
-     its row advanced only for a member), and the bars' targets: 88 plus 128 pixels times the
-     row's share of the highest score. The next frame only uploads the text (`$80:DE9B`).
+     its row advanced only for a member), and the bars' targets: 88 plus the row's share of 128
+     pixels (`$80:9AB2`, the share as PLAYER SCORES'). The next frame only uploads the text
+     (`$80:DE9B`).
+   - The rows are sorted by `$80:EFD4-F024`, a selection sort: each pass takes the last row of the
+     lowest score among rows 0 to n (a tie goes to the later row) and swaps it with row n, so tied
+     members do not keep their order (review `rv-scores`: league 1 scoring 5/10/10 lists the third
+     member above the second; league 2, 3/8/3/8, lists riders 6, 4, 3, 5). [L, C]
    - Each bar's end object steps a pixel a frame toward its target (`$80:DEEF-DF36`) and, off a
      multiple of 8 with x / 8 in 12-26, prints the bar's edge (a filled cell, then an empty
      one) at its column (`$80:DF04`). The loop steps no decorations.
@@ -122,13 +127,28 @@ Right, A, X, L, R). [L]
      base colours), `$80:D420` (the printed objects hidden), the back slide with `$80:DCB6`'s
      hook, and the RECORDS loop from its last frame without a new print (`$80:DC15-DC3C`).
      Native took Y, X, B, Start, A and Right, from pad 1 only.
-   - The rider is `$00CA` masked to 0-15 (`$80:DACF`), not reset: PLAYER SCORES starts on the
-     rider DEFINE or RENAME PLAYER picked (`scores-carry`: MARTIN after RENAME PLAYER's pick).
+   - The rider is `$00CA` masked to 0-15 (`$80:DACF`), not reset. Its writers: DEFINE and RENAME
+     PLAYER's pick, Y in their pickers too with bit 7 set (`$80:C139-C13B`, `$80:D457-D459`), the
+     1P pick (`$80:BBBE-BBC1`), each NOW PLAYING name line of a real rider (`$80:B5C0`: the rider,
+     the opponent, the record's holder), PICK TOUR's medals in 1P (`$80:9759-975C`) and the
+     race's setup (`$80:99E8-99EB`, the first rider). `scores-carry`: MARTIN after RENAME
+     PLAYER's pick; review `rv-ca`: rider 3 after a 1P pick, rider 7 after Y on RENAME PLAYER's
+     picker. The traces of `twop-quit`, `vs-challenger` and `awards-press` show
+     NOW PLAYING's and the race's setup's writes (`pcs.py`). [L, C]
    - The bars: their end objects (`$80:DDE4`) slide in with `$80:DC74`'s hook (off screen at
-     offset 0x74, `$80:DC9A`), then step a pixel a frame toward 48 plus 128 pixels times the
-     figure's share of the largest rider's (races, score) or of 100 (`$83:8EFE`; LOST takes what
-     WON and FAILED leave, `$83:8FDE-8FE8`), printing the bar's edge at x / 8 + 1 on a multiple
-     of 8 with x / 8 in 7-21 (`$80:DBAC-DC71`). Native drew each bar's final length at once.
+     offset 0x74, `$80:DC9A`), then step a pixel a frame toward 48 plus the figure's share of
+     128, printing the bar's edge at x / 8 + 1 on a multiple of 8 with x / 8 in 7-21
+     (`$80:DBAC-DC71`). Native drew each bar's final length at once.
+   - The figures (`$83:8EFE-9045`): WON% and FAILED% through `$83:91D0` and `$83:9D80` (the
+     part halved with the races until below 655, times 100 over the races, both left in
+     `$77:10F9`/`$77:10FB`), 100 for all races; LOST% is 100 less both (`$83:8FEC-8FF5`, review
+     `rv-scores`: 51 for 6 races, 2 won, 1 failed, where 100 x 3 / 6 would give 50). A share is
+     0 for none, 128 for the largest, else both words are shifted left until one has bit 15 and
+     the value's high byte (times 256) is divided by the largest's (`$80:9719`) and halved
+     (`$83:8F2F-8F5D`): exact below 256, not above (review `rv-bars`: 256 points against 257
+     aim at 176, where the exact share gives 175). WON and FAILED share 128 by their percentage;
+     LOST's share is 128 less both (`$83:8FDE-8FE8`). With no race, every figure but the score is 0. The largest races and
+     score are `$83:97BD`'s, from RECORDS' entry. [L, C]
    - The frames: the print (`$80:DACF-DB0C`); the slide from the second (`$80:DB12`), after which
      the loop uploads through `$00A8` to the half on screen (`$80:DB18-DB1D`); the text to the half
      on screen, the window at 64-191, the icon (`$0C1A` = 0x54) and the decorations
@@ -205,10 +225,11 @@ the decorations' delay in RECORDS; the league slots' arrow column (`organic-slot
   (`$80:A4B8-A4C6`). Native has no check and accepts every name.
 - **Long names run past their frame.** That check takes about 39 scanlines a character: from
   about eight characters OK's frame ends without a frame wait and everything after comes a
-  frame later (`league-name`, twelve characters: OK at 2150, the check ends in frame 2151 at
-  scanline 93; native's way back from 2151 is a frame early, 2152-2229). With one or two
-  characters it ends inside OK's frame (`w5`, `kb-input`, `league-pick`). Predicting it needs
-  the check's CPU cycles.
+  frame later. Every full-length rider name (8, DEFINE or RENAME PLAYER) does it (review
+  `rv-kb`: native a frame early from 1831), as does a long league name (`league-name`, twelve
+  characters: the check ends in frame 2151 at scanline 93; native's way back from 2151 is a
+  frame early, 2152-2229). With one or two characters it ends inside OK's frame (`w5`,
+  `kb-input`, `league-pick`). Predicting it needs the check's CPU cycles.
 - **One-frame text buffers.** After OK, `$80:EF4D`'s print of OPTIONS runs past its frame by an
   amount that depends on the name; native prints a fixed part (R-0072), so the text buffer
   differs on that frame (`kb-input` 1661, `w5` 2221, `warnings` 2651); no picture differs.
@@ -219,7 +240,17 @@ the decorations' delay in RECORDS; the league slots' arrow column (`organic-slot
   Native also ends the result's way out (frame 10603) with a frame wait the original's league
   scoring runs past (R-0095's placings), as on main.
 - HIGH SCORES and TRACK RECORDS keep their earlier implementation (R-0072); their entry's logo,
-  frame waits and way back were not recaptured.
+  frame waits and way back were not recaptured (review `rv-records`: 1,141 of 2,100 pictures
+  equal, main 1,060). TRACK RECORDS now reads either pad through the gate (`$80:E449-E4B7`,
+  `$80:D70F-D714`). HIGH SCORES waits with `$80:C206` (`$80:D9B2`): any button of either pad
+  on two frames running; native leaves on pad 1's B, Y, X, Start or A at once.
+- `$00CA`'s other writers, from the listing: the result rows (`$80:CFA9`, `$80:D00F`; traced in
+  `twop-quit`, they leave the first rider), the lap result's (`$80:9041`, `$80:90D9`), the stunt
+  result's (`$80:F227`, `$80:F2AC`), the 1P scoring (`$83:879E`, the first rider) and NOW
+  PLAYING's Race (`$80:B4C0`, a value pulled from the stack and overwritten by the race's setup 7
+  frames later). After a VS challenger pick the original runs NOW PLAYING's print
+  (`$80:B18D`, `vs-challenger` 7000-7002), whose name lines write it; native does not. A 2P or
+  VS lap or stunt result may therefore leave another rider for a later PLAYER SCORES.
 - `$80:FBEE`'s menu (the league's continuation after the podium) runs the generic list loop, so
   it also turns the hidden markers and plays the move's sound; native's does neither. Not
   captured.

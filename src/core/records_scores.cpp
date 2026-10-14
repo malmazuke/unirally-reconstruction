@@ -158,7 +158,7 @@ std::uint32_t phase_frame(const FrontEndState& state) {
 
 // $83:8F2F-8F5D, $80:9AE2-9B0B: a bar's share of 128 pixels, the value's of the largest. Both
 // are shifted left until one has bit 15, and the value's high byte (times 256) is divided by the
-// largest's (`$80:9719`) and halved: exact below 256, a little short of the share above.
+// largest's (`$80:9719`) and halved: exact below 256, not above.
 std::uint8_t bar_share(std::uint16_t value, std::uint16_t largest) {
     constexpr std::uint8_t whole_bar = 0x80;
     if (value == 0) return 0;

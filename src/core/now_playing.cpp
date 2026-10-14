@@ -57,6 +57,15 @@ std::uint8_t race_kind(const FrontEndState& state) {
     return place < 3 ? place : static_cast<std::uint8_t>(place - 3);
 }
 
+// $80:B5C0: each name line's real rider goes to `$00CA` (the rider, the opponent, the record's
+// holder); the last one stays (R-0097).
+void note_named_riders(FrontEndState& state, bool opponent) {
+    const auto& now = state.now_playing;
+    for (const auto rider :
+         {state.rider_menu.rider, opponent ? now.opponent : someone, now.record_holder})
+        if (rider < someone) state.options_rider = rider;
+}
+
 // $80:B57E: a rider's line, "FC 09" (the caller sets the row), the name to its first blank, the
 // icon (`EF n`) and, for a real rider, the best on this track in brackets.
 Text name_line(const FrontEndState& state, const FrontEndContent& content, std::uint8_t rider,
@@ -151,16 +160,11 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         line[1] = row;
         print(line);
     };
-    // $80:B5C0: each line's real rider goes to `$00CA`; the last one stays (R-0097).
-    const auto note_rider = [&](std::uint8_t rider) {
-        if (rider < someone) state.options_rider = rider;
-    };
     print(stream_at(content, title_at));
     print(race_line(state, content));
     draw_tour_picture(state, content, state.tour_menu.tour,
                       word_at(content.now_playing_text, picture_place_at) / 2U);
     print_line(name_line(state, content, state.rider_menu.rider, 0), rider_row);
-    note_rider(state.rider_menu.rider);
     const bool session_wins = state.mode == FrontEndMode::two_player;
     constexpr std::uint8_t wins_column = 0x19;
     if (session_wins) {
@@ -184,7 +188,6 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         if (state.mode == FrontEndMode::one_player && state.tour_menu.tour >= hunter)
             now.opponent = anti_uni;
         print_line(name_line(state, content, now.opponent, 1), opponent_row);
-        note_rider(now.opponent);
         if (session_wins) {
             const std::array<std::uint8_t, 7> count{
                 0xfe, wins_column, opponent_row, 0xfd, opponent_wins_at, 0x00, 0xff};
@@ -198,7 +201,7 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
                      race_kind(state) == stunt_event ? hi_score_at : record_at);
     record.push_back(blank);
     const auto holder = name_line(state, content, now.record_holder, 2);
-    note_rider(now.record_holder);
+    note_named_riders(state, race_kind(state) != stunt_event || now.opponent < someone);
     record.insert(record.end(), holder.begin() + 2, holder.end());
     print(record);
     print(stream_at(content, race_exit_at));

@@ -1000,7 +1000,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/local_modes.cpp:versus_percentage"
+    "src/core/front_end_screens.hpp:divide_word",
+    "src/core/records_scores.cpp:bar_share"
    ],
    "observed_entries": {},
    "start": "$80:9719",
@@ -1320,6 +1321,10 @@
    "end": "$80:9B2E",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/records_scores.cpp:bar_share",
+    "src/core/records_scores.cpp:print_group_table"
    ],
    "observed_entries": {},
    "start": "$80:9AB2",
@@ -2233,7 +2238,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/now_playing.cpp:name_line"
+    "src/core/now_playing.cpp:name_line",
+    "src/core/now_playing.cpp:note_named_riders"
    ],
    "observed_entries": {},
    "start": "$80:B57E",
@@ -4573,7 +4579,8 @@
    ],
    "native": [
     "src/core/audio_cpu_menu_league.cpp:sort_ranking",
-    "src/core/league_menu.cpp:standings_order"
+    "src/core/league_menu.cpp:standings_order",
+    "src/core/records_scores.cpp:sort_group_rows"
    ],
    "observed_entries": {},
    "start": "$80:EFD4",
@@ -14142,7 +14149,9 @@
    ],
    "native": [
     "src/core/records_scores.cpp:PlayerFigures",
-    "src/core/records_scores.cpp:aim_player_bars"
+    "src/core/records_scores.cpp:bar_share",
+    "src/core/records_scores.cpp:part_of_races",
+    "src/core/records_scores.cpp:player_figures"
    ],
    "observed_entries": {},
    "start": "$83:8EFE",
@@ -14253,6 +14262,10 @@
    "end": "$83:91F6",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/front_end_screens.hpp:cartridge_percentage",
+    "src/core/records_scores.cpp:part_of_races"
    ],
    "observed_entries": {},
    "start": "$83:91D0",
@@ -14725,7 +14738,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/local_modes.cpp:versus_percentage"
+    "src/core/front_end_screens.hpp:cartridge_percentage"
    ],
    "observed_entries": {},
    "start": "$83:956D",
@@ -14877,7 +14890,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/audio_cpu_menu_league.cpp:reorder_members"
+    "src/core/audio_cpu_menu_league.cpp:reorder_members",
+    "src/core/records_scores.cpp:GroupStanding"
    ],
    "observed_entries": {},
    "start": "$83:96BE",
@@ -14930,6 +14944,9 @@
    "end": "$83:9869",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/records_scores.cpp:player_figures"
    ],
    "observed_entries": {},
    "start": "$83:97BD",
@@ -15274,6 +15291,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
+    "src/core/front_end_screens.hpp:cartridge_percentage",
     "src/core/local_modes.cpp:versus_percentage"
    ],
    "observed_entries": {},
@@ -19097,18 +19115,18 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2059,
+  "cited_addresses": 2077,
   "cited_by_class": {
    "data": 16,
-   "inferred": 91,
-   "observed": 1760,
+   "inferred": 92,
+   "observed": 1777,
    "unknown": 192
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1373,
+   "loc": 1389,
    "mid": 30,
-   "sub": 448,
+   "sub": 450,
    "unk": 192
   },
   "conflicts": 0,
@@ -19128,9 +19146,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 86837,
-  "routine_bytes_cited_by_native_code": 71365,
+  "routine_bytes_cited_by_native_code": 71702,
   "routines": 759,
-  "routines_cited_by_native_code": 558,
+  "routines_cited_by_native_code": 561,
   "unknown": 31424,
   "unknown_share": 0.2397
  }
