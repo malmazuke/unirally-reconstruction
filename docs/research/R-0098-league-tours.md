@@ -129,6 +129,48 @@ holder `$0684-069B`, `$0742` bit 13), and the whole image outside R-0090's unkep
     on its fourth frame, as a race's return does (`$80:A0F7`); native loaded it two frames late.
     [C: `tour-cues`]
 
+Review round 1 (the reviewer's captures `five`, `backs` and the author's `odd-tours`):
+
+16. **The least-wipeout bonus never counts wipeouts.** `$83:97A4-97BC` compares `$77:07BD` (the
+    player) and `$77:0827` (rider 1, considered only when human, `$0749 < 0x10`) with a
+    less-or-equal test. Only the race's setup writes those words (the clears and `$82:DA79`,
+    `$82:DB21`); they are 0 on every frame of every capture, so in a stunt event every valid human
+    ties and the later one holds the bonus (the one-run bonus, `$83:9757-9782`, needs a strictly
+    greater sum). Native (R-0073's code) counted wipeout announcements
+    into them, so a human wipeout in a stunt event moved the bonus: `five`'s race 8 (track 27,
+    rider 13 against BRONSEN), native's holder 11 against the original's 13 at 50,928, the points
+    swapped from 51,236 and every later pairing different. Native now keeps them 0. [L, C: `five`]
+17. **A computer opponent's voices read past their class table** (an overrun of the original).
+    `$81:C238`'s bit-7 test sends events 200-255, BRONSEN's, SILVIA's and GOLDWYN's and ANTI-UNI's
+    voices, down rider 1's reward path; `$81:C241` reads their class at `$81:C50A + event - 1`,
+    past the 72-entry table, from the code at `$81:C5D1-C608` (pack v40,
+    `physics.reward.opponent-voice-classes`), and `$81:C253-C258` increments the byte
+    `$77:07D5 + (class x 2 & 0xFF)`: a byte of rider 1's tallies, `$0827` (events 223 and 235) or,
+    for 202, 204, 208, 209, 211, 217, 219, 228, 230-233, 239, 242 and 245, the low byte of a saved
+    best time past them (`$77:0829 + 2 x (50 x rider + track)`). The reward byte that follows
+    (`$7E:2102 + event - 1`, `$7E:21C9-21F8`) is 0 on every frame, so nothing else is counted. A
+    combination's voice is queued twice, so ANTI-UNI's 233 adds 2 to `$0859` (rider 0's best on
+    track 24): `odd-tours` 29,415 and 29,433 (track 41), 52,276 and 52,294 (track 43), `five`
+    120,596 and 120,614, 153,415 and 153,433. The consumer runs in every race (no mode test), so
+    a one-player race against these opponents does the same. Native now increments the same
+    bytes: the race hands the best-time bytes to the records each update
+    (`ZoomZooState::cartridge_increments`). [L, C: `odd-tours`, `five`]
+18. **The league's back paths slide by `$00AC`.** The slots (`$80:EF7B`) slide forward when it is 1,
+    PICK TOUR (`$80:E570`) when it is 2, the standings (`$80:A66F`) back when it is 2. NOW PLAYING's
+    Y stores 2 and shows the standings (`$80:BF05-BF09`, `$80:BE55`), which slide back; the
+    standings' Y stores 1 (`$80:BE5F`) and, the pair cursor being 0, enters PICK TOUR at `$80:E550`
+    without `$80:BE16`'s loads (`$80:BE2E`), which slides back; PICK TOUR's Y stores `$80:B74A`'s
+    pad byte (`$80:BE34`, `$80:BDDB`; the low byte of the pad word, 0 for Y, never 1), so the slots
+    slide back, while the standings' Y with another pair to race stores 1 (`$80:BE73`) and they
+    slide forward. Native slid all three forward (with PICK TOUR's full entry), so the halves and
+    the decorations were out of step from then on. A slot's choice leaves the rider word `$017D`
+    as it was (only the pair's choice writes it, `$83:98EE`); native cleared it. [L, C: `backs`]
+19. **A stunt event's second port.** With the AI flag `$0C6D` clear (every stunt event), the pad
+    reader takes `$82:AB91`, the second human's path, whatever the mode: rider 1's words follow
+    port 2. In a league's computer pair the other humans hold it (`odd-tours`' NEON against
+    GOLDWYN, BOUNDER's stunt event against BRONSEN: rider 1's direction right from race frame
+    1,505-1,574 on). Native released the opponent's words to neutral. [L, C]
+
 ## Results
 
 At `29c5786` (`final-29c5786/`; the per-capture table is in the task record's checkpoint):
@@ -140,7 +182,8 @@ At `29c5786` (`final-29c5786/`; the per-capture table is in the task record's ch
   checked by hand) but one frame in `odd-tours` (Not covered).
 - **Pictures**: `podium-back` 5,490 of 5,500 (main 2,949), `picks-l*` 1,699 of 1,700 each,
   `t-crawler` 3,208 of 3,260, the first window of each driven capture 3,096 of 3,206 and 4,550 of
-  4,656 (main 2,896 and 4,350); later windows 44-77 % (the podium's way back, Not covered).
+  4,656 (main 2,896 and 4,350); later windows 44-77 % (the podium's way back and, in `odd-tours`,
+  the pairs a frame apart; Not covered).
 - **Sound**: `tour-cues` 4 frames of 19,339 cue lines differ (10603 as main; the podium's music).
 - **The first tour**: R-0073's frozen gate passes unchanged (six cases, every listed picture 0 px).
 
@@ -155,9 +198,10 @@ At `29c5786` (`final-29c5786/`; the per-capture table is in the task record's ch
   native keeps it (the frozen gate's podium cases rely on it). After a podium the arrow's spin
   `$00C6` and, after a late one, the palette cycle `$00C8-00C9` are a frame apart from the
   original until the league ends, which shows as the arrow's turn and every seventh frame's
-  background colours in later tours' menus (most of the pictures differing in windows 1-8).
-  Predicting it needs the sound processor's timing on the menus' side; a follow-up
-  (PODIUM-RETURN-TIMING).
+  background colours in later tours' menus (most of the pictures differing in `tours-a` windows
+  1-8). The reviewer's sweep (40 exit presses on organic-cycle-five: 15 late, in clumps about
+  every 3.5 frames) agrees. Predicting it needs the sound processor's timing on the menus' side;
+  a follow-up (PODIUM-RETURN-TIMING).
 - **The podium's own music** (`$82:E08E`'s session and its music start, `tour-cues` 11420 and
   11501-11502): native plays none on the podium.
 - **HUNTER's effects in a two-view picture**: the effect captions in rider 1's view, BG effects per
@@ -165,18 +209,38 @@ At `29c5786` (`final-29c5786/`; the per-capture table is in the task record's ch
   domain, and `tours-a` windows 2 and 6 and `odd-tours` window 0 are captures for it.
 - **Split-screen race pictures on the other tracks**: a few 10-22 pixel differences where a rider
   passes under the HUD (SHUFFLER and HOPPER tracks; SPLIT-RIDERS-UNDER-INK's class).
-- **Cycle-timed print overruns**, as R-0095 records for CRAWLER: the standings after an odd
-  league's first pair start a frame late in the original (`odd-tours` 27880), and the awards'
-  header is printed in the result's way out; the awards' rows enter the text buffer a frame
-  apart (no picture differs).
-- **A race's loading a frame off** in `odd-tours` (NEON and the HUNTER race after it with the
-  song counter there; R-0077's race-loading limit): native's own loading starts them a frame
-  early; the comparisons pass the original's initialization.
+- **An event's pairs a frame apart.** In a league with more than one pair an event, the
+  original's standings after each pair but the last start a frame later than native's, in every
+  event, so the menus' decorations fall a frame further behind each event: the wave's best lag
+  in `odd-tours` is -1 from 27,570, -2 from 35,268, -3 from 49,381, -4 from 53,631 and past 4
+  in window 1 (the arrow's spin -1 to -4); in `five` past 4 within the first event, with the
+  palette cycle 2 frames off from 19,783 (the reviewer's `drift.py`). In the same class native
+  counts some later pairs a frame early (the played and points words, `$80:AF54`): `five`
+  15,619, 20,091, 32,500, 38,635 and 60,423, `odd-tours` 35,575; the others (`odd-tours` 12,908,
+  19,473, 27,878, 40,958, 45,042, 49,690, 53,942) are on time. At `five` 32,500 the original
+  counts in the result's way out's second frame, native in its first, and the table's slide
+  follows a frame later; the listing shows no branch that would place either, so, like R-0095's
+  table-print overrun on CRAWLER, they are taken to be the frame's work running past the frame
+  (not modelled). Most later menu pictures in an odd league differ for this reason (`odd-tours`
+  4,912 of 6,459 and 4,934 of 7,003), not the podium's. The awards' header is printed in the
+  result's way out and the awards' rows enter the text buffer a frame apart (no picture
+  differs). A follow-up with the podium's (PODIUM-RETURN-TIMING), both needing the frame's cycle
+  count.
+- **A race's loading a frame off** (R-0077's race-loading limit; the original varies by a frame
+  with the sound processor): four races in this task's captures, `odd-tours` 13,932 (ANTI-UNI on
+  track 40, a frame late) and 36,937 and 46,418 and `tours-a` 218,690 (track 10, each a frame
+  early), and two in the reviewer's `five` (16,596 and 104,002). The comparisons pass the
+  original's initialization; the race itself is self-contained, so this hides nothing else.
 - The odd league's computer race result leaves entries 96-103 at other places (hidden; no picture
   differs), and its event total row for the computer after a stunt (Y = `$FFFF`) keeps an older
   word.
-- VS's NEON scenery 12 and the HUNTER stunt event against the computer outside a league are read
-  from the listing only.
+- Two-view NEON's scenery in 2P (8) and in VS (12), and the HUNTER stunt event against the
+  computer outside a league, are read from the listing only; only the league's 8 is captured.
+- **A computer race's contact on HUNTER's track 41** (`odd-tours` 30,250 and `five` 121,431, both
+  race frame 2,809 against ANTI-UNI): ANTI-UNI's vertical velocity, written by `$81:8F7C` after
+  its contact routine, is -154 in the original and -242 in native for one update. In `odd-tours` nothing follows from it; in `five` the race then differs (from 127,125
+  the league's fields too, the race's result being another). The two-human races on the same
+  track are equal; a follow-up for the computer opponent's contact (RACE-LISTING-BRANCHES).
 
 ## Reproduction
 
