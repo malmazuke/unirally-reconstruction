@@ -3232,16 +3232,6 @@
    "region": "rom"
   },
   {
-   "address": "$80:BE36",
-   "native": [
-    "src/core/tour_menu.cpp:tour_menu_frame"
-   ],
-   "range_ends": [
-    "$80:BE57"
-   ],
-   "region": "rom"
-  },
-  {
    "address": "$80:BE76",
    "native": [
     "src/core/league_completion.cpp:(file)"
@@ -3544,8 +3534,7 @@
    "address": "$80:C1EB",
    "native": [
     "src/core/tour_menu.cpp:set_arrow_mirror",
-    "src/core/tour_menu.cpp:shadow_attribute_entry",
-    "src/core/tour_menu.cpp:tour_menu_frame"
+    "src/core/tour_menu.cpp:shadow_attribute_entry"
    ],
    "region": "rom"
   },
@@ -26881,10 +26870,8 @@
     "$80:BC12",
     "$80:BE16",
     "$80:BE34",
-    "$80:BE36",
     "$80:BECE",
     "$80:BFCE",
-    "$80:C1EB",
     "$80:D1EC",
     "$80:E6B1",
     "$80:FBD7",
@@ -28074,10 +28061,10 @@
   }
  },
  "totals": {
-  "addresses": 2009,
+  "addresses": 2008,
   "io_addresses": 11,
   "native_symbols": 1473,
-  "rom_addresses": 1579,
+  "rom_addresses": 1578,
   "sram_addresses": 63,
   "wram_addresses": 356
  }

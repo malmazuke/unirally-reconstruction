@@ -2950,8 +2950,7 @@
    ],
    "native": [
     "src/core/tour_menu.cpp:set_arrow_mirror",
-    "src/core/tour_menu.cpp:shadow_attribute_entry",
-    "src/core/tour_menu.cpp:tour_menu_frame"
+    "src/core/tour_menu.cpp:shadow_attribute_entry"
    ],
    "observed_entries": {},
    "start": "$80:C1EB",
@@ -19152,16 +19151,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2108,
+  "cited_addresses": 2107,
   "cited_by_class": {
    "data": 16,
    "inferred": 94,
-   "observed": 1804,
+   "observed": 1803,
    "unknown": 194
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1417,
+   "loc": 1416,
    "mid": 30,
    "sub": 451,
    "unk": 194

@@ -123,8 +123,7 @@ holder `$0684-069B`, `$0742` bit 13), and the whole image outside R-0090's unkep
     (`$80:90AF-90F2`, against `$77:0829 + 2 x (50 x opponent + track)`), as the player's
     (`$80:9017-905D`); native kept the player's only (R-0090's personal-best gap). [L, C]
 14. **The standings from PICK TOUR** leave entries 104-111 as they are (the awards' way out and
-    NOW PLAYING hide them themselves) and the choice's frame copies the OAM with the arrow already
-    turned back (`$80:C1EB`, `$80:BE36-BE57`). [L, C: `picks-l0` 6401]
+    NOW PLAYING hide them themselves; `$80:A547` does not). [L, C: `picks-l0`, OAM equal from 6400]
 15. **The podium's sounds around the menus**: on its seventh frame the menu music fades at once,
     as before a race (`$80:99B7-99BE` pattern), and its way back loads the title's sound program
     on its fourth frame, as a race's return does (`$80:A0F7`); native loaded it two frames late.

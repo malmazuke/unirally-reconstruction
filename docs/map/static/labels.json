@@ -6028,26 +6028,12 @@
   ]
  },
  {
-  "address": "$80:BE36",
-  "class": "observed",
-  "comment": "instruction start",
-  "label": "loc_80BE36",
-  "native": [
-   "src/core/league_menu.cpp:(file)",
-   "src/core/tour_menu.cpp:tour_menu_frame"
-  ],
-  "source_records": [
-   "docs/research/R-0098-league-tours.md"
-  ]
- },
- {
   "address": "$80:BE3F",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BE3F",
   "native": [
-   "src/core/league_menu.cpp:(file)",
-   "src/core/tour_menu.cpp:tour_menu_frame"
+   "src/core/league_menu.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -6060,8 +6046,7 @@
   "comment": "instruction start",
   "label": "loc_80BE45",
   "native": [
-   "src/core/league_menu.cpp:(file)",
-   "src/core/tour_menu.cpp:tour_menu_frame"
+   "src/core/league_menu.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -6073,8 +6058,7 @@
   "comment": "instruction start",
   "label": "loc_80BE48",
   "native": [
-   "src/core/league_menu.cpp:(file)",
-   "src/core/tour_menu.cpp:tour_menu_frame"
+   "src/core/league_menu.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0079-two-pad-pause.md"
@@ -6644,12 +6628,10 @@
   "label": "sub_80C1EB",
   "native": [
    "src/core/tour_menu.cpp:set_arrow_mirror",
-   "src/core/tour_menu.cpp:shadow_attribute_entry",
-   "src/core/tour_menu.cpp:tour_menu_frame"
+   "src/core/tour_menu.cpp:shadow_attribute_entry"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
