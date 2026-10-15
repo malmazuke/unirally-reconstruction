@@ -98,10 +98,10 @@ std::uint8_t* opponent_reward_weight(RewardQueueState& queue, std::uint8_t event
         return &learned_weights[event - 2];
     }
     // Past the class table only the opponent's voices get here: the original then reads
-    // past the table into code ($81:C241) and past the learned bank ($81:C260) into
-    // $7E:21C9-21D8 (SILVIA and GOLDWYN: $7E:21D9-21E8; HUNTER: $7E:21E9-21F8). Those bytes
-    // are zero on every reference capture and the reward-bank guards assert it, so it rewards
-    // nothing (R-0035, R-0061).
+    // past the table into code ($81:C241; the tally byte it counts is count_opponent_voice's,
+    // R-0098) and past the learned bank ($81:C260) into $7E:21C9-21D8 (SILVIA and GOLDWYN:
+    // $7E:21D9-21E8; HUNTER: $7E:21E9-21F8). Those bytes are zero on every reference capture
+    // and the reward-bank guards assert it, so it rewards nothing (R-0035, R-0061).
     // Deserialization admits no other event here; widen its guards if this ever moves.
     require(is_opponent_voice(event), "reward queue left the recovered event-one domain");
     return nullptr;

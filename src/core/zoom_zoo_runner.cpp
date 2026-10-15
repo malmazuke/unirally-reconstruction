@@ -189,7 +189,7 @@ struct LooseContent {
         return {
             movement, coefficients, reflection, landing, finish_poses, roll_poses, roll_directions,
             weights,  combinations, {},         {},      {},           {},         {},
-            {},       {},           {}};
+            {},       {},           {},         {}};
     }
 };
 

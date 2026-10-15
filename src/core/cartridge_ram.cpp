@@ -4,6 +4,8 @@
 #include "audio_cpu_scene.hpp"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <stdexcept>
 
 namespace unirally {
@@ -180,6 +182,20 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
     state.records = records_from_cartridge(state.cartridge);
     state.records.league_naming = false; // `$80:A0A5` clears `$0742` bit 1 on every boot
     state.one_player = state.cartridge[one_player_mode] == 1;
+}
+
+void add_race_cartridge_increments(FrontEndState& state, std::span<const std::uint16_t> offsets) {
+    constexpr std::size_t best_times = 0x0829;
+    auto& best = state.records.best;
+    for (const auto offset : offsets) {
+        if (offset < best_times || offset >= best_times + 2 * best.size())
+            throw std::invalid_argument(
+                "a race's cartridge RAM increment lies outside the records");
+        auto& word = best[(offset - best_times) / 2];
+        const unsigned shift = (offset - best_times) % 2 * 8U;
+        const auto byte = static_cast<unsigned>((word >> shift) + 1U) & 0xffU;
+        word = static_cast<std::uint16_t>((word & ~(0xffU << shift)) | byte << shift);
+    }
 }
 
 } // namespace unirally

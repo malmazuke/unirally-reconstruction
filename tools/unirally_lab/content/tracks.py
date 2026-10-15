@@ -360,3 +360,18 @@ def v26_new_entries(rom: bytes) -> list[dict[str, Any]]:
     return [_raw(f"{name}.bg2-tiles", rom, pieces["bg2_tiles"]), _raw(f"{name}.bg2-map", rom, pieces["bg2_map"]),
             _raw(f"{name}.palette", rom, pieces["palette"]), _raw(entry_id, rom, [levels])]
 
+
+
+# LEAGUE-TOURS review (R-0098): rider 1's queue consumer reads an event's class at
+# `$81:C50A + event - 1` (`$81:C241`). The table holds 72 classes, but `$81:C238`'s bit-7 test
+# also sends events 200-255, the computer opponents' voices, down that path, so the original reads
+# the code that follows the table: `$81:C5D1-C608`, one byte per event 200-255.
+OPPONENT_VOICE_CLASSES = ("physics.reward.opponent-voice-classes", 0x81C5D1, 56)
+
+
+def v40_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entry profile v40 adds to v39 (LEAGUE-TOURS): the bytes the opponent's voices read as
+    their classes. Run once with the ROM to append it to the rules; the tests check the rules
+    against the compiled table."""
+    entry_id, bus, length = OPPONENT_VOICE_CLASSES
+    return [_raw(entry_id, rom, [(provenance.rom_file_offset(bus, len(rom)), length)])]

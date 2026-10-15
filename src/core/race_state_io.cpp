@@ -1537,19 +1537,24 @@ void read_forced_hunter(const ForcedHunterParts& parts, ZoomZooState& state) {
 }
 
 // A league pair's stunt event: rider 1's tallies are the league's counts of its tricks and the
-// points they paid, kept the same way ($81:C253-C2C3; R-0073, R-0095).
+// points they paid, kept the same way ($81:C253-C2C3; R-0073, R-0095). A computer opponent's
+// voices (BRONSEN, SILVIA, GOLDWYN, ANTI-UNI) also add to its counts and points' low bytes past
+// their class table (count_opponent_voice, R-0098), so only another rider's must add up.
 void league_opponent_tallies(ZoomZooState& state) {
     const auto& statistics = state.league_statistics;
+    const bool voices_count =
+        announcement::first_voice_of(state.pairing.opponent) >= announcement::first_opponent_voice;
     std::uint16_t points = 0;
     for (unsigned row = 0; row < trick_family::count; ++row)
         for (unsigned column = 0; column < trick_family::columns; ++column) {
             const auto cell = row * trick_family::columns + column;
             auto& tally = state.stunt.opponent_tallies[row][column];
             tally = {statistics.tricks[1][cell], statistics.opponent_points[cell]};
-            refuse_unless(tally.shown || !tally.points, "a stunt tally pays for no trick");
+            refuse_unless(voices_count || tally.shown || !tally.points,
+                          "a stunt tally pays for no trick");
             points = add_word(points, tally.points);
         }
-    refuse_unless(points == state.movement.rewards.feature_total,
+    refuse_unless(voices_count || points == state.movement.rewards.feature_total,
                   "rider 1's stunt tallies do not add up to its score");
 }
 

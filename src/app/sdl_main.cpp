@@ -777,6 +777,10 @@ int main(int argc, char **argv) try {
               zoom_content);
         else
           unirally::update_zoom_zoo(zoom_state, buttons, zoom_content);
+        // Only an update fills them; a restart leaves the last update's.
+        if (waiting_front_end && !(at_stable_result && buttons.start))
+          waiting_front_end->add_cartridge_increments(
+              zoom_state.cartridge_increments);
         // Selector 0 is a real trick (the flat path's negative-velocity
         // rotation), so the impulse is the activity signal; the selector alone
         // would silently drop it.

@@ -3,6 +3,8 @@
 #include "movement.hpp"
 #include "rider_look.hpp"
 
+#include <vector>
+
 namespace unirally {
 struct ReflectionTransition {
     std::uint16_t step{}, end{}, pose_base{}, pose_override{}, completed{}, hold{};
@@ -446,6 +448,10 @@ struct ZoomZooState {
     // Not serialized: this update's sound queue work in program order (R-0076). Each update
     // starts it empty; the caller hands it to the audio side.
     AudioCueList sound_cues;
+    // Not serialized: the cartridge RAM bytes (offsets in `$77`) this update's opponent voices
+    // incremented past rider 1's tallies, an overrun of the original (count_opponent_voice,
+    // R-0098). Each update starts it empty; the caller adds them to the records.
+    std::vector<std::uint16_t> cartridge_increments;
 };
 struct ZoomZooContent {
     MovementContent movement;
@@ -480,6 +486,10 @@ struct ZoomZooContent {
     // presentation.rider.look-tables.v1: the riders' look (R-0036), whose scripted glance clears
     // a rider's idle latch when it ends; empty for loose content, which runs no look.
     std::span<const std::uint8_t> look_tables;
+    // physics.reward.opponent-voice-classes (`$81:C5D1`), a byte per event 200-255: what rider
+    // 1's queue reads as a computer opponent's voice's class, past its table (R-0098); empty in
+    // packs before profile v40.
+    std::span<const std::uint8_t> opponent_voice_classes;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).

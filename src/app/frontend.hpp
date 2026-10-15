@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cartridge_ram.hpp"
 #include "front_end.hpp"
 #include "input_timer.hpp"
 #include "presentation.hpp"
@@ -9,6 +10,7 @@
 #include <array>
 #include <cstdint>
 #include <optional>
+#include <span>
 
 namespace unirally::app {
 
@@ -198,6 +200,11 @@ public:
   // has begun, or its pause menu quit or restarted it. The front end takes over
   // with its times.
   void return_from_race(const ZoomZooState &race, const RaceTimes &times);
+  // A race update's cartridge RAM increments past rider 1's tallies, an
+  // overrun of the original (`ZoomZooState::cartridge_increments`, R-0098).
+  void add_cartridge_increments(std::span<const std::uint16_t> offsets) {
+    add_race_cartridge_increments(state_, offsets);
+  }
   void return_from_demo(std::uint32_t exit_frame, std::uint16_t demo_elapsed);
 
 private:

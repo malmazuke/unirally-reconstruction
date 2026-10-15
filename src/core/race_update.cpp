@@ -34,10 +34,12 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace unirally {
 namespace {
@@ -829,17 +831,72 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     observe_track_markers(rider.progress, samples);
 }
 
+// One byte's 8-bit increment in a word: no carry into the high byte.
+void increment_low_byte(std::uint16_t& word) {
+    word = static_cast<std::uint16_t>((word & 0xff00U) | ((word + 1U) & 0x00ffU));
+}
+
+// `$81:C253-C258`: the byte `$77:07D5,X` incremented, in the field native keeps for it. Rider 1's
+// tallies come first, four bytes a trick class pair: its count, a byte never read, its points'
+// word. Then rider 1's score (`$0825`) and wipeout word (`$0827`), then the saved best times
+// (`$0829`), which the race hands to the records.
+void increment_opponent_tally_byte(ZoomZooState& next, std::uint8_t offset,
+                                   const ClassicRaceScenario& scenario) {
+    constexpr unsigned tally_bytes = 80, wipeout_word = 0x52, best_times = 0x54;
+    constexpr std::uint16_t tallies_address = 0x07d5;
+    auto& statistics = next.league_statistics;
+    if (offset < tally_bytes) {
+        const unsigned cell = offset / 4U;
+        const bool points = offset % 4U == 2U; // a class doubled is even: never +1 or +3
+        auto& tally =
+            next.stunt.opponent_tallies[cell / trick_family::columns][cell % trick_family::columns];
+        if (points) {
+            if (statistics.enabled) increment_low_byte(statistics.opponent_points.at(cell));
+            if (scenario.stunt_event) increment_low_byte(tally.points);
+        } else {
+            if (statistics.enabled) ++statistics.tricks[1].at(cell);
+            if (scenario.stunt_event) ++tally.shown;
+        }
+    } else if (offset == wipeout_word) {
+        if (statistics.enabled) increment_low_byte(statistics.wipeouts[1]);
+    } else if (offset >= best_times) {
+        next.cartridge_increments.push_back(static_cast<std::uint16_t>(tallies_address + offset));
+    } else {
+        throw std::invalid_argument("an opponent voice's class reaches rider 1's score");
+    }
+}
+
+// `$81:C241-C258` for a computer opponent's voice, events 200-255, which `$81:C238`'s bit-7
+// test sends down the reward path (announcements.hpp): an overrun of the original. The class is
+// read past the 72-byte table, from the code at `$81:C5D1` (pack v40), and its double, 8-bit,
+// indexes rider 1's tallies at `$77:07D5`, so most voices land in a tally byte, two in `$0827` and
+// the rest past the table, in the low byte of a saved best time: ANTI-UNI's 233 adds 1 to `$0859`
+// (R-0098). Its reward byte is 0 (reward_queue.cpp), so nothing else is counted. A pack before
+// v40 lacks the bytes and counts nothing.
+void count_opponent_voice(ZoomZooState& next, std::uint8_t event,
+                          std::span<const std::uint8_t> voice_classes,
+                          const ClassicRaceScenario& scenario) {
+    const auto index = static_cast<std::size_t>(event - announcement::first_opponent_voice);
+    if (index >= voice_classes.size() || voice_classes[index] == 255) return;
+    increment_opponent_tally_byte(next, static_cast<std::uint8_t>(voice_classes[index] << 1U),
+                                  scenario);
+}
+
 // Rider 1's queue took an event this update: a league counts its tricks (R-0073),
 // and in a stunt event a trick of a reward class goes into rider 1's tallies ($81:C238-C2C3,
 // R-0095), with the points its reward paid; only a second human shows one.
 void count_opponent_trick(ZoomZooState& next, std::uint16_t previous_reward_total,
-                          const MovementContent& content, const ClassicRaceScenario& scenario) {
+                          const ZoomZooContent& content, const ClassicRaceScenario& scenario) {
     const auto& rewards = next.movement.rewards;
     const auto event = rewards.entries[rewards.read_cursor];
     const auto paid = static_cast<std::uint16_t>(rewards.feature_total - previous_reward_total);
-    if (event == 0 || event >= announcement::wrong_way || content.rotation_class[event - 1] == 255)
+    if (event >= announcement::first_opponent_voice) {
+        count_opponent_voice(next, event, content.opponent_voice_classes, scenario);
         return;
-    const auto trick_class = content.rotation_class[event - 1];
+    }
+    const auto& classes = content.movement.rotation_class;
+    if (event == 0 || event >= announcement::wrong_way || classes[event - 1] == 255) return;
+    const auto trick_class = classes[event - 1];
     if (next.league_statistics.enabled) {
         const auto cell = trick_class / 2U;
         ++next.league_statistics.tricks[1].at(cell);
@@ -901,7 +958,7 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
         race_sound::announcement_voice(next, 1, whole.rewards.entries[whole.rewards.read_cursor],
                                        content.announcement_voices);
     if (previous_reward_cursor != whole.rewards.read_cursor)
-        count_opponent_trick(next, previous_reward_total, content.movement, scenario);
+        count_opponent_trick(next, previous_reward_total, content, scenario);
     if (state.complete_race) update_camera(next, track_geometry(content.movement.sampling.track));
     for (unsigned index = 0; index < rider_passes(scenario, next.split_screen); ++index)
         if (!outcomes[index].contact_skip) update_rider_contact(state, next, index, content);
@@ -991,6 +1048,7 @@ std::uint16_t next_wrong_direction_counter(std::uint16_t previous, std::uint16_t
 void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_buttons,
                      const ControllerButtons& second_port, const ZoomZooContent& content) {
     state.sound_cues.clear();
+    state.cartridge_increments.clear();
     const auto request = gate_controller(state, requested_buttons);
     validate_zoom_zoo_content_state(state, content);
     const auto scenario = classic_race_scenario(state.track);

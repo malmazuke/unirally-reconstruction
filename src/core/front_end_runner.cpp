@@ -725,6 +725,7 @@ int main(int argc, char** argv) try {
             if (state.mode == unirally::FrontEndMode::demo) {
                 if (frame <= race.initialization_frame) continue;
                 update_demo_race(options, pack, state, race, frame, pads, races);
+                unirally::add_race_cartridge_increments(state, race.state.cartridge_increments);
                 write_race_state(race_timeline, frame, race.state);
                 sound_cues.write(frame, race.state.sound_cues);
                 continue;
@@ -736,6 +737,7 @@ int main(int argc, char** argv) try {
             update_local_race(options, pack, content, state, race, race_timeline,
                               one_player_timeline, look_timeline, restored_local, races, frame,
                               pads);
+            unirally::add_race_cartridge_increments(state, race.state.cartridge_increments);
             sound_cues.write(frame, race.state.sound_cues);
         } else if (state.mode_chosen) {
             break;
