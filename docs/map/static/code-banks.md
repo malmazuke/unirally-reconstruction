@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Instructions from observed | 35,735 |
 | Instructions from table | 65 |
 | Routines | 759 |
-| Routines cited by native code | 562 |
-| Routine bytes cited by native code | 71,744 |
+| Routines cited by native code | 565 |
+| Routine bytes cited by native code | 72,002 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-2107 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1416, mid 30, sub 451, unk 194 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 94, observed 1803, unknown 194.
+2124 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1432, mid 31, sub 451, unk 194 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 94, observed 1820, unknown 194.
 
 Cited addresses in `unknown` bytes:
 
@@ -184,7 +184,7 @@ Cited addresses in `unknown` bytes:
 | $81:BA4B | docs/research/R-0008-track-decode.md, tasks/M1-03.md |
 | $81:C441 | docs/research/R-0076-first-race-audio.md |
 | $81:C493 | docs/research/R-0011-motion.md |
-| $81:C50A | docs/research/R-0011-motion.md, docs/research/R-0066-stunt-event-race.md |
+| $81:C50A | docs/research/R-0011-motion.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0098-league-tours.md |
 | $81:CC17 | docs/research/R-0048-race-guards.md |
 | $82:8280 | docs/research/R-0098-league-tours.md |
 | $82:833B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |

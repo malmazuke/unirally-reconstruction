@@ -849,7 +849,7 @@
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:race_restart_frame",
    "src/core/race_result.cpp:quit, restarted",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -872,7 +872,7 @@
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:race_restart_frame",
    "src/core/race_result.cpp:quit, restarted",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
@@ -888,7 +888,7 @@
    "src/core/front_end_screens.hpp:race_restart_frame",
    "src/core/race_result.cpp:quit, restarted",
    "src/core/race_result.cpp:race_restart_frame",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
@@ -903,7 +903,7 @@
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:race_restart_frame",
    "src/core/race_result.cpp:quit, restarted",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
@@ -2150,7 +2150,7 @@
   "comment": "instruction start",
   "label": "loc_809AAC",
   "native": [
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -3225,6 +3225,18 @@
   ]
  },
  {
+  "address": "$80:A66F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A66F",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup::table_slides_back"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
   "address": "$80:A68D",
   "class": "unknown",
   "comment": "unknown",
@@ -3266,7 +3278,7 @@
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/league_completion.cpp:league_continue_frame",
    "src/core/local_modes.cpp:local_continue_frame",
-   "src/core/race_result.cpp:race_return_frame",
+   "src/core/race_result.cpp:restore_menus_after_race",
    "src/core/tour_menu.cpp:first_medal_palette",
    "src/core/tour_menu.cpp:return_to_tour_menu",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
@@ -4958,6 +4970,7 @@
    "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
    "src/core/front_end.hpp:HunterEnding::both_pads",
    "src/core/front_end_screens.hpp:any_button_pressed",
+   "src/core/front_end_screens.hpp:enter_league_slots",
    "src/core/front_end_screens.hpp:gated_pads",
    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
    "src/core/front_end_screens.hpp:start_hunter_ending",
@@ -4974,7 +4987,8 @@
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -6015,11 +6029,51 @@
   ]
  },
  {
+  "address": "$80:BDDB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BDDB",
+  "native": [
+   "src/core/front_end_screens.hpp:enter_league_slots",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
   "address": "$80:BE16",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BE16",
   "native": [
+   "src/core/league_menu.cpp:(file)",
+   "src/core/league_menu.cpp:league_table_frame",
+   "src/core/tour_menu.cpp:tour_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:BE2E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE2E",
+  "native": [
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:BE34",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE34",
+  "native": [
+   "src/core/front_end_screens.hpp:enter_league_slots",
    "src/core/league_menu.cpp:(file)",
    "src/core/tour_menu.cpp:tour_menu_frame"
   ],
@@ -6062,6 +6116,44 @@
   ],
   "source_records": [
    "docs/research/R-0079-two-pad-pause.md"
+  ]
+ },
+ {
+  "address": "$80:BE55",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE55",
+  "native": [
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:BE5F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE5F",
+  "native": [
+   "src/core/league_menu.cpp:(file)",
+   "src/core/league_menu.cpp:league_table_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:BE73",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE73",
+  "native": [
+   "src/core/league_menu.cpp:(file)",
+   "src/core/league_menu.cpp:league_table_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -6118,6 +6210,19 @@
    "src/core/league_completion.cpp:(file)",
    "src/core/league_completion.cpp:league_continue_frame",
    "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:BF05",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF05",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup::table_slides_back",
+   "src/core/now_playing.cpp:now_playing_frame"
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
@@ -7952,7 +8057,7 @@
    "src/core/front_end_screens.hpp:set_menu_registers",
    "src/core/front_end_screens.hpp:upload_last_frame, menu_screen_frame, restore_frame",
    "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -8092,7 +8197,7 @@
   "label": "loc_80D372",
   "native": [
    "src/core/front_end.cpp:boot_frame",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -8106,7 +8211,7 @@
   "label": "loc_80D377",
   "native": [
    "src/core/front_end.cpp:waits_for_frame",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -9235,6 +9340,7 @@
    "src/core/front_end.hpp:TourMenu::slides_back",
    "src/core/front_end_screens.hpp:return_to_tour_menu",
    "src/core/league_completion.cpp:league_continue_frame",
+   "src/core/league_menu.cpp:league_table_frame",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/tour_menu.cpp:(file)",
    "src/core/tour_menu.cpp:return_to_tour_menu"
@@ -9268,6 +9374,18 @@
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
+  "address": "$80:E570",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E570",
+  "native": [
+   "src/core/league_menu.cpp:league_table_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -9967,6 +10085,21 @@
   ]
  },
  {
+  "address": "$80:EF7B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EF7B",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup::slots_slide_back",
+   "src/core/front_end_screens.hpp:enter_league_slots",
+   "src/core/league_menu.cpp:league_table_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
   "address": "$80:EF89",
   "class": "observed",
   "comment": "routine start",
@@ -10603,8 +10736,8 @@
   "label": "sub_80F53F",
   "native": [
    "src/core/front_end_screens.hpp:raise_logo",
-   "src/core/race_result.cpp:race_return_frame",
    "src/core/race_result.cpp:raise_logo",
+   "src/core/race_result.cpp:restore_menus_after_race",
    "src/core/stunt_result.cpp:print_stunt_screen"
   ],
   "source_records": [
@@ -13116,6 +13249,7 @@
   "source_records": [
    "docs/inventory/M4-11-vertical-velocity.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0098-league-tours.md",
    "tasks/M4-11.md"
   ]
  },
@@ -14878,12 +15012,14 @@
   "native": [
    "src/core/announcements.hpp:takes_reward_path",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0098-league-tours.md",
    "tasks/NATIVE-READABILITY.md"
   ]
  },
@@ -14894,13 +15030,16 @@
   "label": "loc_81C241",
   "native": [
    "src/core/announcements.hpp:takes_reward_path",
+   "src/core/content_pack.cpp:league_tours_required",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
    "src/core/reward_queue.cpp:opponent_reward_weight",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
-   "docs/research/R-0033-sustained-traversal.md"
+   "docs/research/R-0033-sustained-traversal.md",
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -14910,7 +15049,10 @@
   "label": "loc_81C24E",
   "native": [
    "src/core/announcements.hpp:takes_reward_path",
+   "src/core/content_pack.cpp:league_tours_required",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
+   "src/core/reward_queue.cpp:opponent_reward_weight",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
@@ -14926,15 +15068,20 @@
   "label": "loc_81C253",
   "native": [
    "src/core/announcements.hpp:takes_reward_path",
+   "src/core/content_pack.cpp:league_tours_required",
    "src/core/race_state_io.cpp:league_opponent_tallies",
    "src/core/race_state_io.cpp:read_tallies",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
+   "src/core/race_update.cpp:increment_opponent_tally_byte",
+   "src/core/reward_queue.cpp:opponent_reward_weight",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -14947,6 +15094,8 @@
    "src/core/race_state_io.cpp:league_opponent_tallies",
    "src/core/race_state_io.cpp:read_tallies",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
+   "src/core/race_update.cpp:increment_opponent_tally_byte",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
@@ -14965,6 +15114,8 @@
    "src/core/race_state_io.cpp:league_opponent_tallies",
    "src/core/race_state_io.cpp:read_tallies",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
+   "src/core/race_update.cpp:increment_opponent_tally_byte",
    "src/core/reward_queue.cpp:opponent_reward_weight",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick",
@@ -14984,6 +15135,8 @@
    "src/core/race_state_io.cpp:league_opponent_tallies",
    "src/core/race_state_io.cpp:read_tallies",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
+   "src/core/race_update.cpp:increment_opponent_tally_byte",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
@@ -15003,6 +15156,8 @@
    "src/core/race_state_io.cpp:league_opponent_tallies",
    "src/core/race_state_io.cpp:read_tallies",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
+   "src/core/race_update.cpp:increment_opponent_tally_byte",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
@@ -15021,6 +15176,8 @@
    "src/core/race_state_io.cpp:league_opponent_tallies",
    "src/core/race_state_io.cpp:read_tallies",
    "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/race_update.cpp:count_opponent_voice",
+   "src/core/race_update.cpp:increment_opponent_tally_byte",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
@@ -15123,7 +15280,8 @@
   "label": "unk_81C50A",
   "source_records": [
    "docs/research/R-0011-motion.md",
-   "docs/research/R-0066-stunt-event-race.md"
+   "docs/research/R-0066-stunt-event-race.md",
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -15238,13 +15396,30 @@
   ]
  },
  {
+  "address": "$81:C5D1",
+  "class": "observed",
+  "comment": "inside the instruction at $81:C5D0",
+  "label": "mid_81C5D1",
+  "native": [
+   "src/core/content_pack.cpp:league_tours_required",
+   "src/core/race_update.cpp:count_opponent_voice",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooContent::opponent_voice_classes"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
   "address": "$81:C5D5",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C5D5",
   "native": [
    "src/core/announcements.hpp:ends_opponent_hints",
+   "src/core/content_pack.cpp:league_tours_required",
+   "src/core/race_update.cpp:count_opponent_voice",
    "src/core/race_update.cpp:finish_update",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooContent::opponent_voice_classes",
    "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints"
   ],
   "source_records": [
@@ -19483,7 +19658,7 @@
   "label": "loc_82AB6A",
   "native": [
    "src/core/race_demo_controls.cpp:demo_rider",
-   "src/core/race_update.cpp:release_absent_opponent",
+   "src/core/race_update.cpp:read_second_rider_controls",
    "src/core/race_update.cpp:release_settled_opponent",
    "src/core/race_update.cpp:run_pause_menu",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
@@ -19502,7 +19677,7 @@
    "src/core/opponent_ai.cpp:update_opponent_controller",
    "src/core/race_demo_controls.cpp:demo_rider",
    "src/core/race_demo_controls.cpp:exit_demo",
-   "src/core/race_update.cpp:release_absent_opponent",
+   "src/core/race_update.cpp:read_second_rider_controls",
    "src/core/race_update.cpp:release_settled_opponent",
    "src/core/race_update.cpp:run_pause_menu",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
@@ -19516,12 +19691,29 @@
   ]
  },
  {
+  "address": "$82:AB91",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AB91",
+  "native": [
+   "src/core/race_demo_controls.cpp:demo_rider",
+   "src/core/race_update.cpp:read_second_pad",
+   "src/core/race_update.cpp:read_second_rider_controls",
+   "src/core/race_update.cpp:release_settled_opponent",
+   "src/core/race_update.cpp:run_pause_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
   "address": "$82:AC5A",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_82AC5A",
   "native": [
-   "src/core/race_update.cpp:read_player_buttons"
+   "src/core/race_update.cpp:read_player_buttons",
+   "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
@@ -19534,7 +19726,8 @@
   "comment": "instruction start",
   "label": "loc_82AC5C",
   "native": [
-   "src/core/race_update.cpp:read_player_buttons"
+   "src/core/race_update.cpp:read_player_buttons",
+   "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
    "tasks/HUNTER-EFFECTS.md"
@@ -20431,9 +20624,8 @@
   "label": "loc_82D98F",
   "native": [
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
-   "src/core/race_setup.cpp:classic_local_race_scenario",
+   "src/core/race_setup.cpp:neon_lighting_on",
    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
-   "src/core/race_setup.cpp:stunt_scenario",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
@@ -20456,6 +20648,21 @@
   ]
  },
  {
+  "address": "$82:DA79",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DA79",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:LeagueRaceStatistics::wipeouts",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
   "address": "$82:DB1D",
   "class": "observed",
   "comment": "instruction start",
@@ -20467,6 +20674,21 @@
   ],
   "source_records": [
    "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$82:DB21",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DB21",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:LeagueRaceStatistics::wipeouts",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -20536,7 +20758,7 @@
   "native": [
    "src/core/content_pack.cpp:tracks_required",
    "src/core/presentation.cpp:load_other_track_presentation_content",
-   "src/core/race_setup.cpp:stunt_scenario"
+   "src/core/race_setup.cpp:neon_lighting_on"
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md",
@@ -20551,8 +20773,7 @@
   "native": [
    "src/core/content_pack.cpp:tracks_required",
    "src/core/presentation.cpp:load_other_track_presentation_content",
-   "src/core/race_setup.cpp:classic_local_race_scenario",
-   "src/core/race_setup.cpp:stunt_scenario"
+   "src/core/race_setup.cpp:neon_lighting_on"
   ],
   "source_records": [
    "docs/research/R-0093-data-coverage.md",
@@ -21330,7 +21551,7 @@
   "comment": "routine start",
   "label": "sub_8389BA",
   "native": [
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:restore_menus_after_race"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -22080,6 +22301,31 @@
   ]
  },
  {
+  "address": "$83:9757",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839757",
+  "native": [
+   "src/core/league_menu.cpp:record_league_result"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$83:97A4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8397A4",
+  "native": [
+   "src/core/league_menu.cpp:record_league_result",
+   "src/core/zoom_zoo_movement.hpp:LeagueRaceStatistics::wipeouts"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
   "address": "$83:97BD",
   "class": "observed",
   "comment": "routine start",
@@ -22144,6 +22390,18 @@
   "label": "loc_8398B8",
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
+  ]
+ },
+ {
+  "address": "$83:98EE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8398EE",
+  "native": [
+   "src/core/league_menu.cpp:choose_league_slot"
+  ],
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -25144,7 +25402,7 @@
   "comment": "instruction start",
   "label": "loc_83E084",
   "native": [
-   "src/core/race_update.cpp:release_absent_opponent"
+   "src/core/race_update.cpp:read_second_rider_controls"
   ],
   "source_records": [
    "docs/research/R-0066-stunt-event-race.md"
