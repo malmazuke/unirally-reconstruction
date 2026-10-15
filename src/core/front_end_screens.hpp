@@ -343,6 +343,9 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
 void start_race_return(FrontEndState& state, const FrontEndContent& content,
                        const RaceTimes& times);
 void race_return_frame(FrontEndState& state, const FrontEndContent& content);
+// Its menus' part, without the title's sound load: the screen, the objects, the restore, the
+// badge tiles and palettes, then the result (the podium's way back, R-0098).
+void restore_menus_after_race(FrontEndState& state, const FrontEndContent& content);
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // $80:88DD-8914 after a restart from the race's pause menu: the logo up, a blank text faded in,
 // then NOW PLAYING (R-0060).

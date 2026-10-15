@@ -550,6 +550,10 @@ void race_return_frame(FrontEndState& state, const FrontEndContent& content) {
     constexpr std::uint32_t sound_upload_frame = 4;
     if (state.script_frame == sound_upload_frame)
         state.sound_cues.push_back(audio_load(AudioSessionLoad::title_return));
+    restore_menus_after_race(state, content);
+}
+
+void restore_menus_after_race(FrontEndState& state, const FrontEndContent& content) {
     switch (state.script_frame) {
     case menu_screen_frame: load_main_menu_screen(state, content); return;
     case objects_frame: lay_out_menu_objects(state); return;

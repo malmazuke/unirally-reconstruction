@@ -183,11 +183,9 @@ void league_podium_exit_frame(FrontEndState& state, const FrontEndContent& conte
         // Left on podium phase 2 or 3, the arrow's spin, which `$83:987D` puts back with the
         // menus, comes back a frame after the rest (R-0095).
         const auto spin = state.arrow.spin;
-        const auto cues = state.sound_cues.size();
         state.script_frame -= 2;
-        race_return_frame(state, content);
+        restore_menus_after_race(state, content);
         state.script_frame = frame;
-        if (frame == sound_upload_frame + 2) state.sound_cues.resize(cues); // loaded above
         if (podium_arrow_late(state)) {
             if (frame == podium_restore_frame) state.arrow.spin = spin;
             if (frame == podium_restore_frame + 1) state.arrow.spin = state.saved.arrow_spin;

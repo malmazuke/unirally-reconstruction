@@ -208,7 +208,8 @@ struct ClassicRaceScenario {
     // Two human riders (2P, VS, a league pair): the opponent takes no computer tier. A computer
     // opponent may still be a rider character: the one-view idle demo's is character 1 (R-0087).
     bool two_humans{};
-    // `$77:0750` bit 2: a VS race. With two views NEON's scenery is that word (R-0098).
+    // `$77:0750` bit 2: a VS race (the state's `versus`, set from it). With two views NEON's
+    // scenery is that word (R-0098).
     bool versus{};
     // `$77:10B1` once this race's setup has counted it ($83:CA08-CA18, modulo 6): every race's
     // sound load counts, an aborted one's too, and a cold start's first race has 1. Its even half

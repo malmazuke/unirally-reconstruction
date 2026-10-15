@@ -392,7 +392,6 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     race.content = unirally::classic_race_content(pack, scenario.track);
     race.state = unirally::classic_race_start(*race.content, scenario);
     race.state.league_statistics.enabled = front_end.mode == unirally::FrontEndMode::league;
-    race.state.versus = front_end.mode == unirally::FrontEndMode::versus;
     if (local) unirally::initialize_split_cameras(race.state);
     race.presentation = unirally::classic_race_presentation_content(pack, scenario);
     race.presentation->rider_names = front_end.records.rider_names;
