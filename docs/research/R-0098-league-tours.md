@@ -236,11 +236,29 @@ At `29c5786` (`final-29c5786/`; the per-capture table is in the task record's ch
   word.
 - Two-view NEON's scenery in 2P (8) and in VS (12), and the HUNTER stunt event against the
   computer outside a league, are read from the listing only; only the league's 8 is captured.
-- **A computer race's contact on HUNTER's track 41** (`odd-tours` 30,250 and `five` 121,431, both
-  race frame 2,809 against ANTI-UNI): ANTI-UNI's vertical velocity, written by `$81:8F7C` after
-  its contact routine, is -154 in the original and -242 in native for one update. In `odd-tours` nothing follows from it; in `five` the race then differs (from 127,125
-  the league's fields too, the race's result being another). The two-human races on the same
-  track are equal; a follow-up for the computer opponent's contact (RACE-LISTING-BRANCHES).
+- **A landing's multiply hit by the BG1 scroll HDMA** (R-0095's DOWNER class, in one view).
+  On track 41 against ANTI-UNI, ANTI-UNI's vertical velocity (`$81:8F7C`) after a landing is
+  -154 in the original and -242 in native at race frame 2,809 (`odd-tours` 30,250, `five`
+  121,431), and 238 against 212 at 2,867 (`five` 121,489). Every input to the contact is equal
+  (native's rows at 2,808 and 2,866 equal the original's) and native takes the original's path:
+  landing, coarse angle -20, matrix 2 (`$0962`), angle 0 pushed to 5 because ANTI-UNI drives
+  against its velocity (`$0F21` = 2), horizontal velocity -16 in both. The difference is the
+  first of the four products (`$81:9585` → `$81:B67C`): the helper writes `$211B` low then
+  high, and the race's channel 4 HDMA writes BG1VOFS (`$210E`, mode 2, a line each from
+  `$7E:24F8`; its high byte is 3 there and 4 at 2,867) at the scanline's HDMA point (dot
+  1,104) between the two writes (the stores start at dots 1,058 and 1,100 of scanline 42, and
+  1,070 and 1,112 of scanline 68). BG1's scroll registers share the mode-7 latch, so M7A
+  becomes `$0103` instead of `$01C4` (the product's middle word 259 × -58 → -59, not 452 × -58
+  → -103) and `$0004` instead of `$0086`. The other three products miss the HDMA point.
+  Ruled out: `$132B` and `$77:0750` (both 0, the matrix-0 branch at `$81:94A8-94BE` not taken),
+  the tile pair (2), the leading support (0). In `odd-tours`, and in `five` after 2,809, the
+  next update's contact clears the difference (vertical velocity 0 in both); `five`'s lasting
+  divergence starts at 2,867 (5,513 rows differ to the race's end; from 127,125 the league's
+  fields, the race's result being another). The two-human races on the track are equal (no
+  multiply of theirs is hit). Predicting it needs the CPU's position in the scanline at the
+  multiply, that is the race update's cycle count (a follow-up with PODIUM-RETURN-TIMING's; no
+  native change). Evidence: `local/evidence/league-tours/contact/`
+  (`trace_hv.py`, `hv-odd-30250.txt`, `hv-five-121489.txt`, `dump_window.py`).
 
 ## Reproduction
 
