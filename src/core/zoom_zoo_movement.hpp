@@ -374,10 +374,13 @@ struct StuntEvent {
     StuntTallies opponent_tallies{};
     bool operator==(const StuntEvent&) const = default;
 };
-// League bonuses read twenty wrapping byte counts and two wipeout words; R-0073.
+// League bonuses read twenty wrapping byte counts and two stunt words; R-0073.
 struct LeagueRaceStatistics {
     bool enabled{};
     std::array<std::array<std::uint8_t, 20>, 2> tricks{};
+    // `$77:07BD` and `$77:0827`, the words the least-wipeout bonus compares ($83:97A4). Only the
+    // race's setup writes them (clears, `$82:DA79`, `$82:DB21`), so they stay 0 and every valid
+    // human ties (R-0098 review: the original never counts the wipeouts).
     std::array<std::uint16_t, 2> wipeouts{};
     std::array<std::uint16_t, 20> opponent_points{};
     bool operator==(const LeagueRaceStatistics&) const = default;

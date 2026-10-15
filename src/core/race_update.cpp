@@ -829,7 +829,7 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     observe_track_markers(rider.progress, samples);
 }
 
-// Rider 1's queue took an event this update: a league counts its tricks and wipeouts (R-0073),
+// Rider 1's queue took an event this update: a league counts its tricks (R-0073),
 // and in a stunt event a trick of a reward class goes into rider 1's tallies ($81:C238-C2C3,
 // R-0095), with the points its reward paid; only a second human shows one.
 void count_opponent_trick(ZoomZooState& next, std::uint16_t previous_reward_total,
@@ -837,8 +837,6 @@ void count_opponent_trick(ZoomZooState& next, std::uint16_t previous_reward_tota
     const auto& rewards = next.movement.rewards;
     const auto event = rewards.entries[rewards.read_cursor];
     const auto paid = static_cast<std::uint16_t>(rewards.feature_total - previous_reward_total);
-    if (next.league_statistics.enabled && event == announcement::wipeout)
-        ++next.league_statistics.wipeouts[1];
     if (event == 0 || event >= announcement::wrong_way || content.rotation_class[event - 1] == 255)
         return;
     const auto trick_class = content.rotation_class[event - 1];

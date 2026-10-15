@@ -362,8 +362,6 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
     }
     queue.read_cursor = slot;
     const auto event = queue.entries[slot];
-    if (state.league_statistics.enabled && event == announcement::wipeout)
-        ++state.league_statistics.wipeouts[0];
     if (hunter && event) {
         state.hunter.shown = 1;
         state.hunter.caption = canonical_caption(captions, event);

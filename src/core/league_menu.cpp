@@ -191,6 +191,8 @@ void record_league_result(FrontEndState& state) {
                     holder = static_cast<std::uint16_t>(rider);
                 }
         } else {
+            // $83:9757-9782 (one run): the sum beats the bonus strictly; $83:97A4-97BC (stunt
+            // event): `$77:07BD`/`$0827`, always 0, takes it on a tie, so the later human holds it.
             const auto value =
                 times.stunt_event ? times.league_wipeouts[index] : times.league_tricks[index];
             if (times.stunt_event ? value <= best : value > best) {
