@@ -295,17 +295,6 @@ bool run_countdown(const ZoomZooState& state, ZoomZooState& next, const Countdow
     return true;
 }
 
-// $82:AB6A-AB91 and $83:E084-E089: with the AI flag clear, port 2 is read as a second pad, which
-// nothing holds, and the AI is skipped: the opponent presses nothing and its selector, countdown
-// and suppression words keep their values. Returns true, as an AI switched off by a marker.
-bool release_absent_opponent(ZoomZooState& next) {
-    auto& input = next.reflection[1];
-    input.brake_input = input.jump_input = input.rotate_negative_input =
-        input.rotate_positive_input = 0;
-    next.opponent_horizontal = direction::neutral;
-    return true;
-}
-
 // This update's trick buttons: the player's A and X, and the opponent's A and X, which are
 // its trick selector's bits 1 and 2 (the selector's bit 0 chose the rotation).
 struct TrickButtons {
@@ -1014,13 +1003,16 @@ bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& s
         // $83:CD50-CD61; ATTRACT-DEMO: the one-view demo runs normal opponent AI
         // after its demo controls. The split demo suppresses that second pass.
         if (!next.split_screen) ai_off = update_opponent_controller(next);
-    } else if (next.split_screen) {
+    } else if (next.split_screen || scenario.stunt_event) {
+        // $82:AB6A-AB91 and $83:E084-E089: a stunt event's AI flag is clear, so port 2 is read as
+        // a second pad there too and the AI is skipped (its selector, countdown and suppression
+        // words keep their values). In a league's computer pair another human may hold it
+        // (R-0098: odd-tours' NEON, the opponent's direction).
         read_second_pad(next, opponent_buttons, demo_buttons,
                         next.hunter.effect[hunter_effect::control_reversed] != 0);
-    } else if (scenario.stunt_event)
-        release_absent_opponent(next);
-    else
+    } else {
         ai_off = update_opponent_controller(next);
+    }
     return ai_off;
 }
 
