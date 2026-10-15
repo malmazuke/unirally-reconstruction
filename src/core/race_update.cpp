@@ -989,7 +989,7 @@ void read_second_pad(ZoomZooState& next, const ControllerButtons& opponent_butto
 bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& scenario,
                                 const ControllerButtons& request,
                                 const ControllerButtons& opponent_buttons,
-                                DemoTrickButtons& demo_buttons) {
+                                DemoTrickButtons& demo_buttons, bool controls_reversed) {
     bool ai_off = next.split_screen || scenario.stunt_event;
     if (next.demo_ai) {
         const auto pressed = [](const ControllerButtons& pad) {
@@ -1008,8 +1008,7 @@ bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& s
         // a second pad there too and the AI is skipped (its selector, countdown and suppression
         // words keep their values). In a league's computer pair another human may hold it
         // (R-0098: odd-tours' NEON, the opponent's direction).
-        read_second_pad(next, opponent_buttons, demo_buttons,
-                        next.hunter.effect[hunter_effect::control_reversed] != 0);
+        read_second_pad(next, opponent_buttons, demo_buttons, controls_reversed);
     } else {
         ai_off = update_opponent_controller(next);
     }
@@ -1065,8 +1064,9 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     }
     advance_clocks(next, buttons);
     const auto player_buttons = release_settled_player(state, next, buttons);
-    bool pressed_a = read_player_buttons(next, player_buttons,
-                                         state.hunter.effect[hunter_effect::control_reversed] != 0);
+    // HUNTER's control reversal, as the update found it, for both pads ($82:AC5A-ACA7).
+    const bool controls_reversed = state.hunter.effect[hunter_effect::control_reversed] != 0;
+    bool pressed_a = read_player_buttons(next, player_buttons, controls_reversed);
     const auto opponent_buttons =
         release_settled_opponent(next, with_physical_dpad(gate_controller(state, second_port)));
     if (!state.demo_ai && run_pause_menu(state, next, player_buttons, opponent_buttons, content)) {
@@ -1078,8 +1078,8 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         && !(state.split_screen && opponent_buttons.start))
         next.pause.released = 0;
     DemoTrickButtons demo_buttons{};
-    const bool ai_off =
-        read_second_rider_controls(next, scenario, request, opponent_buttons, demo_buttons);
+    const bool ai_off = read_second_rider_controls(next, scenario, request, opponent_buttons,
+                                                   demo_buttons, controls_reversed);
     // The demo's exit leaves the player pad 1's A and X (R-0096).
     const bool demo_inputs = next.demo_ai && !next.demo.exit_requested;
     if (demo_inputs) pressed_a = demo_buttons.a[0];
