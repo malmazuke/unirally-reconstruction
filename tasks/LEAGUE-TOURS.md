@@ -127,3 +127,56 @@ scenery 12 from the listing only.
   podium's way back from the sound processor's state; removes the spin and palette-cycle drift),
   PODIUM-AUDIO (the podium's music session), and SPLIT-HUNTER-PICTURES (already queued) with
   `tours-a-w2/w6` and `odd-tours-w0` as captures.
+
+## Review round 1 (returned on `876aa89`) - the fixes
+
+Review: https://github.com/malmazuke/unirally-reconstruction/pull/81#pullrequestreview-5530448051
+(main `local/evidence/league-tours-review/review-876aa89.md`). The worker's fixes are `b8a1131`
+to `b6c00e1`; its final checks at `b6c00e1` are in main `local/evidence/league-tours/final-r1/`.
+That run took 12 hours, most of it the reviewer's `five` capture, about 160,000 frames.
+`checks.sh` now runs the review's `five` (two windows) and `backs` captures too.
+
+1. **Blocker, the least-wipeout bonus:** fixed in `b8a1131`. `$83:97A4` compares `$77:07BD` and
+   `$0827`. Only the race's setup writes them, so they stay 0, and native now keeps them 0
+   (R-0098 finding 16). In `five` window 0, all 15 league races are equal. Its league fields
+   differ on only one sampled frame each for played points and the pair cursor, the
+   pair-timing class below. The bonus holder is equal.
+2. **Odd leagues' pairs a frame apart:** recorded, not fixed. The original's standings after
+   each pair but the last start a frame later, and native counts some later pairs a frame early.
+   The listing shows no branch that places either, so they are taken to be the frame's work
+   running past the frame, like R-0095's table-print overrun. R-0098's Not covered now says this
+   explains most of the odd leagues' differing menu pictures, not the podium. It suggests the
+   follow-up PODIUM-RETURN-TIMING, since both need the frame's cycle count.
+3. **`$77:0859` and the voices past their class table:** fixed in `f409ce5`. Pack v40 adds
+   `physics.reward.opponent-voice-classes`, and native increments the same bytes the original
+   does (R-0098 finding 17).
+4. **R-0098 corrections:** made in `14c8e8f`. Six races load a frame off: four of the
+   author's and two of the reviewer's. 2P's NEON scenery 8 is from the listing only. The
+   organic-three offset is two frames.
+- **Advisories, all fixed:**
+  - the league's back paths slide by `$00AC` (`e333865`, finding 18): `backs` has 3,797 of
+    3,800 pictures equal, against main's 3,800 differing frames;
+  - the readability items (`c472276`), and HUNTER's reversal read once for both pads (`b2dd3b4`);
+  - found on the way, a stunt event reads port 2 as the second pad (`ce253a3`, finding 19).
+- **A new limit found by the fixed checks.** In `five` window 1, ANTI-UNI's computer race on
+  track 41 diverges.
+  - A focused worker traced it with an instruction trace and scanline timing (main
+    `local/evidence/league-tours/contact/`). HDMA channel 4's BG1VOFS write lands between the
+    two `$211B` stores of the landing matrix's first multiply (`$81:B67C`). BG1's scroll and
+    mode 7 share the write latch, so the original multiplies with a corrupted M7A.
+  - In `odd-tours` 30,250 this gives -154 against native's -242 for one update, which heals.
+    In `five` it gives 121,489 (scanline 68): 238 against 212. That race then differs, and
+    from 127,125 so do the league's fields.
+  - It is the same hardware-timing class as R-0095's DOWNER mode-7 latch race, so it is
+    recorded in R-0098's Not covered. No native change was made (`0ec076d`). Predicting it
+    needs the race update's cycle count.
+
+**Checks at `b6c00e1`:**
+- app-debug, lab-debug and lab-release build; ctest passes 41 of 41 on both debug presets.
+- clang-tidy and clang-format report 0 warnings, and `native-symbols --check` passes.
+- R-0073's league frozen gate passes.
+- The front-end sweep has 149 of 179 equal to main, the differing ones all `league/`.
+- Every league race in `tours-a`, `tours-b`, `odd-tours` and `five` is equal on every update.
+  The computer races are equal except `odd-tours` 30,250 (one update) and `five` window 1
+  (the latch race).
+- `tour-cues` differs on 4 of 19,339 lines, as before.
