@@ -216,6 +216,10 @@ struct LeagueSetup {
     bool after_podium{}; // $80:BEC6-BEE2: a tour choice goes straight to NOW PLAYING
     bool awards_press_seen{}, awards_left{}; // `$80:C206`'s press on two frames running
     bool more_pairs{}; // `$80:AFC3-AFE7`: another pair races before the awards
+    // `$00AC` = 2 at the standings (`$80:A66F-A67A`): back from NOW PLAYING (`$80:BF05`), the
+    // standings slide back in; from anywhere else `$00AC` is 1 and they slide forward (R-0098).
+    bool table_slides_back{};
+    bool slots_slide_back{}; // `$00AC` != 1 at the slots (`$80:EF7B`): back from PICK TOUR
 };
 
 // Where PLAYER SCORES (`$80:DACF`) and GROUP TABLES (`$80:DDFC`) are (R-0097).

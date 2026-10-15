@@ -332,7 +332,7 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
     switch (now.choice) {
     case NowPlayingChoice::back:
         if (state.mode == FrontEndMode::league)
-            enter_league_table(state, content);
+            enter_league_table(state, content, true); // $80:BF05-BF09: `$00AC` = 2
         else if (returns_to_continuation(state, FrontEndScreen::now_playing))
             return_to_local_continue(state, content); // $80:AED3-AEDA
         else {

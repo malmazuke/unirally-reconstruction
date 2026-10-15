@@ -457,14 +457,15 @@ void choose_league_slot(FrontEndState& state, const FrontEndContent& content) {
         enter_league_table(state, content);
         return;
     }
-    state.rider_menu.rider = 0;
+    // `$017D` keeps its rider: only the pair's choice writes it (`$83:98EE`; R-0098, `backs`).
     enter_tour_menu(state);
 }
 
-void enter_league_table(FrontEndState& state, const FrontEndContent& content) {
+void enter_league_table(FrontEndState& state, const FrontEndContent& content, bool slides_back) {
     // `$80:A547` leaves entries 104-111 as they were: the awards' way out and NOW PLAYING's back
     // hide them themselves, PICK TOUR and the slots leave them shown off screen (R-0098).
     print_table(state, content);
+    state.league.table_slides_back = slides_back;
     state.screen = FrontEndScreen::league_table_entry;
     state.latches = {};
     state.league.previous_buttons = 0;
@@ -473,7 +474,7 @@ void enter_league_table(FrontEndState& state, const FrontEndContent& content) {
 void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
         copy_oam(state);
-        start_slide(state, content, false);
+        start_slide(state, content, state.league.table_slides_back);
         return;
     }
     if (!slide_frame(state, content)) return;
@@ -490,10 +491,12 @@ void league_table_frame(FrontEndState& state, const FrontEndContent& content, Fr
     state.league.previous_buttons = buttons;
     if (!buttons || !previous) return;
     if (buttons & back_buttons) {
+        // $80:BE5F-BE73: `$00AC` = 1, so the slots slide forward (`$80:EF7B`) and PICK TOUR, from
+        // `$80:E550` without `$80:BE16`'s loads, back (`$80:E570`; R-0098).
         if (state.records.league_pair_cursor[state.league.slot])
             enter_league_slots(state, content);
         else
-            enter_tour_menu(state);
+            return_to_tour_menu(state, true);
         return;
     }
     if (!(buttons & choose_buttons)) return;

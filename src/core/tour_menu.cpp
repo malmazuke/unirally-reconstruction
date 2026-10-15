@@ -369,7 +369,7 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
             enter_tour_menu(state);
             menu.slides_back = true;
         } else if (back) {
-            enter_league_slots(state, content); // $80:BE34
+            enter_league_slots(state, content, true); // $80:BE34
         } else {
             state.records.league_tracks[state.league.slot] =
                 static_cast<std::uint8_t>(menu.tour * tracks_per_tour);

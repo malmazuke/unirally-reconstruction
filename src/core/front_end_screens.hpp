@@ -271,7 +271,8 @@ void count_league_pair(FrontEndState&);
 void finish_league_pair(FrontEndState&, const FrontEndContent&);
 void league_awards_frame(FrontEndState&, const FrontEndContent&, FrontEndPads);
 void choose_league_slot(FrontEndState& state, const FrontEndContent& content);
-void enter_league_table(FrontEndState& state, const FrontEndContent& content);
+void enter_league_table(FrontEndState& state, const FrontEndContent& content,
+                        bool slides_back = false);
 void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_table_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void choose_league_pair(FrontEndState& state);
@@ -281,7 +282,10 @@ void league_podium_frame(FrontEndState& state, const FrontEndContent& content, F
 void league_podium_exit_frame(FrontEndState& state, const FrontEndContent& content);
 void league_continue_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
-void enter_league_slots(FrontEndState& state, const FrontEndContent& content);
+// `slides_back`: `$00AC` is not 1 (`$80:EF7B`): PICK TOUR's Y stores `$80:B74A`'s pad byte, which
+// is never 1 (`$80:BE34`, `$80:BDDB`; R-0098).
+void enter_league_slots(FrontEndState& state, const FrontEndContent& content,
+                        bool slides_back = false);
 void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
