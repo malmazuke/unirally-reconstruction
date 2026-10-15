@@ -38,3 +38,92 @@ first CRAWLER tour only" among the whole features native lacks.
 
 - The league's first tour stays as accepted (R-0073's frozen gate unchanged).
 - Presentation residuals R-0073 and R-0095 record stay with them unless this work fixes them.
+
+## Checkpoint - 15 October 2026 (implementation worker, Claude Opus 5.5)
+
+Record: [R-0098](../docs/research/R-0098-league-tours.md). Evidence: main
+`local/evidence/league-tours/` (driven captures `tours-a`, `tours-b`, `odd-tours` with their
+`*-drive.json` and windowed probes `probe-*-wN`; `picks-l0/1/2`, `podium-back`, `t-crawler`;
+the sound schedule `cues/tour-cues*`; `checks.sh`, `final_checks.sh`, the baseline `base-ceb50cf/`;
+the final run `final-29c5786/` and its `.out`).
+
+**Native before** (main `ceb50cf`): a second tour started from the slots played like the first,
+but after a podium PICK TOUR's cursor started on the last tour (`$00CE`/`$00D0` not stepped), so
+the same presses chose another tour; HUNTER's tagged races with two humans diverged (rider 1's
+pad not reversed); NEON with two views ran NEON's lighting and no tags; a two-human stunt
+qualified on medal 0; a league's computer opponent on HUNTER was refused ("the one-player menus
+cannot choose this race's pairing"); the awards printed in place, the continuation stepped the
+decorations, Y after a podium went to the slots; event totals, the pair's count and the stunt
+totals were written a few frames early; the lap result kept no second human's personal best.
+
+**Native now**: every R-0098 finding 2-15 (commits below). Measured at `29c5786` (`final-29c5786/`):
+
+| Capture | League races: rows equal | League fields (every 25 frames) | Pictures equal (native; main) |
+|---|---|---|---|
+| `tours-a-w0` SHUFFLER | 19,608 of 19,608 | 1,211 equal | 3,096 of 3,206; main 2,896 |
+| `tours-a-w1` RUNNER | 15,772 of 15,772 | 1,088 equal | 2,908 of 3,799 |
+| `tours-a-w2` HUNTER | 18,372 of 18,372 | 1,124 equal | 2,235 of 3,889; main 1 (races 0 of 15,595: it plays another tour) |
+| `tours-a-w3` JUMPER | 22,546 of 22,546 | 1,360 equal | 2,891 of 4,480 |
+| `tours-a-w4` WALKER | 18,557 of 18,557 | 1,198 equal | 2,488 of 4,075 |
+| `tours-a-w5` SPRINTER | 21,818 of 21,818 | 1,330 equal | 2,811 of 4,404 |
+| `tours-a-w6` HUNTER | 18,372 of 18,372 | 1,124 equal | 1,706 of 3,890 |
+| `tours-a-w7` SHUFFLER | 19,633 of 19,633 | 1,244 equal | 2,486 of 4,189 |
+| `tours-a-w8` JUMPER, EXIT | 22,546 of 22,546 | 1,395 equal | 3,385 of 5,511 |
+| `tours-b-w0` HOPPER | 21,383 of 21,383 | 1,323 equal | 4,550 of 4,656; main 4,350 |
+| `tours-b-w1` BOUNDER, EXIT | 20,521 of 20,521 | 1,314 equal | 3,829 of 5,310 |
+| `odd-tours-w0` HUNTER, 3 members | 18,372 of 18,372 (8 races) | 2,043 of 2,044 | 4,912 of 6,459; main refuses the race |
+| `odd-tours-w1` BOUNDER, 3 members | 20,521 of 20,521 (10 races) | 2,424 equal | 4,934 of 7,003 |
+| `t-crawler` CRAWLER, EXIT | 20,668 of 20,668 | 1,287 equal | 3,208 of 3,260 |
+| `picks-l0/1/2` | - | 275 equal each | 1,699 of 1,700 each; main 1,699 (l0) |
+| `podium-back` | 2,776 of 2,776 | 623 equal | 5,490 of 5,500; main 2,949 |
+
+Every league race of every tour (all 44 league tracks, 76 races in the driven captures) is equal
+on every update. Sound schedule `tour-cues`: 4 frames of 19,339 lines differ: the result's way
+out (10603, R-0095's, as main) and the podium's own music (11420, 11501-11502). League frozen gate
+(`league_frozen.py`, pack v39): passed, all six cases, every listed picture 0 px. Front-end sweep
+against main `ceb50cf` (`fe_equivalence.py`, 179 manifests, 1,269,921 frames): 149 equal, 30
+differ, all `league/` manifests, none with another exit; `classify.py` over their 301 original
+frames: 10 change, 7 closer (the awards now slide), 3 further (`organic-three`,
+`-three-clean`, `-three-complete` 15700: 111 to 123 px, the awards' rider icons in a manifest
+already a frame off since R-0095's table-print overrun). Fields that move are this task's: the
+awards' scroll and halves, `$00CE`/`$00D0`, the continuation's decorations, entries 104-111 at the
+standings, the pair count's frame.
+
+**Not covered** (R-0098): the podium's way back a frame late in about a third of podiums (the
+sound upload's end; the arrow's spin and the palette cycle then stay a frame apart until the
+league ends, which is most of the differing pictures in windows 1-8); the podium's own music;
+HUNTER's effects in a two-view picture (SPLIT-HUNTER-PICTURES' domain; captures ready); a few
+10-22 px race pictures where riders pass under the HUD; cycle-timed print overruns (the odd
+league's standings after a first pair, `odd-tours` 27880; the pair count after a human-computer
+result a frame early, `odd-tours` 35575); a race's own loading a frame early in `odd-tours` (NEON
+and the next race; the comparisons pass the original's initialization); VS's two-view NEON
+scenery 12 from the listing only.
+
+## Handoff (worker)
+
+- Branch `task/league-tours`, head `29c5786` plus this record's commit; base claim `3e0b69b`
+  on main `ceb50cf`. Commits: `45a6582` (tour cursor, Y after podium, stunt totals, HUNTER
+  reversal for pad 2, two-view NEON tags, two-human qualifying medal), `7dca7a5` (awards slide
+  and two passes, continuation loop, second human's lap personal best), `e805f80` (league
+  computer opponent, two-view NEON scenery, pair count, standings entry), `b70e3b3` (awards'
+  frames by rows printed), `db0c615` (podium sound cues), `08e0dc9` (maps), `ea7bd90` (totals
+  with the result's rows, count before the awards, R-0098, unit tests), `29c5786` (revert of an
+  OAM copy that made picks-l0 6400 differ).
+- Files: `src/core/league_menu.cpp`, `league_completion.cpp`, `tour_menu.cpp`, `now_playing.cpp`,
+  `race_result.cpp`, `lap_result.cpp`, `stunt_result.cpp`, `race_update.cpp`, `race_setup.cpp`,
+  `presentation.cpp`, `hunter_effects.cpp`, `front_end_runner.cpp`, `front_end.hpp`,
+  `front_end_screens.hpp`, `zoom_zoo_movement.hpp`, `src/app/frontend.hpp`,
+  `tests/native/league_tests.cpp`, `docs/research/R-0098-league-tours.md`, `docs/map/static/*`.
+  No pack change (v39).
+- Checks (`final_checks.sh`, `final-29c5786.out`): app-debug and lab-debug build, ctest 41 of 41
+  each; clang-tidy 0 warnings on the changed `src/core` files (one function over 80 lines found
+  and split); clang-format clean; `coverage native-symbols --check` current, 0 uncited;
+  static map regenerated with the five raw coverage inputs (`regen.sh`). Synthetic suite and the
+  coordinator's gates not run by the worker.
+- Commands: `bash local/evidence/league-tours/checks.sh WORKTREE OUTDIR` (candidate on 18
+  captures, main on six, the sound schedule); `final_checks.sh OUTDIR`; captures per R-0098
+  Reproduction. The heavy evidence is about 13 GB (`probe-*` series).
+- Next: gates and the tier-1 review. Follow-ups worth queueing: PODIUM-RETURN-TIMING (predict the
+  podium's way back from the sound processor's state; removes the spin and palette-cycle drift),
+  PODIUM-AUDIO (the podium's music session), and SPLIT-HUNTER-PICTURES (already queued) with
+  `tours-a-w2/w6` and `odd-tours-w0` as captures.

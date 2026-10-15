@@ -131,15 +131,18 @@ holder `$0684-069B`, `$0742` bit 13), and the whole image outside R-0090's unkep
 
 ## Results
 
-At `08e0dc9` (`final-08e0dc9/`), against the original:
+At `29c5786` (`final-29c5786/`; the per-capture table is in the task record's checkpoint):
 
-| Capture | League races: rows equal | League fields (every 25 frames) | Menu pictures equal (native / main) |
-|---|---|---|---|
-| (filled from the final checks) | | | |
-
-The league races (all 44 tracks, 88 two-human and computer races) are equal on every compared
-update in every capture. The league fields are equal on every compared frame but the frames
-listed under Not covered. The front-end sweep against main `ceb50cf`: see the task record.
+- **League races**: every league race of every capture equal on every update (76 driven races
+  over all 44 league tracks, plus `podium-back`'s two), the second camera and rider 1's hints
+  too.
+- **League fields**: equal on every compared frame (every 25th; per frame around each write
+  checked by hand) but one frame in `odd-tours` (Not covered).
+- **Pictures**: `podium-back` 5,490 of 5,500 (main 2,949), `picks-l*` 1,699 of 1,700 each,
+  `t-crawler` 3,208 of 3,260, the first window of each driven capture 3,096 of 3,206 and 4,550 of
+  4,656 (main 2,896 and 4,350); later windows 44-77 % (the podium's way back, Not covered).
+- **Sound**: `tour-cues` 4 frames of 19,339 cue lines differ (10603 as main; the podium's music).
+- **The first tour**: R-0073's frozen gate passes unchanged (six cases, every listed picture 0 px).
 
 ## Not covered
 
