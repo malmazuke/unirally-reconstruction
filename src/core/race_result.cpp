@@ -550,6 +550,10 @@ void race_return_frame(FrontEndState& state, const FrontEndContent& content) {
     constexpr std::uint32_t sound_upload_frame = 4;
     if (state.script_frame == sound_upload_frame)
         state.sound_cues.push_back(audio_load(AudioSessionLoad::title_return));
+    restore_menus_after_race(state, content);
+}
+
+void restore_menus_after_race(FrontEndState& state, const FrontEndContent& content) {
     switch (state.script_frame) {
     case menu_screen_frame: load_main_menu_screen(state, content); return;
     case objects_frame: lay_out_menu_objects(state); return;
@@ -625,15 +629,18 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
         start_result(state, content);
         return;
     }
+    const bool league = state.mode == FrontEndMode::league;
     if (frame == rows_frame) {
         if (result.times.lap_race)
             print_lap_result(state, content);
         else
             print_result(state, content);
+        if (league && result.times.lap_race) store_league_race_totals(state);
         return;
     }
     if (frame == icons_frame) {
         show_icons(state, content);
+        if (league && !result.times.lap_race) store_league_race_totals(state);
         return;
     }
     copy_oam(state);
@@ -683,6 +690,10 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
             return;
         }
     }
+    // $80:AF54 counts the pair in the frame before the awards' (R-0098: `tours-a` 11465 after
+    // two record placings, 22585 after a stunt event with none).
+    if (frame + 1 == result_scoring_frame(state) && state.mode == FrontEndMode::league)
+        count_league_pair(state);
     if (frame == 1) return;
     if (frame < scoring) return; // `$80:C786`'s overrun: no wait, no OAM copy
     copy_oam(state);
@@ -754,6 +765,19 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
     // A stunt event's qualifying score, by the rider's best medal on the tour ($80:99ED).
     scenario.best_medal = front_end_screens::best_medal(state);
     scenario.hunter_tour = scenario.hunter_tour || hunter_races_running(state);
+    return scenario;
+}
+
+ClassicRaceScenario local_race_scenario(const FrontEndState& state) {
+    const auto rider = state.rider_menu.rider, second = state.second_rider;
+    auto scenario =
+        classic_local_race_scenario(ClassicRaceTrack{state.tour_menu.track}, {rider, second},
+                                    ((state.records.tutorial_bits >> rider) & 1U) == 0,
+                                    ((state.records.tutorial_bits >> second) & 1U) == 0);
+    // $80:99E8-99F1: the stunt event's qualifying score by the first rider's medal on the tour
+    // (`$83:9EEB`), in every mode (R-0098: HUNTER's medals are 2 in a cold image).
+    scenario.best_medal = front_end_screens::best_medal(state);
+    scenario.versus = state.mode == FrontEndMode::versus;
     return scenario;
 }
 

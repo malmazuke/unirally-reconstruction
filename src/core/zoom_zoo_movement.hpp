@@ -3,6 +3,8 @@
 #include "movement.hpp"
 #include "rider_look.hpp"
 
+#include <vector>
+
 namespace unirally {
 struct ReflectionTransition {
     std::uint16_t step{}, end{}, pose_base{}, pose_override{}, completed{}, hold{};
@@ -206,6 +208,9 @@ struct ClassicRaceScenario {
     // Two human riders (2P, VS, a league pair): the opponent takes no computer tier. A computer
     // opponent may still be a rider character: the one-view idle demo's is character 1 (R-0087).
     bool two_humans{};
+    // `$77:0750` bit 2: a VS race (the state's `versus`, set from it). With two views NEON's
+    // scenery is that word (R-0098).
+    bool versus{};
     // `$77:10B1` once this race's setup has counted it ($83:CA08-CA18, modulo 6): every race's
     // sound load counts, an aborted one's too, and a cold start's first race has 1. Its even half
     // picks the finish poses' pair of tables (R-0084).
@@ -256,6 +261,9 @@ ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePair
                                                 bool tutorial_hints = true,
                                                 bool opponent_tutorial_hints = false);
 bool classic_race_has_scenario(ClassicRaceTrack track);
+struct ZoomZooState;
+// `$12D1` in a race: NEON (track 42) with one view; two views leave it clear (R-0098).
+bool neon_lighting_runs(const ZoomZooState& state);
 // $81:A304-A51B: decoded track byte 13 selects one of the fixed playfields of
 // 16,384 64-unit coarse cells. Zero selects 1,024 columns (DRAGSTER) and 0x40
 // selects 256 (ZOOM ZOO); x wraps with `$0D4F`, columns * 64 - 1. The same arm
@@ -369,10 +377,13 @@ struct StuntEvent {
     StuntTallies opponent_tallies{};
     bool operator==(const StuntEvent&) const = default;
 };
-// League bonuses read twenty wrapping byte counts and two wipeout words; R-0073.
+// League bonuses read twenty wrapping byte counts and two stunt words; R-0073.
 struct LeagueRaceStatistics {
     bool enabled{};
     std::array<std::array<std::uint8_t, 20>, 2> tricks{};
+    // `$77:07BD` and `$77:0827`, the words the least-wipeout bonus compares ($83:97A4). Only the
+    // race's setup writes them (clears, `$82:DA79`, `$82:DB21`), so they stay 0 and every valid
+    // human ties (R-0098 review: the original never counts the wipeouts).
     std::array<std::uint16_t, 2> wipeouts{};
     std::array<std::uint16_t, 20> opponent_points{};
     bool operator==(const LeagueRaceStatistics&) const = default;
@@ -438,6 +449,10 @@ struct ZoomZooState {
     // Not serialized: this update's sound queue work in program order (R-0076). Each update
     // starts it empty; the caller hands it to the audio side.
     AudioCueList sound_cues;
+    // Not serialized: the cartridge RAM bytes (offsets in `$77`) this update's opponent voices
+    // incremented past rider 1's tallies, an overrun of the original (count_opponent_voice,
+    // R-0098). Each update starts it empty; the caller adds them to the records.
+    std::vector<std::uint16_t> cartridge_increments;
 };
 struct ZoomZooContent {
     MovementContent movement;
@@ -472,6 +487,10 @@ struct ZoomZooContent {
     // presentation.rider.look-tables.v1: the riders' look (R-0036), whose scripted glance clears
     // a rider's idle latch when it ends; empty for loose content, which runs no look.
     std::span<const std::uint8_t> look_tables;
+    // physics.reward.opponent-voice-classes (`$81:C5D1`), a byte per event 200-255: what rider
+    // 1's queue reads as a computer opponent's voice's class, past its table (R-0098); empty in
+    // packs before profile v40.
+    std::span<const std::uint8_t> opponent_voice_classes;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).

@@ -34,10 +34,12 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace unirally {
 namespace {
@@ -156,7 +158,7 @@ void advance_clocks(ZoomZooState& next, const ControllerButtons& buttons) {
 // $82:AAE2-AAFB: B drives the jump ($0331), Y the brake ($0325), the shoulders the
 // rotations. Returns whether A is pressed. $82:AC5A-ACA7: the HUNTER's control reversal
 // swaps left and right, the two rotations, and Y with A; it swaps the opponent's port-2
-// words too, which the AI then overwrites.
+// words too, which the AI then overwrites and a second human's pad uses (read_second_pad).
 bool read_player_buttons(ZoomZooState& next, const ControllerButtons& buttons, bool reversed) {
     auto& input = next.reflection[0];
     input.brake_input = buttons.y;
@@ -290,17 +292,6 @@ bool run_countdown(const ZoomZooState& state, ZoomZooState& next, const Countdow
         input.brake_input = 1;
         input.jump_input = 0;
     }
-    return true;
-}
-
-// $82:AB6A-AB91 and $83:E084-E089: with the AI flag clear, port 2 is read as a second pad, which
-// nothing holds, and the AI is skipped: the opponent presses nothing and its selector, countdown
-// and suppression words keep their values. Returns true, as an AI switched off by a marker.
-bool release_absent_opponent(ZoomZooState& next) {
-    auto& input = next.reflection[1];
-    input.brake_input = input.jump_input = input.rotate_negative_input =
-        input.rotate_positive_input = 0;
-    next.opponent_horizontal = direction::neutral;
     return true;
 }
 
@@ -802,9 +793,9 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     const auto geometry = track_geometry(sampling.track);
     const auto samples = sample_track(sampling, points, rider.motion.x, rider.motion.y,
                                       geometry.coarse_columns, geometry.whole_height);
-    const auto summary = summarize_vertical_contact(
-        content.movement.flat_contact, points, samples, rider.motion.x, rider.motion.y,
-        classic_race_scenario(state.track).neon_lighting);
+    const auto summary =
+        summarize_vertical_contact(content.movement.flat_contact, points, samples, rider.motion.x,
+                                   rider.motion.y, neon_lighting_runs(state));
     if (content.slope_coefficients.size() != 18 && content.slope_coefficients.size() != 128)
         throw std::invalid_argument("ZOOM ZOO slope coefficients missing");
     const bool surface_mode = next.surface[index].mode != 0;
@@ -829,19 +820,72 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     observe_track_markers(rider.progress, samples);
 }
 
-// Rider 1's queue took an event this update: a league counts its tricks and wipeouts (R-0073),
+// One byte's 8-bit increment in a word: no carry into the high byte.
+void increment_low_byte(std::uint16_t& word) {
+    word = static_cast<std::uint16_t>((word & 0xff00U) | ((word + 1U) & 0x00ffU));
+}
+
+// `$81:C253-C258`: the byte `$77:07D5,X` incremented, in the field native keeps for it. Rider 1's
+// tallies come first, four bytes a trick class pair: its count, a byte never read, its points'
+// word. Then rider 1's score (`$0825`) and wipeout word (`$0827`), then the saved best times
+// (`$0829`), which the race hands to the records.
+void increment_opponent_tally_byte(ZoomZooState& next, std::uint8_t offset,
+                                   const ClassicRaceScenario& scenario) {
+    constexpr unsigned tally_bytes = 80, wipeout_word = 0x52, best_times = 0x54;
+    constexpr std::uint16_t tallies_address = 0x07d5;
+    auto& statistics = next.league_statistics;
+    if (offset < tally_bytes) {
+        const unsigned cell = offset / 4U;
+        const bool points = offset % 4U == 2U; // a class doubled is even: never +1 or +3
+        auto& tally =
+            next.stunt.opponent_tallies[cell / trick_family::columns][cell % trick_family::columns];
+        if (points) {
+            if (statistics.enabled) increment_low_byte(statistics.opponent_points.at(cell));
+            if (scenario.stunt_event) increment_low_byte(tally.points);
+        } else {
+            if (statistics.enabled) ++statistics.tricks[1].at(cell);
+            if (scenario.stunt_event) ++tally.shown;
+        }
+    } else if (offset == wipeout_word) {
+        if (statistics.enabled) increment_low_byte(statistics.wipeouts[1]);
+    } else if (offset >= best_times) {
+        next.cartridge_increments.push_back(static_cast<std::uint16_t>(tallies_address + offset));
+    } else {
+        throw std::invalid_argument("an opponent voice's class reaches rider 1's score");
+    }
+}
+
+// `$81:C241-C258` for a computer opponent's voice, events 200-255, which `$81:C238`'s bit-7
+// test sends down the reward path (announcements.hpp): an overrun of the original. The class is
+// read past the 72-byte table, from the code at `$81:C5D1` (pack v40), and its double, 8-bit,
+// indexes rider 1's tallies at `$77:07D5`, so most voices land in a tally byte, two in `$0827` and
+// the rest past the table, in the low byte of a saved best time: ANTI-UNI's 233 adds 1 to `$0859`
+// (R-0098). Its reward byte is 0 (reward_queue.cpp), so nothing else is counted. A pack before
+// v40 lacks the bytes and counts nothing.
+void count_opponent_voice(ZoomZooState& next, std::uint8_t event,
+                          std::span<const std::uint8_t> voice_classes,
+                          const ClassicRaceScenario& scenario) {
+    const auto index = static_cast<std::size_t>(event - announcement::first_opponent_voice);
+    if (index >= voice_classes.size() || voice_classes[index] == 255) return;
+    increment_opponent_tally_byte(next, static_cast<std::uint8_t>(voice_classes[index] << 1U),
+                                  scenario);
+}
+
+// Rider 1's queue took an event this update: a league counts its tricks (R-0073),
 // and in a stunt event a trick of a reward class goes into rider 1's tallies ($81:C238-C2C3,
 // R-0095), with the points its reward paid; only a second human shows one.
 void count_opponent_trick(ZoomZooState& next, std::uint16_t previous_reward_total,
-                          const MovementContent& content, const ClassicRaceScenario& scenario) {
+                          const ZoomZooContent& content, const ClassicRaceScenario& scenario) {
     const auto& rewards = next.movement.rewards;
     const auto event = rewards.entries[rewards.read_cursor];
     const auto paid = static_cast<std::uint16_t>(rewards.feature_total - previous_reward_total);
-    if (next.league_statistics.enabled && event == announcement::wipeout)
-        ++next.league_statistics.wipeouts[1];
-    if (event == 0 || event >= announcement::wrong_way || content.rotation_class[event - 1] == 255)
+    if (event >= announcement::first_opponent_voice) {
+        count_opponent_voice(next, event, content.opponent_voice_classes, scenario);
         return;
-    const auto trick_class = content.rotation_class[event - 1];
+    }
+    const auto& classes = content.movement.rotation_class;
+    if (event == 0 || event >= announcement::wrong_way || classes[event - 1] == 255) return;
+    const auto trick_class = classes[event - 1];
     if (next.league_statistics.enabled) {
         const auto cell = trick_class / 2U;
         ++next.league_statistics.tricks[1].at(cell);
@@ -903,7 +947,7 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
         race_sound::announcement_voice(next, 1, whole.rewards.entries[whole.rewards.read_cursor],
                                        content.announcement_voices);
     if (previous_reward_cursor != whole.rewards.read_cursor)
-        count_opponent_trick(next, previous_reward_total, content.movement, scenario);
+        count_opponent_trick(next, previous_reward_total, content, scenario);
     if (state.complete_race) update_camera(next, track_geometry(content.movement.sampling.track));
     for (unsigned index = 0; index < rider_passes(scenario, next.split_screen); ++index)
         if (!outcomes[index].contact_skip) update_rider_contact(state, next, index, content);
@@ -921,8 +965,11 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
 // The second rider's controls for one update: the demo's scripted pads, a second human's pad,
 // an absent stunt opponent or the opponent AI. Returns whether the AI is off this update.
 // A two-pad race's second rider: pad 2's direction and buttons.
+// Port 2's words for a second human ($82:AB91-AC4F). On HUNTER's tour control reversal
+// ($82:AC84-ACA4) swaps them as it swaps the player's: left and right (`$031B`), the rotations
+// (`$032B`, `$032F`) and Y with A (`$0327`, `$031F`), so a tag reverses both humans (R-0098).
 void read_second_pad(ZoomZooState& next, const ControllerButtons& opponent_buttons,
-                     DemoTrickButtons& demo_buttons) {
+                     DemoTrickButtons& demo_buttons, bool reversed = false) {
     const auto sample = sample_controller(opponent_buttons);
     next.opponent_horizontal = sample.horizontal;
     auto& input = next.reflection[1];
@@ -932,12 +979,17 @@ void read_second_pad(ZoomZooState& next, const ControllerButtons& opponent_butto
     input.rotate_positive_input = opponent_buttons.right_shoulder;
     demo_buttons.a[1] = opponent_buttons.a;
     demo_buttons.x[1] = opponent_buttons.x;
+    if (!reversed) return;
+    next.opponent_horizontal = static_cast<std::uint8_t>(2U - next.opponent_horizontal);
+    std::swap(input.rotate_negative_input, input.rotate_positive_input);
+    input.brake_input = opponent_buttons.a;
+    demo_buttons.a[1] = opponent_buttons.y;
 }
 
 bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& scenario,
                                 const ControllerButtons& request,
                                 const ControllerButtons& opponent_buttons,
-                                DemoTrickButtons& demo_buttons) {
+                                DemoTrickButtons& demo_buttons, bool controls_reversed) {
     bool ai_off = next.split_screen || scenario.stunt_event;
     if (next.demo_ai) {
         const auto pressed = [](const ControllerButtons& pad) {
@@ -951,12 +1003,15 @@ bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& s
         // $83:CD50-CD61; ATTRACT-DEMO: the one-view demo runs normal opponent AI
         // after its demo controls. The split demo suppresses that second pass.
         if (!next.split_screen) ai_off = update_opponent_controller(next);
-    } else if (next.split_screen) {
-        read_second_pad(next, opponent_buttons, demo_buttons);
-    } else if (scenario.stunt_event)
-        release_absent_opponent(next);
-    else
+    } else if (next.split_screen || scenario.stunt_event) {
+        // $82:AB6A-AB91 and $83:E084-E089: a stunt event's AI flag is clear, so port 2 is read as
+        // a second pad there too and the AI is skipped (its selector, countdown and suppression
+        // words keep their values). In a league's computer pair another human may hold it
+        // (R-0098: odd-tours' NEON, the opponent's direction).
+        read_second_pad(next, opponent_buttons, demo_buttons, controls_reversed);
+    } else {
         ai_off = update_opponent_controller(next);
+    }
     return ai_off;
 }
 
@@ -984,6 +1039,7 @@ std::uint16_t next_wrong_direction_counter(std::uint16_t previous, std::uint16_t
 void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_buttons,
                      const ControllerButtons& second_port, const ZoomZooContent& content) {
     state.sound_cues.clear();
+    state.cartridge_increments.clear();
     const auto request = gate_controller(state, requested_buttons);
     validate_zoom_zoo_content_state(state, content);
     const auto scenario = classic_race_scenario(state.track);
@@ -1008,8 +1064,9 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     }
     advance_clocks(next, buttons);
     const auto player_buttons = release_settled_player(state, next, buttons);
-    bool pressed_a = read_player_buttons(next, player_buttons,
-                                         state.hunter.effect[hunter_effect::control_reversed] != 0);
+    // HUNTER's control reversal, as the update found it, for both pads ($82:AC5A-ACA7).
+    const bool controls_reversed = state.hunter.effect[hunter_effect::control_reversed] != 0;
+    bool pressed_a = read_player_buttons(next, player_buttons, controls_reversed);
     const auto opponent_buttons =
         release_settled_opponent(next, with_physical_dpad(gate_controller(state, second_port)));
     if (!state.demo_ai && run_pause_menu(state, next, player_buttons, opponent_buttons, content)) {
@@ -1021,8 +1078,8 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         && !(state.split_screen && opponent_buttons.start))
         next.pause.released = 0;
     DemoTrickButtons demo_buttons{};
-    const bool ai_off =
-        read_second_rider_controls(next, scenario, request, opponent_buttons, demo_buttons);
+    const bool ai_off = read_second_rider_controls(next, scenario, request, opponent_buttons,
+                                                   demo_buttons, controls_reversed);
     // The demo's exit leaves the player pad 1's A and X (R-0096).
     const bool demo_inputs = next.demo_ai && !next.demo.exit_requested;
     if (demo_inputs) pressed_a = demo_buttons.a[0];

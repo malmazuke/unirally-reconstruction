@@ -5,6 +5,7 @@
 // (SAVE-FILES, R-0090).
 #include "front_end.hpp"
 
+#include <cstdint>
 #include <span>
 
 namespace unirally {
@@ -30,5 +31,10 @@ OnePlayerRecords records_from_cartridge(const CartridgeImage& image);
 // original reads them from power-on. At the boot's check an image with the signature keeps them
 // (as after a soft reset); any other is wiped to a cold start's.
 void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image);
+
+// A race update's increments of cartridge RAM bytes past rider 1's tallies
+// (`ZoomZooState::cartridge_increments`, an overrun of the original; R-0098): each adds 1 to one
+// byte of a saved best time, without a carry.
+void add_race_cartridge_increments(FrontEndState& state, std::span<const std::uint16_t> offsets);
 
 } // namespace unirally

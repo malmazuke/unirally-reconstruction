@@ -67,14 +67,20 @@ ClassicRaceScenario observed_scenario(ClassicRaceTrack track, std::uint32_t init
 // NEON, HUNTER's stunt event: the one track whose one-player race sets `$12D1`.
 constexpr std::uint8_t neon_track = 42;
 
+// $82:D98F-D9AF and $82:DC22-DC3A: track 42 sets `$12D1`, NEON's lighting and scenery 14, with
+// one view only (R-0068); with two (`$77:0750` bit 3) it sets `$131F` instead: no lighting, and
+// the tag effects run (R-0098).
+bool neon_lighting_on(ClassicRaceTrack track, bool two_views) {
+    return track.index == neon_track && !two_views;
+}
+
 ClassicRaceScenario stunt_scenario(ClassicRaceTrack track, std::uint32_t initialization_frame) {
     const bool hunter = track.index >= first_hunter_track && track.index <= last_hunter_track;
     ClassicRaceScenario scenario{
         track,  initialization_frame,  0, stunt_stable_result, stunt_stable_result, false,
         hunter, {0, opponent::bronsen}};
     scenario.stunt_event = true;
-    // $82:D98F-D9A7 and $82:DC22-DC3A: track 42 in one-player play sets `$12D1` (R-0068).
-    scenario.neon_lighting = track.index == neon_track;
+    scenario.neon_lighting = neon_lighting_on(track, false);
     return scenario;
 }
 
@@ -197,6 +203,7 @@ ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePair
     auto scenario = classic_race_scenario(track);
     scenario.pairing = pairing;
     scenario.two_humans = true;
+    scenario.neon_lighting = neon_lighting_on(track, true);
     scenario.tutorial_hints = tutorial_hints;
     scenario.opponent_tutorial_hints = opponent_tutorial_hints;
     return scenario;
@@ -226,6 +233,10 @@ OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
     const auto limit = static_cast<std::uint8_t>(base - tier.catch_up);
     tier.adjustment_limit = (limit & 0x80U) ? base : limit;
     return tier;
+}
+
+bool neon_lighting_runs(const ZoomZooState& state) {
+    return neon_lighting_on(state.track, state.split_screen);
 }
 
 bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track, unsigned rider) {
@@ -278,6 +289,7 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     state.track = scenario.track;
     state.hunter_tour = scenario.hunter_tour;
     state.pairing = scenario.pairing;
+    state.versus = scenario.versus;
     state.race_counter = scenario.race_counter;
     state.opponent_tier = opponent_tier(scenario, content.opponent_catch_up);
     state.native_initialization = state.complete_race = state.sustained = true;
@@ -355,7 +367,8 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     }
     const bool split = state.split_screen;
     const bool demo_ai = state.demo_ai;
-    const bool league = state.league_statistics.enabled, versus = state.versus;
+    const bool league = state.league_statistics.enabled;
+    scenario.versus = state.versus;
     // A race restarted on its own keeps its `$131F`; from the menus a restart is a new setup.
     scenario.hunter_tour = state.hunter_tour;
     // A race restarted on its own keeps `$77:10B1`. From the menus a restart ends the race, and
@@ -364,7 +377,6 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     scenario.race_counter = state.race_counter;
     state = classic_race_start(content, scenario);
     state.league_statistics.enabled = league;
-    state.versus = versus;
     if (split) initialize_split_cameras(state);
     state.demo_ai = demo_ai;
     state.opponent_hints.active = opponent_hints;

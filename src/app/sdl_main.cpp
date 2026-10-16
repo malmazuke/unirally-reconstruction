@@ -713,7 +713,6 @@ int main(int argc, char **argv) try {
           // same track again.
           zoom_state = unirally::classic_race_start(zoom_content, scenario);
           zoom_state.league_statistics.enabled = front_end->league_race();
-          zoom_state.versus = front_end->versus_race();
           if (front_end->local_race())
             scripted_race_frame = front_end->front_end_frame() - 1U +
                                   front_end->race_loading_frames();
@@ -777,6 +776,10 @@ int main(int argc, char **argv) try {
               zoom_content);
         else
           unirally::update_zoom_zoo(zoom_state, buttons, zoom_content);
+        // Only an update fills them; a restart leaves the last update's.
+        if (waiting_front_end && !(at_stable_result && buttons.start))
+          waiting_front_end->add_cartridge_increments(
+              zoom_state.cartridge_increments);
         // Selector 0 is a real trick (the flat path's negative-velocity
         // rotation), so the impulse is the activity signal; the selector alone
         // would silently drop it.

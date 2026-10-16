@@ -215,6 +215,11 @@ struct LeagueSetup {
     std::uint16_t podium_phase{};
     bool after_podium{}; // $80:BEC6-BEE2: a tour choice goes straight to NOW PLAYING
     bool awards_press_seen{}, awards_left{}; // `$80:C206`'s press on two frames running
+    bool more_pairs{}; // `$80:AFC3-AFE7`: another pair races before the awards
+    // `$00AC` = 2 at the standings (`$80:A66F-A67A`): back from NOW PLAYING (`$80:BF05`), the
+    // standings slide back in; from anywhere else `$00AC` is 1 and they slide forward (R-0098).
+    bool table_slides_back{};
+    bool slots_slide_back{}; // `$00AC` != 1 at the slots (`$80:EF7B`): back from PICK TOUR
 };
 
 // Where PLAYER SCORES (`$80:DACF`) and GROUP TABLES (`$80:DDFC`) are (R-0097).
@@ -711,6 +716,9 @@ RgbFrame render_front_end(const FrontEndState& state);
 // The race NOW PLAYING chose: its track, the rider PICK YOUR UNI chose against NOW PLAYING's
 // opponent, and the tutorial hints unless the records hold the rider's bit (R-0061).
 ClassicRaceScenario one_player_race_scenario(const FrontEndState& state);
+// The race of two humans (2P, VS, a league pair): the riders the menus paired, their tutorial
+// hints, and the first rider's medal on the tour for a stunt event's qualifying score.
+ClassicRaceScenario local_race_scenario(const FrontEndState& state);
 // $82:D978: the race now starting (from NOW PLAYING or the idle demo) runs HUNTER's tag effects
 // and tier on any track, because `$77:111A-111B` is not zero (the name "faedine", R-0094).
 bool hunter_races_running(const FrontEndState& state);

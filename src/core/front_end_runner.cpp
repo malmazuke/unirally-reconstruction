@@ -382,13 +382,8 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         front_end.mode == unirally::FrontEndMode::two_player
         || front_end.mode == unirally::FrontEndMode::versus
         || (front_end.mode == unirally::FrontEndMode::league && front_end.second_rider < 16);
-    auto scenario =
-        local ? unirally::classic_local_race_scenario(
-                    unirally::ClassicRaceTrack{front_end.tour_menu.track},
-                    {front_end.rider_menu.rider, front_end.second_rider},
-                    ((front_end.records.tutorial_bits >> front_end.rider_menu.rider) & 1U) == 0,
-                    ((front_end.records.tutorial_bits >> front_end.second_rider) & 1U) == 0)
-              : unirally::one_player_race_scenario(front_end);
+    auto scenario = local ? unirally::local_race_scenario(front_end)
+                          : unirally::one_player_race_scenario(front_end);
     scenario.race_counter = front_end.race_song; // `$77:10B1` after this race's count (R-0084)
     // `$82:D978` (R-0094): the name "faedine" gives any track HUNTER's effects and tier.
     scenario.hunter_tour = scenario.hunter_tour || unirally::hunter_races_running(front_end);
@@ -397,7 +392,6 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     race.content = unirally::classic_race_content(pack, scenario.track);
     race.state = unirally::classic_race_start(*race.content, scenario);
     race.state.league_statistics.enabled = front_end.mode == unirally::FrontEndMode::league;
-    race.state.versus = front_end.mode == unirally::FrontEndMode::versus;
     if (local) unirally::initialize_split_cameras(race.state);
     race.presentation = unirally::classic_race_presentation_content(pack, scenario);
     race.presentation->rider_names = front_end.records.rider_names;
@@ -730,6 +724,7 @@ int main(int argc, char** argv) try {
             if (state.mode == unirally::FrontEndMode::demo) {
                 if (frame <= race.initialization_frame) continue;
                 update_demo_race(options, pack, state, race, frame, pads, races);
+                unirally::add_race_cartridge_increments(state, race.state.cartridge_increments);
                 write_race_state(race_timeline, frame, race.state);
                 sound_cues.write(frame, race.state.sound_cues);
                 continue;
@@ -741,6 +736,7 @@ int main(int argc, char** argv) try {
             update_local_race(options, pack, content, state, race, race_timeline,
                               one_player_timeline, look_timeline, restored_local, races, frame,
                               pads);
+            unirally::add_race_cartridge_increments(state, race.state.cartridge_increments);
             sound_cues.write(frame, race.state.sound_cues);
         } else if (state.mode_chosen) {
             break;

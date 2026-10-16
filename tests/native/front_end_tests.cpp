@@ -2257,6 +2257,19 @@ void demo_sound_tests() {
 
 } // namespace
 
+// R-0098: a computer opponent's voice read past its class table increments one
+// byte of a saved best time, 8-bit (ANTI-UNI's 233: `$0859`, best[24]'s low byte).
+void race_cartridge_increment_tests() {
+  auto state = unirally::start_front_end();
+  state.records.best[24] = 0x12ff;
+  state.records.best[3] = 0x0400;
+  const std::array<std::uint16_t, 3> offsets{0x0859, 0x0859, 0x0830};
+  unirally::add_race_cartridge_increments(state, offsets);
+  require(state.records.best[24] == 0x1201 && state.records.best[3] == 0x0500);
+  const std::array<std::uint16_t, 1> tallies{0x0827};
+  require(refuses([&] { unirally::add_race_cartridge_increments(state, tallies); }));
+}
+
 int main() try {
   text_printer_tests();
   text_variable_tests();
@@ -2279,6 +2292,7 @@ int main() try {
   title_code_tests();
   code_route_tests();
   save_file_tests();
+  race_cartridge_increment_tests();
   wipe_ram_tests();
   credits_picture_tests();
   faedine_tests();

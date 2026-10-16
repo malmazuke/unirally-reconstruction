@@ -242,11 +242,20 @@ void print_lap_result(FrontEndState& state, const FrontEndContent& content) {
                  {0, 0, 0, 0, scale.floor, scale.top}); // $80:910F
     print_stream(state, content, content.lap_result_player,
                  {player_best, 0, 0, times.player_total, 0, 0}); // $80:91A1
-    // A rider opponent (below 0x10) would keep a personal best like the player's (`$80:90AF`);
-    // one-player play has none, and `start_result` refuses one.
+    // $80:90AF-90F2: the opponent's best lap against its word at `$77:0829 + 100 x opponent + 2 x
+    // track`: a second human's personal best, kept like the player's (2P, VS, a league pair;
+    // R-0098), or for a computer opponent the word past the riders' table (above).
     const auto opponent_best = best_lap(times.opponent_laps);
-    if (opponent_best < saved_word_under_opponent_best(state))
+    const auto opponent = state.now_playing.opponent;
+    if (opponent < someone) {
+        auto& opponent_record = personal_best(records, opponent, track);
+        if (opponent_best < opponent_record) {
+            opponent_record = opponent_best;
+            high_bits(state, 96) &= opponent_best_markers;
+        }
+    } else if (opponent_best < saved_word_under_opponent_best(state)) {
         high_bits(state, 96) &= opponent_best_markers;
+    }
     print_stream(state, content, content.lap_result_opponent,
                  {opponent_best, 0, 0, times.opponent_total, 0, 0}); // $80:91B9
 }

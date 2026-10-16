@@ -30,6 +30,7 @@ V35_ENTRIES = 562  # the whole v35 inventory, before v36's WIPE RAM text
 V36_ENTRIES = 565  # the whole v36 inventory, before v37's name cheats
 V37_ENTRIES = 569  # the whole v37 inventory, before v38's REMATCH
 V38_ENTRIES = 570  # the whole v38 inventory, before v39's demo sound set
+V39_ENTRIES = 576  # the whole v39 inventory, before v40's opponent voice classes
 
 
 def through_league(rules: dict) -> list[dict]:
@@ -741,7 +742,7 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "2c4f0af167580fd0c5194e90b86409748d01a2170d82087f6d7ab93c13a3c82f")
-        added = rules["entries"][V38_ENTRIES:]
+        added = rules["entries"][V38_ENTRIES:V39_ENTRIES]
         # $80:9440-9459: score 56 (`$93:F70C`, its data from `$93:F712`), the slots at
         # `$83:FC35` and the samples they add (R-0093, R-0096).
         self.assertEqual([(e["id"], e["size"]) for e in added],
@@ -754,6 +755,29 @@ class AudioEntryTests(unittest.TestCase):
             {"file_offset": audio.DEMO_SAMPLE_SLOTS, "length": 64}]})
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("demo_audio_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_opponent_voice_classes_preserve_v39_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:V39_ENTRIES]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "ad0b0d8e2902eeb48cf9bdfa5503ab399d090e1a657c109e82d65a57781b55f0")
+        added = rules["entries"][V39_ENTRIES:]
+        # $81:C5D1-C608, the bytes after the 72 race-finish reward classes that `$81:C241` reads
+        # for events 200-255 (R-0098).
+        self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
+                         [("physics.reward.opponent-voice-classes", 56,
+                           {"kind": "raw", "pieces": [{"file_offset": 0xC5D1, "length": 56}]})])
+        self.assertEqual(tracks.OPPONENT_VOICE_CLASSES,
+                         ("physics.reward.opponent-voice-classes", 0x81C5D1, 56))
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("league_tours_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

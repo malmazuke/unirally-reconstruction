@@ -150,8 +150,9 @@ void options_menu_frame(FrontEndState& state, const FrontEndContent& content, Fr
     enter_league_slots(state, content);
 }
 
-void enter_league_slots(FrontEndState& state, const FrontEndContent& content) {
+void enter_league_slots(FrontEndState& state, const FrontEndContent& content, bool slides_back) {
     // $80:9EF7-9F73, R-0072 observations 4 and 6.
+    state.league.slots_slide_back = slides_back;
     state.text.words.fill(cleared_text);
     TextVariables variables;
     variables.league_names = state.records.league_names;
@@ -166,7 +167,8 @@ void enter_league_slots(FrontEndState& state, const FrontEndContent& content) {
 
 void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
-        start_slide(state, content, false); // `$80:EF4D`: no OAM copy before the first pass
+        // `$80:EF4D`: no OAM copy before the first pass.
+        start_slide(state, content, state.league.slots_slide_back);
         return;
     }
     if (!slide_frame(state, content)) return;

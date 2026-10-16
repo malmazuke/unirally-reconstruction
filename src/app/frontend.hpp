@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cartridge_ram.hpp"
 #include "front_end.hpp"
 #include "input_timer.hpp"
 #include "presentation.hpp"
@@ -9,6 +10,7 @@
 #include <array>
 #include <cstdint>
 #include <optional>
+#include <span>
 
 namespace unirally::app {
 
@@ -141,7 +143,6 @@ public:
   unsigned screen() const { return static_cast<unsigned>(state_.screen); }
   bool demo_race() const { return state_.mode == FrontEndMode::demo; }
   bool league_race() const { return state_.mode == FrontEndMode::league; }
-  bool versus_race() const { return state_.mode == FrontEndMode::versus; }
   bool local_race() const {
     return state_.mode == FrontEndMode::two_player || state_.mode == FrontEndMode::versus
            || (state_.mode == FrontEndMode::league && state_.second_rider < 16);
@@ -179,16 +180,8 @@ public:
                              (hunter_races_running(state_) && !demo_split_race());
       return scenario;
     }
-    auto scenario =
-        local_race()
-            ? classic_local_race_scenario(
-                  ClassicRaceTrack{state_.tour_menu.track},
-                  {state_.rider_menu.rider, state_.second_rider},
-                  ((state_.records.tutorial_bits >> state_.rider_menu.rider) &
-                   1U) == 0,
-                  ((state_.records.tutorial_bits >> state_.second_rider) &
-                   1U) == 0)
-            : one_player_race_scenario(state_);
+    auto scenario = local_race() ? local_race_scenario(state_)
+                                 : one_player_race_scenario(state_);
     scenario.race_counter =
         state_.race_song; // `$77:10B1` after this race's count (R-0084)
     // `$82:D978`: the name "faedine" gives any track HUNTER's effects (R-0094).
@@ -206,6 +199,11 @@ public:
   // has begun, or its pause menu quit or restarted it. The front end takes over
   // with its times.
   void return_from_race(const ZoomZooState &race, const RaceTimes &times);
+  // A race update's cartridge RAM increments past rider 1's tallies, an
+  // overrun of the original (`ZoomZooState::cartridge_increments`, R-0098).
+  void add_cartridge_increments(std::span<const std::uint16_t> offsets) {
+    add_race_cartridge_increments(state_, offsets);
+  }
   void return_from_demo(std::uint32_t exit_frame, std::uint16_t demo_elapsed);
 
 private:

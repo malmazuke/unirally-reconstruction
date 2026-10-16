@@ -77,6 +77,35 @@ void print_continue(FrontEndState& state, const FrontEndContent& content) {
     }
     load_text(state, state.slide.hidden_half);
 }
+
+// $80:B93C-B975 with `$00AE` = `$80:FC2F`: the arrow's x target is the entry's column (2, 1 and 8,
+// in units of 8 pixels), its y target the entry's row from 0x0580, 0x0180 apart.
+void aim_continue_arrow(FrontEndState& state) {
+    constexpr std::array<std::uint8_t, 3> columns{2, 1, 8}; // $80:FC2F
+    constexpr std::uint16_t first_row_y = 0x0580, row_height = 0x0180;
+    state.arrow.target_x = static_cast<std::uint16_t>(columns[state.menu.selection] * 128);
+    state.arrow.target_y =
+        static_cast<std::uint16_t>(first_row_y + state.menu.selection * row_height);
+}
+
+void move_continue_arrow(FrontEndState& state, std::uint16_t pad) {
+    constexpr std::uint8_t last_entry = 2; // `$009D`
+    const bool down = (pad & (pad_down | pad_select)) != 0;
+    const bool up = !down && (pad & pad_up) != 0;
+    if (!down && !up) {
+        state.latches.moved = false;
+        return;
+    }
+    if (state.latches.moved) return;
+    state.latches.moved = true;
+    play_menu_sound(state, MenuSound::navigate); // $80:BA13 (Down), $80:B9B1 (Up)
+    auto& entry = state.menu.selection;
+    if (down)
+        entry = entry == last_entry ? 0 : static_cast<std::uint8_t>(entry + 1);
+    else
+        entry = entry == 0 ? last_entry : static_cast<std::uint8_t>(entry - 1);
+    aim_continue_arrow(state);
+}
 } // namespace
 
 void enter_league_podium(FrontEndState& state) {
@@ -93,6 +122,11 @@ void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& cont
         return;
     }
     if (frame == 7) {
+        // As before a race ($80:99B7-99BE), the menu music fades (rate -112 x 8) at once (R-0098:
+        // tour-cues 11408); the podium's own music session is not native (R-0098 Not covered).
+        constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;
+        state.sound_cues.push_back(audio_enqueue(music_fade, race_fade_rate));
+        state.sound_cues.push_back(audio_dispatch(AudioDispatchSite::race_choice));
         state.saved = {state.menu,        state.cycle,       state.logo.offset, state.slide,
                        state.decorations, state.latches,     state.rider_menu,  state.tour_menu,
                        state.track_menu,  state.now_playing, state.printer,     state.arrow.spin};
@@ -138,14 +172,19 @@ void league_podium_frame(FrontEndState& state, const FrontEndContent& content, F
 void league_podium_exit_frame(FrontEndState& state, const FrontEndContent& content) {
     constexpr std::uint32_t podium_restore_frame = restore_frame + 2;
     const auto frame = state.script_frame;
-    // Podium teardown has two more blank frames than the retained race returns.
+    // Podium teardown has two more blank frames than the retained race returns, but the title's
+    // sound program is loaded on the same frame as after a race (`$80:A0F7`, R-0098: the tour-cues
+    // schedule).
+    constexpr std::uint32_t sound_upload_frame = 4;
+    if (frame == sound_upload_frame)
+        state.sound_cues.push_back(audio_load(AudioSessionLoad::title_return));
     if (frame <= 2) return;
     if (frame <= 105) {
         // Left on podium phase 2 or 3, the arrow's spin, which `$83:987D` puts back with the
         // menus, comes back a frame after the rest (R-0095).
         const auto spin = state.arrow.spin;
         state.script_frame -= 2;
-        race_return_frame(state, content);
+        restore_menus_after_race(state, content);
         state.script_frame = frame;
         if (podium_arrow_late(state)) {
             if (frame == podium_restore_frame) state.arrow.spin = spin;
@@ -179,32 +218,29 @@ void league_continue_entry_frame(FrontEndState& state, const FrontEndContent& co
     fade_up(state, 2 * (frame - 40));
     copy_oam(state);
     if (frame < 47) return;
+    // $80:B93C's set-up: the first entry, no latches, the arrow sent to it, and its first pass's
+    // `$80:EB23`, which turns the hidden PICK TRACK markers (R-0097, R-0098).
     state.menu.selection = 0;
-    state.arrow.target_x = 0x0100;
-    state.arrow.target_y = 0x0580;
     state.latches = {};
+    aim_continue_arrow(state);
+    turn_markers(state, content);
     state.screen = FrontEndScreen::league_continue;
 }
 
+// `$80:FBEE`, the generic list loop `$80:B93C` on KEEP SCORES, RESET SCORES and EXIT: no
+// decorations stepped (R-0095), the pads through the gate, Down (or Select) before Up once a press
+// with the move's sound and a wrap past either end (`$80:B983-BA5E`), the hidden markers turned
+// on a pass that stays. B, Start or A, and Y or X too, return to `$80:FBF1`, which acts on the
+// entry the arrow is on (R-0098).
 void league_continue_frame(FrontEndState& state, const FrontEndContent& content,
                            FrontEndPads pads) {
-    copy_oam(state);
-    step_decorations(state, content);
-    constexpr std::array<std::uint8_t, 3> columns{2, 1, 8}; // $80:FC2F
-    const auto pad = static_cast<std::uint16_t>(pads.one | pads.two);
-    const bool down = (pad & (pad_down | pad_select)) != 0;
-    const bool up = !down && (pad & pad_up) != 0;
-    if (!down && !up)
-        state.latches.moved = false;
-    else if (!state.latches.moved) {
-        state.latches.moved = true;
-        state.menu.selection =
-            static_cast<std::uint8_t>((state.menu.selection + (down ? 1U : 2U)) % 3U);
+    copy_oam(state); // $80:D1EC
+    const auto pad = gated_pads(state, pads);
+    if (!(pad & (choose_buttons | back_buttons))) {
+        move_continue_arrow(state, pad);
+        turn_markers(state, content);
+        return;
     }
-    state.arrow.target_x = static_cast<std::uint16_t>(columns[state.menu.selection] * 128);
-    state.arrow.target_y = static_cast<std::uint16_t>(0x0580 + state.menu.selection * 0x0180);
-    const auto buttons = static_cast<std::uint16_t>(pads.one | pads.two);
-    if (!(buttons & choose_buttons)) return;
     if (state.menu.selection == 2) {
         print_main_menu(state, content);
         state.screen = FrontEndScreen::main_menu_return;
@@ -216,6 +252,8 @@ void league_continue_frame(FrontEndState& state, const FrontEndContent& content,
         state.records.league_played[state.league.slot].fill(0);
     }
     state.league.after_podium = true;
-    enter_tour_menu(state);
+    // $80:BEC6: PICK TOUR from `$80:E550` with no `$80:A858` or `$80:A82B` before it, `$00AC` still
+    // 1 from `$80:FBD7`: the menu slides back (R-0098).
+    return_to_tour_menu(state, true);
 }
 } // namespace unirally::front_end_screens

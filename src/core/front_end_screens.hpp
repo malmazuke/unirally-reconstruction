@@ -264,11 +264,15 @@ void define_player_warning_frame(FrontEndState& state, const FrontEndContent& co
 void define_player_after_confirm_frame(FrontEndState& state, const FrontEndContent& content);
 void reset_league(FrontEndState&);
 void record_league_result(FrontEndState&);
+void store_league_stunt_totals(FrontEndState&, bool against_computer);
+void store_league_race_totals(FrontEndState&);
 void restore_league_pair(FrontEndState&);
+void count_league_pair(FrontEndState&);
 void finish_league_pair(FrontEndState&, const FrontEndContent&);
 void league_awards_frame(FrontEndState&, const FrontEndContent&, FrontEndPads);
 void choose_league_slot(FrontEndState& state, const FrontEndContent& content);
-void enter_league_table(FrontEndState& state, const FrontEndContent& content);
+void enter_league_table(FrontEndState& state, const FrontEndContent& content,
+                        bool slides_back = false);
 void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_table_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void choose_league_pair(FrontEndState& state);
@@ -278,7 +282,10 @@ void league_podium_frame(FrontEndState& state, const FrontEndContent& content, F
 void league_podium_exit_frame(FrontEndState& state, const FrontEndContent& content);
 void league_continue_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
-void enter_league_slots(FrontEndState& state, const FrontEndContent& content);
+// `slides_back`: `$00AC` is not 1 (`$80:EF7B`): PICK TOUR's Y stores `$80:B74A`'s pad byte, which
+// is never 1 (`$80:BE34`, `$80:BDDB`; R-0098).
+void enter_league_slots(FrontEndState& state, const FrontEndContent& content,
+                        bool slides_back = false);
 void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
@@ -336,6 +343,9 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
 void start_race_return(FrontEndState& state, const FrontEndContent& content,
                        const RaceTimes& times);
 void race_return_frame(FrontEndState& state, const FrontEndContent& content);
+// Its menus' part, without the title's sound load: the screen, the objects, the restore, the
+// badge tiles and palettes, then the result (the podium's way back, R-0098).
+void restore_menus_after_race(FrontEndState& state, const FrontEndContent& content);
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // $80:88DD-8914 after a restart from the race's pause menu: the logo up, a blank text faded in,
 // then NOW PLAYING (R-0060).
