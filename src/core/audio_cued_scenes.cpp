@@ -24,6 +24,11 @@ constexpr std::uint64_t split_finish_fade_anchor = 26966;
 // races) and 20 sessions.
 constexpr std::uint64_t demo_fade_anchor = 30027, demo_load_anchor = 123288;
 constexpr std::uint64_t title_return_load_anchor = 344450;
+// PODIUM-AUDIO (R-0099): the podium's session's first FF request (`$82:E07C`) and the first of its
+// loop's eight polls (`$82:DEE2`) in each of the loop's first three passes, which do different work
+// before it (84,188-84,240, 122,582-123,166 and 90,368-90,672): the medians of eight podiums.
+constexpr std::uint64_t podium_load_anchor = 340626;
+constexpr std::array<std::uint64_t, 3> podium_pass_anchors{84221, 123126, 90525};
 // D-0010 calibration (R-0077): the first FF request of the award's, a gold ending's and the title
 // set's sessions, master clocks after their frame's boundary, the medians of the cold captures'
 // sessions (24 awards, 3 endings, 27 returns). Each follows a frame wait, early in its frame.
@@ -68,6 +73,9 @@ std::uint64_t dispatch_anchor(AudioDispatchSite site) {
     case AudioDispatchSite::pause_continue: return pause_continue_anchor;
     case AudioDispatchSite::split_finish_fade: return split_finish_fade_anchor;
     case AudioDispatchSite::demo_fade: return demo_fade_anchor;
+    case AudioDispatchSite::podium_first_pass: return podium_pass_anchors[0];
+    case AudioDispatchSite::podium_second_pass: return podium_pass_anchors[1];
+    case AudioDispatchSite::podium_third_pass: return podium_pass_anchors[2];
     }
     throw std::invalid_argument("unknown audio dispatch site");
 }
@@ -119,6 +127,7 @@ SessionStart session_start(const AudioCue& cue) {
     case AudioSessionLoad::award_return: return {AudioSoundSetId::title, award_return_load_anchor};
     case AudioSessionLoad::reset_boot: return {AudioSoundSetId::title, reset_boot_load_anchor};
     case AudioSessionLoad::demo: return {AudioSoundSetId::demo, demo_load_anchor};
+    case AudioSessionLoad::podium: return {AudioSoundSetId::award, podium_load_anchor};
     }
     throw std::invalid_argument("unknown audio session");
 }
@@ -139,6 +148,21 @@ void start_music_at_full_gain(Clock& c, AudioCpuQueueState& queue) {
     enqueue_cue(c, queue, 1, 2);
     enqueue_cue(c, queue, 8, 255);
     enqueue_cue(c, queue, 7, 127);
+}
+// $82:E099-E102 after the podium's samples: eight dispatcher calls, effect gain 255, then sixteen
+// calls. The music gain and start come from the podium's loop (R-0099).
+void end_podium_session(Clock& c, AudioCpuQueueState& queue) {
+    constexpr unsigned calls_before_gain = 8, calls_after_gain = 16;
+    for (unsigned call = 0; call < calls_before_gain; ++call) {
+        c.call_far();
+        native_audio_poll_queue(c, queue);
+    }
+    enqueue_cue(c, queue, 8, 255);
+    c.change_widths();
+    for (unsigned call = 0; call < calls_after_gain; ++call) {
+        c.call_far();
+        native_audio_poll_queue(c, queue);
+    }
 }
 } // namespace
 
@@ -227,6 +251,7 @@ void NativeTitleMenuAudio::load_session(std::uint32_t frame, const AudioCue& cue
     case AudioSessionLoad::ending: start_screen_music(c, queue_); return;
     case AudioSessionLoad::award_return:
     case AudioSessionLoad::demo: start_music_at_full_gain(c, queue_); return;
+    case AudioSessionLoad::podium: end_podium_session(c, queue_); return;
     }
 }
 } // namespace unirally

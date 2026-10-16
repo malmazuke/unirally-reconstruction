@@ -8,6 +8,9 @@ namespace unirally::front_end_screens {
 namespace {
 constexpr std::array<unsigned, 3> podium_objects{98, 96, 97};
 constexpr std::array<unsigned, 3> podium_tile_words{0x6080, 0x6880, 0x6000};
+// The podium's sound session ($82:E06F) starts on its entry's frame 19, after the fade and the
+// picture's loads (R-0099).
+constexpr std::uint32_t podium_session_frame = 19;
 
 // $83:F0FF's composed 64 x 64 objects, encoded back into the native VRAM tile layout.
 void upload_podium_rider(FrontEndState& state, const FrontEndContent& content, unsigned rank) {
@@ -106,12 +109,37 @@ void move_continue_arrow(FrontEndState& state, std::uint16_t pad) {
         entry = entry == 0 ? last_entry : static_cast<std::uint8_t>(entry - 1);
     aim_continue_arrow(state);
 }
+
+// $82:DEBC-DEFE, after a pass's poses: the loop counts its passes to 8 in `$1365`, and the first
+// three each send effect gain 255, music gain 127 and the music start with eight dispatcher calls
+// (R-0099). A pass that leaves on a press returns before it ($82:DE45).
+void podium_music_pass(FrontEndState& state) {
+    constexpr std::uint16_t counted_passes = 8, music_passes = 3;
+    auto& passes = state.league.podium_music_passes;
+    if (passes == counted_passes) return;
+    if (++passes > music_passes) return;
+    // The driver's commands: 8 the effect gain, 7 the music gain, 1 the music start (argument 2,
+    // as every session's music start).
+    constexpr std::uint8_t effect_gain = 8, music_gain = 7, music_start = 1;
+    constexpr std::uint8_t full_gain = 255, usual_music_gain = 127, start_argument = 2;
+    constexpr unsigned dispatcher_calls = 8;
+    // The audio side places each pass's calls at its own clock (D-0010).
+    constexpr std::array<AudioDispatchSite, music_passes> sites{
+        AudioDispatchSite::podium_first_pass, AudioDispatchSite::podium_second_pass,
+        AudioDispatchSite::podium_third_pass};
+    state.sound_cues.push_back(audio_enqueue(effect_gain, full_gain));
+    state.sound_cues.push_back(audio_enqueue(music_gain, usual_music_gain));
+    state.sound_cues.push_back(audio_enqueue(music_start, start_argument));
+    for (unsigned call = 0; call < dispatcher_calls; ++call)
+        state.sound_cues.push_back(audio_dispatch(sites[static_cast<std::size_t>(passes) - 1]));
+}
 } // namespace
 
 void enter_league_podium(FrontEndState& state) {
     state.records.league_cycle_complete = false;
     state.league.podium_poses = {0x0a45, 0x0a4d, 0x0a55};
     state.league.podium_phase = 0;
+    state.league.podium_music_passes = 0;
     state.screen = FrontEndScreen::league_podium_entry;
 }
 
@@ -123,7 +151,7 @@ void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& cont
     }
     if (frame == 7) {
         // As before a race ($80:99B7-99BE), the menu music fades (rate -112 x 8) at once (R-0098:
-        // tour-cues 11408); the podium's own music session is not native (R-0098 Not covered).
+        // tour-cues 11408).
         constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;
         state.sound_cues.push_back(audio_enqueue(music_fade, race_fade_rate));
         state.sound_cues.push_back(audio_dispatch(AudioDispatchSite::race_choice));
@@ -135,6 +163,9 @@ void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& cont
         state.slide.shown_half = 0x1000;
         state.slide.hidden_half = 0x1400;
     }
+    // $82:E06F: the podium's sound session starts while its picture loads (R-0099).
+    if (frame == podium_session_frame)
+        state.sound_cues.push_back(audio_load(AudioSessionLoad::podium));
     if (frame <= 98) state.registers.force_blank = true;
     if (frame == 98) setup_podium(state, content);
     if (frame >= 99) {
@@ -166,7 +197,9 @@ void league_podium_frame(FrontEndState& state, const FrontEndContent& content, F
     if (any_button_pressed(pads)) {
         begin_menu_restore(state, content);
         state.screen = FrontEndScreen::league_podium_exit;
+        return;
     }
+    podium_music_pass(state);
 }
 
 void league_podium_exit_frame(FrontEndState& state, const FrontEndContent& content) {

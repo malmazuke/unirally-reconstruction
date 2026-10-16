@@ -21,11 +21,16 @@ enum class AudioDispatchSite : std::uint8_t {
     pause_continue,    // $83:F937-F93B: CONTINUE's fade-in
     split_finish_fade, // $83:E7F9, $83:E7FD: a split race's finish fade (MODE-AUDIO)
     demo_fade,         // $83:E26E, $83:E272: the idle demo race's fade-out (DEMO-AUDIO)
+    // $82:DEE2-DEFE: the league podium loop's eight polls in its first, second and third pass,
+    // each pass's at its own clock (PODIUM-AUDIO)
+    podium_first_pass,
+    podium_second_pass,
+    podium_third_pass,
 };
 // The laboratory cue logs' name of each site, in the enum's order.
-constexpr std::array<std::string_view, 11> audio_dispatch_site_names{
-    "wait",  "early",      "late",           "countdown", "finish",   "choice",
-    "pause", "pause-fade", "pause-continue", "finish2",   "demo-fade"};
+constexpr std::array<std::string_view, 14> audio_dispatch_site_names{
+    "wait",       "early",          "late",    "countdown", "finish",   "choice",   "pause",
+    "pause-fade", "pause-continue", "finish2", "demo-fade", "podium-1", "podium-2", "podium-3"};
 inline std::string_view audio_dispatch_site_name(AudioDispatchSite site) {
     return audio_dispatch_site_names.at(static_cast<std::size_t>(site));
 }
@@ -42,15 +47,18 @@ enum class AudioSessionLoad : std::uint8_t {
                   // race (R-0077)
     demo,         // $80:9440-9471: the idle demo's set at its title, then the music start and
                   // both gains (R-0096); the demo's race keeps it
+    podium,       // $82:E06F-E102: the league podium's set, the award's (R-0099), then eight
+                  // polls, effect gain 255 and sixteen polls; the podium loop starts the music
 };
 // The laboratory cue logs' names of the sessions other than a race's ("race-RESOURCE").
-constexpr std::array<std::pair<AudioSessionLoad, std::string_view>, 6> audio_session_names{{
+constexpr std::array<std::pair<AudioSessionLoad, std::string_view>, 7> audio_session_names{{
     {AudioSessionLoad::title_return, "title"},
     {AudioSessionLoad::award, "award"},
     {AudioSessionLoad::ending, "ending"},
     {AudioSessionLoad::award_return, "title-award"},
     {AudioSessionLoad::reset_boot, "title-reset"},
     {AudioSessionLoad::demo, "demo"},
+    {AudioSessionLoad::podium, "podium"},
 }};
 inline std::string_view audio_session_name(AudioSessionLoad load) {
     for (const auto& [session, name] : audio_session_names)

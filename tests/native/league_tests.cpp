@@ -151,6 +151,67 @@ void stunt_totals_after_the_tallies() {
                 && state.records.league_event_totals[2][3] == 0,
             "against the computer only the player's word");
 }
+// R-0099: the podium's sound session on its entry's frame 19 ($82:E06F), then the loop's first
+// three passes each send effect gain 255, music gain 127 and the music start with eight polls
+// ($82:DEBC-DEFE); `$1365` counts on to 8 and stops. The poses' pictures need ROM content, so the
+// later passes run as the entry's last frame does (no picture upload).
+AudioCueList podium_entry_cues(FrontEndState& state, const Content& content, std::uint32_t frame) {
+    state.sound_cues.clear();
+    state.script_frame = frame;
+    league_podium_entry_frame(state, content.view);
+    return state.sound_cues;
+}
+AudioCueList podium_pass_cues(FrontEndState& state, const Content& content, FrontEndPads pads) {
+    state.sound_cues.clear();
+    state.screen = FrontEndScreen::league_podium_entry;
+    ++state.script_frame;
+    league_podium_frame(state, content.view, pads);
+    return state.sound_cues;
+}
+void podium_music(const Content& content) {
+    auto state = league(3, 0xe000);
+    enter_league_podium(state);
+    state.league.podium_music_passes = 5; // a previous podium's count does not carry over
+    enter_league_podium(state);
+    const auto music = [](AudioDispatchSite site) {
+        AudioCueList cues{audio_enqueue(8, 255), audio_enqueue(7, 127), audio_enqueue(1, 2)};
+        for (unsigned call = 0; call < 8; ++call) cues.push_back(audio_dispatch(site));
+        return cues;
+    };
+    for (std::uint32_t frame = 1; frame <= 98; ++frame) {
+        const auto cues = podium_entry_cues(state, content, frame);
+        if (frame == 7)
+            require(cues == AudioCueList{audio_enqueue(3, 0x90),
+                                         audio_dispatch(AudioDispatchSite::race_choice)},
+                    "the menu music fades on the entry's frame 7");
+        else if (frame == 19)
+            require(cues == AudioCueList{audio_load(AudioSessionLoad::podium)},
+                    "the podium's session on the entry's frame 19");
+        else
+            require(cues.empty(), "no other sound while the podium loads");
+    }
+    require(podium_entry_cues(state, content, 99) == music(AudioDispatchSite::podium_first_pass),
+            "the first pass starts the music");
+    require(state.screen == FrontEndScreen::league_podium, "the loop runs from frame 99");
+    require(podium_pass_cues(state, content, {}) == music(AudioDispatchSite::podium_second_pass),
+            "the second pass too");
+    require(podium_pass_cues(state, content, {}) == music(AudioDispatchSite::podium_third_pass),
+            "and the third");
+    for (unsigned pass = 4; pass <= 12; ++pass)
+        require(podium_pass_cues(state, content, {}).empty(), "later passes are silent");
+    require(state.league.podium_music_passes == 8, "`$1365` stops at 8");
+    // A pass that leaves on a press returns before the music ($82:DE45).
+    auto pressed = league(3, 0xe000);
+    enter_league_podium(pressed);
+    for (std::uint32_t frame = 1; frame <= 99; ++frame) podium_entry_cues(pressed, content, frame);
+    require(podium_pass_cues(pressed, content, {pad_start, 0}).empty()
+                && pressed.screen == FrontEndScreen::league_podium_exit
+                && pressed.league.podium_music_passes == 1,
+            "a press leaves without the music");
+    require(audio_session_name(AudioSessionLoad::podium) == "podium"
+                && audio_dispatch_site_name(AudioDispatchSite::podium_third_pass) == "podium-3",
+            "the cue logs' names");
+}
 } // namespace
 int main() try {
     const Content content;
@@ -158,6 +219,7 @@ int main() try {
     odd_pair_and_result_order(content);
     bonus_comparisons();
     stunt_totals_after_the_tallies();
+    podium_music(content);
     return 0;
 } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';
