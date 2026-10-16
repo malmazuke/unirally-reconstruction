@@ -13432,6 +13432,12 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:podium_load_anchor",
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
+    "src/core/league_completion.cpp:podium_music_pass"
+   ],
    "observed_entries": {},
    "start": "$82:DE06",
    "static_entries": {
@@ -13533,6 +13539,13 @@
    "end": "$82:E102",
    "mode_at_entry": [
     "Nmx"
+   ],
+   "native": [
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:end_podium_session",
+    "src/core/audio_cued_scenes.cpp:podium_load_anchor",
+    "src/core/league_completion.cpp:league_podium_entry_frame",
+    "src/core/league_completion.cpp:podium_session_frame"
    ],
    "observed_entries": {},
    "start": "$82:E06F",
@@ -19178,18 +19191,18 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2124,
+  "cited_addresses": 2152,
   "cited_by_class": {
    "data": 16,
    "inferred": 94,
-   "observed": 1820,
+   "observed": 1848,
    "unknown": 194
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1432,
+   "loc": 1452,
    "mid": 31,
-   "sub": 451,
+   "sub": 459,
    "unk": 194
   },
   "conflicts": 0,
@@ -19209,9 +19222,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 86837,
-  "routine_bytes_cited_by_native_code": 72002,
+  "routine_bytes_cited_by_native_code": 72405,
   "routines": 759,
-  "routines_cited_by_native_code": 565,
+  "routines_cited_by_native_code": 567,
   "unknown": 31424,
   "unknown_share": 0.2397
  }

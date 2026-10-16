@@ -13649,7 +13649,8 @@
    "src/core/vertical_contact.cpp:land"
   ],
   "source_records": [
-   "docs/research/R-0011-contact.md"
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -13726,6 +13727,15 @@
   "label": "loc_81950C",
   "source_records": [
    "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:9585",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819585",
+  "source_records": [
+   "docs/research/R-0098-league-tours.md"
   ]
  },
  {
@@ -14646,7 +14656,9 @@
   "comment": "routine start",
   "label": "sub_81B67C",
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0098-league-tours.md",
+   "tasks/LEAGUE-TOURS.md"
   ]
  },
  {
@@ -17200,6 +17212,7 @@
   "source_records": [
    "docs/research/R-0074-audio-foundation.md",
    "docs/research/R-0077-one-player-audio.md",
+   "docs/research/R-0099-podium-audio.md",
    "tasks/AUDIO-ONE-PLAYER.md",
    "tasks/DEMO-AUDIO.md"
   ]
@@ -17390,6 +17403,24 @@
   "label": "unk_828280",
   "source_records": [
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$82:8294",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_828294",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:82A5",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8282A5",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -19488,6 +19519,18 @@
   ]
  },
  {
+  "address": "$82:AA71",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82AA71",
+  "native": [
+   "src/core/race_update.cpp:run_skipped_update"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$82:AA75",
   "class": "observed",
   "comment": "routine start",
@@ -20271,6 +20314,15 @@
   ]
  },
  {
+  "address": "$82:D497",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D497",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$82:D4B8",
   "class": "observed",
   "comment": "instruction start",
@@ -20388,6 +20440,15 @@
   ]
  },
  {
+  "address": "$82:D71F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D71F",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$82:D724",
   "class": "observed",
   "comment": "instruction start",
@@ -20434,7 +20495,8 @@
    "src/core/front_end.cpp:update_front_end"
   ],
   "source_records": [
-   "docs/research/R-0094-name-cheats.md"
+   "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20850,6 +20912,15 @@
   ]
  },
  {
+  "address": "$82:DDCD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82DDCD",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$82:DDD5",
   "class": "observed",
   "comment": "instruction start",
@@ -20871,6 +20942,80 @@
   ]
  },
  {
+  "address": "$82:DDEA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DDEA",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:DE01",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DE01",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:DE06",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82DE06",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:DE43",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DE43",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:DE48",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DE48",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:DEBC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DEBC",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
+   "src/core/league_completion.cpp:podium_music_pass"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/PODIUM-AUDIO.md"
+  ]
+ },
+ {
+  "address": "$82:DEE2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DEE2",
+  "native": [
+   "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/audio_cued_scenes.cpp:podium_load_anchor",
+   "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
+   "src/core/league_completion.cpp:podium_music_pass"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$82:DF05",
   "class": "observed",
   "comment": "routine start",
@@ -20879,7 +21024,8 @@
    "src/core/credits_name.cpp:credits_picture_frame"
   ],
   "source_records": [
-   "docs/research/R-0094-name-cheats.md"
+   "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20892,7 +21038,8 @@
    "src/core/league_completion.cpp:league_podium_frame"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20905,7 +21052,8 @@
    "src/core/league_completion.cpp:setup_podium"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20917,7 +21065,79 @@
    "src/core/league_completion.cpp:setup_podium"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:E06F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82E06F",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/PODIUM-AUDIO.md"
+  ]
+ },
+ {
+  "address": "$82:E071",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E071",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:E079",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E079",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:E082",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E082",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:E08B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E08B",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20925,8 +21145,74 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_82E08E",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
   "source_records": [
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/PODIUM-AUDIO.md"
+  ]
+ },
+ {
+  "address": "$82:E092",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E092",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:E099",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E099",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:end_podium_session",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:E0B9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E0B9",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:end_podium_session",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:E0C2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E0C2",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:end_podium_session",
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:podium_session_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20938,7 +21224,8 @@
    "src/core/league_completion.cpp:setup_podium"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -22322,7 +22609,8 @@
    "src/core/zoom_zoo_movement.hpp:LeagueRaceStatistics::wipeouts"
   ],
   "source_records": [
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "tasks/LEAGUE-TOURS.md"
   ]
  },
  {
@@ -22918,6 +23206,22 @@
    "docs/research/R-0077-one-player-audio.md",
    "tasks/AUDIO-DECISION.md",
    "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:A624",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83A624",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/PODIUM-AUDIO.md"
   ]
  },
  {
@@ -24305,6 +24609,15 @@
   ]
  },
  {
+  "address": "$83:C9C1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C9C1",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$83:C9E4",
   "class": "observed",
   "comment": "instruction start",
@@ -24375,6 +24688,20 @@
   ],
   "source_records": [
    "docs/research/R-0084-two-human-restart.md"
+  ]
+ },
+ {
+  "address": "$83:CA69",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CA69",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:start_race_music"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -27501,7 +27828,8 @@
   "comment": "routine start",
   "label": "sub_83F0FB",
   "source_records": [
-   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -27918,6 +28246,15 @@
   ]
  },
  {
+  "address": "$83:F692",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F692",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$83:F695",
   "class": "observed",
   "comment": "instruction start",
@@ -28173,6 +28510,20 @@
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$83:F942",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F942",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
+   "src/core/race_hud.hpp:classic_pause_menu_closed"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -28536,7 +28887,9 @@
   "label": "unk_83FBF5",
   "source_records": [
    "docs/research/R-0077-one-player-audio.md",
-   "tasks/AUDIO-ONE-PLAYER.md"
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md",
+   "tasks/PODIUM-AUDIO.md"
   ]
  },
  {
