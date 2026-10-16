@@ -193,8 +193,9 @@ void add_race_cartridge_increments(FrontEndState& state, std::span<const std::ui
                 "a race's cartridge RAM increment lies outside the records");
         auto& word = best[(offset - best_times) / 2];
         const unsigned shift = (offset - best_times) % 2 * 8U;
-        const auto byte = static_cast<unsigned>((word >> shift) + 1U) & 0xffU;
-        word = static_cast<std::uint16_t>((word & ~(0xffU << shift)) | byte << shift);
+        const unsigned value = word;
+        const unsigned byte = ((value >> shift) + 1U) & 0xffU;
+        word = static_cast<std::uint16_t>((value & ~(0xffU << shift)) | (byte << shift));
     }
 }
 
