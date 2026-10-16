@@ -1,5 +1,30 @@
 # Next session
 
+**16 October 2026: LEAGUE-TOURS is accepted (tier 1, #81) and integrated by merge commit.**
+A league now plays natively through every tour, not only CRAWLER's:
+- **Tours.** After a podium, PICK TOUR's cursor starts on the next tour, Y returns to PICK TOUR,
+  and the league's back paths slide as the original's.
+- **Races.** HUNTER's reversal applies to the second human's pad. NEON runs with two views. A
+  stunt event reads port 2 as the second pad. Odd leagues' computer opponent is chosen as the
+  original does, ANTI-UNI on HUNTER.
+- **Scoring.** The least-wipeout bonus compares the words the original compares; R-0073's code
+  counted wipeouts and misscored five-member leagues. Event totals, played counts and stunt
+  totals are written on the original's frames. A computer opponent's voices overrun their class
+  table into saved best times, as the original's do (pack v40).
+- **Awards and podium.** POINT AWARDS slide and print in two passes, and the podium's fade and
+  title set are on the original's frames.
+
+Results: every league race in five driven captures (a 3-, 4- and 5-member league among them)
+equals the original on every update. The league's cartridge RAM fields are equal but for
+one-frame pair timing. The first tour's frozen gate is unchanged, and every gate and sweep equals
+main or improves.
+
+Recorded limits: in some podiums the original returns a frame later; an event's pairs start a
+frame apart; on HUNTER's track 41 an HDMA scroll write corrupts the original's mode-7 multiply.
+These leave later menus' pictures 44-77% equal, and one computer race in a five-member league
+different. Queued: PODIUM-RETURN-TIMING and PODIUM-AUDIO. [R-0098](../docs/research/R-0098-league-tours.md)
+and [LEAGUE-TOURS](LEAGUE-TOURS.md) define the domain.
+
 **14 October 2026: MENU-INPUT is accepted (tier 1, #79) and integrated by merge commit.**
 The menus now take input as the original reads it where native differed:
 - **The keyboard.** Start goes straight to OK, Left and Right repeat while held (19 frames, then

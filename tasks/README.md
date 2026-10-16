@@ -93,7 +93,9 @@ The coordinator maintains the status registry below. Work orders further below d
 | MENU-INPUT | accepted (tier 1, #79, R-0097): the keyboard, the league member picker, PLAYER SCORES and GROUP TABLES frame by frame, OPTIONS' ways back and warnings, `$00CA` and `$017D` as the original reads and writes them | [Menu input the listing shows](MENU-INPUT.md) |
 | RECORD-SCREENS | queued (tier 1) by MENU-INPUT (R-0097): HIGH SCORES and TRACK RECORDS frame by frame, `$80:FBEE`'s menu after the league podium, the result screens' `$00CA` writers | [The records screens and the rider word after a result](RECORD-SCREENS.md) |
 | NAME-CHECK | queued (tier 1) by MENU-INPUT (R-0097): the keyboard's word check `$83:84D9` and the frame its run time costs a long name | [The keyboard's name check](NAME-CHECK.md) |
-| LEAGUE-TOURS | claimed 14 October 2026 (tier 1) on main `ceb50cf`; R-0089's queue item 6: league beyond the first CRAWLER tour | [League beyond the first CRAWLER tour](LEAGUE-TOURS.md) |
+| LEAGUE-TOURS | accepted (tier 1, #81, R-0098): a league through every tour, its pairings, scoring, awards, podium and continuation; pack v40 | [League beyond the first CRAWLER tour](LEAGUE-TOURS.md) |
+| PODIUM-RETURN-TIMING | queued (tier 1) by LEAGUE-TOURS (R-0098): the podium's way back a frame late in some podiums, an event's pairs a frame apart, the frame-overrun effects that need the frame's cycle count | [Frame overruns in the league's menus](PODIUM-RETURN-TIMING.md) |
+| PODIUM-AUDIO | queued (tier 1) by LEAGUE-TOURS (R-0098): the league podium's own music session | [The league podium's music](PODIUM-AUDIO.md) |
 | WIPE-RAM | accepted (tier 1, #69): the main menu's hidden WIPE RAM menu, its warning and the factory reset (R-0092); pack v36 | [The hidden WIPE RAM menu](WIPE-RAM.md) |
 | CREDITS-NAME | accepted (tier 1, #70): the rider-name cheats "credits" and "faedine" (R-0094); pack v37 | [The rider-name cheats](CREDITS-NAME.md) |
 | SPLIT-HUNTER-PICTURES | queued (tier 2) by CREDITS-NAME (R-0094): HUNTER's effects in a two-view race's picture | [HUNTER's effects in a split picture](SPLIT-HUNTER-PICTURES.md) |

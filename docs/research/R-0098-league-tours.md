@@ -133,8 +133,10 @@ Review round 1 (the reviewer's captures `five`, `backs` and the author's `odd-to
 
 16. **The least-wipeout bonus never counts wipeouts.** `$83:97A4-97BC` compares `$77:07BD` (the
     player) and `$77:0827` (rider 1, considered only when human, `$0749 < 0x10`) with a
-    less-or-equal test. Only the race's setup writes those words (the clears and `$82:DA79`,
-    `$82:DB21`); they are 0 on every frame of every capture, so in a stunt event every valid human
+    less-or-equal test. No wipeout writes them: `$07BD` is written only by the race's setup (the
+    clears and `$82:DA79`, `$82:DB21`), and `$0827` also by finding 17's voice overrun, which
+    only computer opponents play, while the test reads it only for a human rider. Both are 0 on
+    every frame where a human holds them, in every capture, so in a stunt event every valid human
     ties and the later one holds the bonus (the one-run bonus, `$83:9757-9782`, needs a strictly
     greater sum). Native (R-0073's code) counted wipeout announcements
     into them, so a human wipeout in a stunt event moved the bonus: `five`'s race 8 (track 27,
@@ -152,7 +154,9 @@ Review round 1 (the reviewer's captures `five`, `backs` and the author's `odd-to
     combination's voice is queued twice, so ANTI-UNI's 233 adds 2 to `$0859` (rider 0's best on
     track 24): `odd-tours` 29,415 and 29,433 (track 41), 52,276 and 52,294 (track 43), `five`
     120,596 and 120,614, 153,415 and 153,433. The consumer runs in every race (no mode test), so
-    a one-player race against these opponents does the same. Native now increments the same
+    by the listing a one-player race against these opponents does the same; the review's
+    one-player captures against ANTI-UNI (track 40) and BRONSEN (DRAGSTER) played no such voice,
+    so that is not confirmed by a capture. Native now increments the same
     bytes: the race hands the best-time bytes to the records each update
     (`ZoomZooState::cartridge_increments`). [L, C: `odd-tours`, `five`]
 18. **The league's back paths slide by `$00AC`.** The slots (`$80:EF7B`) slide forward when it is 1,
@@ -211,7 +215,8 @@ At `29c5786` (`final-29c5786/`; the per-capture table is in the task record's ch
   passes under the HUD (SHUFFLER and HOPPER tracks; SPLIT-RIDERS-UNDER-INK's class).
 - **An event's pairs a frame apart.** In a league with more than one pair an event, the
   original's standings after each pair but the last start a frame later than native's, in every
-  event, so the menus' decorations fall a frame further behind each event: the wave's best lag
+  observed event (15 of 15 across the 3-, 4- and 5-member captures, the review's even `four`
+  too), so a follow-up may model it as one fixed extra frame, so the menus' decorations fall a frame further behind each event: the wave's best lag
   in `odd-tours` is -1 from 27,570, -2 from 35,268, -3 from 49,381, -4 from 53,631 and past 4
   in window 1 (the arrow's spin -1 to -4); in `five` past 4 within the first event, with the
   palette cycle 2 frames off from 19,783 (the reviewer's `drift.py`). In the same class native

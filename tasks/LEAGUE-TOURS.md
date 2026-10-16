@@ -2,10 +2,12 @@
 
 ## Assignment
 
-- Status: **claimed** 14 October 2026 on main `ceb50cf` (Claude Code desktop app, Claude Opus 5.5
+- Status: **accepted** 16 October 2026 (tier 1, [#81](https://github.com/malmazuke/unirally-reconstruction/pull/81),
+  review round 2 returned only for Linux CI, fixed in `9cf5541`), integrated by merge commit.
+  Claimed 14 October 2026 on main `ceb50cf` (Claude Code desktop app, Claude Opus 5.5
   `claude-opus-5-5`; coordinator and integrator; a worker subagent implements, a fresh subagent
   reviews). Queued by [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 6). Weekly usage at
-  claim: recorded in the handoff.
+  claim 28%.
 - Choice: R-0089's next queue item and the largest player-visible gap left there; ahead of the
   smaller RECORD-SCREENS and NAME-CHECK, SPLIT-HUNTER-PICTURES and the infrastructure task
   GATES-AGAINST-MAIN. No other session holds a claim. The user asked for the next task after the
@@ -180,3 +182,61 @@ That run took 12 hours, most of it the reviewer's `five` capture, about 160,000 
   The computer races are equal except `odd-tours` 30,250 (one update) and `five` window 1
   (the latch race).
 - `tour-cues` differs on 4 of 19,339 lines, as before.
+
+## Gates - head `246cb3e` (main `local/evidence/league-tours/gates-246cb3e.out`)
+
+These are MENU-INPUT's gates plus this task's `checks.sh`, run against main `ceb50cf`'s binaries
+`base-ceb50cf/` (pack v40 for the candidate, v39 for main). They ran from 22:20 to 01:57 UTC on
+15-16 October 2026, from the task worktree, as `league_frozen.py` requires.
+- **Builds and suites.** Four presets build, and ctest passes 41 of 41 on each. Both synthetic
+  suites pass. The v1 contracts, hidden app runs and the front end pass. Fuzz is as on main (40
+  aborts, a recorded non-pass).
+- **Differential gates.** The eleven differential gates pass with main's row digests. The race
+  sweep has 432 runs and 0 differences. The front-end sweep has 149 of 179 equal to main, the
+  rest all `league/`.
+- **Earlier tasks.** Every earlier comparison and schedule is as at `876aa89`, which equals MENU-INPUT's
+  `84036e7` run except two improvements: `zzap-long`'s result pictures (800 of 800) and
+  MENU-INPUT's `awards-press` (700 of 700). The league frozen pictures pass.
+- **This task's captures.** They give the results in "Review round 1". `tour-cues` differs on
+  4 of 19,339 lines.
+- **Static checks.** 577 tooling tests pass, no function is over 80 lines, and the native
+  symbols are current.
+- **Hosted CI.** On `246cb3e`, Linux GCC failed on a sign conversion in `cartridge_ram.cpp`,
+  which the reviewer found. It is fixed in `9cf5541`, with app-debug ctest 41 of 41, and CI is
+  green on all three checks.
+
+## Review round 2 (returned for Linux CI only)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/81#pullrequestreview-5542258501)
+  of `246cb3e`. The verdict was return only because the Linux build failed; every behaviour
+  reproduced, and a reply naming the fix commit suffices.
+  - The bonus fix holds on `five` and on a new four-member league `four`, whose stunt event has
+    wipeouts: 8 races and 33,772 rows equal, league fields equal over 2,063 frames, where main
+    diverges from 42,905.
+  - `$0859` is equal, and `backs` has 3,797 of 3,800 pictures equal.
+  - The two recorded limits are judged honest and acceptable.
+- **Fixed in `9cf5541`:** the GCC sign conversion. Clang does not flag this case, so hosted CI
+  is the check.
+- **Advisories, applied in R-0098 in the closing commit:**
+  - the pairs a frame apart in every observed event (15 of 15, `four` included), with the
+    follow-up free to model it as one fixed frame;
+  - who writes `$0827`;
+  - the one-player overrun as read from the listing only.
+
+## Handoff (closeout)
+
+- **Commits.** The claim `3e0b69b`; the worker's `45a6582` to `876aa89`; round 1 `b8a1131` to
+  `b6c00e1`, `14c8e8f`, `0ec076d` and `246cb3e`; round 2 `9cf5541`; then this closing record.
+- **Cleanup by the closing session.**
+  - It moves the worktree's `artifacts/league-tours/` (gate logs) to main
+    `artifacts/league-tours-integration/` with `closeout.json`.
+  - It deletes both worktrees' build output, removes `.worktrees/league-tours` and
+    `.worktrees/league-tours-review` and the local branch.
+  - Captures stay in main `local/evidence/league-tours/` and `league-tours-review/`, the
+    evidence of a merged task, under D-0011.
+- **Queued follow-ups.**
+  - [PODIUM-RETURN-TIMING](PODIUM-RETURN-TIMING.md): the podium's way back, the pairs a frame
+    apart, and R-0098's other frame-overrun effects.
+  - [PODIUM-AUDIO](PODIUM-AUDIO.md): the podium's own music.
+  - SPLIT-HUNTER-PICTURES gains three ready captures. The track-41 latch race stays a recorded
+    hardware-timing limit, as R-0095's DOWNER does.
