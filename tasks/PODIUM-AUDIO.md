@@ -124,4 +124,23 @@ Record: [R-0099](../docs/research/R-0099-podium-audio.md). Evidence: main
   - the podium's way back a frame late (PODIUM-RETURN-TIMING);
   - a press on the second or third pass, from the listing only;
   - `$1365` assumed 0.
-- Next: the coordinator's gates and the tier-1 review.
+- Final checks at `63ce259` (`final_checks.sh`, main `local/evidence/podium-audio/final-63ce259.out`
+  and `final-63ce259/checks.out`, 23:08-23:31 UTC on 16 October 2026):
+  - app-debug, lab-debug and lab-release build; ctest passes 41 of 41 on app-debug and lab-debug;
+  - clang-tidy reports 0 warnings and 0 errors on `audio_cued_scenes.cpp` and
+    `league_completion.cpp`, with no function over 80 lines; clang-format reports 0 warnings;
+  - `coverage native-symbols --check` is current, with 0 uncited addresses, and the map tooling
+    tests pass;
+  - `checks.sh` gives the tables above, and LEAGUE's frozen gate (`league_frozen.py`, pack v40)
+    passes.
+  - Not run by the worker: the synthetic suite, the coordinator's gates, and the ASan presets
+    (unavailable on this host).
+- Evidence housekeeping:
+  - The redundant full capture `full-tour-full` is stripped to its CPU rows; its first cue capture
+    keeps the same PCM.
+  - `tour-cues-full`'s events are gzipped, with `SHA256SUMS` beside them.
+  - The evidence directory is about 6 GB.
+  - Main's toolchain manifest is unchanged: no bootstrap ran in the worktree (`local/` is linked),
+    and a backup is in the evidence directory.
+- Next: the coordinator's gates and the tier-1 review. A follow-up worth queueing is the app's
+  scripted replay of two-human league races (above).
