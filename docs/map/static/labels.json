@@ -389,6 +389,18 @@
   ]
  },
  {
+  "address": "$80:85E8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8085E8",
+  "native": [
+   "src/core/league_completion.cpp:leaves_podium"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$80:8638",
   "class": "observed",
   "comment": "instruction start",
@@ -19535,8 +19547,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_82AA75",
+  "native": [
+   "src/core/league_completion.cpp:leaves_podium"
+  ],
   "source_records": [
    "docs/research/R-0096-demo-audio.md",
+   "docs/research/R-0099-podium-audio.md",
    "tasks/DEMO-AUDIO.md"
   ]
  },
@@ -19546,6 +19562,7 @@
   "comment": "instruction start",
   "label": "loc_82AA7D",
   "native": [
+   "src/core/league_completion.cpp:leaves_podium",
    "src/core/race_update.cpp:release_settled_player",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
   ],
@@ -19559,7 +19576,8 @@
   "comment": "instruction start",
   "label": "loc_82AAA4",
   "native": [
-   "src/core/input_timer.cpp:sample_controller"
+   "src/core/input_timer.cpp:sample_controller",
+   "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -19572,7 +19590,8 @@
   "comment": "instruction start",
   "label": "loc_82AADF",
   "native": [
-   "src/core/input_timer.cpp:sample_controller"
+   "src/core/input_timer.cpp:sample_controller",
+   "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -19588,6 +19607,7 @@
   "label": "loc_82AAE2",
   "native": [
    "src/core/input_timer.cpp:sample_controller",
+   "src/core/league_completion.cpp:leaves_podium",
    "src/core/race_update.cpp:read_player_buttons"
   ],
   "source_records": [
@@ -19602,7 +19622,8 @@
   "comment": "instruction start",
   "label": "loc_82AB1A",
   "native": [
-   "src/core/input_timer.cpp:sample_controller"
+   "src/core/input_timer.cpp:sample_controller",
+   "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
    "docs/research/R-0010-input-timer.md"
@@ -19614,7 +19635,8 @@
   "comment": "instruction start",
   "label": "loc_82AB20",
   "native": [
-   "src/core/input_timer.cpp:sample_controller"
+   "src/core/input_timer.cpp:sample_controller",
+   "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -19627,7 +19649,8 @@
   "comment": "instruction start",
   "label": "loc_82AB36",
   "native": [
-   "src/core/input_timer.cpp:sample_controller"
+   "src/core/input_timer.cpp:sample_controller",
+   "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -19642,7 +19665,8 @@
   "comment": "instruction start",
   "label": "loc_82AB52",
   "native": [
-   "src/core/input_timer.cpp:sample_controller"
+   "src/core/input_timer.cpp:sample_controller",
+   "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -19657,7 +19681,8 @@
   "comment": "instruction start",
   "label": "loc_82AB59",
   "native": [
-   "src/core/input_timer.cpp:sample_controller"
+   "src/core/input_timer.cpp:sample_controller",
+   "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -19671,6 +19696,7 @@
   "comment": "routine start",
   "label": "sub_82AB5C",
   "native": [
+   "src/core/league_completion.cpp:leaves_podium",
    "src/core/race_update.cpp:release_settled_opponent",
    "src/core/race_update.cpp:run_pause_menu"
   ],
@@ -19684,6 +19710,7 @@
   "comment": "instruction start",
   "label": "loc_82AB62",
   "native": [
+   "src/core/league_completion.cpp:leaves_podium",
    "src/core/race_update.cpp:release_settled_opponent",
    "src/core/race_update.cpp:run_pause_menu",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
@@ -19700,6 +19727,7 @@
   "comment": "instruction start",
   "label": "loc_82AB6A",
   "native": [
+   "src/core/league_completion.cpp:leaves_podium",
    "src/core/race_demo_controls.cpp:demo_rider",
    "src/core/race_update.cpp:read_second_rider_controls",
    "src/core/race_update.cpp:release_settled_opponent",
@@ -19717,6 +19745,7 @@
   "comment": "routine start",
   "label": "sub_82AB6F",
   "native": [
+   "src/core/league_completion.cpp:leaves_podium",
    "src/core/opponent_ai.cpp:update_opponent_controller",
    "src/core/race_demo_controls.cpp:demo_rider",
    "src/core/race_demo_controls.cpp:exit_demo",
@@ -19739,6 +19768,7 @@
   "comment": "instruction start",
   "label": "loc_82AB91",
   "native": [
+   "src/core/league_completion.cpp:leaves_podium",
    "src/core/race_demo_controls.cpp:demo_rider",
    "src/core/race_update.cpp:read_second_pad",
    "src/core/race_update.cpp:read_second_rider_controls",
@@ -19760,7 +19790,8 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20929,7 +20960,8 @@
    "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames"
   ],
   "source_records": [
-   "docs/research/R-0094-name-cheats.md"
+   "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20938,7 +20970,8 @@
   "comment": "instruction start",
   "label": "loc_82DDDE",
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -20964,15 +20997,22 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_82DE06",
+  "native": [
+   "src/core/league_completion.cpp:league_podium_entry_frame"
+  ],
   "source_records": [
    "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
-  "address": "$82:DE43",
+  "address": "$82:DE10",
   "class": "observed",
   "comment": "instruction start",
-  "label": "loc_82DE43",
+  "label": "loc_82DE10",
+  "native": [
+   "src/core/league_completion.cpp:league_podium_entry_frame",
+   "src/core/league_completion.cpp:leaves_podium"
+  ],
   "source_records": [
    "docs/research/R-0099-podium-audio.md"
   ]
@@ -20982,6 +21022,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_82DE48",
+  "native": [
+   "src/core/league_completion.cpp:leaves_podium"
+  ],
   "source_records": [
    "docs/research/R-0099-podium-audio.md"
   ]
@@ -24647,6 +24690,21 @@
   ]
  },
  {
+  "address": "$83:CA02",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CA02",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:idle_demo_loading_frames",
+   "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
+   "src/core/front_end_runner.cpp:start_race"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
   "address": "$83:CA08",
   "class": "observed",
   "comment": "instruction start",
@@ -24698,7 +24756,8 @@
   "native": [
    "src/core/audio_cpu_upload.cpp:upload_of",
    "src/core/audio_cue.hpp:AudioSessionLoad",
-   "src/core/audio_cued_scenes.cpp:start_race_music"
+   "src/core/audio_cued_scenes.cpp:start_race_music",
+   "src/core/front_end.hpp:LeagueSetup::podium_music_passes"
   ],
   "source_records": [
    "docs/research/R-0099-podium-audio.md"
@@ -24719,6 +24778,20 @@
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:CAAE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CAAE",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:start_race_music"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -26043,6 +26116,23 @@
   ],
   "source_records": [
    "docs/research/R-0096-demo-audio.md"
+  ]
+ },
+ {
+  "address": "$83:E276",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E276",
+  "native": [
+   "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_sound.cpp:demo_fade",
+   "src/core/race_sound.hpp:demo_fade",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -28513,20 +28603,6 @@
   ]
  },
  {
-  "address": "$83:F942",
-  "class": "observed",
-  "comment": "instruction start",
-  "label": "loc_83F942",
-  "native": [
-   "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
-   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
-   "src/core/race_hud.hpp:classic_pause_menu_closed"
-  ],
-  "source_records": [
-   "docs/research/R-0099-podium-audio.md"
-  ]
- },
- {
   "address": "$83:F945",
   "class": "observed",
   "comment": "instruction start",
@@ -28601,7 +28677,8 @@
   ],
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md",
-   "docs/research/R-0094-name-cheats.md"
+   "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -28731,7 +28808,8 @@
    "src/core/front_end.hpp:FrontEndContent::name_cheats"
   ],
   "source_records": [
-   "docs/research/R-0094-name-cheats.md"
+   "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {
@@ -28830,6 +28908,15 @@
   ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FBB5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FBB5",
+  "source_records": [
+   "docs/research/R-0099-podium-audio.md"
   ]
  },
  {

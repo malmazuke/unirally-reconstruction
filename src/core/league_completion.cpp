@@ -110,9 +110,18 @@ void move_continue_arrow(FrontEndState& state, std::uint16_t pad) {
     aim_continue_arrow(state);
 }
 
+// $82:DE10-DE5B, the loop's exit test on the pad words `$82:AA75-AC4C` sets from `$0311-$0314`
+// (`$80:85E8-85FD`, read each frame): any of A, X, L, R, B, Y, Select and Start on either pad, or
+// Left or Right held on either pad (`$0319`, `$031B`: 0 Left, 2 Right, 1 neither). Up and Down
+// never count (R-0099: rv-up-pad2).
+bool leaves_podium(FrontEndPads pads) {
+    constexpr std::uint16_t exit_buttons = 0xf3f0; // all but Up (0x0800) and Down (0x0400)
+    return ((pads.one | pads.two) & exit_buttons) != 0;
+}
+
 // $82:DEBC-DEFE, after a pass's poses: the loop counts its passes to 8 in `$1365`, and the first
 // three each send effect gain 255, music gain 127 and the music start with eight dispatcher calls
-// (R-0099). A pass that leaves on a press returns before it ($82:DE45).
+// (R-0099). A pass that leaves on its exit test returns before it ($82:DE45).
 void podium_music_pass(FrontEndState& state) {
     constexpr std::uint16_t counted_passes = 8, music_passes = 3;
     auto& passes = state.league.podium_music_passes;
@@ -143,7 +152,8 @@ void enter_league_podium(FrontEndState& state) {
     state.screen = FrontEndScreen::league_podium_entry;
 }
 
-void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& content) {
+void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& content,
+                               FrontEndPads pads) {
     const auto frame = state.script_frame;
     if (frame < 7) {
         state.registers.brightness = static_cast<std::uint8_t>(15 - frame * 2);
@@ -169,7 +179,10 @@ void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& cont
     if (frame <= 98) state.registers.force_blank = true;
     if (frame == 98) setup_podium(state, content);
     if (frame >= 99) {
-        league_podium_frame(state, content, {});
+        // The loop's first pass reads the pads like every other ($82:DE06-DE45): a press held as
+        // the podium appears leaves before its music (R-0099: rv-press1).
+        league_podium_frame(state, content, pads);
+        if (state.screen != FrontEndScreen::league_podium_entry) return;
         fade_up(state, 1);
         if (frame == 99) state.screen = FrontEndScreen::league_podium;
     }
@@ -194,7 +207,7 @@ void league_podium_frame(FrontEndState& state, const FrontEndContent& content, F
     // The podium uses the race fade: one brightness step for each two NMI updates.
     fade_up(state, std::min<std::uint32_t>(15, state.script_frame + 1));
     copy_oam(state);
-    if (any_button_pressed(pads)) {
+    if (leaves_podium(pads)) {
         begin_menu_restore(state, content);
         state.screen = FrontEndScreen::league_podium_exit;
         return;

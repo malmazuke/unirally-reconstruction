@@ -1216,7 +1216,9 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::league_table_entry: league_table_entry_frame(state, content); break;
     case FrontEndScreen::league_awards: league_awards_frame(state, content, physical); break;
     case FrontEndScreen::league_table: league_table_frame(state, content, physical); break;
-    case FrontEndScreen::league_podium_entry: league_podium_entry_frame(state, content); break;
+    case FrontEndScreen::league_podium_entry:
+        league_podium_entry_frame(state, content, physical);
+        break;
     case FrontEndScreen::league_podium: league_podium_frame(state, content, physical); break;
     case FrontEndScreen::league_podium_exit: league_podium_exit_frame(state, content); break;
     case FrontEndScreen::league_continue_entry: league_continue_entry_frame(state, content); break;

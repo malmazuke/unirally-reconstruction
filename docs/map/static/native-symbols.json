@@ -236,6 +236,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:85E8",
+   "native": [
+    "src/core/league_completion.cpp:leaves_podium"
+   ],
+   "range_ends": [
+    "$80:85FD"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:8638",
    "native": [
     "src/core/presentation.cpp:race_scroll"
@@ -9786,6 +9796,16 @@
    "region": "rom"
   },
   {
+   "address": "$82:AA75",
+   "native": [
+    "src/core/league_completion.cpp:leaves_podium"
+   ],
+   "range_ends": [
+    "$82:AC4C"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:AA7D",
    "native": [
     "src/core/race_update.cpp:release_settled_player",
@@ -10329,6 +10349,26 @@
    "address": "$82:DDD5",
    "native": [
     "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DE06",
+   "native": [
+    "src/core/league_completion.cpp:league_podium_entry_frame"
+   ],
+   "range_ends": [
+    "$82:DE45"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DE10",
+   "native": [
+    "src/core/league_completion.cpp:leaves_podium"
+   ],
+   "range_ends": [
+    "$82:DE5B"
    ],
    "region": "rom"
   },
@@ -12748,6 +12788,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:CA02",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:CA08",
    "native": [
     "src/core/audio_cue.hpp:race_song_count",
@@ -12784,6 +12831,13 @@
    ],
    "range_ends": [
     "$83:CBEE"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:CA69",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes"
    ],
    "region": "rom"
   },
@@ -15242,6 +15296,7 @@
    "address": "$0311",
    "native": [
     "src/core/input_timer.hpp:ControllerSample::low_image",
+    "src/core/league_completion.cpp:leaves_podium",
     "src/core/race_update.cpp:run_skipped_update"
    ],
    "range_ends": [
@@ -15266,13 +15321,15 @@
   {
    "address": "$0319",
    "native": [
-    "src/core/input_timer.hpp:ControllerSample::horizontal"
+    "src/core/input_timer.hpp:ControllerSample::horizontal",
+    "src/core/league_completion.cpp:leaves_podium"
    ],
    "region": "wram"
   },
   {
    "address": "$031B",
    "native": [
+    "src/core/league_completion.cpp:leaves_podium",
     "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_update.cpp:read_second_pad"
    ],
@@ -20096,7 +20153,9 @@
   },
   "src/core/front_end.hpp:LeagueSetup::podium_music_passes": {
    "rom": [
-    "$82:DEBC"
+    "$82:DEBC",
+    "$83:CA02",
+    "$83:CA69"
    ],
    "wram": [
     "$1365"
@@ -21834,6 +21893,7 @@
   "src/core/league_completion.cpp:league_podium_entry_frame": {
    "rom": [
     "$80:99B7",
+    "$82:DE06",
     "$82:E06F"
    ]
   },
@@ -21850,6 +21910,18 @@
    ],
    "wram": [
     "$0A5D"
+   ]
+  },
+  "src/core/league_completion.cpp:leaves_podium": {
+   "rom": [
+    "$80:85E8",
+    "$82:AA75",
+    "$82:DE10"
+   ],
+   "wram": [
+    "$0311",
+    "$0319",
+    "$031B"
    ]
   },
   "src/core/league_completion.cpp:move_continue_arrow": {
@@ -28415,10 +28487,10 @@
   }
  },
  "totals": {
-  "addresses": 2031,
+  "addresses": 2037,
   "io_addresses": 11,
-  "native_symbols": 1486,
-  "rom_addresses": 1595,
+  "native_symbols": 1487,
+  "rom_addresses": 1601,
   "sram_addresses": 65,
   "wram_addresses": 360
  }
