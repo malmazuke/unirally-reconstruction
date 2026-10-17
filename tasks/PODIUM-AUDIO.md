@@ -2,10 +2,11 @@
 
 ## Assignment
 
-- Status: **claimed** 17 October 2026 on main `6c50ac1` (Claude Code desktop app, Claude Opus 5.5
-  `claude-opus-5-5`; coordinator and integrator; a worker subagent implements, a fresh subagent
-  reviews). Queued 16 October 2026 by [LEAGUE-TOURS](LEAGUE-TOURS.md) (R-0098). Weekly usage at
-  claim 14%.
+- Status: **accepted** 17 October 2026 (tier 1, [#82](https://github.com/malmazuke/unirally-reconstruction/pull/82),
+  review round 2 approved `b7efb93`), integrated by merge commit. Claimed 17 October 2026 on main
+  `6c50ac1` (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and
+  integrator; a worker subagent implements, a fresh subagent reviews). Queued 16 October 2026 by
+  [LEAGUE-TOURS](LEAGUE-TOURS.md) (R-0098). Weekly usage at claim 14%.
 - Choice: the smallest player-visible gap in the queue (the league's podium is silent), with its
   original schedule already captured (`tour-cues`); ahead of PODIUM-RETURN-TIMING (needs a
   cycle-count model), RECORD-SCREENS, NAME-CHECK, SPLIT-HUNTER-PICTURES and GATES-AGAINST-MAIN.
@@ -208,6 +209,58 @@ main `local/evidence/podium-audio/final-c8c358f.out` and `final-c8c358f/checks.o
   `0e39a79`'s. The review's three podium windows are equal too.
 - The driver check, anchors, PCM and the app run are as before (2,980 cued frames, no later drop).
 - LEAGUE's frozen gate passes.
-- Two untracked logs in the worktree root, `cond.log` and `league-frozen.log` from 14:29 AEDT, are
-  not this worker's runs (an earlier `checks.sh` run with a relative OUTDIR). They are left
-  untracked.
+- Two untracked logs in the worktree root, `cond.log` and `league-frozen.log` from 14:29 AEDT,
+  were the coordinator's: its first gate run invoked `checks.sh` with `bash`, not `zsh` (fixed in
+  `gates.sh`). The coordinator deleted them.
+
+## Review round 2 (approved `b7efb93`)
+
+Review: https://github.com/malmazuke/unirally-reconstruction/pull/82#pullrequestreview-5557217524
+(main `local/evidence/podium-audio-review/review-b7efb93.md`, by the same reviewer subagent).
+- Both findings fixed: `rv-press1`, `rv-press2` and `rv-up-pad2` equal the original's podium
+  windows, `leaves_podium` checked against `$82:DE10-DE5B` and `$82:AA75-AC4C`, and only the
+  podium's predicate changed.
+- Two new withheld captures equal the original: `rv-pad2-left` (Down held on pad 2 stays, Left
+  held on pad 2 leaves, title session at 11,604) and `rv-press3` (a press on the third pass leaves
+  before its music, title session at 11,506).
+- The reader's mode flags and the high bytes the 16-bit ORs read are 0 on the first 120 loop
+  frames of all 17 probed podiums (`podium_reader_flags.py`); a one-human league is untested.
+- The reproduced checks equal the worker's: 8 of 8 earlier podium windows, cue logs byte-identical
+  to `0e39a79`'s, the app run clean.
+- Advisories (no change required), taken into R-0099 in the records commit: finding 7 counts 17
+  podiums, not eight; `$1335` cannot change the exit test; the third pass's press is now captured.
+
+## Gates - head `b7efb93` (main `local/evidence/podium-audio/gates-b7efb93.out`)
+
+LEAGUE-TOURS' gates plus its and this task's `checks.sh`, against main `6c50ac1`'s binaries
+`base-6c50ac1/` (pack v40 for both), from the task worktree, 17 October 2026 04:53-09:25 UTC.
+- **Builds and suites.** Four presets build, and ctest passes 41 of 41 on each. Both synthetic
+  suites pass. The v1 contracts, hidden app runs and the front end pass. Fuzz is as on main (40
+  aborts, a recorded non-pass).
+- **Differential gates.** The eleven differential gates pass with main's row digests. The race
+  sweep has 432 runs and 0 differences. The front-end sweep has 179 of 179 equal to main.
+- **Earlier tasks.** Every earlier comparison, schedule and restore check is as in LEAGUE-TOURS'
+  `246cb3e` run. The DEMO-AUDIO app run drops only the boot's silence (2,815 pairs, peak 0; the
+  first run on `0e39a79`, under the reviewer's builds, 3,775). LEAGUE-TOURS' `checks.sh` reads
+  `tour-cues` with its own derivation, which hides the first pass's words, so it now shows 5
+  frames, the podium's 4 of them the lines R-0099 finding 6 explains; with that derivation's
+  conventions applied to native's log only 10603 differs, as on main.
+- **This task's `checks.sh`.** Every podium window equal in the six schedules and the review's
+  three captures; the driver check, anchors, PCM and app run as in R-0099. The first gate run, on
+  `0e39a79`, ran `checks.sh` with the wrong shell; the worker's `final_checks.sh` measured that
+  head instead.
+- CI on `b7efb93`: `changes`, `lab (macos-15)` and `lab (ubuntu-24.04)` pass.
+
+## Closeout
+
+The pull request, its merge commit and check runs are in ignored main
+`artifacts/podium-audio-integration/closeout.json`. The closing session:
+- keeps main `local/evidence/podium-audio/` (6.0 GB: the schedules' captures `checks.sh` reads,
+  `tour-cues-full` for the driver check, `base-6c50ac1/`) and `local/evidence/podium-audio-review/`
+  (1.8 GB, the review's captures, which `checks.sh` reads);
+- moves the worktree's gate logs (`artifacts/podium-audio/gates-*`, `final-*`) to main
+  `artifacts/podium-audio-integration/`, and deletes the rest of the worktree's `artifacts/`
+  (scratch: app runs, PCM and disassembly outputs no record cites) and both worktrees' build
+  output;
+- removes `.worktrees/podium-audio` and `.worktrees/podium-audio-review` and the local branch
+  `task/podium-audio` (GitHub deletes the merged head branch).

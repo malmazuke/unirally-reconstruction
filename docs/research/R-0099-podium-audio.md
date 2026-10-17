@@ -113,8 +113,11 @@ reads each schedule's first capture, which keeps the PCM.
      `$032D`) and B, Y, Select, Start (`$0331`, `$0325`, `$0335`, `$0339`), and `$0319` is 0 for
      Left, 2 for Right and 1 for neither. Pad 2 gives the same in `$031F`-`$033B` and `$031B`.
    - Pad 2 is read while `$7E:212C` is set, or `$12E1` and `$0C6D` are clear; pad 1 is cleared when
-     `$12DF` is set; `$1335` reverses left and right (`$82:AC5A`). All five are 0 on every frame of
-     the eight probed podiums' first 60 passes, so both pads are read as they are.
+     `$12DF` is set; `$1335` reverses left and right (`$82:AC5A`). All five, and the high bytes the
+     test's 16-bit ORs also read, are 0 on every frame of the first 120 loop frames of all 17
+     probed podiums (review round 2, `podium_reader_flags.py`), so both pads are read as they are.
+     `$1335` swaps button pairs and maps `$0319` to 2 minus `$0319`, which keeps 1 at 1, so it
+     cannot change the exit test.
    - `$82:DE10-DE45` leaves if any of the sixteen button flags is set (a 16-bit OR; the bytes
      between them are 0 in the probes). `$82:DE48-DE5B` leaves unless both `$0319` and `$031B` are
      1, that is while Left or Right is held on either pad.
@@ -220,14 +223,17 @@ reads each schedule's first capture, which keeps the PCM.
 - **The podium's way back a frame late** (R-0098, PODIUM-RETURN-TIMING). The way back's title
   session keeps its frame, but in about a third of podiums the original's later cues are a frame
   later than native's until the next session (`pa-t-crawler` 36,998-38,554, for example).
-- **Presses on the first and second passes** are captured (`rv-press1`, `rv-press2`). A press on
-  the third pass, which leaves before its music, is from the listing only.
+- **Presses on every music pass** are captured: the first and second (`rv-press1`, `rv-press2`)
+  and, in review round 2, the third (`rv-press3`, the way back's title session at 11,506), each
+  leaving before that pass's music. `rv-pad2-left` (Down held on pad 2 stays, then Left held on
+  pad 2 leaves, the title session at 11,604) confirms the second pad's Left and Right.
 - **`$1365` at the podium's entry** is 0 in all 17 probed podiums (finding 3), but the routine
   that clears it is not identified. A podium entered with another value would send fewer music
   starts, or none. That is not observed, and native assumes 0.
-- **The exit test's other inputs.** If `$12DF`, `$12E1`, `$0C6D`, `$7E:212C` or `$1335` were set
-  at a podium, a pad would be ignored or reversed. All are 0 in every probed podium, and native
-  assumes so.
+- **The exit test's other inputs.** If `$12DF` were set at a podium, pad 1 would be ignored; if
+  `$12E1` or `$0C6D` were set with `$7E:212C` clear, pad 2 would be. All are 0 in every probed
+  podium, and native assumes so. Every probed league has two humans; a league with one human,
+  where pad 2 might be gated off, is not captured.
 - **`$0545`'s branch** at `$82:DDDE-DDE7`, which skips the whole podium (the picture, the session
   and the loop), is inferred, never observed. Native has no such branch.
 - **The way back after an early exit.** In `rv-press1`, `rv-press2` and `rv-up-pad2` the cues after
