@@ -236,6 +236,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:85E8",
+   "native": [
+    "src/core/league_completion.cpp:leaves_podium"
+   ],
+   "range_ends": [
+    "$80:85FD"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:8638",
    "native": [
     "src/core/presentation.cpp:race_scroll"
@@ -9786,6 +9796,16 @@
    "region": "rom"
   },
   {
+   "address": "$82:AA75",
+   "native": [
+    "src/core/league_completion.cpp:leaves_podium"
+   ],
+   "range_ends": [
+    "$82:AC4C"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:AA7D",
    "native": [
     "src/core/race_update.cpp:release_settled_player",
@@ -10333,6 +10353,55 @@
    "region": "rom"
   },
   {
+   "address": "$82:DE06",
+   "native": [
+    "src/core/league_completion.cpp:league_podium_entry_frame"
+   ],
+   "range_ends": [
+    "$82:DE45"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DE10",
+   "native": [
+    "src/core/league_completion.cpp:leaves_podium"
+   ],
+   "range_ends": [
+    "$82:DE5B"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DE45",
+   "native": [
+    "src/core/league_completion.cpp:podium_music_pass"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DEBC",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
+    "src/core/league_completion.cpp:podium_music_pass"
+   ],
+   "range_ends": [
+    "$82:DEFE"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DEE2",
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:podium_load_anchor"
+   ],
+   "range_ends": [
+    "$82:DEFE"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:DF05",
    "native": [
     "src/core/credits_name.cpp:credits_picture_frame"
@@ -10368,6 +10437,35 @@
    ],
    "range_ends": [
     "$82:E06E"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:E06F",
+   "native": [
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/league_completion.cpp:league_podium_entry_frame",
+    "src/core/league_completion.cpp:podium_session_frame"
+   ],
+   "range_ends": [
+    "$82:E102"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:E07C",
+   "native": [
+    "src/core/audio_cued_scenes.cpp:podium_load_anchor"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:E099",
+   "native": [
+    "src/core/audio_cued_scenes.cpp:end_podium_session"
+   ],
+   "range_ends": [
+    "$82:E102"
    ],
    "region": "rom"
   },
@@ -12690,6 +12788,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:CA02",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:CA08",
    "native": [
     "src/core/audio_cue.hpp:race_song_count",
@@ -12726,6 +12831,13 @@
    ],
    "range_ends": [
     "$83:CBEE"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:CA69",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes"
    ],
    "region": "rom"
   },
@@ -15184,6 +15296,7 @@
    "address": "$0311",
    "native": [
     "src/core/input_timer.hpp:ControllerSample::low_image",
+    "src/core/league_completion.cpp:leaves_podium",
     "src/core/race_update.cpp:run_skipped_update"
    ],
    "range_ends": [
@@ -15208,13 +15321,15 @@
   {
    "address": "$0319",
    "native": [
-    "src/core/input_timer.hpp:ControllerSample::horizontal"
+    "src/core/input_timer.hpp:ControllerSample::horizontal",
+    "src/core/league_completion.cpp:leaves_podium"
    ],
    "region": "wram"
   },
   {
    "address": "$031B",
    "native": [
+    "src/core/league_completion.cpp:leaves_podium",
     "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_update.cpp:read_second_pad"
    ],
@@ -17248,6 +17363,8 @@
   {
    "address": "$1365",
    "native": [
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
+    "src/core/league_completion.cpp:podium_music_pass",
     "src/core/race_sound.hpp:pause_frame"
    ],
    "region": "wram"
@@ -18780,6 +18897,7 @@
     "$80:99BE",
     "$80:FADF",
     "$82:8035",
+    "$82:DEE2",
     "$83:A923",
     "$83:CD6E",
     "$83:CD9F",
@@ -18803,6 +18921,7 @@
     "$80:A09A",
     "$80:A0F7",
     "$82:807E",
+    "$82:E06F",
     "$83:A507",
     "$83:A614",
     "$83:A721",
@@ -18842,11 +18961,22 @@
     "$83:E26E"
    ]
   },
+  "src/core/audio_cued_scenes.cpp:end_podium_session": {
+   "rom": [
+    "$82:E099"
+   ]
+  },
   "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor, pause_fade_anchor, pause_continue_anchor": {
    "rom": [
     "$80:FADF",
     "$83:CD6E",
     "$83:CD9F"
+   ]
+  },
+  "src/core/audio_cued_scenes.cpp:podium_load_anchor": {
+   "rom": [
+    "$82:DEE2",
+    "$82:E07C"
    ]
   },
   "src/core/audio_cued_scenes.cpp:split_finish_fade_anchor": {
@@ -20019,6 +20149,16 @@
   "src/core/front_end.hpp:LeagueSetup::more_pairs": {
    "rom": [
     "$80:AFC3"
+   ]
+  },
+  "src/core/front_end.hpp:LeagueSetup::podium_music_passes": {
+   "rom": [
+    "$82:DEBC",
+    "$83:CA02",
+    "$83:CA69"
+   ],
+   "wram": [
+    "$1365"
    ]
   },
   "src/core/front_end.hpp:LeagueSetup::slot": {
@@ -21752,7 +21892,9 @@
   },
   "src/core/league_completion.cpp:league_podium_entry_frame": {
    "rom": [
-    "$80:99B7"
+    "$80:99B7",
+    "$82:DE06",
+    "$82:E06F"
    ]
   },
   "src/core/league_completion.cpp:league_podium_exit_frame": {
@@ -21770,6 +21912,18 @@
     "$0A5D"
    ]
   },
+  "src/core/league_completion.cpp:leaves_podium": {
+   "rom": [
+    "$80:85E8",
+    "$82:AA75",
+    "$82:DE10"
+   ],
+   "wram": [
+    "$0311",
+    "$0319",
+    "$031B"
+   ]
+  },
   "src/core/league_completion.cpp:move_continue_arrow": {
    "rom": [
     "$80:B9B1",
@@ -21777,6 +21931,20 @@
    ],
    "wram": [
     "$009D"
+   ]
+  },
+  "src/core/league_completion.cpp:podium_music_pass": {
+   "rom": [
+    "$82:DE45",
+    "$82:DEBC"
+   ],
+   "wram": [
+    "$1365"
+   ]
+  },
+  "src/core/league_completion.cpp:podium_session_frame": {
+   "rom": [
+    "$82:E06F"
    ]
   },
   "src/core/league_completion.cpp:setup_podium": {
@@ -28319,10 +28487,10 @@
   }
  },
  "totals": {
-  "addresses": 2025,
+  "addresses": 2037,
   "io_addresses": 11,
-  "native_symbols": 1481,
-  "rom_addresses": 1589,
+  "native_symbols": 1487,
+  "rom_addresses": 1601,
   "sram_addresses": 65,
   "wram_addresses": 360
  }

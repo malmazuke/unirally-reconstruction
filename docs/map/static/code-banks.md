@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Instructions from observed | 35,735 |
 | Instructions from table | 65 |
 | Routines | 759 |
-| Routines cited by native code | 565 |
-| Routine bytes cited by native code | 72,002 |
+| Routines cited by native code | 567 |
+| Routine bytes cited by native code | 72,405 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-2124 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1432, mid 31, sub 451, unk 194 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 94, observed 1820, unknown 194.
+2156 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1456, mid 31, sub 459, unk 194 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 95, observed 1851, unknown 194.
 
 Cited addresses in `unknown` bytes:
 
@@ -239,9 +239,9 @@ Cited addresses in `unknown` bytes:
 | $83:F516 | docs/research/R-0078-pause-menu-picture.md, docs/research/R-0079-two-pad-pause.md, tasks/SPLIT-PAUSE-MENU.md |
 | $83:F616 | docs/research/R-0078-pause-menu-picture.md, tasks/CLASSIC-PAUSE-MENU.md |
 | $83:F636 | docs/research/R-0078-pause-menu-picture.md, tasks/CLASSIC-PAUSE-MENU.md |
-| $83:FB56 | docs/research/R-0094-name-cheats.md |
+| $83:FB56 | docs/research/R-0094-name-cheats.md, docs/research/R-0099-podium-audio.md |
 | $83:FB70 | docs/research/R-0094-name-cheats.md |
-| $83:FBF5 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
+| $83:FBF5 | docs/research/R-0077-one-player-audio.md, docs/research/R-0099-podium-audio.md, tasks/AUDIO-ONE-PLAYER.md, tasks/PODIUM-AUDIO.md |
 | $83:FC35 | docs/research/R-0096-demo-audio.md, tasks/DEMO-AUDIO.md, tasks/NEXT_SESSION.md |
 | $83:FC75 | docs/research/R-0076-first-race-audio.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-FIRST-RACE.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FCF5 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-TITLE-MENU.md |

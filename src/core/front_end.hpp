@@ -213,6 +213,10 @@ struct LeagueSetup {
     std::array<std::uint16_t, 8> award_points{};
     std::array<std::uint16_t, 3> podium_poses{0x0a45, 0x0a4d, 0x0a55};
     std::uint16_t podium_phase{};
+    // $1365: the podium loop's passes counted to 8; the first three start the music ($82:DEBC-DEFE,
+    // R-0099). A race leaves it 0x7F or 0xFF (`$83:CA02`, `$83:CA69`); a work-RAM clear on the
+    // podium entry's frame 7, 12 frames before the session, leaves it 0 (all 17 probed podiums).
+    std::uint16_t podium_music_passes{};
     bool after_podium{}; // $80:BEC6-BEE2: a tour choice goes straight to NOW PLAYING
     bool awards_press_seen{}, awards_left{}; // `$80:C206`'s press on two frames running
     bool more_pairs{}; // `$80:AFC3-AFE7`: another pair races before the awards

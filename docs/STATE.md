@@ -1,5 +1,28 @@
 # Project state
 
+**17 October 2026: PODIUM-AUDIO is accepted (tier 1, #82) and integrated by merge commit.**
+The league's podium now plays its music natively; before, it was silent.
+- **The session.** On the podium entry's frame 19 the original loads the medal award's sound set
+  (`$82:E06F`), polls the driver and sets effect gain 255. The pack already has the set (v40).
+- **The music.** The podium loop counts its passes in `$1365`; each of the first three sends
+  effect gain 255, music gain 127 and the music start with eight polls (`$82:DEBC-DEFE`), each
+  pass at its own clock (D-0010).
+- **The way out.** The review found two more differences in the same loop, both fixed: a press on
+  the first pass leaves before the music, and the exit test is the original's (A, X, L, R, B, Y,
+  Select, Start or Left/Right held on either pad, never Up or Down); native had tested pad 1 only
+  and counted Up and Down.
+
+Results: all 8 podiums in six captured schedules and the review's five press captures equal the
+original's cue schedule, frame waits included; the driver check equals on all 2,712,437 writes
+and 10,763,786 stereo pairs; 6 of 8 podiums are 88-99% of PCM windows within 1 dB; the app's
+producer plays through a podium with no drop after the boot's. Every gate and sweep equals main.
+
+Recorded limits: the music start reaches the driver a pass apart from the original in 2 of 8
+podiums (the driver's phase after the upload); the podium's way back a frame late stays with
+PODIUM-RETURN-TIMING. LEAGUE-TOURS' cue derivation hid the first pass's words (34 lines per podium,
+not 7). [R-0099](research/R-0099-podium-audio.md) and [PODIUM-AUDIO](../tasks/PODIUM-AUDIO.md)
+define the domain.
+
 **16 October 2026: LEAGUE-TOURS is accepted (tier 1, #81) and integrated by merge commit.**
 A league now plays natively through every tour, not only CRAWLER's:
 - **Tours.** After a podium, PICK TOUR's cursor starts on the next tour, Y returns to PICK TOUR,

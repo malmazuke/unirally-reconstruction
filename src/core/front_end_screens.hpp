@@ -277,7 +277,8 @@ void league_table_entry_frame(FrontEndState& state, const FrontEndContent& conte
 void league_table_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void choose_league_pair(FrontEndState& state);
 void enter_league_podium(FrontEndState& state);
-void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& content,
+                               FrontEndPads pads);
 void league_podium_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void league_podium_exit_frame(FrontEndState& state, const FrontEndContent& content);
 void league_continue_entry_frame(FrontEndState& state, const FrontEndContent& content);

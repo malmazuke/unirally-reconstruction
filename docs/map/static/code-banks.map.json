@@ -11935,6 +11935,7 @@
    ],
    "native": [
     "src/core/input_timer.cpp:sample_controller",
+    "src/core/league_completion.cpp:leaves_podium",
     "src/core/race_update.cpp:read_player_buttons",
     "src/core/race_update.cpp:release_settled_player",
     "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
@@ -11957,6 +11958,7 @@
     "Nmx"
    ],
    "native": [
+    "src/core/league_completion.cpp:leaves_podium",
     "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_update.cpp:read_second_rider_controls",
     "src/core/race_update.cpp:release_settled_opponent",
@@ -11981,6 +11983,7 @@
     "Nmx"
    ],
    "native": [
+    "src/core/league_completion.cpp:leaves_podium",
     "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_demo_controls.cpp:exit_demo",
@@ -13432,6 +13435,14 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:podium_load_anchor",
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
+    "src/core/league_completion.cpp:league_podium_entry_frame",
+    "src/core/league_completion.cpp:leaves_podium",
+    "src/core/league_completion.cpp:podium_music_pass"
+   ],
    "observed_entries": {},
    "start": "$82:DE06",
    "static_entries": {
@@ -13533,6 +13544,13 @@
    "end": "$82:E102",
    "mode_at_entry": [
     "Nmx"
+   ],
+   "native": [
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:end_podium_session",
+    "src/core/audio_cued_scenes.cpp:podium_load_anchor",
+    "src/core/league_completion.cpp:league_podium_entry_frame",
+    "src/core/league_completion.cpp:podium_session_frame"
    ],
    "observed_entries": {},
    "start": "$82:E06F",
@@ -16890,6 +16908,7 @@
     "src/core/credits_name.cpp:restart_total",
     "src/core/front_end.cpp:demo_title_frame",
     "src/core/front_end.cpp:idle_demo_loading_frames",
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
     "src/core/front_end.hpp:choose_race_song",
     "src/core/front_end_runner.cpp:start_race",
     "src/core/now_playing.cpp:race_fade_frame",
@@ -16917,7 +16936,8 @@
    "native": [
     "src/core/audio_cpu_upload.cpp:upload_of",
     "src/core/audio_cue.hpp:AudioSessionLoad",
-    "src/core/audio_cued_scenes.cpp:start_race_music"
+    "src/core/audio_cued_scenes.cpp:start_race_music",
+    "src/core/front_end.hpp:LeagueSetup::podium_music_passes"
    ],
    "observed_entries": {},
    "start": "$83:CA2D",
@@ -19178,18 +19198,18 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2124,
+  "cited_addresses": 2156,
   "cited_by_class": {
    "data": 16,
-   "inferred": 94,
-   "observed": 1820,
+   "inferred": 95,
+   "observed": 1851,
    "unknown": 194
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1432,
+   "loc": 1456,
    "mid": 31,
-   "sub": 451,
+   "sub": 459,
    "unk": 194
   },
   "conflicts": 0,
@@ -19209,9 +19229,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 86837,
-  "routine_bytes_cited_by_native_code": 72002,
+  "routine_bytes_cited_by_native_code": 72405,
   "routines": 759,
-  "routines_cited_by_native_code": 565,
+  "routines_cited_by_native_code": 567,
   "unknown": 31424,
   "unknown_share": 0.2397
  }
