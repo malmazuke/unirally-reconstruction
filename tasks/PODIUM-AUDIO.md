@@ -144,3 +144,70 @@ Record: [R-0099](../docs/research/R-0099-podium-audio.md). Evidence: main
     and a backup is in the evidence directory.
 - Next: the coordinator's gates and the tier-1 review. A follow-up worth queueing is the app's
   scripted replay of two-human league races (above).
+
+## Review round 1 (returned on `0e39a79`) - the fixes
+
+Review: https://github.com/malmazuke/unirally-reconstruction/pull/82#pullrequestreview-5556120775
+(main `local/evidence/podium-audio-review/review-0e39a79.md`). The reviewer's captures are in main
+`local/evidence/podium-audio-review/cues/`: `rv-press1`, `rv-press2` and `rv-up-pad2`, with their
+scripts. They are now part of `checks.sh`.
+
+1. **A press on the podium's first pass:** fixed in `c8c358f`.
+   - The entry's frame 99 ran the loop's first pass with no pads, but the original reads them on
+     every pass (`$82:DE06-DE45`). `league_podium_entry_frame` now takes the frame's pads and stops
+     when that pass leaves.
+   - `rv-press1` (A held over 11,490-11,509): the podium window is equal. That is 2 original lines,
+     the session and the way back at 11,504, with no music. Main differed on 3 frames there.
+   - Unit test: `league_tests` presses A on frame 99. There is no music, the screen is the way
+     back, and `$1365` stays 0.
+2. **The exit test:** fixed in `c8c358f`, at the coordinator's decision. `leaves_podium` is the
+   original's predicate, read from the listing:
+   - `$80:85E8-85FD` copies `$4218-$421B` each frame.
+   - `$82:AA75-AC4C` sets a flag per button and `$0319`/`$031B`, which are 0 for Left, 2 for
+     Right and 1 for neither.
+   - `$82:DE10-DE5B` leaves on any of A, X, L, R, B, Y, Select and Start of either pad, or while
+     Left or Right is held on either pad. Up and Down are never tested.
+   - The flags are the pad's state that frame (level, not edge). The pass reads them that frame,
+     with no latency beyond native's existing frame mapping; `rv-press1` and `rv-up-pad2` leave on
+     the original's frames.
+   - The reader's mode flags (`$12DF`, `$12E1`, `$0C6D`, `$7E:212C`, `$1335`) are 0 in all eight
+     probed podiums. Native assumes so (R-0099 Not covered).
+   - Only the podium's test changed. `any_button_pressed` (`$80:B6D3`) stays for its other users:
+     the award, the hunter ending, the stunt and race results.
+   - `rv-up-pad2` (Up on pad 1, then Start on pad 2): the podium window is equal, all 35 lines,
+     staying through the Up and leaving at 11,604. Main differed on 8 frames.
+   - Unit test: `podium_exit_test` presses each of the ten exit buttons on each pad (all leave),
+     Up and Down on either pad (none leave), and no press.
+3. **R-0099 corrected** (`c8c358f`):
+   - finding 3 says the loop leaves on its exit test;
+   - the new finding 7 covers the first pass and the predicate, with the review's captures as
+     evidence;
+   - Not covered now lists the third pass's press as from the listing only, the reader's flags,
+     and the way back after an early exit.
+- **Advisories, all done in `c8c358f`:**
+  - `front_end.hpp`'s comment and R-0099 finding 3 cite the `$1365` evidence. A race leaves it
+    0x7F or 0xFF. A work-RAM clear on the entry's frame 7, 12 frames before the session, zeroes it.
+    The review's `trace_1365.py`, rerun here, shows this in all 17 probed podiums (15 at 0x7F, 2 at
+    0xFF), each with the first pass 92 frames later. The clearing routine is not identified.
+  - `$0545`'s skip at `$82:DDDE-DDE7` is in finding 1 and Not covered.
+  - `league_tests.cpp` is formatted with `src/core/.clang-format` (0 warnings).
+  - `checks.sh` quotes every path, makes OUTDIR absolute, and refuses to run outside a worktree.
+    `final_checks.sh` now invokes it by its absolute path.
+- **Remaining on the review's captures:** after the way back's title session, `rv-press1`,
+  `rv-press2` and `rv-up-pad2` differ on 5, 3 and 5 frames (main 10, 3 and 80 there). These are
+  frame waits and the slide's sound a frame apart, R-0098's late way back (PODIUM-RETURN-TIMING).
+
+**Checks at `c8c358f`** (`final_checks.sh` under the heavy-run lock, 04:29-04:51 UTC on 17 October;
+main `local/evidence/podium-audio/final-c8c358f.out` and `final-c8c358f/checks.out`):
+- app-debug, lab-debug and lab-release build; ctest passes 41 of 41 on app-debug and lab-debug.
+- clang-tidy reports 0 warnings on `audio_cued_scenes.cpp`, `front_end.cpp` and
+  `league_completion.cpp`, and clang-format reports 0.
+- `native-symbols --check` is current (1,601 cited addresses, 0 without a record). The map is
+  regenerated for the new citations, and its tooling tests pass.
+- Every earlier podium window is still equal: 8 of 8, each candidate cue log byte-identical to
+  `0e39a79`'s. The review's three podium windows are equal too.
+- The driver check, anchors, PCM and the app run are as before (2,980 cued frames, no later drop).
+- LEAGUE's frozen gate passes.
+- Two untracked logs in the worktree root, `cond.log` and `league-frozen.log` from 14:29 AEDT, are
+  not this worker's runs (an earlier `checks.sh` run with a relative OUTDIR). They are left
+  untracked.
