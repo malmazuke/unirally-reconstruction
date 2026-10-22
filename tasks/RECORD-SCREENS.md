@@ -2,9 +2,17 @@
 
 ## Assignment
 
-- Status: **queued** 14 October 2026 by [MENU-INPUT](MENU-INPUT.md) (R-0097). Unclaimed.
+- Status: **claimed** 23 October 2026 on main `ff1efb6` (Claude Code desktop app, Claude Opus 5.5
+  `claude-opus-5-5`; coordinator and integrator; a worker subagent implements, a fresh subagent
+  reviews). Queued 14 October 2026 by [MENU-INPUT](MENU-INPUT.md) (R-0097). Weekly usage at claim 31%.
+- Choice: the user asked for this task by name. No other session holds a claim (the only remote
+  task branch is the merged `task/podium-audio`).
+- Branch `task/record-screens` in `.worktrees/record-screens`; evidence in main
+  `local/evidence/record-screens/`.
+- Task provider: Anthropic.
 - Milestone: M4 (original game coverage).
-- Review tier: **1** (menu state in `src/core`).
+- Review tier: **1** (menu state in `src/core`: the records screens' frame waits and exits, and the
+  rider word `$00CA`).
 - Dependencies: OPTIONS (R-0072), MENU-INPUT (R-0097), TWO-HUMAN-STUNTS (R-0095).
 
 ## Why
