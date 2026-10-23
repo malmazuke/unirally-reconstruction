@@ -4899,6 +4899,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:D83D",
+   "native": [
+    "src/core/high_scores.cpp:high_score_leaders"
+   ],
+   "range_ends": [
+    "$80:D849"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:D8C3",
    "native": [
     "src/core/high_scores.cpp:high_score_leaders"
@@ -10921,7 +10931,7 @@
   {
    "address": "$83:879B",
    "native": [
-    "src/core/race_result.cpp:score_race"
+    "src/core/race_result.cpp:race_result_exit_frame"
    ],
    "range_ends": [
     "$83:879E"
@@ -18601,6 +18611,7 @@
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
     "src/core/front_end_screens.hpp:cartridge_percentage",
+    "src/core/high_scores.cpp:high_score_leaders",
     "src/core/local_modes.cpp:versus_percentage"
    ],
    "region": "sram"
@@ -22000,11 +22011,13 @@
    "rom": [
     "$80:9719",
     "$80:D7CD",
+    "$80:D83D",
     "$80:D8C3",
     "$83:9D80"
    ],
    "sram": [
-    "$77:10F9"
+    "$77:10F9",
+    "$77:10FB"
    ]
   },
   "src/core/high_scores.cpp:high_scores_entry_frame": {
@@ -24576,6 +24589,7 @@
     "$80:F4B8",
     "$80:F8E7",
     "$83:879A",
+    "$83:879B",
     "$83:A923"
    ],
    "sram": [
@@ -24663,7 +24677,6 @@
    "rom": [
     "$80:D1E8",
     "$83:879A",
-    "$83:879B",
     "$83:87B6",
     "$83:8805",
     "$83:9EC8"
@@ -29236,10 +29249,10 @@
   }
  },
  "totals": {
-  "addresses": 2085,
+  "addresses": 2086,
   "io_addresses": 11,
   "native_symbols": 1530,
-  "rom_addresses": 1644,
+  "rom_addresses": 1645,
   "sram_addresses": 65,
   "wram_addresses": 365
  }

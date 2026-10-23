@@ -106,3 +106,36 @@ gates on main `ff1efb6`'s binaries `base-ff1efb6/`, pack v40 on both sides, plus
   main).
 - Tooling tests 577 passed; functions over 80 lines 0; native symbols current. Hosted CI on
   `b6fa277`: `changes`, `lab (macos-15)` and `lab (ubuntu-24.04)` pass.
+
+## Review round 1 (returned on `b6fa277`) - the fixes
+
+Review: main `local/evidence/record-screens-review/review-b6fa277.md`, with its captures
+`wr-track`, `wr-stats`, `wr-stats2` and `wr-1p-ca`. The fixes are in `66b8629`. Results come from
+`checks.sh` at `66b8629` (`artifacts/record-screens/checks-66b8629.out` in the worktree), which now
+also runs the review's four captures, their cartridge RAM (`records_check.py`) and the two sound
+schedules.
+
+1. **`$77:10FB` from every rider.** Fixed in `66b8629`. `$80:D83D-D849` stores each rider's wins
+   in `$77:10FB` before testing its races (checked in the listing). A rider with no races now
+   writes it too (`high_scores.cpp`). On `wr-stats2` at 1699, `10FB` is now 0 as in the original
+   (it was 1); `10F9` is 3 on both sides (main 0).
+2. **The 1P scoring's `$00CA` a frame earlier.** Fixed in `66b8629`. `$83:879B-879E` comes before
+   `JSR $83:A923` (checked in the listing), so native now writes it on the frame before the
+   scoring (`race_result.cpp`, `frame + 1 == scoring` in 1P). `wr-1p-ca`'s `$00CA` is now equal on
+   every frame (before: 3803 differed, 17 against 0). Pictures are 2600/2600 (main 2318).
+3. **RECORDS' entry overrun with dense statistics** (`$83:97BD`'s 48 percentages). Not fixed, as
+   agreed: recorded in R-0100's Not covered as a CPU-cycle frame overrun of the PODIUM-RETURN-TIMING
+   and NAME-CHECK class. `wr-stats2` is 517/800 on candidate and main alike, from 901.
+
+The review's other captures: `wr-track` 1150/1150 (main 551), sound 0 frames differ of 1562 lines
+(main 15); `wr-stats` 800/800 (main 358), sound 0 of 1091 (main 2). Every other `checks.sh` line is
+identical to the run at `2a15a8c`. The cartridge RAM byte `$77:10A7` still differs at the end of
+`wr-stats`, `wr-stats2` and `wr-track`, as on main (native's save does not write the markers' step,
+R-0100 Not covered).
+
+Checks at `66b8629`: ctest app-debug 41/41 and lab-debug 41/41; clang-tidy (LLVM 19) 0 warnings on
+`high_scores.cpp` and `race_result.cpp`; clang-format clean; `regen.sh` (five coverage inputs) and
+`coverage native-symbols --check` passed, 1645 cited and 0 without a record; tooling tests
+`test_native_symbols`, `test_static_map` and `test_tracks` OK. R-0100 is updated: finding 5's
+leaders no longer claim "exactly" and describe `10F9`/`10FB`; finding 6 gives the 1P write's frame;
+the Results add the review's captures; Not covered adds the entry overrun.

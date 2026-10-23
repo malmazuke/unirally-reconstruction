@@ -132,11 +132,15 @@ frame by frame, frame waits included (`diff_cues.py --waits`).
      OAM, the object colours (`$83:91F7`, assets 28 and 5 at 0xD0, 0xE0) and the back slide
      (`$80:E27E`); on its last frame the logo down and RECORDS' loop from its first pass. Native
      left on pad 1's B, Y, X, Start or A at once and printed the RECORDS menu again.
-   - The leaders (`$80:D7D5-D8F8`), exactly: every leader starts on rider 15 (`$80:D8C3` turns the
-     loops' counts into riders) and the worst averages at 7000. Races and losses (races less
-     wins) go to the last rider with `$83:97BD`'s largest, wins to the first. The win averages are
-     `$83:9D80`'s percentages of the riders with races (the halving below 655, and the last one
-     left in `$77:10F9`/`10FB`); best is the last of the highest, worst the first of the lowest.
+   - The leaders (`$80:D7D5-D8F8`): every leader starts on rider 15 (`$80:D8C3` turns the loops'
+     counts into riders) and the worst averages at 7000. Races and losses (races less wins) go to
+     the last rider with `$83:97BD`'s largest, wins to the first. The win averages are
+     `$83:9D80`'s percentages of the riders with races (the halving below 655); best is the last
+     of the highest, worst the first of the lowest. Every rider's wins go to `$77:10FB` before the
+     test for races (`$80:D83D-D849`), and only a rider with races writes `$77:10F9` and halves
+     both, so the cartridge RAM keeps the last such rider's races and rider 15's wins (review
+     round 1's `wr-stats2`: rider 15 with no race leaves `10FB` 0, where native at `b6fa277` left
+     rider 14's 1).
      The total score is the last of the highest; the score averages are score / races
      (`$80:9719`) over the riders with a score. With no race at all both worst averages are 0 and
      every leader SOMEONE. Native used 100 x wins / races, took the first of a tied best and
@@ -148,7 +152,9 @@ frame by frame, frame waits included (`diff_cues.py --waits`).
    - The lap result writes the rider (`$80:903E-9041`) and then the opponent (`$80:90D6-90D9`,
      every opponent, a computer's too); the stunt result writes the rider at the end of its tally
      (`$80:F224-F227`) and a second human's at the end of theirs (`$80:F2A9-F2AC`); the 1P
-     scoring writes the rider (`$83:879B-879E`). Those words are stored in 16-bit mode (`$00CB`
+     scoring writes the rider (`$83:879B-879E`) before its frame wait (`$83:A923`), so a frame
+     before the scoring itself (review round 1's `wr-1p-ca`: 3803, where native at `b6fa277`
+     wrote it on 3804). Those words are stored in 16-bit mode (`$00CB`
      takes `$017E` or `$0180`), which native does not keep.
    - NOW PLAYING pushes `$00CA` as its print begins (`$80:B194`) and pulls it back on Race or Y
      or X (`$80:B4BF-B4C0`), not on Exit. Race's value lasts the 7 frames until the race's setup
@@ -172,7 +178,7 @@ frame by frame, frame waits included (`diff_cues.py --waits`).
 
 ## Results
 
-`checks.sh` at `2a15a8c` (pack v40 on both sides; main is `ff1efb6`'s runner, `base-ff1efb6/`).
+`checks.sh` at `66b8629` (after review round 1's fixes; pack v40 on both sides; main is `ff1efb6`'s runner, `base-ff1efb6/`).
 "Other" is the candidate's differing menu frames outside the pictures.
 
 | Capture | Pictures equal (candidate / main) | Other (candidate) | Sound schedule (candidate / main) |
@@ -187,7 +193,15 @@ frame by frame, frame waits included (`diff_cues.py --waits`).
 | `rs-ca-np` | 1,950 of 1,950 / 1,675 | none | - |
 | `rs-podium-menu` | 1,000 of 1,000 from 12300 / 1,000 | the podium's own frames 11408-12305, as main (fields the podium does not keep) | 14,297: 1 frame (10603, the awards' frame wait) / 1 |
 
-`$00CA` is equal on every compared frame of every capture above and of MENU-INPUT's (below).
+Review round 1's captures (main `local/evidence/record-screens-review/`): `wr-track` 1,150 of
+1,150 (main 551; other: the grid prints past their frames), sound 1,562 lines 0 frames differ
+(main 15); `wr-stats` 800 of 800 (main 358; other: HIGH SCORES' print past its frame), sound 1,091
+lines 0 (main 2); `wr-stats2` 517 of 800 on candidate and main alike (RECORDS' entry overrun, Not
+covered), its cartridge RAM at 1699 equal but `$77:10A7` (`10F9` 3 and `10FB` 0 on both sides;
+main 0 and 0); `wr-1p-ca` 2,600 of 2,600 (main 2,318; the 1P result's OAM and text as main).
+
+`$00CA` is equal on every compared frame of every capture above, review round 1's `wr-1p-ca`
+included (which at `b6fa277` differed on 3803), and of MENU-INPUT's (below).
 MENU-INPUT's captures and its review's, candidate and main on pack v40, are as MENU-INPUT
 recorded: `w5` 3,800 of 3,800, `kb-input` 2,100, `league-pick` 2,400, `league-name` 2,143 of 2,400
 (the long-name lag), `opt-backs` 2,300, `warnings` 3,200, `records-input` 1,650, `scores-input`
@@ -205,6 +219,13 @@ the first rider.
   86 of its entry: `rs-track` 1163, 1186, 2113, 2136) and HIGH SCORES' leaders (the choice's frame:
   the text and the first printed objects, 2350 and 2650). Native prints each whole in one frame;
   no picture differs.
+- **RECORDS' entry with many races.** `$80:D527` calls `$83:97BD`, whose 48 `$83:9D80`
+  percentages (a software division each) run past RECORDS' entry frame when the riders have
+  dense statistics; the original's menus are then a frame behind native's to the end of the run
+  (review round 1's `wr-stats2` from 901: the arrow's spin and the decorations' phase, pictures
+  517 of 800 on candidate and main alike, HIGH SCORES' text and its pictures 1059-1342 equal). A
+  CPU-cycle frame overrun of the class PODIUM-RETURN-TIMING and NAME-CHECK are queued for; not
+  modelled, and on main too. With no statistics (`wr-stats`) or this task's saves there is no lag.
 - **Assets 29 and 30** (TRACK RECORDS' entry frame 62, colours 0x00-0x1F) are not in pack v40, and
   native skips them while the pack lacks them; the base colours overwrite them five frames later
   and no picture of the captures differs. A pack profile v41 would add them.
@@ -214,7 +235,8 @@ the first rider.
   as TRACK RECORDS leaves them (native keeps its own fields), are not compared.
 - **A saved `$77:10A7` of 14 or more**, which the menus do not write (HUNTER's ending uses the
   byte as its drop), starts the markers from 0; native's own save still writes the byte as the
-  loaded image or the cold start left it.
+  loaded image or the cold start left it (review round 1's `records_check.py`: `10A7` differs at
+  the end of `wr-stats`, `wr-stats2` and `wr-track`, as on main).
 - The name check and the long names' lag (NAME-CHECK), and every other item of R-0097's Not
   covered but the three above, are unchanged.
 
