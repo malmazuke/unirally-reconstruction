@@ -80,3 +80,29 @@ on TRACK RECORDS' entry frames 63 and 86, HIGH SCORES' choice frame), assets 29/
   Reproduction. The gates' `gates.sh` calls it.
 - Next: the coordinator's gates and review. Follow-ups: NAME-CHECK (queued); a pack v41 with assets
   29/30 if a later screen shows colours 0x00-0x1F there.
+
+## Gates - head `b6fa277` (main `local/evidence/record-screens/gates-b6fa277.out`)
+
+Run by the coordinator under `local/locks/heavy-run.sh` with `gates_and_synthetic.sh` (PODIUM-AUDIO's
+gates on main `ff1efb6`'s binaries `base-ff1efb6/`, pack v40 on both sides, plus this task's
+`checks.sh`), 02:58-08:16 UTC 23 October 2026. The worker's implementation ran 3 h 06 min
+(harness-measured).
+- Four presets build, ctest 41 of 41 each (ASan presets unavailable on this host; Linux CI covers
+  them). Synthetic suite passed on app-debug and lab-debug. v1 contracts, eight hidden app runs and
+  the front end passed. Fuzz as on main (40 seeds, 40 aborts: recorded non-pass).
+- Eleven differential gates passed with main's row digests. Race sweep 432 runs, 0 differences;
+  R-0076's seven cue schedules identical to main; every pause, two-pad, race-end, look, restart,
+  restore, track-sweep, idle-demo, CREDITS-NAME, WIPE-RAM, TWO-HUMAN-STUNTS, DEMO-AUDIO, MODE-AUDIO
+  and R-0077 result as on main.
+- Front-end sweep: 168 of 179 manifests equal to main. The 11 differing are all TRACK RECORDS or
+  HIGH SCORES: nine OPTIONS records manifests (state only, no sampled picture differs) and
+  `coverage-roadmap/mode-4` (from 1051) and `league/organic-two-recon` (from 6101), which both open
+  TRACK RECORDS: main shows the grid at once where the candidate runs the 88-frame entry.
+- MENU-INPUT's, LEAGUE-TOURS' and PODIUM-AUDIO's `checks.sh` as recorded (MENU-INPUT's twelve and
+  the review's nine captures equal to main or better; `awards-press` 700/700).
+- This task's `checks.sh`: as the checkpoint's table (`rv-records` 2100/2100, `rs-track`
+  2200/2200, `rs-high` 2300/2300, the five `rs-ca-*` captures on every picture,
+  `rs-podium-menu` 1000/1000); sound schedules 0 frames differing but `rs-podium-menu` 1 (10603, as
+  main).
+- Tooling tests 577 passed; functions over 80 lines 0; native symbols current. Hosted CI on
+  `b6fa277`: `changes`, `lab (macos-15)` and `lab (ubuntu-24.04)` pass.
