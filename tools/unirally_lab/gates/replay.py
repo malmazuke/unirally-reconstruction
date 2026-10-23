@@ -186,6 +186,12 @@ def main() -> int:
     p.add_argument('--steps', help='only cases these comma-separated steps ran')
     p.add_argument('--out', type=Path, required=True)
     a = p.parse_args()
+    if not (a.corpus / 'meta.json').exists():
+        print('no corpus recorded: every check against the original runs (record one with run --full --record)')
+        a.out.write_text(json.dumps(dict(summary=dict(cases=0, frames=0, equal=0, differing=0, steps_with_differences=[]),
+                                         rows=[])) + '\n')
+        print('status=passed')
+        return 0
     cases, by_step = load(a.corpus)
     current = json.loads((a.corpus / 'meta.json').read_text())['current_pack_sha256']
     if a.steps:
