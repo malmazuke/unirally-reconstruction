@@ -56,3 +56,41 @@
 - Acceptance of new behaviour still compares with the original.
 - No gate is weakened silently. Each switched gate's compared fields and frame ranges are the
   same as before.
+
+## Design - 24 October 2026
+
+[D-0012](../docs/decisions/D-0012-selective-gates-against-main.md) records the decision; this is
+how it was reached.
+
+- **What the 5 h 18 min is spent on.** A read-only survey of every section of RECORD-SCREENS'
+  `gates.sh` and the four `checks.sh` it runs (which binary, which options, which inputs, which
+  outputs, against what), and the per-file times of its run at `b6fa277`, give three causes:
+  - the eleven frozen gates re-project two 850 MB captures each, although their contracts hold
+    the digest of the projected rows;
+  - the earlier tasks' scripts compare, in Python, native pictures the candidate did not change
+    with the original's frames;
+  - everything is serial.
+- **Choosing checks by system.** The project already proves, with ninja's recorded dependencies,
+  that a presentation change cannot move a frozen gate's rows (`gate_identity`). The runner applies
+  that per binary, so "touches its system" is measured rather than guessed from paths.
+- **Comparing with main, on the checks' own inputs.** The checks derive part of their native input
+  from the original: race initialization frames, record writes, warm-boot images, pinned packs.
+  So the corpus is recorded by a shim in place of `front_end_runner` while the checks run in a full
+  run, rather than re-derived. The replay compares a superset of every check's outputs:
+  `--frame-digests` adds per-frame picture, cartridge RAM and VRAM digests to the runner, so no
+  picture is stored.
+- **The frozen gates keep comparing with the original**, through the contract's frozen digest
+  (`--frozen-original`).
+- **The long scripts are split per capture** (MENU-INPUT's, LEAGUE-TOURS'; RECORD-SCREENS' own as
+  a `.list` for its measurement), so that a difference re-runs only its own capture and the full
+  run spreads them over the cores.
+
+## Acceptance
+
+| Criterion | Command or experiment | Expected result |
+| --- | --- | --- |
+| The runner selects and runs the gates | `python3 -m tools.unirally_lab.gates run` on RECORD-SCREENS' change (`.worktrees/gam-rs`, base the runner's commit) and on PODIUM-AUDIO's (`.worktrees/gam-pa`, base `6c50ac1` with the runner) | under an hour each, temp under a few GB, every selected step's result readable |
+| The full run works and records the corpus | `run --full --record --base HEAD` in `.worktrees/gam-main` | every step runs; the corpus covers every check against the original |
+| It catches a regression in each gated system | `gam/reg-race`, `gam/reg-picture`, `gam/reg-cue`, `gam/reg-driver` (local, never pushed) | each is selected by its binary and fails a step |
+| No check is lost | every section of `gates.sh` is a catalogue step (`tests/tooling/test_gates.py`) | yes |
+| Tooling | `python3 -m unittest tests.tooling.test_gates` | passes |
