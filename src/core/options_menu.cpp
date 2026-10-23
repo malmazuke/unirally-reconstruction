@@ -293,6 +293,10 @@ void records_menu_frame(FrontEndState& state, const FrontEndContent& content, Fr
     detail.phase = ScoresPhase::entering;
     detail.high_scores = HighScoresPhase::entering;
     detail.press_seen = detail.group_reprinted = false;
+    // $80:DACF-DAD6: PLAYER SCORES masks its rider to 0-15 before its first frame wait.
+    constexpr std::uint8_t rider_bits = 15;
+    if (detail.category == player_scores_category)
+        state.options_rider = static_cast<std::uint8_t>(state.options_rider & rider_bits);
 }
 
 void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& content) {
