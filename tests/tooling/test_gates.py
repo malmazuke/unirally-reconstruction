@@ -200,3 +200,23 @@ class Selection(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class FrozenOriginal(unittest.TestCase):
+    """`--frozen-original` trusts only a report whose digest the contract froze."""
+
+    def test_the_report_must_match_the_contract(self):
+        from tools.unirally_lab.native import dragster_playable, zoom_zoo_playable
+        from tools.unirally_lab.native.zoom_zoo_trial_reference import digest
+        with tempfile.TemporaryDirectory() as d:
+            ref = Path(d)
+            document = dict(frames=[1207, 1300], timeline=[[[]]], case=dict(id='x'))
+            (ref / 'reference.json').write_text(json.dumps(document))
+            frozen = dict(original_sha256=digest(document), rows_sha256='r', events=dict(loading_frame=1))
+            for module in (zoom_zoo_playable, dragster_playable):
+                got, rows, events = module.frozen_original(ref, frozen)
+                self.assertEqual(got, document)
+                self.assertIsNone(rows)                     # the caller compares the rows by digest
+                self.assertEqual(events, frozen['events'])
+                with self.assertRaises(ValueError):
+                    module.frozen_original(ref, dict(frozen, original_sha256='0' * 64))
