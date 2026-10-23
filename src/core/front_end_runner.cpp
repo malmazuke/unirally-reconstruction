@@ -51,9 +51,10 @@ struct Options {
     std::filesystem::path race_timeline, look_timeline, sound_cues, one_player_timeline;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
-    // Every drawn picture's digest, one `frame digest` line each, instead of picture files: the
-    // gates compare two runs' pictures without storing them (D-0012).
-    std::filesystem::path picture_digests;
+    // Digests instead of files: a `frame P digest` line for every drawn picture, `frame R digest`
+    // for the cartridge RAM and `frame V digest` for the VRAM on every frame the runner can write
+    // them, so the gates compare two runs' outputs without storing them (D-0012).
+    std::filesystem::path frame_digests;
     // The original's race initialization frames, in race order, from a capture: the loading time
     // varies by a frame with the sound program's handshake (R-0039, R-0058).
     std::vector<std::uint32_t> race_initializations;
@@ -170,8 +171,8 @@ Options parse_options(int argc, char** argv) {
             options.look_timeline = value();
         else if (option == "--sound-cues")
             options.sound_cues = value();
-        else if (option == "--picture-digests")
-            options.picture_digests = value();
+        else if (option == "--frame-digests")
+            options.frame_digests = value();
         else if (option == "--picture") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.pictures[frame] = value();
@@ -206,7 +207,7 @@ Options parse_options(int argc, char** argv) {
     if (options.pack.empty() || options.frames == 0)
         throw std::invalid_argument("usage: front_end_runner --content-pack PACK --frames N "
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
-                                    "[--picture-digests OUT.txt] "
+                                    "[--frame-digests OUT.txt] "
                                     "[--records FRAME OUT.bin]... [--cartridge-in IMAGE.bin] "
                                     "[--race-initialization FRAME]... "
                                     "[--human-after FRAME] "
@@ -237,34 +238,35 @@ void write_ppm(const std::filesystem::path& path, const unirally::RgbFrame& fram
     if (!out) throw std::runtime_error("cannot write front-end picture");
 }
 
-// `--picture-digests`: open in main when asked for, written on every frame a picture is drawn.
-std::ofstream picture_digests;
+// `--frame-digests`: open in main when asked for.
+std::ofstream frame_digests;
 
-// 64-bit FNV-1a of the picture's pixels: a regression check between two runs, not a security
-// hash.
-std::uint64_t picture_digest(const unirally::RgbFrame& frame) {
+// 64-bit FNV-1a: a regression check between two runs, not a security hash.
+std::uint64_t digest_of(std::span<const std::uint8_t> bytes) {
     std::uint64_t digest = 0xcbf29ce484222325ULL;
-    for (const auto byte : frame.pixels) {
+    for (const auto byte : bytes) {
         digest ^= byte;
         digest *= 0x100000001b3ULL;
     }
     return digest;
 }
 
+void write_digest(std::uint32_t frame, char kind, std::span<const std::uint8_t> bytes) {
+    char line[40];
+    std::snprintf(line, sizeof line, "%u %c %016llx\n", frame, kind,
+                  static_cast<unsigned long long>(digest_of(bytes)));
+    frame_digests << line;
+}
+
 // A picture is drawn on a frame `--picture` names, and on every frame when digests are asked for.
 bool picture_wanted(const Options& options, std::uint32_t frame) {
-    return picture_digests.is_open() || options.pictures.contains(frame);
+    return frame_digests.is_open() || options.pictures.contains(frame);
 }
 
 void emit_picture(const Options& options, std::uint32_t frame, const unirally::RgbFrame& picture) {
     if (const auto at = options.pictures.find(frame); at != options.pictures.end())
         write_ppm(at->second, picture);
-    if (picture_digests.is_open()) {
-        char line[32];
-        std::snprintf(line, sizeof line, "%u %016llx\n", frame,
-                      static_cast<unsigned long long>(picture_digest(picture)));
-        picture_digests << line;
-    }
+    if (frame_digests.is_open()) write_digest(frame, 'P', picture.pixels);
 }
 
 // Power-on, with the cartridge RAM `--cartridge-in` gives (SAVE-FILES).
@@ -287,6 +289,13 @@ void write_records(const std::filesystem::path& path, const unirally::FrontEndSt
     out.write(reinterpret_cast<const char*>(image.data()),
               static_cast<std::streamsize>(image.size()));
     if (!out) throw std::runtime_error("cannot write front-end records");
+}
+
+void emit_records(const Options& options, std::uint32_t frame,
+                  const unirally::FrontEndState& state) {
+    if (const auto at = options.records.find(frame); at != options.records.end())
+        write_records(at->second, state);
+    if (frame_digests.is_open()) write_digest(frame, 'R', unirally::cartridge_image(state));
 }
 
 template <std::size_t N>
@@ -636,13 +645,16 @@ void write_frame_outputs(const Options& options, std::uint32_t frame,
     print_state(frame, state);
     if (picture_wanted(options, frame))
         emit_picture(options, frame, unirally::render_front_end(state));
-    if (const auto at = options.records.find(frame); at != options.records.end())
-        write_records(at->second, state);
+    emit_records(options, frame, state);
     if (const auto at = options.vram.find(frame); at != options.vram.end()) {
         std::ofstream out(at->second, std::ios::binary);
         out.write(reinterpret_cast<const char*>(state.video.vram.data()),
                   static_cast<std::streamsize>(state.video.vram.size()));
     }
+    if (frame_digests.is_open())
+        write_digest(frame, 'V',
+                     std::span(reinterpret_cast<const std::uint8_t*>(state.video.vram.data()),
+                               state.video.vram.size() * sizeof state.video.vram[0]));
 }
 
 void update_local_race(const Options& options, const unirally::ClassicContentPack& pack,
@@ -670,7 +682,7 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
                                      + std::to_string(frame));
     }
     // A one-player race keeps its picture history only when pictures are asked for.
-    if (local || !options.pictures.empty() || picture_digests.is_open()) {
+    if (local || !options.pictures.empty() || frame_digests.is_open()) {
         race.history.observe_update(previous, race.state, pack);
         if (local) write_look(look_timeline, frame, race.state.look);
         const auto shown = race.history.on_screen();
@@ -711,8 +723,7 @@ void write_loading_frame(const Options& options, const unirally::FrontEndState& 
     sound_cues.write(frame, unirally::race_sound::loading(race.initialization_frame - frame, timing,
                                                           track.index, state.race_song));
     if (picture_wanted(options, frame)) emit_picture(options, frame, unirally::RgbFrame{});
-    if (const auto records = options.records.find(frame); records != options.records.end())
-        write_records(records->second, state);
+    emit_records(options, frame, state);
 }
 
 // An output timeline, or none when its option is not given.
@@ -731,8 +742,8 @@ int main(int argc, char** argv) try {
     auto race_timeline = open_timeline(options.race_timeline, "race");
     auto one_player_timeline = open_timeline(options.one_player_timeline, "one-player");
     auto look_timeline = open_timeline(options.look_timeline, "look");
-    if (!options.picture_digests.empty())
-        picture_digests = open_timeline(options.picture_digests, "picture digest");
+    if (!options.frame_digests.empty())
+        frame_digests = open_timeline(options.frame_digests, "frame digest");
     const unirally::ClassicContentPack pack(options.pack);
     const auto content = unirally::front_end_content(pack);
     const auto inputs = read_inputs(options.inputs);
@@ -792,8 +803,7 @@ int main(int argc, char** argv) try {
         } else {
             if (frame <= race.initialization_frame && picture_wanted(options, frame))
                 emit_picture(options, frame, unirally::RgbFrame{});
-            if (const auto at = options.records.find(frame); at != options.records.end())
-                write_records(at->second, state);
+            emit_records(options, frame, state);
         }
     }
     // A mode chosen; for 1P the race NOW PLAYING chose.
