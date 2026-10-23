@@ -456,7 +456,6 @@ bool race_won(const FrontEndState& state, const FrontEndContent& content) {
 // the 0 and 1 the game writes (R-0065).
 void score_race(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     constexpr std::uint16_t forced_completion = 0x2050;
-    state.options_rider = state.rider_menu.rider; // $83:879B-879E
     if (pads.one == forced_completion) {
         complete_tour(state);
         return;
@@ -684,6 +683,8 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
     // VS CHAMPIONS (`$80:F8E7`, from $80:C051) starts in the frame the records end, and 2P's
     // continuation (`$80:ADE3`, from $80:BD98) prints after that frame's wait (R-0095).
     if (frame + 1 == result_scoring_frame(state)) {
+        // $83:879B-879E: the 1P scoring's rider word goes in before its frame wait (`$83:A923`).
+        if (state.mode == FrontEndMode::one_player) state.options_rider = state.rider_menu.rider;
         if (state.mode == FrontEndMode::versus) {
             enter_vs_champions(state, content);
             return;

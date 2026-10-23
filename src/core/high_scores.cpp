@@ -58,7 +58,8 @@ void rank_average(ScoreLeader& best, ScoreLeader& worst, std::uint16_t value, un
 
 // $80:D7CD-D8F8. Every leader starts on rider 15 (`$80:D8C3` turns the loops' counts into riders);
 // the worst averages start at 7000. The win averages are `$83:9D80`'s percentages of the riders
-// with races (which leave the last in `$77:10F9`/`10FB`); the score averages the score over the
+// with races (`$77:10F9` keeps the last one's races, halved; `$77:10FB` rider 15's wins, halved
+// only if it has races); the score averages the score over the
 // races (`$80:9719`) of the riders with a score. The total score is the last of the highest. With
 // no race at all, both worst averages are 0 and every leader SOMEONE.
 ScoreLeaders high_score_leaders(OnePlayerRecords& records) {
@@ -73,7 +74,10 @@ ScoreLeaders high_score_leaders(OnePlayerRecords& records) {
     find_most(records, leaders);
     for (unsigned rider = 0; rider < rider_count; ++rider) {
         const auto& stats = records.statistics[rider];
-        if (stats[0] != 0)
+        // $80:D83D-D849: every rider's wins go to `$77:10FB` before the test for races.
+        if (stats[0] == 0)
+            records.versus_percentage_wins = stats[1];
+        else
             rank_average(leaders.best_win_average, leaders.worst_win_average,
                          cartridge_percentage(records, stats[0], stats[1]), rider);
         if (stats[3] >= leaders.total_score.value)
