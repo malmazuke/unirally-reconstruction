@@ -41,7 +41,7 @@ def task_steps(paths: list[str]) -> list[tuple[str, str, str]]:
     out = []
     for raw in paths:
         path = Path(raw).resolve()
-        name = path.parent.name
+        name = path.stem if path.suffix == '.list' else path.parent.name
         if path.suffix == '.list':
             for n, line in enumerate(l for l in path.read_text().splitlines() if l.strip() and not l.startswith('#')):
                 out.append((f'checks-{name}-{n + 1:02d}', line, 'zsh' if line.startswith('zsh ') else 'bash'))
