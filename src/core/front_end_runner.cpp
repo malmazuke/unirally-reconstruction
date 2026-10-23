@@ -51,6 +51,9 @@ struct Options {
     std::filesystem::path race_timeline, look_timeline, sound_cues, one_player_timeline;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
+    // Every drawn picture's digest, one `frame digest` line each, instead of picture files: the
+    // gates compare two runs' pictures without storing them (D-0012).
+    std::filesystem::path picture_digests;
     // The original's race initialization frames, in race order, from a capture: the loading time
     // varies by a frame with the sound program's handshake (R-0039, R-0058).
     std::vector<std::uint32_t> race_initializations;
@@ -167,6 +170,8 @@ Options parse_options(int argc, char** argv) {
             options.look_timeline = value();
         else if (option == "--sound-cues")
             options.sound_cues = value();
+        else if (option == "--picture-digests")
+            options.picture_digests = value();
         else if (option == "--picture") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.pictures[frame] = value();
@@ -201,6 +206,7 @@ Options parse_options(int argc, char** argv) {
     if (options.pack.empty() || options.frames == 0)
         throw std::invalid_argument("usage: front_end_runner --content-pack PACK --frames N "
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
+                                    "[--picture-digests OUT.txt] "
                                     "[--records FRAME OUT.bin]... [--cartridge-in IMAGE.bin] "
                                     "[--race-initialization FRAME]... "
                                     "[--human-after FRAME] "
@@ -229,6 +235,36 @@ void write_ppm(const std::filesystem::path& path, const unirally::RgbFrame& fram
     out.write(reinterpret_cast<const char*>(frame.pixels.data()),
               static_cast<std::streamsize>(frame.pixels.size()));
     if (!out) throw std::runtime_error("cannot write front-end picture");
+}
+
+// `--picture-digests`: open in main when asked for, written on every frame a picture is drawn.
+std::ofstream picture_digests;
+
+// 64-bit FNV-1a of the picture's pixels: a regression check between two runs, not a security
+// hash.
+std::uint64_t picture_digest(const unirally::RgbFrame& frame) {
+    std::uint64_t digest = 0xcbf29ce484222325ULL;
+    for (const auto byte : frame.pixels) {
+        digest ^= byte;
+        digest *= 0x100000001b3ULL;
+    }
+    return digest;
+}
+
+// A picture is drawn on a frame `--picture` names, and on every frame when digests are asked for.
+bool picture_wanted(const Options& options, std::uint32_t frame) {
+    return picture_digests.is_open() || options.pictures.contains(frame);
+}
+
+void emit_picture(const Options& options, std::uint32_t frame, const unirally::RgbFrame& picture) {
+    if (const auto at = options.pictures.find(frame); at != options.pictures.end())
+        write_ppm(at->second, picture);
+    if (picture_digests.is_open()) {
+        char line[32];
+        std::snprintf(line, sizeof line, "%u %016llx\n", frame,
+                      static_cast<unsigned long long>(picture_digest(picture)));
+        picture_digests << line;
+    }
 }
 
 // Power-on, with the cartridge RAM `--cartridge-in` gives (SAVE-FILES).
@@ -438,10 +474,11 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
             throw std::runtime_error("demo save failed round-trip");
     }
     race.history.observe_update(previous, race.state, pack);
-    if (const auto picture = options.pictures.find(frame); picture != options.pictures.end()) {
+    if (picture_wanted(options, frame)) {
         const auto shown = race.history.on_screen();
-        write_ppm(picture->second,
-                  unirally::render_classic_race(race.state, *race.presentation, &previous, &shown));
+        emit_picture(
+            options, frame,
+            unirally::render_classic_race(race.state, *race.presentation, &previous, &shown));
     }
     if (race.state.demo.exit_requested) {
         if (race.restored_demo)
@@ -597,8 +634,8 @@ private:
 void write_frame_outputs(const Options& options, std::uint32_t frame,
                          const unirally::FrontEndState& state) {
     print_state(frame, state);
-    if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
-        write_ppm(picture->second, unirally::render_front_end(state));
+    if (picture_wanted(options, frame))
+        emit_picture(options, frame, unirally::render_front_end(state));
     if (const auto at = options.records.find(frame); at != options.records.end())
         write_records(at->second, state);
     if (const auto at = options.vram.find(frame); at != options.vram.end()) {
@@ -633,13 +670,14 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
                                      + std::to_string(frame));
     }
     // A one-player race keeps its picture history only when pictures are asked for.
-    if (local || !options.pictures.empty()) {
+    if (local || !options.pictures.empty() || picture_digests.is_open()) {
         race.history.observe_update(previous, race.state, pack);
         if (local) write_look(look_timeline, frame, race.state.look);
         const auto shown = race.history.on_screen();
-        if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
-            write_ppm(picture->second, unirally::render_classic_race(race.state, *race.presentation,
-                                                                     &previous, &shown));
+        if (picture_wanted(options, frame))
+            emit_picture(
+                options, frame,
+                unirally::render_classic_race(race.state, *race.presentation, &previous, &shown));
     }
     write_race_state(local ? race_timeline : one_player_timeline, frame, race.state);
     if (!over) return;
@@ -672,8 +710,7 @@ void write_loading_frame(const Options& options, const unirally::FrontEndState& 
                                        + race.initialization_frame - race.loading_initialization);
     sound_cues.write(frame, unirally::race_sound::loading(race.initialization_frame - frame, timing,
                                                           track.index, state.race_song));
-    if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
-        write_ppm(picture->second, unirally::RgbFrame{});
+    if (picture_wanted(options, frame)) emit_picture(options, frame, unirally::RgbFrame{});
     if (const auto records = options.records.find(frame); records != options.records.end())
         write_records(records->second, state);
 }
@@ -694,6 +731,8 @@ int main(int argc, char** argv) try {
     auto race_timeline = open_timeline(options.race_timeline, "race");
     auto one_player_timeline = open_timeline(options.one_player_timeline, "one-player");
     auto look_timeline = open_timeline(options.look_timeline, "look");
+    if (!options.picture_digests.empty())
+        picture_digests = open_timeline(options.picture_digests, "picture digest");
     const unirally::ClassicContentPack pack(options.pack);
     const auto content = unirally::front_end_content(pack);
     const auto inputs = read_inputs(options.inputs);
@@ -751,9 +790,8 @@ int main(int argc, char** argv) try {
         if (state.screen != unirally::FrontEndScreen::race) {
             write_frame_outputs(options, frame, state);
         } else {
-            if (frame <= race.initialization_frame)
-                if (const auto at = options.pictures.find(frame); at != options.pictures.end())
-                    write_ppm(at->second, unirally::RgbFrame{});
+            if (frame <= race.initialization_frame && picture_wanted(options, frame))
+                emit_picture(options, frame, unirally::RgbFrame{});
             if (const auto at = options.records.find(frame); at != options.records.end())
                 write_records(at->second, state);
         }
