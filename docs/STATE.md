@@ -1,5 +1,34 @@
 # Project state
 
+**24 October 2026: RECORD-SCREENS is accepted (tier 1, #83) and integrated by merge commit.**
+OPTIONS' records screens now run as the original does, and PLAYER SCORES starts on the right rider
+after any result:
+- **TRACK RECORDS.** The logo slides up, the `$0C70` HDMA tables wipe the grid in and out over 57
+  passes each, the grid is printed in two halves, and the scroll eases (`$80:E3E9`). Left and Right
+  don't wrap and each latches separately; the stunt column shows scores. The way out returns to
+  RECORDS' loop with no new print.
+- **HIGH SCORES.** The leaders follow `$80:D7D5-D8F8`, including ties and the averages. That also
+  writes `$77:10F9`/`10FB` as the original does. The screen exits through `$80:C206`: any button
+  of either pad held on two frames running. Before, it left on pad 1's first press.
+- **The rider word `$00CA`.** It is now written at the result screens' writers, the 1P scoring
+  (`$83:879E`, before its frame wait) and NOW PLAYING's push and pull. Before, a 2P or VS result
+  left the wrong rider for a later PLAYER SCORES.
+- `$80:FBEE`'s menu after the podium was already native (LEAGUE-TOURS); a new capture confirms it.
+
+Results: nine captures of the original equal on every picture: `rv-records` 2100/2100 (main 1141),
+`rs-track` 2200/2200 (main 487), `rs-high` 2300/2300 (main 50), and the five `rs-ca-*` results.
+`$00CA` is equal on every menu frame. The review's six withheld captures are equal too, except
+`wr-stats2` (below). The sound schedules are equal with frame waits included (main differed on 20
+and 31 frames). Every gate and sweep equals main, except the front-end sweep's 11 TRACK RECORDS and
+HIGH SCORES manifests.
+
+Recorded limits: with dense statistics, RECORDS' entry (`$83:97BD`) runs past its frame, so the
+original's menus are a frame behind native's from there (on main too; added to
+PODIUM-RETURN-TIMING). Prints that run past their frame leave one or two text-buffer frames
+differing, with no picture affected. Assets 29/30 are not in pack v40.
+[R-0100](research/R-0100-record-screens.md) and [RECORD-SCREENS](../tasks/RECORD-SCREENS.md) define
+the domain.
+
 **17 October 2026: PODIUM-AUDIO is accepted (tier 1, #82) and integrated by merge commit.**
 The league's podium now plays its music natively; before, it was silent.
 - **The session.** On the podium entry's frame 19 the original loads the medal award's sound set

@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 23 October 2026 on main `ff1efb6` (Claude Code desktop app, Claude Opus 5.5
+- Status: **accepted** 24 October 2026 (tier 1, [#83](https://github.com/malmazuke/unirally-reconstruction/pull/83),
+  approved in review round 2 at `3f8a1ab`), integrated by merge commit. Claimed 23 October 2026 on main `ff1efb6` (Claude Code desktop app, Claude Opus 5.5
   `claude-opus-5-5`; coordinator and integrator; a worker subagent implements, a fresh subagent
   reviews). Queued 14 October 2026 by [MENU-INPUT](MENU-INPUT.md) (R-0097). Weekly usage at claim 31%.
 - Choice: the user asked for this task by name. No other session holds a claim (the only remote
@@ -109,7 +110,8 @@ gates on main `ff1efb6`'s binaries `base-ff1efb6/`, pack v40 on both sides, plus
 
 ## Review round 1 (returned on `b6fa277`) - the fixes
 
-Review: main `local/evidence/record-screens-review/review-b6fa277.md`, with its captures
+Review: https://github.com/malmazuke/unirally-reconstruction/pull/83#pullrequestreview-5625769540
+(main `local/evidence/record-screens-review/review-b6fa277.md`), with its captures
 `wr-track`, `wr-stats`, `wr-stats2` and `wr-1p-ca`. The fixes are in `66b8629`. Results come from
 `checks.sh` at `66b8629` (`artifacts/record-screens/checks-66b8629.out` in the worktree), which now
 also runs the review's four captures, their cartridge RAM (`records_check.py`) and the two sound
@@ -139,3 +141,42 @@ Checks at `66b8629`: ctest app-debug 41/41 and lab-debug 41/41; clang-tidy (LLVM
 `test_native_symbols`, `test_static_map` and `test_tracks` OK. R-0100 is updated: finding 5's
 leaders no longer claim "exactly" and describe `10F9`/`10FB`; finding 6 gives the 1P write's frame;
 the Results add the review's captures; Not covered adds the entry overrun.
+
+## Review round 2 (approved `3f8a1ab`)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/83#pullrequestreview-5626601904)
+  of `3f8a1ab`: approved, no new findings (main `local/evidence/record-screens-review/review-3f8a1ab.md`).
+  Both fixes checked against the listing; the 1P move cannot miss a 1P path (every 1P result,
+  stunt events included, leaves through `race_result_exit`).
+- Two more withheld captures: `wr-1p-force` (forced completion, the tour's award, PLAYER SCORES)
+  and `wr-1p-loss` (a 1P loss, PLAYER SCORES): 2600/2600 pictures each, `$00CA` equal on every frame.
+- The 224 cartridge RAM bytes `wr-1p-ca` differs in are a strict subset of main's 225 (main's extra
+  is `$77:10F9`, fixed here), all in fields native does not keep: the checksum `$77:054E`, the score
+  history `$77:0618`, the race's setup and result words `$77:0740-07D7`, the menus' save at
+  `$77:0E6B`, the markers' step `$77:10A7`.
+
+## Gates - head `3f8a1ab` (main `local/evidence/record-screens/gates-3f8a1ab.out`)
+
+Same script, 09:49-22:50 UTC 23 October 2026; the run was suspended for about seven hours while the
+host slept, so its wall time is not a measure. Every line equals the run at `b6fa277` but:
+- this task's `checks.sh` adds the review's captures: `wr-track` 1150/1150 (main 551), `wr-stats`
+  800/800 (main 358), `wr-stats2` 517/800 (as main, R-0100 Not covered), `wr-1p-ca` 2600/2600 (main
+  2318); cartridge RAM `10F9`/`10FB` equal on all; sound `wr-track` 0 frames differ (main 15),
+  `wr-stats` 0 (main 2);
+- the app's producer through a podium drops 2,622 late pairs after the boot's (2,815 at `b6fa277`;
+  a real-time measure, the first drop at the boot in both).
+Hosted CI on `3f8a1ab`: `changes`, `lab (macos-15)` and `lab (ubuntu-24.04)` pass.
+
+## Closeout
+
+The pull request, its merge commit and check runs are in ignored main
+`artifacts/record-screens-integration/closeout.json`. The closing session:
+- keeps main `local/evidence/record-screens/` (2.0 GB: the captures `checks.sh` reads, the two
+  gate logs, `base-ff1efb6/`) and `local/evidence/record-screens-review/` (0.6 GB, the review's
+  captures, which `checks.sh` reads);
+- moves the worktree's gate logs and `checks-*` outputs to main
+  `artifacts/record-screens-integration/` and deletes both worktrees' build output;
+- removes `.worktrees/record-screens` and `.worktrees/record-screens-review` and the local branch
+  `task/record-screens` (GitHub deletes the merged head branch).
+- Queued: RECORDS' entry overrun with dense statistics, added to
+  [PODIUM-RETURN-TIMING](PODIUM-RETURN-TIMING.md); NAME-CHECK unchanged.
