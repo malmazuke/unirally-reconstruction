@@ -397,7 +397,8 @@
    "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
-   "docs/research/R-0099-podium-audio.md"
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/PODIUM-AUDIO.md"
   ]
  },
  {
@@ -1253,6 +1254,24 @@
   ]
  },
  {
+  "address": "$80:903E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80903E",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/front_end_screens.hpp:best_lap",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
   "address": "$80:9041",
   "class": "observed",
   "comment": "instruction start",
@@ -1288,6 +1307,24 @@
   "source_records": [
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:90D6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8090D6",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
+   "src/core/lap_result.cpp:saved_word_under_opponent_best",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -1486,6 +1523,18 @@
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0084-two-human-restart.md"
+  ]
+ },
+ {
+  "address": "$80:93CB",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8093CB",
+  "native": [
+   "src/core/track_records.cpp:show_selected_records"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -1787,11 +1836,13 @@
   "label": "sub_809719",
   "native": [
    "src/core/front_end_screens.hpp:divide_word",
+   "src/core/high_scores.cpp:high_score_leaders",
    "src/core/records_scores.cpp:bar_share"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -2050,6 +2101,7 @@
    "docs/research/R-0061-riders-and-opponents.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -2620,8 +2672,122 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_809F7A",
+  "native": [
+   "src/core/track_records.cpp:(file)",
+   "src/core/track_records.cpp:leave_grid"
+  ],
   "source_records": [
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
+  "address": "$80:9F8B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809F8B",
+  "native": [
+   "src/core/track_records.cpp:track_records_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:9FB1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809FB1",
+  "native": [
+   "src/core/track_records.cpp:track_records_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:9FBF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809FBF",
+  "native": [
+   "src/core/track_records.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:9FC7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809FC7",
+  "native": [
+   "src/core/track_records.cpp:set_wipe_speed"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:9FDA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809FDA",
+  "native": [
+   "src/core/track_records.cpp:wipe_out_pass"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:A029",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A029",
+  "native": [
+   "src/core/track_records.cpp:track_records_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:A031",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80A031",
+  "native": [
+   "src/core/track_records.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:A039",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A039",
+  "native": [
+   "src/core/track_records.cpp:set_wipe_speed"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:A04C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A04C",
+  "native": [
+   "src/core/track_records.cpp:wipe_in_pass"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -2762,8 +2928,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A1A1",
+  "native": [
+   "src/core/track_records.cpp:move_grid"
+  ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -3293,12 +3463,14 @@
    "src/core/race_result.cpp:restore_menus_after_race",
    "src/core/tour_menu.cpp:first_medal_palette",
    "src/core/tour_menu.cpp:return_to_tour_menu",
-   "src/core/tour_menu.cpp:tour_menu_entry_frame"
+   "src/core/tour_menu.cpp:tour_menu_entry_frame",
+   "src/core/track_records.cpp:entry_grid_frames"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -3316,7 +3488,8 @@
    "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/tour_menu.cpp:return_to_tour_menu",
    "src/core/tour_menu.cpp:reveal_frames",
-   "src/core/tour_menu.cpp:tour_menu_entry_frame"
+   "src/core/tour_menu.cpp:tour_menu_entry_frame",
+   "src/core/track_records.cpp:entry_grid_frames"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
@@ -3324,7 +3497,8 @@
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0062-gold-endings.md",
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -3335,12 +3509,14 @@
   "native": [
    "src/core/audio_cpu_menu_reveal.cpp:upload_menu_font",
    "src/core/front_end.cpp:menu_text_tiles_dma",
-   "src/core/front_end_screens.hpp:reload_menu_text_tiles"
+   "src/core/front_end_screens.hpp:reload_menu_text_tiles",
+   "src/core/track_records.cpp:track_records_exit_frame"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -3354,12 +3530,14 @@
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_nintendo_screen",
    "src/core/front_end_screens.hpp:reload_menu_palette",
-   "src/core/records_scores.cpp:player_scores_leaving"
+   "src/core/records_scores.cpp:player_scores_leaving",
+   "src/core/track_records.cpp:track_records_exit_frame"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -4462,6 +4640,21 @@
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
+  "address": "$80:B194",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B194",
+  "native": [
+   "src/core/front_end.hpp:NowPlaying::pushed_rider_word",
+   "src/core/now_playing.cpp:enter_now_playing"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -4666,15 +4859,30 @@
   ]
  },
  {
+  "address": "$80:B4BF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B4BF",
+  "native": [
+   "src/core/front_end.hpp:NowPlaying::pushed_rider_word",
+   "src/core/now_playing.cpp:move_now_playing_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
   "address": "$80:B4C0",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B4C0",
   "native": [
+   "src/core/front_end.hpp:NowPlaying::pushed_rider_word",
    "src/core/now_playing.cpp:move_now_playing_arrow"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -4797,6 +5005,7 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -4909,7 +5118,8 @@
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/PODIUM-AUDIO.md"
   ]
  },
  {
@@ -5220,7 +5430,8 @@
    "docs/research/R-0092-wipe-ram.md",
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -6773,6 +6984,7 @@
   "label": "sub_80C206",
   "native": [
    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HighScoresPhase",
    "src/core/front_end.hpp:HunterEnding::press_seen",
    "src/core/front_end.hpp:LeagueSetup::awards_press_seen, LeagueSetup::awards_left",
    "src/core/front_end.hpp:RaceResult::press_seen",
@@ -6780,7 +6992,9 @@
    "src/core/front_end.hpp:ScoresPhase",
    "src/core/front_end.hpp:WipeRamMenu",
    "src/core/front_end.hpp:WipeRamMenu::press_seen",
+   "src/core/front_end_screens.hpp:press_seen_twice",
    "src/core/front_end_screens.hpp:wait_for_result_press",
+   "src/core/high_scores.cpp:(file)",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/league_menu.cpp:leave_league_awards",
@@ -6800,6 +7014,7 @@
    "docs/research/R-0092-wipe-ram.md",
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md",
    "tasks/RECORD-SCREENS.md"
   ]
@@ -6827,6 +7042,7 @@
   "native": [
    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
    "src/core/front_end.hpp:HunterEnding::press_seen",
+   "src/core/front_end_screens.hpp:press_seen_twice",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/local_modes.cpp:vs_champions_frame",
@@ -6867,6 +7083,31 @@
    "docs/research/R-0092-wipe-ram.md",
    "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:C269",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80C269",
+  "native": [
+   "src/core/track_records.cpp:record_line"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
+  "address": "$80:C30E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C30E",
+  "native": [
+   "src/core/track_records.cpp:record_line"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -7812,6 +8053,18 @@
   ]
  },
  {
+  "address": "$80:CF60",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CF60",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
   "address": "$80:CF91",
   "class": "unknown",
   "comment": "unknown",
@@ -7824,6 +8077,18 @@
   ]
  },
  {
+  "address": "$80:CFA3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CFA3",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
   "address": "$80:CFA9",
   "class": "observed",
   "comment": "instruction start",
@@ -7832,7 +8097,8 @@
    "src/core/race_result.cpp:print_rows"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -7861,6 +8127,18 @@
   ]
  },
  {
+  "address": "$80:D009",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D009",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
   "address": "$80:D00F",
   "class": "observed",
   "comment": "instruction start",
@@ -7869,7 +8147,8 @@
    "src/core/race_result.cpp:print_rows"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -8017,6 +8296,7 @@
    "src/core/stunt_result.cpp:tally_frame",
    "src/core/tour_menu.cpp:tour_menu_frame",
    "src/core/track_menu.cpp:track_menu_frame",
+   "src/core/track_records.cpp:show_selected_records",
    "src/core/wipe_ram.cpp:wipe_ram_answer_frame",
    "src/core/wipe_ram.cpp:wipe_ram_menu_frame",
    "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
@@ -8026,7 +8306,8 @@
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0067-stunt-result.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8271,12 +8552,15 @@
   "comment": "routine start",
   "label": "sub_80D420",
   "native": [
+   "src/core/high_scores.cpp:leave_high_scores",
    "src/core/now_playing.cpp:hide_icons",
-   "src/core/records_scores.cpp:player_scores_leaving"
+   "src/core/records_scores.cpp:player_scores_leaving",
+   "src/core/track_records.cpp:leave_grid"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8437,7 +8721,21 @@
    "src/core/options_menu.cpp:records_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:D55F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D55F",
+  "native": [
+   "src/core/high_scores.cpp:high_scores_frame",
+   "src/core/track_records.cpp:track_records_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8458,11 +8756,26 @@
   "comment": "instruction start",
   "label": "loc_80D5E6",
   "native": [
-   "src/core/options_menu.cpp:print_track_records"
+   "src/core/front_end.hpp:TrackRecordsGrid",
+   "src/core/track_records.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
-   "tasks/OPTIONS.md"
+   "docs/research/R-0100-record-screens.md",
+   "tasks/OPTIONS.md",
+   "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
+  "address": "$80:D682",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D682",
+  "native": [
+   "src/core/track_records.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8471,12 +8784,24 @@
   "comment": "instruction start",
   "label": "loc_80D699",
   "native": [
-   "src/core/options_menu.cpp:print_track_records",
-   "src/core/options_menu.cpp:print_track_selected_times"
+   "src/core/track_records.cpp:(file)",
+   "src/core/track_records.cpp:tour_under_arrow"
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
    "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:D6D5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D6D5",
+  "native": [
+   "src/core/track_records.cpp:print_loop_pass"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8485,12 +8810,46 @@
   "comment": "instruction start",
   "label": "loc_80D70F",
   "native": [
-   "src/core/options_menu.cpp:print_track_records",
-   "src/core/options_menu.cpp:update_track_records"
+   "src/core/track_records.cpp:track_records_frame"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:D71F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D71F",
+  "native": [
+   "src/core/track_records.cpp:(file)",
+   "src/core/track_records.cpp:leave_grid"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:D729",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D729",
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:D777",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D777",
+  "native": [
+   "src/core/track_records.cpp:template_offset"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8499,10 +8858,30 @@
   "comment": "instruction start",
   "label": "loc_80D7CD",
   "native": [
-   "src/core/options_menu.cpp:print_high_scores"
+   "src/core/front_end.hpp:HighScoresPhase",
+   "src/core/high_scores.cpp:(file)",
+   "src/core/high_scores.cpp:high_score_leaders",
+   "src/core/high_scores.cpp:print_high_scores"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:D7D5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D7D5",
+  "native": [
+   "src/core/front_end.hpp:HighScoresPhase",
+   "src/core/high_scores.cpp:(file)",
+   "src/core/high_scores.cpp:high_score_leaders",
+   "src/core/high_scores.cpp:print_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -8511,11 +8890,52 @@
   "comment": "instruction start",
   "label": "loc_80D8C1",
   "native": [
-   "src/core/options_menu.cpp:high_score_leaders",
-   "src/core/options_menu.cpp:print_high_scores"
+   "src/core/front_end.hpp:HighScoresPhase",
+   "src/core/high_scores.cpp:(file)",
+   "src/core/high_scores.cpp:high_score_leaders",
+   "src/core/high_scores.cpp:print_high_scores"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D8C3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D8C3",
+  "native": [
+   "src/core/front_end.hpp:HighScoresPhase",
+   "src/core/high_scores.cpp:(file)",
+   "src/core/high_scores.cpp:high_score_leaders",
+   "src/core/high_scores.cpp:print_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:D908",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D908",
+  "native": [
+   "src/core/high_scores.cpp:high_scores_entry_waits"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:D90B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D90B",
+  "native": [
+   "src/core/high_scores.cpp:high_scores_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8524,8 +8944,7 @@
   "comment": "instruction start",
   "label": "loc_80D917",
   "native": [
-   "src/core/options_menu.cpp:load_high_score_palettes",
-   "src/core/options_menu.cpp:print_high_scores"
+   "src/core/high_scores.cpp:load_leader_colours"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
@@ -8537,8 +8956,7 @@
   "comment": "instruction start",
   "label": "loc_80D9AC",
   "native": [
-   "src/core/options_menu.cpp:print_high_scores",
-   "src/core/options_menu.cpp:records_detail_frame"
+   "src/core/high_scores.cpp:load_leader_colours"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
@@ -8549,13 +8967,21 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80D9B2",
-  "native": [
-   "src/core/options_menu.cpp:print_high_scores",
-   "src/core/options_menu.cpp:records_detail_frame"
-  ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
    "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
+  "address": "$80:D9B5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D9B5",
+  "native": [
+   "src/core/high_scores.cpp:leave_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8564,9 +8990,7 @@
   "comment": "inside the instruction at $80:D9B5",
   "label": "mid_80D9B7",
   "native": [
-   "src/core/options_menu.cpp:print_high_scores",
-   "src/core/options_menu.cpp:records_detail_exit_frame",
-   "src/core/options_menu.cpp:records_detail_frame"
+   "src/core/high_scores.cpp:leave_high_scores"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
@@ -8577,11 +9001,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80D9D8",
-  "native": [
-   "src/core/options_menu.cpp:print_high_scores"
-  ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -8592,13 +9014,16 @@
   "native": [
    "src/core/front_end.hpp:FrontEndState::options_rider",
    "src/core/front_end.hpp:ScoresPhase",
+   "src/core/options_menu.cpp:records_menu_frame",
    "src/core/records_scores.cpp:(file)",
    "src/core/records_scores.cpp:print_player_screen"
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
    "docs/research/R-0097-menu-input.md",
-   "tasks/MENU-INPUT.md"
+   "docs/research/R-0100-record-screens.md",
+   "tasks/MENU-INPUT.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -9161,7 +9586,8 @@
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0076-first-race-audio.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -9293,15 +9719,42 @@
   ]
  },
  {
+  "address": "$80:E3E9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80E3E9",
+  "native": [
+   "src/core/track_records.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
   "address": "$80:E449",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E449",
   "native": [
-   "src/core/options_menu.cpp:update_track_records"
+   "src/core/track_records.cpp:steer_scroll",
+   "src/core/track_records.cpp:track_records_frame"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:E483",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E483",
+  "native": [
+   "src/core/track_records.cpp:move_column",
+   "src/core/track_records.cpp:track_records_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -9310,7 +9763,8 @@
   "comment": "instruction start",
   "label": "loc_80E492",
   "native": [
-   "src/core/options_menu.cpp:update_track_records"
+   "src/core/track_records.cpp:move_column",
+   "src/core/track_records.cpp:track_records_frame"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -9322,10 +9776,22 @@
   "comment": "instruction start",
   "label": "loc_80E4C6",
   "native": [
-   "src/core/options_menu.cpp:update_track_records"
+   "src/core/track_records.cpp:move_column"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:E536",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E536",
+  "native": [
+   "src/core/track_records.cpp:scroll_speeds"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -9945,6 +10411,7 @@
    "docs/research/R-0092-wipe-ram.md",
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -9963,11 +10430,12 @@
   "comment": "routine start",
   "label": "sub_80EB76",
   "native": [
-   "src/core/options_menu.cpp:records_detail_entry_frame",
-   "src/core/options_menu.cpp:track_records_hdma"
+   "src/core/track_records.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -9976,10 +10444,47 @@
   "comment": "instruction start",
   "label": "loc_80EB78",
   "native": [
-   "src/core/options_menu.cpp:records_detail_entry_frame"
+   "src/core/track_records.cpp:open_grid"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:EB7B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EB7B",
+  "native": [
+   "src/core/track_records.cpp:copy_grid_tables",
+   "src/core/track_records.cpp:open_grid"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:EBE2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EBE2",
+  "native": [
+   "src/core/track_records.cpp:entry_title_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:EC20",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EC20",
+  "native": [
+   "src/core/track_records.cpp:entry_grid_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -9988,10 +10493,22 @@
   "comment": "instruction start",
   "label": "loc_80EC8A",
   "native": [
-   "src/core/options_menu.cpp:records_detail_entry_frame"
+   "src/core/track_records.cpp:entry_grid_frames"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:ECAE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ECAE",
+  "native": [
+   "src/core/track_records.cpp:show_records"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -10000,7 +10517,7 @@
   "comment": "instruction start",
   "label": "loc_80ECC4",
   "native": [
-   "src/core/options_menu.cpp:update_track_records"
+   "src/core/track_records.cpp:show_records"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -10012,10 +10529,12 @@
   "comment": "unknown",
   "label": "unk_80ECD1",
   "native": [
-   "src/core/options_menu.cpp:track_records_hdma"
+   "src/core/front_end.hpp:TrackRecordsGrid::tables",
+   "src/core/track_records.cpp:copy_grid_tables"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -10024,10 +10543,25 @@
   "comment": "unknown",
   "label": "unk_80ECF7",
   "native": [
-   "src/core/options_menu.cpp:track_records_hdma"
+   "src/core/front_end.hpp:TrackRecordsGrid::tables",
+   "src/core/track_records.cpp:copy_grid_tables"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:ED1D",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80ED1D",
+  "native": [
+   "src/core/track_records.cpp:(file)",
+   "src/core/track_records.cpp:track_records_entry_waits"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -10036,7 +10570,7 @@
   "comment": "routine start",
   "label": "sub_80EEF2",
   "native": [
-   "src/core/options_menu.cpp:track_grid_half"
+   "src/core/track_records.cpp:record_dot"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
@@ -10344,6 +10878,23 @@
   ]
  },
  {
+  "address": "$80:F224",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F224",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_setup.cpp:stunt_stable_result",
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:end_tally",
+   "src/core/stunt_result.cpp:start_stunt_result"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
   "address": "$80:F227",
   "class": "observed",
   "comment": "instruction start",
@@ -10449,6 +11000,23 @@
   "source_records": [
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:F2A9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F2A9",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_setup.cpp:stunt_stable_result",
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:end_tally",
+   "src/core/stunt_result.cpp:start_stunt_result"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -10708,7 +11276,8 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -10721,12 +11290,14 @@
    "src/core/options_menu.cpp:rename_commit_frame",
    "src/core/records_scores.cpp:close_scores",
    "src/core/rider_menu.cpp:main_menu_return_frame",
+   "src/core/track_records.cpp:leave_grid",
    "src/core/wipe_ram.cpp:cancel_reset"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -10755,7 +11326,8 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0060-pause-exits.md",
-   "docs/research/R-0084-two-human-restart.md"
+   "docs/research/R-0084-two-human-restart.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -11400,7 +11972,8 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0096-demo-audio.md"
+   "docs/research/R-0096-demo-audio.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -11515,6 +12088,7 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md",
    "tasks/README.md",
    "tasks/RECORD-SCREENS.md"
@@ -19553,7 +20127,8 @@
   "source_records": [
    "docs/research/R-0096-demo-audio.md",
    "docs/research/R-0099-podium-audio.md",
-   "tasks/DEMO-AUDIO.md"
+   "tasks/DEMO-AUDIO.md",
+   "tasks/PODIUM-AUDIO.md"
   ]
  },
  {
@@ -20971,7 +21546,8 @@
   "label": "loc_82DDDE",
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md",
-   "docs/research/R-0099-podium-audio.md"
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/PODIUM-AUDIO.md"
   ]
  },
  {
@@ -21001,7 +21577,8 @@
    "src/core/league_completion.cpp:league_podium_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0099-podium-audio.md"
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/PODIUM-AUDIO.md"
   ]
  },
  {
@@ -21014,7 +21591,8 @@
    "src/core/league_completion.cpp:leaves_podium"
   ],
   "source_records": [
-   "docs/research/R-0099-podium-audio.md"
+   "docs/research/R-0099-podium-audio.md",
+   "tasks/PODIUM-AUDIO.md"
   ]
  },
  {
@@ -21040,6 +21618,7 @@
   ],
   "source_records": [
    "docs/research/R-0099-podium-audio.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/PODIUM-AUDIO.md"
   ]
  },
@@ -21124,6 +21703,7 @@
   ],
   "source_records": [
    "docs/research/R-0099-podium-audio.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/PODIUM-AUDIO.md"
   ]
  },
@@ -21482,10 +22062,25 @@
   ]
  },
  {
+  "address": "$83:879B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83879B",
+  "native": [
+   "src/core/race_result.cpp:score_race"
+  ],
+  "source_records": [
+   "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
   "address": "$83:879E",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83879E",
+  "native": [
+   "src/core/race_result.cpp:score_race"
+  ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
    "tasks/RECORD-SCREENS.md"
@@ -21952,10 +22547,12 @@
   "native": [
    "src/core/audio_cpu_menu_records.cpp:clear_menu_text_work_internal",
    "src/core/front_end_screens.hpp:cleared_text",
+   "src/core/high_scores.cpp:print_high_scores",
    "src/core/hunter_ending.cpp:set_up_credits",
    "src/core/rider_menu.cpp:print_rider_menu",
    "src/core/tour_menu.cpp:print_tour_menu",
-   "src/core/track_menu.cpp:track_menu_entry_frame"
+   "src/core/track_menu.cpp:track_menu_entry_frame",
+   "src/core/track_records.cpp:print_selected_records"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
@@ -22010,7 +22607,8 @@
   "comment": "routine start",
   "label": "sub_838C7B",
   "native": [
-   "src/core/text_printer.hpp:race_time_text"
+   "src/core/text_printer.hpp:race_time_text",
+   "src/core/track_records.cpp:record_line"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
@@ -22213,6 +22811,7 @@
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:soft_reset",
    "src/core/front_end_screens.hpp:load_object_palette",
+   "src/core/high_scores.cpp:leave_high_scores",
    "src/core/league_menu.cpp:leave_league_awards",
    "src/core/local_modes.cpp:local_continue_entry_frame",
    "src/core/rider_menu.cpp:menu_text_palette, early_palette",
@@ -22222,7 +22821,8 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -22662,10 +23262,12 @@
   "comment": "routine start",
   "label": "sub_8397BD",
   "native": [
+   "src/core/high_scores.cpp:find_largest",
    "src/core/records_scores.cpp:player_figures"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md"
   ]
  },
  {
@@ -22944,11 +23546,13 @@
   "native": [
    "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
    "src/core/front_end_screens.hpp:cartridge_percentage",
+   "src/core/high_scores.cpp:high_score_leaders",
    "src/core/local_modes.cpp:versus_percentage"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md"
   ]
  },

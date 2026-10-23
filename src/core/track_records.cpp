@@ -610,7 +610,8 @@ void track_records_exit_frame(FrontEndState& state, const FrontEndContent& conte
     } else if (frame <= exit_frame::wipe_end) {
         wipe_frame(state, false);
     } else { // the frame after the last pass
-        // $80:A029: HDMA off; back through `$80:D55F` to the RECORDS menu's loop.
+        // $80:A029: HDMA off, BG2VOFS left on the grid's last write, the scroll 0 (`$80:9FB1`);
+        // back through `$80:D55F` to the RECORDS menu's loop.
         grid.hdma_on = false;
         state.registers.bg[1].vofs = 0;
         state.logo.raised = false;
