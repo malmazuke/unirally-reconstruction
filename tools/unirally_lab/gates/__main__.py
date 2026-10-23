@@ -111,8 +111,8 @@ def main() -> int:
     env = dict(os.environ, W=str(root), L=str(evidence), PACK=str(pack), BASE_PACK=str(base_pack), B=str(out / 'base-bin'),
                BASE_SHA=base, CORPUS=str(corpus_dir), JOBS=str(a.jobs), RUN=str(out), FER=str(fer))
     context = dict(full=a.full, record=a.full and a.record, corpus_steps=by_step, identity=None, replay=None)
+    context['corpus_log'] = lambda step: corpus.clear_step(corpus_dir, step)
     if context['record']:
-        context['corpus_log'] = lambda step: corpus.clear_step(corpus_dir, step)
         corpus_dir.mkdir(parents=True, exist_ok=True)
         (corpus_dir / 'meta.json').write_text(json.dumps(dict(current_pack=str(pack), current_pack_sha256=corpus.sha_path(pack),
                                                               recorded_at=head, base=base)) + '\n')

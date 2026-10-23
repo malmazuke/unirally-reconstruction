@@ -113,7 +113,8 @@ class Run:
         shutil.rmtree(tmp, ignore_errors=True); shutil.rmtree(out, ignore_errors=True)
         tmp.mkdir(parents=True); out.mkdir(parents=True)
         env = dict(self.env, TMPDIR=str(tmp), G=str(out), STEP=step.id)
-        if step.record and self.context.get('record'):
+        # Checks against the original are recorded by a recording run; a task's own, every run.
+        if step.record and (self.context.get('record') or step.system == 'task') and 'corpus_log' in self.context:
             env['GATES_RECORD'] = str(self.context['corpus_log'](step.id))
         # In an evidence directory only what appears after the start is the step's (its mkdtemp).
         watched = [(d, entries(d)) for d in (Path(w.format(**self.env)) for w in step.writes)]
