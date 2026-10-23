@@ -796,6 +796,44 @@ refused as an unauthorized fixture directory, and so is a symlink to one: the
 path is resolved before it is authorized, so copy the two directories rather
 than linking them (CLASSIC-RACE-HUD).
 
+## The gate runner (D-0012)
+
+Pre-merge gates are one command, from the candidate's checkout (`local` linked to the main
+checkout's), under the heavy-run lock:
+
+```sh
+local/locks/heavy-run.sh <TASK> python3 -m tools.unirally_lab.gates run --task-checks <the task's checks>
+```
+
+- **What it does.** It builds main's binaries at the merge base in `.worktrees/gates-base`
+  (incrementally) and the candidate's four presets. From ninja's recorded inputs, the pack and the
+  build-wide files it decides which binaries the change can alter. Then it runs the steps of
+  `tools/unirally_lab/gates/catalogue.py` that those changes call for.
+- **What it prints and writes.** A line per step with its reason: why it ran or why it was
+  skipped. `artifacts/gates/<head>/report.json` holds each step's status, time and peak temp, and
+  the run's lowest free disk. `python3 -m tools.unirally_lab.gates plan` lists the steps.
+- **Comparing with main.** Checks against the original that drive `front_end_runner` run only
+  when their own recorded invocations, replayed through main's runner and the candidate's
+  (`fe-replay`), differ on some output. The replay compares the state rows, stderr, every
+  timeline, the sound cues, and per-frame digests of the picture, cartridge RAM and VRAM
+  (`front_end_runner --frame-digests`). Nothing is stored: each stream is read from a pipe and
+  reduced to one 8-byte digest per line.
+- **The frozen race gates** compare with the contract's frozen digest of the original's rows
+  (`--frozen-original`). They re-project both captures only with `--reproject` or when the
+  projection or its guards changed.
+- **The full run.** `run --full --record` runs everything and records the corpus again
+  (`local/gates/corpus/`). It is due before a milestone tag, after every fifth merged task or
+  weekly, and when a check script or a captured reference changes.
+- **A task's own checks** are a script, or better a `.list` of independent commands (one per line,
+  `$L` is `local/evidence` and `$G` the step's output directory), which run in parallel.
+- **Limits.** Each step has its own `TMPDIR`, capped at 2 GB. Running steps' caps sum to at most
+  6 GB (`--temp-cap`). No step starts with less than 4 GB plus its cap free (`--disk-floor`). The
+  synthetic suite and the builds run alone, and the app's real-time runs run only beside each
+  other.
+- **Selection is not a pass.** A skipped step is reported with its reason: "unchanged from main" or
+  "its recorded runs equal main". A failed or capped step fails the run (`status=failed`). Steps
+  that compare with the original and print their results (`ran`) are read as before.
+
 ## Citing the differential gates instead of re-running them
 
 Every differential compare drives `zoom_zoo_runner`, which links
