@@ -276,6 +276,7 @@ void move_now_playing_arrow(FrontEndState& state, std::uint16_t pad) {
 
 void enter_now_playing(FrontEndState& state) {
     state.now_playing.choice = NowPlayingChoice::none;
+    state.now_playing.pushed_rider_word = state.options_rider; // $80:B194-B196
     state.screen = FrontEndScreen::now_playing_entry;
 }
 
@@ -329,6 +330,7 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
         play_menu_sound(state, MenuSound::select); // $80:B4A0/B4B1
     hide_icons(state);
     high_bits(state, 112) = high_bits(state, first_mark) = four_hidden;
+    if (now.choice != NowPlayingChoice::exit) state.options_rider = now.pushed_rider_word;
     switch (now.choice) {
     case NowPlayingChoice::back:
         if (state.mode == FrontEndMode::league)

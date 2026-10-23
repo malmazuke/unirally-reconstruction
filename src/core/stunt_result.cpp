@@ -281,6 +281,7 @@ void end_tally(FrontEndState& state, const FrontEndContent& content, FrontEndPad
     words.record_or_total = result.tally.total;
     print_stunt(state, content, second ? StuntText::second_total : StuntText::total, words);
     const auto rider = second ? state.now_playing.opponent : state.rider_menu.rider;
+    state.options_rider = rider; // $80:F224-F227, $80:F2A9-F2AC
     const auto score = second ? result.times.opponent_score : result.times.player_score;
     auto& best = personal_best(state.records, rider, track_of(state));
     if (score > best) {

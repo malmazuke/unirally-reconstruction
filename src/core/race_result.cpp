@@ -160,6 +160,7 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
         switch (row.kind) {
         case RowKind::blank: continue;
         case RowKind::opponent: {
+            state.options_rider = state.now_playing.opponent; // $80:D009-D00F
             rider = state.second_rider;
             auto& best = personal_best(records, rider, track);
             if (row.time < best) {
@@ -175,6 +176,7 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
         }
         case RowKind::player: {
             rider = state.rider_menu.rider;
+            state.options_rider = rider; // $80:CFA3-CFA9
             auto& best = personal_best(records, rider, track);
             if (row.time < best) {
                 best = row.time;
@@ -454,6 +456,7 @@ bool race_won(const FrontEndState& state, const FrontEndContent& content) {
 // the 0 and 1 the game writes (R-0065).
 void score_race(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     constexpr std::uint16_t forced_completion = 0x2050;
+    state.options_rider = state.rider_menu.rider; // $83:879B-879E
     if (pads.one == forced_completion) {
         complete_tour(state);
         return;

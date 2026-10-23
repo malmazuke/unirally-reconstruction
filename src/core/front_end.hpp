@@ -512,6 +512,9 @@ struct NowPlaying {
     // keeps the menus' work RAM aside, so the stunt result's first tally pass reads it
     // (`$83:987D`, `$80:F758`).
     std::uint16_t choice_pads{};
+    // `$00CA` as NOW PLAYING's print began (`$80:B194` pushes it); Race and Y or X pull it back
+    // (`$80:B4BF-B4C0`, R-0100).
+    std::uint8_t pushed_rider_word{};
 };
 
 struct MainMenu {

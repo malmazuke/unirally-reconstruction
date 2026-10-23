@@ -35,6 +35,7 @@
 #include <iostream>
 #include <iterator>
 #include <map>
+#include <memory>
 #include <optional>
 #include <span>
 #include <sstream>
@@ -51,6 +52,9 @@ struct Options {
     std::filesystem::path race_timeline, look_timeline, sound_cues, one_player_timeline;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
+    // `--rider-word FILE`: `$00CA`, the rider PLAYER SCORES starts on, after each menu frame
+    // (RECORD-SCREENS, R-0100).
+    std::shared_ptr<std::ofstream> rider_word;
     // The original's race initialization frames, in race order, from a capture: the loading time
     // varies by a frame with the sound program's handshake (R-0039, R-0058).
     std::vector<std::uint32_t> race_initializations;
@@ -183,6 +187,9 @@ Options parse_options(int argc, char** argv) {
             unirally::OnePlayerRecords check;
             set_record_byte(check, offset, byte); // refuses an offset native keeps no record for
             options.record_writes.emplace_back(frame, offset, byte);
+        } else if (option == "--rider-word") {
+            options.rider_word = std::make_shared<std::ofstream>(value());
+            if (!*options.rider_word) throw std::runtime_error("cannot create the rider word log");
         } else if (option == "--cartridge-in") {
             options.cartridge_in = value();
         } else if (option == "--records") {
@@ -202,6 +209,7 @@ Options parse_options(int argc, char** argv) {
         throw std::invalid_argument("usage: front_end_runner --content-pack PACK --frames N "
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
                                     "[--records FRAME OUT.bin]... [--cartridge-in IMAGE.bin] "
+                                    "[--rider-word OUT.txt] "
                                     "[--race-initialization FRAME]... "
                                     "[--human-after FRAME] "
                                     "[--restore-check FRAME] "
@@ -597,6 +605,8 @@ private:
 void write_frame_outputs(const Options& options, std::uint32_t frame,
                          const unirally::FrontEndState& state) {
     print_state(frame, state);
+    if (options.rider_word)
+        *options.rider_word << frame << ' ' << unsigned(state.options_rider) << '\n';
     if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
         write_ppm(picture->second, unirally::render_front_end(state));
     if (const auto at = options.records.find(frame); at != options.records.end())
