@@ -106,19 +106,9 @@ def freeze(a,b,out):
     out.write_text(json.dumps(result,indent=2)+'\n');return result
 
 
-def compare(a,b,contract,binary,pack,out):
-    if out.exists():raise ValueError('fresh report required')
-    binary=binary.resolve();pack=pack.resolve()
-    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT);diff=sha(subprocess.check_output(['git','diff','HEAD'],cwd=ROOT));binary_sha=sha(binary.read_bytes());pack_sha=sha(pack.read_bytes())
-    reference,rows,events=original(a);repeat,other,other_events=original(b);frozen=json.loads(contract.read_text())
-    if reference!=repeat or rows!=other or events!=other_events:raise ValueError('original repeats differ')
-    expected_inventory=dict(kind='m4_16_playable_freeze',frames=[1376,reference['frames'][1]],state_bytes=742,
-                            original_sha256=digest(reference),rows_sha256=digest(rows),events=events,
-                            timeline_sha256=reference['timeline_sha256'],rom_sha256=ROM_SHA,core_sha256=reference['core_sha256'])
-    if any(frozen.get(key)!=value for key,value in expected_inventory.items()):
-        raise ValueError('frozen original inventory differs')
-    rules,rules_sha=load_rules(ROOT/TWO_TRACK_RULES_PATH);validate_pack(pack.read_bytes(),rules,rules_sha)
-    last=reference['frames'][1]
+def restore_boundaries(rows,events,last):
+    """M4-16's restore frames: its named edges, M4-15's transitions and every change of the queue,
+    weight, charge, roll and pause bytes."""
     boundaries={1376,1377,1380,1381,1550,1551,1582,1583,1649,events['loading_frame']-1,events['loading_frame'],events['first_visible'],events['stable_result'],last-1}
     boundaries.update(restore_frames(rows[1649-1376:events['loading_frame']-1376]))
     # Restore across queue publication/consumption, learned reward weight,
@@ -128,7 +118,41 @@ def compare(a,b,contract,binary,pack,out):
         before,after=bytes.fromhex(rows[i-1]),bytes.fromhex(rows[i])
         if any(before[a:b]!=after[a:b] for a,b in [(12,16),(581,619),(621,626),(628,632),(632,652),(654,676),(678,742)]):
             boundaries.update((1375+i,1376+i))
-    boundaries=sorted(f for f in boundaries if 1376<=f<last)
+    return sorted(f for f in boundaries if 1376<=f<last)
+
+
+def frozen_original(directory,frozen):
+    """An original as its frozen contract recorded it, without reading its memory capture.
+
+    The contract froze the digest of the original's report (`original_sha256`), of its projected
+    rows (`rows_sha256`) and its events, from two captures that agreed. A gate asks whether the
+    candidate's rows equal those rows, which their digest answers; re-projecting 850 MB of memory
+    per capture on every gate re-checks the capture, not the candidate (D-0012). The rows come
+    back as None for the caller to compare by digest. The projection's guard manifest is not in
+    this contract, so a gate may use this only while that manifest and this module are unchanged
+    from the commit whose gates passed."""
+    document=json.loads((directory/'reference.json').read_text())
+    if digest(document)!=frozen.get('original_sha256'):raise ValueError('original report differs from the frozen contract')
+    return document,None,frozen['events']
+
+
+def compare(a,b,contract,binary,pack,out,frozen_only=False):
+    if out.exists():raise ValueError('fresh report required')
+    binary=binary.resolve();pack=pack.resolve()
+    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT);diff=sha(subprocess.check_output(['git','diff','HEAD'],cwd=ROOT));binary_sha=sha(binary.read_bytes());pack_sha=sha(pack.read_bytes())
+    frozen=json.loads(contract.read_text())
+    if frozen_only:
+        reference,rows,events=frozen_original(a,frozen)
+    else:
+        reference,rows,events=original(a);repeat,other,other_events=original(b)
+        if reference!=repeat or rows!=other or events!=other_events:raise ValueError('original repeats differ')
+    expected_inventory=dict(kind='m4_16_playable_freeze',frames=[1376,reference['frames'][1]],state_bytes=742,
+                            original_sha256=digest(reference),rows_sha256=frozen.get('rows_sha256') if frozen_only else digest(rows),events=events,
+                            timeline_sha256=reference['timeline_sha256'],rom_sha256=ROM_SHA,core_sha256=reference['core_sha256'])
+    if any(frozen.get(key)!=value for key,value in expected_inventory.items()):
+        raise ValueError('frozen original inventory differs')
+    rules,rules_sha=load_rules(ROOT/TWO_TRACK_RULES_PATH);validate_pack(pack.read_bytes(),rules,rules_sha)
+    last=reference['frames'][1]
     with tempfile.TemporaryDirectory(prefix='zoom-playable-native-') as directory:
         root=Path(directory);local_pack=root/'classic.pack';local_pack.write_bytes(pack.read_bytes());inputs=root/'inputs.txt';seed=root/'restore.bin'
         def execute(first,restore=None,restart=False,hints=1):
@@ -144,10 +168,15 @@ def compare(a,b,contract,binary,pack,out):
                 output.append(row)
             return output
         actual=execute(1376)
+        if rows is None:
+            if digest(actual)!=frozen['rows_sha256']:
+                raise ValueError('native rows differ from the frozen original rows; rerun without --frozen-original for the first mismatch')
+            rows=actual
         if actual!=rows:
             for i,(x,y) in enumerate(zip(actual,rows)):
                 if x!=y:raise ValueError(f'first mismatch {1376+i}: {[n for n,(v,w) in enumerate(zip(bytes.fromhex(x),bytes.fromhex(y))) if v!=w]}')
             raise ValueError('native frame count differs')
+        boundaries=restore_boundaries(rows,events,last)
         if execute(1376)!=actual:raise ValueError('fresh native initialization differs')
         # R-0061: a restart reads the rider's tutorial bit again, which the race set in $77:1116 when
         # its hints ended ($12E3 1 to 0 and $77:1116 0 to 1 on one frame, M4-16 boundary-a frame
@@ -161,7 +190,7 @@ def compare(a,b,contract,binary,pack,out):
         raise ValueError('source/binary/pack changed during validation')
     result=dict(status='passed',source_commit=head.decode().strip(),source_diff_sha256=diff,binary_sha256=binary_sha,
                 pack_sha256=pack_sha,contract_sha256=sha(contract.read_bytes()),frames=[1376,last],state_bytes=742,
-                rows_sha256=digest(rows),restore_frames=boundaries,events=events,
+                rows_sha256=digest(rows),restore_frames=boundaries,events=events,original='frozen contract digest' if frozen_only else 'both captures re-projected',
                 comparison_domains=dict(race=[1376,events['loading_frame']-1],race_projected_bytes=724,
                     result_archived_race_bytes=724,result_original_publication_bytes=8,semantic_loading_clock_bytes=2,semantic_pause_counter_bytes=8,
                     restart='fresh-process result restore then shared native restart; entire new race compared'),
@@ -175,7 +204,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['freeze','compare'])
     for flag in ['reference','repeat','out']:p.add_argument('--'+flag,type=Path,required=True)
     for flag in ['contract','binary','pack']:p.add_argument('--'+flag,type=Path)
+    p.add_argument('--frozen-original',action='store_true',help="compare with the contract's frozen row digest instead of re-projecting both captures (D-0012)")
     a=p.parse_args()
-    r=freeze(a.reference,a.repeat,a.out) if a.command=='freeze' else compare(a.reference,a.repeat,a.contract,a.binary,a.pack,a.out)
+    r=freeze(a.reference,a.repeat,a.out) if a.command=='freeze' else compare(a.reference,a.repeat,a.contract,a.binary,a.pack,a.out,a.frozen_original)
     print(json.dumps({k:v for k,v in r.items() if k!='restore_frames'},indent=2));print('restores',len(r.get('restore_frames',[])))
 if __name__=='__main__':main()
