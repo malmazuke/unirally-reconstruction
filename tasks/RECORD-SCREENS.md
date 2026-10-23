@@ -2,9 +2,18 @@
 
 ## Assignment
 
-- Status: **queued** 14 October 2026 by [MENU-INPUT](MENU-INPUT.md) (R-0097). Unclaimed.
+- Status: **accepted** 24 October 2026 (tier 1, [#83](https://github.com/malmazuke/unirally-reconstruction/pull/83),
+  approved in review round 2 at `3f8a1ab`), integrated by merge commit. Claimed 23 October 2026 on main `ff1efb6` (Claude Code desktop app, Claude Opus 5.5
+  `claude-opus-5-5`; coordinator and integrator; a worker subagent implements, a fresh subagent
+  reviews). Queued 14 October 2026 by [MENU-INPUT](MENU-INPUT.md) (R-0097). Weekly usage at claim 31%.
+- Choice: the user asked for this task by name. No other session holds a claim (the only remote
+  task branch is the merged `task/podium-audio`).
+- Branch `task/record-screens` in `.worktrees/record-screens`; evidence in main
+  `local/evidence/record-screens/`.
+- Task provider: Anthropic.
 - Milestone: M4 (original game coverage).
-- Review tier: **1** (menu state in `src/core`).
+- Review tier: **1** (menu state in `src/core`: the records screens' frame waits and exits, and the
+  rider word `$00CA`).
 - Dependencies: OPTIONS (R-0072), MENU-INPUT (R-0097), TWO-HUMAN-STUNTS (R-0095).
 
 ## Why
@@ -24,3 +33,150 @@ MENU-INPUT made PLAYER SCORES and GROUP TABLES frame-exact but left, in R-0097's
 
 Each captured from the original and made native, with the menus' frozen comparisons and
 MENU-INPUT's `checks.sh` unchanged elsewhere.
+
+## Checkpoint - 23 October 2026 (implementation worker, Claude Opus 5.5)
+
+Record: [R-0100](../docs/research/R-0100-record-screens.md). Evidence: main
+`local/evidence/record-screens/` (nine probe captures `probe-*` with their manifests, five sound
+schedules `*.cues.txt` with their stripped `*-disp1/2` captures, the warm-boot images in `images/`,
+`checks.sh`, `make_ca.py`, the baseline `base-ff1efb6/` the coordinator built). Results below are
+`checks.sh` at `2a15a8c` (`artifacts/record-screens/checks-2a15a8c.out` in the worktree): pictures
+equal against the original, candidate and main.
+
+| Item | Native before | Native after | Captures and result |
+|---|---|---|---|
+| TRACK RECORDS' entry | logo raised at once, the grid printed at once, static HDMA, the loop 6 frames early | `$80:D5E6`/`$80:EB76` frame by frame: logo slide, `$0C70` tables and the 57-pass wipe, the two grid halves past their frames (`$00CE` 25, 45), 18 scroll passes, the records' objects | `rs-track` 2200/2200 (main 487), `rs-high` 2300/2300 (main 50), `rv-records` 2100/2100 (main 1141) |
+| TRACK RECORDS' loop | 32 pixels a press, wrapping column, one latch, a time in every column | `$80:E3E9`'s easing scroll, unwrapped separately latched column with a sound per press, `$80:C269`'s scores, the colours and rows a frame after the print | same captures; Start held from before the loop leaves on its first poll (2138) |
+| TRACK RECORDS' way out | one frame, RECORDS printed and slid again | `$80:9F7A`: 62 frames, the wipe out, HDMA off, RECORDS' loop without a print | same captures |
+| HIGH SCORES | pad 1's B/Y/X/Start/A at once; palettes at once; leaders' ties and averages off | print past the choice's frame, slide, three colour frames, `$80:C206` (either pad, two frames running), back slide; leaders as `$80:D7D5-D8F8` | `rs-track` (one-frame B ignored 2450; pad 2 X + pad 1 A leaves 2501; L held leaves 2696), `rs-high`, `rv-records` |
+| `$00CA` after results | the first rider (race setup) | `$80:CFA9`, `$80:D00F`, `$80:9041`, `$80:90D9`, `$80:F227`, `$80:F2AC`, `$83:879E`; NOW PLAYING's push and pull (`$80:B194`, `$80:B4C0`) | `rs-ca-2p-lap` 2153/2153 (main 1878: PLAYER SCORES' rider), `rs-ca-vs-lap` 2568/2568 (2293), `rs-ca-2p-stunt` 1694/1694 (1419), `rs-ca-vs-stunt` 2109/2109 (1834), `rs-ca-np` 1950/1950 (1675); `$00CA` equal on every menu frame of every capture |
+| PLAYER SCORES' mask | a frame after RECORDS' choice | in the choice's frame (`$80:DACF-DAD6`) | `rv-ca` `$00CA` equal from 3450 (135 against 7 before) |
+| VS challenger's NOW PLAYING print | native since MENU-INPUT round 1 | unchanged | `rs-ca-vs-lap`, `rs-ca-vs-stunt`, `vs-challenger` |
+| `$80:FBEE`'s menu | native since LEAGUE-TOURS (R-0098 finding 5) | unchanged | `rs-podium-menu` 1000/1000 from 12300, candidate and main; the podium's own frames differ in the fields menu_compare.py skips, as main |
+| Found on the way | warm boots started the markers' step at 0 | `$77:10A7` taken from the image | every warm OPTIONS/RECORDS frame's OAM (`rs-track` from 660) |
+
+Sound schedules (frame waits included, from 620): `rs-track` 2630 lines, `rs-high` 2712,
+`rs-ca-2p-lap` 16414, `rs-ca-vs-stunt` 9289: 0 frames differ; `rs-podium-menu` 14297: 1 frame
+(10603, the awards' frame wait, as recorded in R-0097 and on main).
+
+Remaining differences (R-0100 Not covered): the prints that run past their frame (text and `$00CE`
+on TRACK RECORDS' entry frames 63 and 86, HIGH SCORES' choice frame), assets 29/30 not in pack v40
+(no picture differs), the HDMA tables checked through the pictures only.
+
+## Handoff (worker)
+
+- Branch `task/record-screens`, base claim `ce33f1e` on main `ff1efb6`. Commits: `05b4a3e`
+  (TRACK RECORDS and HIGH SCORES, the markers' step), `549da89` (`$00CA`'s writers, the runner's
+  `--rider-word`), `2a15a8c` (PLAYER SCORES' mask), then R-0100, this record and the regenerated
+  `docs/map/static/`.
+- Pack: v40 unchanged (assets 29/30 would need v41; not needed for any picture).
+- Checks run: `ctest` app-debug 41/41 and lab-debug 41/41; `clang-tidy` (LLVM 19) clean on the
+  changed files (function size included); `clang-format` (19) clean; `coverage native-symbols
+  --check` passed, 0 of 1,644 cited addresses without a record (`regen.sh`, the five raw coverage
+  inputs; tooling tests `test_native_symbols`, `test_static_map`, `test_tracks` OK); `checks.sh` at
+  `2a15a8c` as the table above (`artifacts/record-screens/checks-2a15a8c.out`). Synthetic suite and
+  the coordinator's gates not run by the worker. The commit after `2a15a8c` changes a comment and
+  the records only.
+- Commands: `zsh local/evidence/record-screens/checks.sh OUTDIR` (under `heavy-run.sh`; zsh), R-0100
+  Reproduction. The gates' `gates.sh` calls it.
+- Next: the coordinator's gates and review. Follow-ups: NAME-CHECK (queued); a pack v41 with assets
+  29/30 if a later screen shows colours 0x00-0x1F there.
+
+## Gates - head `b6fa277` (main `local/evidence/record-screens/gates-b6fa277.out`)
+
+Run by the coordinator under `local/locks/heavy-run.sh` with `gates_and_synthetic.sh` (PODIUM-AUDIO's
+gates on main `ff1efb6`'s binaries `base-ff1efb6/`, pack v40 on both sides, plus this task's
+`checks.sh`), 02:58-08:16 UTC 23 October 2026. The worker's implementation ran 3 h 06 min
+(harness-measured).
+- Four presets build, ctest 41 of 41 each (ASan presets unavailable on this host; Linux CI covers
+  them). Synthetic suite passed on app-debug and lab-debug. v1 contracts, eight hidden app runs and
+  the front end passed. Fuzz as on main (40 seeds, 40 aborts: recorded non-pass).
+- Eleven differential gates passed with main's row digests. Race sweep 432 runs, 0 differences;
+  R-0076's seven cue schedules identical to main; every pause, two-pad, race-end, look, restart,
+  restore, track-sweep, idle-demo, CREDITS-NAME, WIPE-RAM, TWO-HUMAN-STUNTS, DEMO-AUDIO, MODE-AUDIO
+  and R-0077 result as on main.
+- Front-end sweep: 168 of 179 manifests equal to main. The 11 differing are all TRACK RECORDS or
+  HIGH SCORES: nine OPTIONS records manifests (state only, no sampled picture differs) and
+  `coverage-roadmap/mode-4` (from 1051) and `league/organic-two-recon` (from 6101), which both open
+  TRACK RECORDS: main shows the grid at once where the candidate runs the 88-frame entry.
+- MENU-INPUT's, LEAGUE-TOURS' and PODIUM-AUDIO's `checks.sh` as recorded (MENU-INPUT's twelve and
+  the review's nine captures equal to main or better; `awards-press` 700/700).
+- This task's `checks.sh`: as the checkpoint's table (`rv-records` 2100/2100, `rs-track`
+  2200/2200, `rs-high` 2300/2300, the five `rs-ca-*` captures on every picture,
+  `rs-podium-menu` 1000/1000); sound schedules 0 frames differing but `rs-podium-menu` 1 (10603, as
+  main).
+- Tooling tests 577 passed; functions over 80 lines 0; native symbols current. Hosted CI on
+  `b6fa277`: `changes`, `lab (macos-15)` and `lab (ubuntu-24.04)` pass.
+
+## Review round 1 (returned on `b6fa277`) - the fixes
+
+Review: https://github.com/malmazuke/unirally-reconstruction/pull/83#pullrequestreview-5625769540
+(main `local/evidence/record-screens-review/review-b6fa277.md`), with its captures
+`wr-track`, `wr-stats`, `wr-stats2` and `wr-1p-ca`. The fixes are in `66b8629`. Results come from
+`checks.sh` at `66b8629` (`artifacts/record-screens/checks-66b8629.out` in the worktree), which now
+also runs the review's four captures, their cartridge RAM (`records_check.py`) and the two sound
+schedules.
+
+1. **`$77:10FB` from every rider.** Fixed in `66b8629`. `$80:D83D-D849` stores each rider's wins
+   in `$77:10FB` before testing its races (checked in the listing). A rider with no races now
+   writes it too (`high_scores.cpp`). On `wr-stats2` at 1699, `10FB` is now 0 as in the original
+   (it was 1); `10F9` is 3 on both sides (main 0).
+2. **The 1P scoring's `$00CA` a frame earlier.** Fixed in `66b8629`. `$83:879B-879E` comes before
+   `JSR $83:A923` (checked in the listing), so native now writes it on the frame before the
+   scoring (`race_result.cpp`, `frame + 1 == scoring` in 1P). `wr-1p-ca`'s `$00CA` is now equal on
+   every frame (before: 3803 differed, 17 against 0). Pictures are 2600/2600 (main 2318).
+3. **RECORDS' entry overrun with dense statistics** (`$83:97BD`'s 48 percentages). Not fixed, as
+   agreed: recorded in R-0100's Not covered as a CPU-cycle frame overrun of the PODIUM-RETURN-TIMING
+   and NAME-CHECK class. `wr-stats2` is 517/800 on candidate and main alike, from 901.
+
+The review's other captures: `wr-track` 1150/1150 (main 551), sound 0 frames differ of 1562 lines
+(main 15); `wr-stats` 800/800 (main 358), sound 0 of 1091 (main 2). Every other `checks.sh` line is
+identical to the run at `2a15a8c`. The cartridge RAM byte `$77:10A7` still differs at the end of
+`wr-stats`, `wr-stats2` and `wr-track`, as on main (native's save does not write the markers' step,
+R-0100 Not covered).
+
+Checks at `66b8629`: ctest app-debug 41/41 and lab-debug 41/41; clang-tidy (LLVM 19) 0 warnings on
+`high_scores.cpp` and `race_result.cpp`; clang-format clean; `regen.sh` (five coverage inputs) and
+`coverage native-symbols --check` passed, 1645 cited and 0 without a record; tooling tests
+`test_native_symbols`, `test_static_map` and `test_tracks` OK. R-0100 is updated: finding 5's
+leaders no longer claim "exactly" and describe `10F9`/`10FB`; finding 6 gives the 1P write's frame;
+the Results add the review's captures; Not covered adds the entry overrun.
+
+## Review round 2 (approved `3f8a1ab`)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/83#pullrequestreview-5626601904)
+  of `3f8a1ab`: approved, no new findings (main `local/evidence/record-screens-review/review-3f8a1ab.md`).
+  Both fixes checked against the listing; the 1P move cannot miss a 1P path (every 1P result,
+  stunt events included, leaves through `race_result_exit`).
+- Two more withheld captures: `wr-1p-force` (forced completion, the tour's award, PLAYER SCORES)
+  and `wr-1p-loss` (a 1P loss, PLAYER SCORES): 2600/2600 pictures each, `$00CA` equal on every frame.
+- The 224 cartridge RAM bytes `wr-1p-ca` differs in are a strict subset of main's 225 (main's extra
+  is `$77:10F9`, fixed here), all in fields native does not keep: the checksum `$77:054E`, the score
+  history `$77:0618`, the race's setup and result words `$77:0740-07D7`, the menus' save at
+  `$77:0E6B`, the markers' step `$77:10A7`.
+
+## Gates - head `3f8a1ab` (main `local/evidence/record-screens/gates-3f8a1ab.out`)
+
+Same script, 09:49-22:50 UTC 23 October 2026; the run was suspended for about seven hours while the
+host slept, so its wall time is not a measure. Every line equals the run at `b6fa277` but:
+- this task's `checks.sh` adds the review's captures: `wr-track` 1150/1150 (main 551), `wr-stats`
+  800/800 (main 358), `wr-stats2` 517/800 (as main, R-0100 Not covered), `wr-1p-ca` 2600/2600 (main
+  2318); cartridge RAM `10F9`/`10FB` equal on all; sound `wr-track` 0 frames differ (main 15),
+  `wr-stats` 0 (main 2);
+- the app's producer through a podium drops 2,622 late pairs after the boot's (2,815 at `b6fa277`;
+  a real-time measure, the first drop at the boot in both).
+Hosted CI on `3f8a1ab`: `changes`, `lab (macos-15)` and `lab (ubuntu-24.04)` pass.
+
+## Closeout
+
+The pull request, its merge commit and check runs are in ignored main
+`artifacts/record-screens-integration/closeout.json`. The closing session:
+- keeps main `local/evidence/record-screens/` (2.0 GB: the captures `checks.sh` reads, the two
+  gate logs, `base-ff1efb6/`) and `local/evidence/record-screens-review/` (0.6 GB, the review's
+  captures, which `checks.sh` reads);
+- moves the worktree's gate logs and `checks-*` outputs to main
+  `artifacts/record-screens-integration/` and deletes both worktrees' build output;
+- removes `.worktrees/record-screens` and `.worktrees/record-screens-review` and the local branch
+  `task/record-screens` (GitHub deletes the merged head branch).
+- Queued: RECORDS' entry overrun with dense statistics, added to
+  [PODIUM-RETURN-TIMING](PODIUM-RETURN-TIMING.md); NAME-CHECK unchanged.

@@ -19,6 +19,14 @@ differ by a frame, from two effects R-0098 records and native does not model:
   pair (15 of 15, leagues of 3, 4 and 5), the standings after each pair but the last start a
   frame later. Native also counts some later pairs a frame early.
 
+## Added by RECORD-SCREENS (24 October 2026)
+
+- **RECORDS' entry with dense statistics.** `$80:D527` calls `$83:97BD`, whose 48 `$83:9D80`
+  percentages run past RECORDS' entry frame when the riders have many races, so the original's
+  menus are a frame behind native's from there (review capture `wr-stats2` from 901, main
+  `local/evidence/record-screens-review/`; on main too). The same frame-cycle model would predict
+  it ([R-0100](../docs/research/R-0100-record-screens.md) Not covered).
+
 ## Outcome
 
 - Model what predicts each effect (the sound processor's handshake, or the frame's cycle count),

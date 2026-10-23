@@ -242,23 +242,19 @@ void league_warning_frame(FrontEndState& state, const FrontEndContent& content, 
 
 void enter_records_menu(FrontEndState& state, const FrontEndContent& content) {
     // $80:D525-D53C; R-0072 observation 5. `$0089`, the decorations' delay, goes on (R-0097).
-    state.records_detail.returning = false;
     print_choices(state, content, content.records_menu_text);
     state.screen = FrontEndScreen::records_entry;
 }
 
 void records_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
-        // `$80:EF4D` copies no OAM before the slide's first pass; the way back from a detail did.
-        if (state.records_detail.returning) copy_oam(state);
-        start_slide(state, content, state.records_detail.returning);
+        start_slide(state, content, false); // `$80:EF4D`: no OAM copy before the first pass
         return;
     }
     if (!slide_frame(state, content)) return;
     state.menu.selection = 0;
     aim_choice(state, content.records_arrow_columns);
     state.latches = {};
-    state.records_detail.returning = false;
     turn_markers(state, content); // $80:D53F JSR $B93C (R-0097)
     state.screen = FrontEndScreen::records_menu;
 }
@@ -269,12 +265,8 @@ void reopen_records_menu(FrontEndState& state, const FrontEndContent& content) {
     aim_choice(state, content.records_arrow_columns);
     state.latches = {};
     turn_markers(state, content);
-    state.records_detail.returning = false;
     state.screen = FrontEndScreen::records_menu;
 }
-
-void print_high_scores(FrontEndState& state, const FrontEndContent& content);
-void print_track_records(FrontEndState& state, const FrontEndContent& content);
 
 void records_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state);
@@ -295,419 +287,46 @@ void records_menu_frame(FrontEndState& state, const FrontEndContent& content, Fr
     auto& detail = state.records_detail;
     detail.category = state.menu.selection;
     state.screen = FrontEndScreen::records_detail_entry;
-    if (shows_scores(state)) {
-        // $80:D54B: the logo slides up (R-0097); the rider and the league are the last ones.
-        state.logo.raised = true;
-        detail.phase = ScoresPhase::entering;
-        detail.press_seen = detail.group_reprinted = false;
-        return;
-    }
-    detail.rider = 0;
-    detail.tour = 0;
-    raise_logo(state);
-}
-
-namespace {
-
-struct ScoreLeader {
-    std::uint16_t value{};
-    std::uint16_t rider{someone};
-};
-
-struct ScoreLeaders {
-    ScoreLeader races, wins, losses, best_win_average, worst_win_average, total_score,
-        best_score_average, worst_score_average;
-};
-
-void take_larger(ScoreLeader& leader, std::uint16_t value, unsigned rider) {
-    if (value <= leader.value) return;
-    leader = {value, static_cast<std::uint16_t>(rider)};
-}
-
-ScoreLeaders high_score_leaders(const OnePlayerRecords& records) {
-    ScoreLeaders leaders;
-    leaders.worst_win_average.value = leaders.worst_score_average.value = 0xffff;
-    bool any_played = false;
-    for (unsigned rider = 0; rider < records.statistics.size(); ++rider) {
-        const auto& stats = records.statistics[rider];
-        const auto races = stats[0], wins = stats[1];
-        const auto losses = static_cast<std::uint16_t>(races - wins);
-        const auto score = stats[3];
-        take_larger(leaders.races, races, rider);
-        take_larger(leaders.wins, wins, rider);
-        take_larger(leaders.losses, losses, rider);
-        if (score >= leaders.total_score.value)
-            leaders.total_score = {score, static_cast<std::uint16_t>(rider)};
-        // $80:D8C1-D8D8 assigns an unplayed rider the 7000 score-average
-        // sentinel. In the measured one-played-rider case, equal zero best
-        // averages and equal 7000 worst averages end on rider 15.
-        const auto score_average = static_cast<std::uint16_t>(races == 0 ? 0 : score / races);
-        if (score_average >= leaders.best_score_average.value)
-            leaders.best_score_average = {score_average, static_cast<std::uint16_t>(rider)};
-        const auto worst_score = static_cast<std::uint16_t>(races == 0 ? 7000 : score_average);
-        if (leaders.worst_score_average.rider == someone
-            || worst_score >= leaders.worst_score_average.value)
-            leaders.worst_score_average = {worst_score, static_cast<std::uint16_t>(rider)};
-        if (races == 0) continue;
-        any_played = true;
-        const auto win_average = static_cast<std::uint16_t>(100U * wins / races);
-        take_larger(leaders.best_win_average, win_average, rider);
-        if (win_average < leaders.worst_win_average.value)
-            leaders.worst_win_average = {win_average, static_cast<std::uint16_t>(rider)};
-    }
-    if (leaders.worst_win_average.rider == someone) leaders.worst_win_average.value = 0;
-    if (!any_played) {
-        leaders.total_score = {};
-        leaders.best_score_average = leaders.worst_score_average = {};
-    }
-    return leaders;
-}
-
-std::uint16_t high_score_word(const ScoreLeaders& s, std::uint16_t address) {
-    switch (address) {
-    case 0x013f: return s.races.value;
-    case 0x0016: return s.races.rider;
-    case 0x0141: return s.wins.value;
-    case 0x001a: return s.wins.rider;
-    case 0x0143: return s.losses.value;
-    case 0x001e: return s.losses.rider;
-    case 0x0020: return s.best_win_average.value;
-    case 0x0022: return s.best_win_average.rider;
-    case 0x0024: return s.worst_win_average.value;
-    case 0x0026: return s.worst_win_average.rider;
-    case 0x0147: return s.total_score.value;
-    case 0x002a: return s.total_score.rider;
-    case 0x002c: return s.best_score_average.value;
-    case 0x002e: return s.best_score_average.rider;
-    case 0x0030: return s.worst_score_average.value;
-    case 0x0032: return s.worst_score_average.rider;
-    default: throw std::invalid_argument("unknown HIGH SCORES text operand");
-    }
-}
-
-} // namespace
-
-void print_high_scores(FrontEndState& state, const FrontEndContent& content) {
-    // $80:D7CD-DACC; the text stream's operands are the computed leaders and their values.
-    const auto leaders = high_score_leaders(state.records);
-    TextVariables variables;
-    variables.rider_names = state.records.rider_names;
-    variables.word = [&](std::uint16_t address) { return high_score_word(leaders, address); };
-    variables.place_object = [&](unsigned object, unsigned position) {
-        place_printed_object(state, object, position);
-    };
-    print_text(state.text, state.printer, content.high_scores_text, content.character_table,
-               &variables);
-}
-
-namespace {
-
-void track_grid_line(FrontEndState& state, const FrontEndContent& content, unsigned y,
-                     const char* word, unsigned length) {
-    std::array<std::uint8_t, 16> stream{};
-    stream[0] = 0xfe;
-    stream[1] = 9;
-    stream[2] = static_cast<std::uint8_t>(y);
-    for (unsigned k = 0; k < length; ++k) stream[3 + k] = static_cast<std::uint8_t>(word[k]);
-    stream[3 + length] = 0xff;
-    print_text(state.text, state.printer, std::span<const std::uint8_t>(stream.data(), 4 + length),
-               content.character_table);
-}
-
-void track_grid_half(FrontEndState& state, const FrontEndContent& content, unsigned first_tour,
-                     unsigned count, unsigned starting_row, unsigned map_word) {
-    state.text.words.fill(cleared_text);
-    for (unsigned i = 0; i < count; ++i) {
-        const unsigned tour = first_tour + i;
-        const unsigned row = starting_row + i * 6;
-        draw_tour_picture(state, content, tour, row * 32 + 2);
-        for (unsigned medal = 0; medal < 3; ++medal) {
-            const unsigned y = row + 2 * medal;
-            if (medal == 0) track_grid_line(state, content, y, "gold", 4);
-            if (medal == 1) track_grid_line(state, content, y, "silver", 6);
-            if (medal == 2) track_grid_line(state, content, y, "bronze", 6);
-            for (unsigned track = 0; track < 5; ++track) {
-                const unsigned x = 16 + 3 * track;
-                const unsigned index = tour * 5 + track;
-                const bool placed =
-                    state.records.record_times[medal][index] != (track == 2 ? 0 : 0xea60);
-                // $80:EEF2-EF35 maps the holder to an eight-glyph icon and
-                // its palette. The same rank changes from blue to red when
-                // only its holder changes (track 0, R-0072).
-                constexpr std::array<std::uint8_t, 16> holder_palettes{4, 3, 0, 2, 3, 3, 4, 0,
-                                                                       3, 0, 4, 0, 2, 1, 0, 5};
-                const unsigned holder = state.records.record_holders[medal][index];
-                const std::uint16_t top =
-                    holder < holder_palettes.size()
-                        ? static_cast<std::uint16_t>(
-                              0x20d1U + (holder & 7U)
-                              + (static_cast<unsigned>(holder_palettes[holder]) << 10U))
-                        : 0x3cd9;
-                const std::uint16_t dot_top = placed ? top : 0x3cd9;
-                const std::uint16_t dot_bottom =
-                    placed ? static_cast<std::uint16_t>(top + 0x3cU) : 0x3d15;
-                state.text.words[y * 32 + x] = dot_top;
-                state.text.words[y * 32 + x + 1] = dot_top | 0x4000;
-                state.text.words[(y + 1) * 32 + x] = dot_bottom;
-                state.text.words[(y + 1) * 32 + x + 1] = dot_bottom | 0x4000;
-            }
-        }
-    }
-    load_text(state, map_word);
-}
-
-void track_records_hdma(FrontEndState& state) {
-    // $80:EB76 copies the two mode-2 HDMA tables at $80:ECD1/ECF7. Channel 6
-    // switches BG2 to the grid for lines 40-167; channel 5 supplies its
-    // scrolling vertical offset. The last writes remain in the PPU registers.
-    auto add = [&](unsigned row, SnesLineRegisterName name, unsigned value) {
-        state.line_registers.push_back(
-            {static_cast<std::uint8_t>(row), name, static_cast<std::uint16_t>(value)});
-    };
-    add(0, SnesLineRegisterName::bg2_horizontal_offset, 0);
-    add(0, SnesLineRegisterName::bg2_vertical_offset, 0x100);
-    add(39, SnesLineRegisterName::bg2_vertical_offset, 0x104);
-    add(40, SnesLineRegisterName::bg2_horizontal_offset, 0x100);
-    add(40, SnesLineRegisterName::bg2_vertical_offset, state.records_detail.track_scroll);
-    add(168, SnesLineRegisterName::bg2_horizontal_offset, 0);
-    add(168, SnesLineRegisterName::bg2_vertical_offset, 0x08d);
-    add(169, SnesLineRegisterName::bg2_vertical_offset, 0x105);
-}
-
-void print_track_selected_times(FrontEndState& state, const FrontEndContent& content) {
-    // $80:D699-D6B1 derives the selected tour from the BG2 grid scroll:
-    // a half-pixel shift, three 16-pixel rows per tour, and a five-track
-    // stride. The 5-bit row wraps while the scroll itself keeps moving.
-    const auto delta = static_cast<std::uint16_t>(state.records_detail.track_scroll - 0x01a7U);
-    const unsigned row = (((delta >> 1U) + 1U) >> 3U) & 31U;
-    const unsigned tour = row / 3U;
-    if (tour >= 9U) return; // $80:D6AE's bounds branch retains the last lines.
-    state.text.words.fill(cleared_text);
-    const unsigned track = tour * 5U + state.records_detail.rider;
-    for (unsigned rank = 0; rank < 3; ++rank) {
-        const auto time = state.records.record_times[rank][track];
-        const auto holder = state.records.record_holders[rank][track];
-        // $80:D6D5-D6FF: each selected holder colours one of the three
-        // accompanying object rows, including SOMEONE at palette asset 22.
-        load_cgram(state, asset(content, first_rider_palette + holder), 0x80 + 16 * rank);
-        std::vector<std::uint8_t> stream{0xfe, 0x06, static_cast<std::uint8_t>(22 + 2 * rank)};
-        const auto display = race_time_text(time, content.time_words);
-        stream.insert(stream.end(), display.begin(), display.end());
-        constexpr std::array<std::uint8_t, 4> by{'_', 'b', 'y', '_'};
-        stream.insert(stream.end(), by.begin(), by.end());
-        stream.insert(stream.end(), {0xf8, 0xbc, 0x00, 0xff});
-        TextVariables variables;
-        variables.rider_names = state.records.rider_names;
-        variables.word = [holder](std::uint16_t address) -> std::uint16_t {
-            if (address != 0x00bc) throw std::invalid_argument("unknown TRACK RECORDS holder");
-            return holder;
-        };
-        print_text(state.text, state.printer, stream, content.character_table, &variables);
-    }
-    for (unsigned y = 22; y < 28; ++y)
-        for (unsigned x = 0; x < 32; ++x) {
-            const unsigned at = (0x1800 + y * 32 + x) * 2;
-            const auto word = state.text.words[y * 32 + x];
-            state.video.vram[at] = static_cast<std::uint8_t>(word);
-            state.video.vram[at + 1] = static_cast<std::uint8_t>(word >> 8);
-        }
-}
-
-} // namespace
-
-void print_track_records(FrontEndState& state, const FrontEndContent& content) {
-    // $80:D5E6-D7C0: the fixed title and three selected times occupy the
-    // lower-left BG2 map; the five-tour grid wraps across its right halves.
-    state.text.words.fill(cleared_text);
-    load_cgram(state, asset(content, 35), 0);
-    load_cgram(state, asset(content, 36), 0x40);
-    for (unsigned slot = 0; slot < 3; ++slot)
-        load_cgram(state, asset(content, 22), 0x80 + 16 * slot);
-    load_vram(state, asset(content, 68).last(0x780), 0x3d80);
-    print_text(state.text, state.printer, content.track_records_text, content.character_table);
-    TextVariables variables;
-    variables.place_object = [&](unsigned object, unsigned position) {
-        place_printed_object(state, object, position);
-    };
-    print_text(state.text, state.printer, content.track_records_objects, content.character_table,
-               &variables);
-    for (unsigned rank = 0; rank < 3; ++rank) {
-        // $80:D641-D660 raises the printed icons five pixels and places the
-        // three medal objects beside the selected record lines.
-        oam_byte(state, 104 + rank, 1) =
-            static_cast<std::uint8_t>(oam_byte(state, 104 + rank, 1) - 5);
-        oam_byte(state, 112 + rank, 0) = 32;
-        oam_byte(state, 112 + rank, 1) = static_cast<std::uint8_t>(174 + 16 * rank);
-        oam_byte(state, 112 + rank, 2) = static_cast<std::uint8_t>(0xa6 + 2 * rank);
-        oam_byte(state, 112 + rank, 3) =
-            static_cast<std::uint8_t>(rank == 2 ? 0x1d : 0x17 + 2 * rank);
-    }
-    high_bits(state, 104) = 0x40;
-    high_bits(state, 108) = 0x00;
-    high_bits(state, 112) = 0x40;
-    load_text(state, 0x1800);
-    track_grid_half(state, content, 0, 5, 2, 0x1400);
-    track_grid_half(state, content, 5, 4, 0, 0x1c00);
-    state.records_detail.track_scroll = 0x01e7;
-    print_track_selected_times(state, content);
-    state.registers.bg[1].hofs = 0;
-    state.registers.bg[1].vofs = 0x105;
-    load_cgram(state, asset(content, 34), 0xb0);
-    load_cgram(state, asset(content, 33), 0xc0);
-    load_cgram(state, asset(content, 32), 0xe0);
-    state.arrow.target_x = 0x0600;
-    state.arrow.target_y = 0x0740;
-    state.records_detail.track_scroll_step = 0;
-    track_records_hdma(state);
-}
-
-void load_high_score_palettes(FrontEndState& state, const FrontEndContent& content) {
-    // $80:D917-D9A8: the eight leaders supply the eight object palettes.
-    const auto leaders = high_score_leaders(state.records);
-    const std::array<std::uint16_t, 8> riders{leaders.wins.rider,
-                                              leaders.losses.rider,
-                                              leaders.races.rider,
-                                              leaders.best_win_average.rider,
-                                              leaders.worst_win_average.rider,
-                                              leaders.total_score.rider,
-                                              leaders.best_score_average.rider,
-                                              leaders.worst_score_average.rider};
-    for (unsigned k = 0; k < riders.size(); ++k)
-        load_cgram(state, asset(content, first_rider_palette + riders[k]), 0x80 + 16 * k);
+    // $80:D54B: the logo slides up for every choice (R-0097, R-0100). PLAYER SCORES and GROUP
+    // TABLES start on the last rider and league.
+    state.logo.raised = true;
+    detail.phase = ScoresPhase::entering;
+    detail.high_scores = HighScoresPhase::entering;
+    detail.press_seen = detail.group_reprinted = false;
+    // $80:DACF-DAD6: PLAYER SCORES masks its rider to 0-15 before its first frame wait.
+    constexpr std::uint8_t rider_bits = 15;
+    if (detail.category == player_scores_category)
+        state.options_rider = static_cast<std::uint8_t>(state.options_rider & rider_bits);
 }
 
 void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& content) {
-    if (state.records_detail.category == 0) {
-        // TRACK RECORDS opens with a wipe ($80:EB76) that plays the forward slide's sound at its
-        // start ($80:EB78) and again as the grid scrolls in ($80:EC8A).
-        constexpr std::uint32_t grid_scroll_frame = 68;
-        if (state.script_frame == 1 || state.script_frame == grid_scroll_frame)
-            play_menu_sound(state, MenuSound::forward_slide);
-        copy_oam(state);
-        if (state.script_frame == 1) {
-            print_track_records(state, content);
-            return;
-        }
-        track_records_hdma(state);
-        if (state.script_frame >= 82) {
-            // The PAL frame-1200 wave and arrow snapshots are one animation
-            // step ahead of the shared menu loop at this entry boundary.
-            // Keep the medal objects on their previously sampled step.
-            for (unsigned k = 0; k < 8; ++k) {
-                state.decorations.wave[k] =
-                    static_cast<std::uint8_t>((state.decorations.wave[k] + 1U) % 20U);
-                oam_byte(state, 104 + k, 2) =
-                    content.decoration_frames[wave_tiles + state.decorations.wave[k]];
-            }
-            state.arrow.spin = static_cast<std::uint8_t>((state.arrow.spin + 1U) & 31U);
-            state.screen = FrontEndScreen::records_detail;
-        }
+    if (state.records_detail.category == track_records_category) {
+        track_records_entry_frame(state, content);
         return;
     }
     if (shows_scores(state)) {
         scores_entry_frame(state, content);
         return;
     }
-    if (state.script_frame == 1) {
-        copy_oam(state);
-        state.text.words.fill(cleared_text);
-        if (state.records_detail.category != 1)
-            throw std::runtime_error("RECORDS detail category is not yet recovered");
-        print_high_scores(state, content);
-        load_text(state, state.slide.hidden_half);
-        high_bits(state, 104) = high_bits(state, 108) = four_hidden;
-        return;
-    }
-    if (state.script_frame == 2) {
-        copy_oam(state);
-        send_arrow_off(state);
-        start_slide(state, content, false);
-        return;
-    }
-    if (!slide_frame(state, content)) return;
-    high_bits(state, 104) = high_bits(state, 108) = four_shown;
-    load_high_score_palettes(state, content);
-    state.screen = FrontEndScreen::records_detail;
-}
-
-void update_track_records(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
-    // The printer consumes the grid offset from the preceding picture;
-    // the current input then advances the HDMA scroll for the next one.
-    print_track_selected_times(state, content);
-    if (state.script_frame > 3) step_decorations(state, content);
-    // The wipe ends with the result's sound after its last wait ($80:ECC4-ECC7), six frames into
-    // native's loop.
-    constexpr std::uint32_t wipe_result_frame = 6;
-    if (state.script_frame == wipe_result_frame) play_menu_sound(state, MenuSound::result);
-    constexpr std::array<std::uint8_t, 12> scroll_steps{1, 2, 2, 3, 4, 5, 4, 4, 2, 2, 2, 1};
-    // Its tests read either pad the gate lets in ($80:E449-E4B7, $80:D70F-D714; R-0097).
-    const auto pad = gated_pads(state, pads);
-    const bool down = (pad & (pad_down | pad_select)) != 0;
-    const bool up = !down && (pad & pad_up) != 0;
-    if (!down && !up) state.latches.moved = false;
-    if ((down || up) && !state.latches.moved) {
-        state.latches.moved = true;
-        state.records_detail.track_scroll_up = up;
-        state.records_detail.track_scroll_step = 1;
-    }
-    const bool right = (pad & pad_right) != 0;
-    const bool left = !right && (pad & pad_left) != 0;
-    if (!right && !left) state.latches.up = false;
-    if ((right || left) && !state.latches.up) {
-        state.latches.up = true;
-        play_menu_sound(state, MenuSound::navigate); // $80:E4C6 (Right), $80:E492 (Left)
-        auto& column = state.records_detail.rider;
-        column = static_cast<std::uint8_t>(right ? (column + 1U) % 5U : (column + 4U) % 5U);
-        state.arrow.target_x = static_cast<std::uint16_t>(0x0600 + column * 0x180);
-    }
-    if (state.records_detail.track_scroll_step != 0) {
-        const auto step = state.records_detail.track_scroll_step - 1U;
-        const auto pixels = scroll_steps[step];
-        auto& offset = state.records_detail.track_scroll;
-        offset = static_cast<std::uint16_t>(state.records_detail.track_scroll_up ? offset - pixels
-                                                                                 : offset + pixels);
-        state.records_detail.track_scroll_step =
-            static_cast<std::uint8_t>(step + 1U == scroll_steps.size() ? 0U : step + 2U);
-    }
-    track_records_hdma(state);
-    if (pad & (back_buttons | choose_buttons)) state.screen = FrontEndScreen::records_detail_exit;
+    high_scores_entry_frame(state, content);
 }
 
 void records_detail_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    if (state.records_detail.category == track_records_category) {
+        track_records_frame(state, content, pads);
+        return;
+    }
     if (shows_scores(state)) {
         scores_frame(state, content, pads);
         return;
     }
-    copy_oam(state);
-    if (state.records_detail.category == 0) {
-        update_track_records(state, content, pads);
-        return;
-    }
-    // $80:D9AC-D9B7 runs three waits after the slide before the record loop.
-    if (state.script_frame > 3) step_decorations(state, content);
-    if (!(pads.one & (back_buttons | choose_buttons))) return;
-    state.screen = FrontEndScreen::records_detail_exit;
+    high_scores_frame(state, content, pads);
 }
 
 void records_detail_exit_frame(FrontEndState& state, const FrontEndContent& content) {
-    // $80:D9B7-D9D7 restores the menu palettes and hides score-row objects.
-    if (state.records_detail.category == 0) {
-        // TRACK RECORDS replaced the high BG1 logo tiles with its tour badges
-        // and used BG2's vertical offset for the scrolling grid. Its return
-        // restores both before the records menu slides back into view.
-        state.registers.bg[1].vofs = 0;
-        reload_menu_palette(state, content);
-        reload_menu_text_tiles(state, content);
-        high_bits(state, 112) = four_hidden;
-    }
-    high_bits(state, 104) = high_bits(state, 108) = four_hidden;
-    load_object_palette(state, content);
-    load_cgram(state, asset(content, 28), 0xd0);
-    load_cgram(state, asset(content, 5), 0xe0);
-    state.registers.object_window_one_inverted = false;
-    state.logo.raised = false;
-    enter_records_menu(state, content);
-    state.records_detail.returning = true;
+    // Only TRACK RECORDS has a screen of its own on the way out; the other three slide back from
+    // their loop's screen.
+    track_records_exit_frame(state, content);
 }
 
 void enter_define_player_warning(FrontEndState& state, const FrontEndContent& content) {

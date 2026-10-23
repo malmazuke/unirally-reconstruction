@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 namespace unirally::front_end_screens {
 
@@ -322,6 +323,28 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
 // $80:EB23, before each frame wait of PICK TRACK and the two-entry menus: the done-track markers
 // turn (`$77:10A7`).
 void turn_markers(FrontEndState& state, const FrontEndContent& content);
+
+// track_records.cpp and high_scores.cpp: TRACK RECORDS and HIGH SCORES, RECORDS' choices 0 and 1
+// (R-0072, R-0100). Each entry's frames that start after a frame wait.
+inline constexpr std::uint8_t track_records_category = 0, high_scores_category = 1;
+bool track_records_entry_waits(std::uint32_t next);
+void track_records_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void track_records_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void track_records_exit_frame(FrontEndState& state, const FrontEndContent& content);
+bool high_scores_entry_waits(std::uint32_t next);
+void high_scores_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void high_scores_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// $80:C206: a press of any button of either pad on two frames running, each frame copying the
+// OAM and stepping the decorations; then `$80:C236` hides entries 30-35.
+bool press_seen_twice(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// HDMA in direct mode through a table, as the picture's register writes by row: each entry a line
+// count (bit 7 set: a write on every line), then the data; a count of 0, or the table's end,
+// ends it. `bytes` is 1, or 2 for mode 2's two writes (a low byte, then a high byte). A write on
+// the table's line n is first seen on row n.
+void add_hdma_writes(std::vector<SnesLineRegister>& writes, std::span<const std::uint8_t> table,
+                     unsigned bytes, SnesLineRegisterName name);
+// The writes in row order, each row's in the order they were added.
+void sort_line_registers(std::vector<SnesLineRegister>& writes);
 
 // records_scores.cpp: PLAYER SCORES and GROUP TABLES, RECORDS' choices 2 and 3 (R-0072, R-0097).
 inline constexpr std::uint8_t player_scores_category = 2, group_tables_category = 3;
