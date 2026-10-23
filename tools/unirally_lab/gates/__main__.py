@@ -7,9 +7,11 @@ at the merge base and the candidate's presets, decides from ninja's recorded inp
 the change can alter, and runs the steps of `catalogue.py` that those binaries' changes call for,
 in parallel where they do not contend. Prints one line per step and writes `report.json`.
 
-  --full      every step, the frozen gates re-projecting their captures, and every check against
-              the original (the periodic and pre-milestone run)
+  --full      every step and every check against the original (the periodic and pre-milestone
+              run)
   --record    with --full: record the front-end corpus from the checks' own invocations
+  --reproject the frozen race gates re-project both captures of the original instead of checking
+              the contract's frozen digest (always when the projection or its guards changed)
   --task-checks FILE   the task's own checks (run as `SHELL FILE OUTDIR`, the shell from its first
               line); repeatable. A file of commands, one per line, named *.list, runs each line
               as its own step, in parallel.
@@ -61,6 +63,7 @@ def main() -> int:
     p.add_argument('--base-pack', help="main's pack (default: the candidate's)")
     p.add_argument('--full', action='store_true')
     p.add_argument('--record', action='store_true')
+    p.add_argument('--reproject', action='store_true')
     p.add_argument('--task-checks', action='append', default=[])
     p.add_argument('--jobs', type=int, default=max(1, (os.cpu_count() or 8) - 4))
     p.add_argument('--out', help='report directory (default artifacts/gates/<head>)')
@@ -125,7 +128,7 @@ def main() -> int:
         print(f'  identity: {len(ident.changed_files)} files changed, pack {"changed" if ident.pack_changed else "unchanged"}')
         for name, b in ident.binaries.items():
             print(f'    {name:34s} {"CHANGED" if b["changed"] else "same   "} {b["reason"]}')
-        if a.full or any(f.startswith(catalogue.FROZEN_TRUSTS) for f in ident.changed_files):
+        if a.reproject or any(f.startswith(catalogue.FROZEN_TRUSTS) for f in ident.changed_files):
             run.env['FROZEN_FULL'] = '1'
         if fer.exists():
             corpus.install_shim(fer)
