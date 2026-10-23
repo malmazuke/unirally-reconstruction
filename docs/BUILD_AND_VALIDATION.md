@@ -826,7 +826,7 @@ local/locks/heavy-run.sh <TASK> python3 -m tools.unirally_lab.gates run --task-c
   weekly, and when a check script or a captured reference changes.
 - **A task's own checks** are a script, or better a `.list` of independent commands (one per line,
   `$L` is `local/evidence` and `$G` the step's output directory), which run in parallel.
-- **Limits.** Each step has its own `TMPDIR`, capped at 2 GB. Running steps' caps sum to at most
+- **Limits.** Each step has its own `TMPDIR`, capped at 1 GB by default (3 GB for LEAGUE-TOURS' chunked picture compares). Running steps' caps sum to at most
   6 GB (`--temp-cap`). No step starts with less than 4 GB plus its cap free (`--disk-floor`). The
   synthetic suite and the builds run alone, and the app's real-time runs run only beside each
   other.

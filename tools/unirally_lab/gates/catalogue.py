@@ -215,7 +215,7 @@ done
 exit $st''', system='front-end', select=drives('front_end_runner')))
 
     # -- checks against the original, driven by front_end_runner: run when the corpus differs ------
-    def original(step_id, title, command, writes=(), shell='bash', weight=1, temp_cap=2 * GB, also=(), timeout=5400):
+    def original(step_id, title, command, writes=(), shell='bash', weight=1, temp_cap=1 * GB, also=(), timeout=5400):
         add(Step(step_id, title, PRELUDE + command if shell == 'bash' else command, system='front-end',
                  shell=shell, weight=weight, temp_cap=temp_cap, writes=writes, timeout=timeout,
                  after=('fe-replay',), reads_status=False, record=True, select=corpus(step_id, also)))
@@ -369,7 +369,7 @@ echo "  rv-twop-quit (MODE-AUDIO review): $(python3 $E/diff_cues.py $RV/rv-twop-
 echo "  {c} (main):"; PACK=local/classic-pal-crawler-tracks-v39.pack bash $E/compare_capture.sh {c} "$G/main" $E/base-ceb50cf/front_end_runner | sed 's/^/  /'
 '''
                      if c in lt_main else '')
-        original(f'lt-{c}', f"LEAGUE-TOURS' capture {c} against the original", f'''
+        original(f'lt-{c}', f"LEAGUE-TOURS' capture {c} against the original", temp_cap=3 * GB, command=f'''
 E=local/evidence/league-tours
 echo "  {c} (candidate):"; PACK=local/classic-pal-crawler-tracks-v40.pack bash $E/compare_capture.sh {c} "$G/candidate" build/lab-release/src/core/front_end_runner | sed 's/^/  /'
 ''' + main_side)

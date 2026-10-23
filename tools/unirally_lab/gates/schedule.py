@@ -38,7 +38,7 @@ class Step:
     system: str = 'all'                # for the report: build, race, front-end, audio, app, rules
     lane: str = 'pool'                 # exclusive | realtime | pool
     weight: int = 1
-    temp_cap: int = 2 * GB
+    temp_cap: int = 1 * GB
     timeout: int = 3600
     writes: tuple[str, ...] = ()       # other directories it writes into, measured with its temp
     shell: str = 'bash'

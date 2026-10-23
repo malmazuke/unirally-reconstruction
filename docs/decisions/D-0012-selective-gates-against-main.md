@@ -147,7 +147,7 @@ A full run's result is recorded in `docs/STATE.md`.
   per line, read from pipes and named pipes as the runners write them.
 - **Each step has its own `TMPDIR`.** It is measured every 3 seconds together with the step's output
   directory and anything new in the evidence folders the step is known to write into. A step past
-  its cap (2 GB by default) is stopped and fails.
+  its cap (1 GB by default; 3 GB for LEAGUE-TOURS' captures, which compare pictures in 20,000-frame chunks) is stopped and fails.
 - **The caps of the running steps may not sum past 6 GB**, so the run's own temp stays under that.
 - **No step starts while free disk is under a 4 GB floor plus its cap.**
 - **Each step's temp is deleted when it ends**, which also fixes the leaked `wipe-ram` pictures.
