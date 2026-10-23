@@ -81,10 +81,6 @@ def main() -> int:
     pack = Path(a.pack).resolve() if a.pack else packs[-1].resolve()
     base_pack = Path(a.base_pack).resolve() if a.base_pack else pack
     out = Path(a.out).resolve() if a.out else root / 'artifacts' / 'gates' / head[:10]
-    if out.exists():
-        shutil.rmtree(out)
-    out.mkdir(parents=True)
-    temp_root = Path(tempfile.mkdtemp(prefix='gates-'))
     corpus_dir = main_root / 'local' / 'gates' / 'corpus'
     fer = root / 'build' / 'lab-release' / 'src' / 'core' / 'front_end_runner'
     _, by_step = corpus.load(corpus_dir) if corpus_dir.exists() else ({}, {})
@@ -94,6 +90,15 @@ def main() -> int:
         print('only records changed: no local gates (CI\'s docs-only fast path covers them)'); return 0
 
     task = task_steps(a.task_checks)
+    if a.command == 'plan':
+        print('the steps, in order (which run is decided after the builds):')
+        for s in catalogue.steps(a.jobs, task):
+            print(f'  {s.id:28s} {s.lane:9s} {s.system:9s} {s.title}')
+        return 0
+    if out.exists():
+        shutil.rmtree(out)
+    out.mkdir(parents=True)
+    temp_root = Path(tempfile.mkdtemp(prefix='gates-'))
     steps = catalogue.steps(a.jobs, task)
     if a.only:
         keep = set(a.only.split(',')) | {'build-base', 'build'}
@@ -134,11 +139,6 @@ def main() -> int:
 
     run.callbacks['build'] = after_build
     run.callbacks['fe-replay'] = after_replay
-    if a.command == 'plan':
-        print('plan: the steps, in order (selection needs the builds; `run` decides):')
-        for s in steps:
-            print(f'  {s.id:28s} {s.lane:9s} {s.system:9s} {s.title}')
-        return 0
     try:
         report = run.go()
     finally:
