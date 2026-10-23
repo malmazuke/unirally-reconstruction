@@ -104,8 +104,10 @@ def steps(jobs: int, task_checks: list[tuple[str, str, str]]) -> list[Step]:
 for preset in lab-debug lab-release app-debug app-release; do
   python3 tools/project.py build --preset "$preset" > "$G/build-$preset.log" 2>&1
   st=$(grep status= "$G/build-$preset.log" | tail -1)
-  echo "  $preset build $st; ctest $(ctest --test-dir "build/$preset" 2>&1 | grep 'tests passed')"
+  ctest --test-dir "build/$preset" > "$G/ctest-$preset.log" 2>&1
+  echo "  $preset build $st; ctest $(grep 'tests passed' "$G/ctest-$preset.log")"
   case "$st" in *passed*) ;; *) exit 1;; esac
+  grep -q '100% tests passed' "$G/ctest-$preset.log" || exit 1
 done''', system='build', lane='exclusive', timeout=5400, select=lambda run: (True, 'every run')))
     add(Step('synthetic', 'synthetic suite (app-debug), alone', '''
 python3 tools/project.py test --suite synthetic --preset app-debug --artifacts "$G/artifacts" --report "$G/synthetic.json" > "$G/synthetic.log" 2>&1
