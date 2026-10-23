@@ -326,15 +326,61 @@ for v in primary quit loss variety continue back nav; do
   "$B/front_end_runner" --content-pack "$BASE_PACK" --frames $n --inputs "$d/$v.frontend-inputs.txt" --sound-cues "$G/main-$v.cues.txt" > /dev/null 2>&1
   cmp -s "$G/native-$v.cues.txt" "$G/main-$v.cues.txt" && echo "  $v: identical to main ($(wc -l < "$G/main-$v.cues.txt") lines)" || echo "  $v: DIFFERS from main"
 done''')
-    original('checks-menu-input', "MENU-INPUT: its captures against the original (checks.sh)", '''
-bash "$L/menu-input/checks.sh" "$W" "$G/out" > "$G/checks.out" 2>&1; echo "  rc=$?"; grep -E '^  ' "$G/checks.out" | cut -c1-240''')
-    original('checks-league-tours', "LEAGUE-TOURS: its captures against the original (checks.sh)", '''
-bash "$L/league-tours/checks.sh" "$W" "$G/out" > "$G/checks.out" 2>&1; echo "  rc=$?"; grep -E '^  ' "$G/checks.out" | cut -c1-240''')
+    # MENU-INPUT's and LEAGUE-TOURS' checks.sh (35 and 57 minutes serially), one step per capture,
+    # so that a difference re-runs only its own capture and the full run spreads them over the pool.
+    mi_summary = '''summary() { python3 -c "
+import json,sys; d=json.load(open(sys.argv[1]))
+print(f\\"    {sys.argv[2]:>9}: frames {d['frames_compared']} differing {d['frames_differing']} pictures {d['pictures_equal']}/{d['pictures']} ranges {d['differing_ranges'][:6]}\\")" "$1" "$2"; }
+'''
+    for spec in ('w5:400 kb-input:400 league-pick:400 league-name:400 opt-backs:400 warnings:400 records-input:400 '
+                 'scores-input:400 scores-carry:400 vs-challenger:6600 twop-quit:6600 awards-press:10500').split():
+        c, first = spec.split(':')
+        original(f'mi-{c}', f"MENU-INPUT's capture {c} against the original, candidate and main", mi_summary + f'''
+E=local/evidence/menu-input; B0=$E/base-e304868/front_end_runner; C0=build/lab-release/src/core/front_end_runner
+echo "  {c}:"
+python3 $E/compare.py {c} --probe --binary $C0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from {first} > "$G/{c}-candidate.json" 2>&1 && summary "$G/{c}-candidate.json" candidate
+python3 $E/compare.py {c} --probe --binary $B0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from {first} > "$G/{c}-main.json" 2>&1 && summary "$G/{c}-main.json" main''')
+    for c in ('rv-ca', 'rv-scores', 'rv-bars', 'rv-records', 'rv-pick', 'rv-warn', 'rv-kb'):
+        original(f'mi-{c}', f"MENU-INPUT's review capture {c} against the original, candidate and main", mi_summary + f'''
+R=local/evidence/menu-input-review; B0=local/evidence/menu-input/base-e304868/front_end_runner; C0=build/lab-release/src/core/front_end_runner
+echo "  {c}:"
+python3 $R/compare.py {c} --probe --binary $C0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from 400 > "$G/{c}-candidate.json" 2>&1 && summary "$G/{c}-candidate.json" candidate
+python3 $R/compare.py {c} --probe --binary $B0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from 400 > "$G/{c}-main.json" 2>&1 && summary "$G/{c}-main.json" main''')
+    original('mi-cues', "MENU-INPUT's sound schedules against the original's (frame waits included)", '''
+E=local/evidence/menu-input; R=local/evidence/menu-input-review; mkdir -p "$G/cues"
+for n in kb-input league-pick league-name opt-backs warnings records-input scores-input scores-carry w5 vs-challenger awards-press; do
+  [ -f $E/$n.cues.txt ] || { echo "  $n: no schedule"; continue; }
+  W="$PWD" N="$G/cues" zsh $E/cues.sh $n > /dev/null 2>&1
+  echo "  $n: $(python3 $E/diff_cues.py $E/$n.cues.txt $G/cues/native-$n.cues.txt 620 --waits --limit=0 | head -1) (lines $(wc -l < $E/$n.cues.txt | tr -d ' ') / $(wc -l < $G/cues/native-$n.cues.txt | tr -d ' '))"
+done
+for n in rv-pick rv-scores; do
+  W="$PWD" E="$PWD/$R" N="$G/cues" zsh $E/cues.sh $n > /dev/null 2>&1
+  echo "  $n (review): $(python3 $E/diff_cues.py $R/$n.cues.txt $G/cues/native-$n.cues.txt 620 --waits --limit=0 | head -1)"
+done
+RV=local/evidence/mode-audio-review
+W="$PWD" E="$PWD/$RV" N="$G/cues" zsh $E/cues.sh rv-twop-quit > /dev/null 2>&1
+echo "  rv-twop-quit (MODE-AUDIO review): $(python3 $E/diff_cues.py $RV/rv-twop-quit.cues.txt $G/cues/native-rv-twop-quit.cues.txt 620 --waits --limit=0 | head -1)"''')
+    lt_main = {'tours-a-w0', 'tours-a-w2', 'tours-b-w0', 'odd-tours-w0', 'picks-l0', 'podium-back', 'backs'}
+    for c in ('tours-a-w0 tours-a-w1 tours-a-w2 tours-a-w3 tours-a-w4 tours-a-w5 tours-a-w6 tours-a-w7 tours-a-w8 tours-b-w0 '
+              'tours-b-w1 odd-tours-w0 odd-tours-w1 picks-l0 picks-l1 picks-l2 podium-back t-crawler five-w0 five-w1 backs').split():
+        main_side = (f'''
+echo "  {c} (main):"; PACK=local/classic-pal-crawler-tracks-v39.pack bash $E/compare_capture.sh {c} "$G/main" $E/base-ceb50cf/front_end_runner | sed 's/^/  /'
+'''
+                     if c in lt_main else '')
+        original(f'lt-{c}', f"LEAGUE-TOURS' capture {c} against the original", f'''
+E=local/evidence/league-tours
+echo "  {c} (candidate):"; PACK=local/classic-pal-crawler-tracks-v40.pack bash $E/compare_capture.sh {c} "$G/candidate" build/lab-release/src/core/front_end_runner | sed 's/^/  /'
+''' + main_side)
+    original('lt-cues', "LEAGUE-TOURS' sound schedules against the original's (frame waits included)", '''
+E=local/evidence/league-tours
+for n in $(ls $E/cues/*.cues.txt 2>/dev/null | grep -v /native- | xargs -n1 basename | sed 's/.cues.txt//'); do
+  PACK="$PWD/local/classic-pal-crawler-tracks-v40.pack" W="$PWD" E="$PWD/$E/cues" N="$G" zsh local/evidence/menu-input/cues.sh $n > /dev/null 2>&1
+  echo "  $n: $(python3 local/evidence/menu-input/diff_cues.py $E/cues/$n.cues.txt $G/native-$n.cues.txt 620 --waits --limit=0 | head -1) (lines $(wc -l < $E/cues/$n.cues.txt | tr -d ' ') / $(wc -l < $G/native-$n.cues.txt 2>/dev/null | tr -d ' '))"
+done''')
     original('checks-podium-audio', "PODIUM-AUDIO: its captures against the original (checks.sh)", '''
 zsh "$L/podium-audio/checks.sh" "$G/out" > "$G/checks.out" 2>&1; echo "  rc=$?"; grep -E '^  ' "$G/checks.out" | cut -c1-240''',
              writes=('{L}/podium-audio',), also=('audio_driver_runner',))
-    original('checks-record-screens', "RECORD-SCREENS: its captures against the original (checks.sh)", '''
-zsh "$L/record-screens/checks.sh" "$G/out" > "$G/checks.out" 2>&1; echo "  rc=$?"; grep -E '^  ' "$G/checks.out" | cut -c1-240''')
+    # RECORD-SCREENS' checks join here once it is on main (until then they are its own task checks).
 
     add(Step('demo-audio-cond', "DEMO-AUDIO: the native driver on the demo's sessions (demo-cold-full)", PRELUDE + '''
 DA="$L/demo-audio"

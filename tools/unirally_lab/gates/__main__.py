@@ -67,6 +67,7 @@ def main() -> int:
     p.add_argument('--disk-floor', type=float, default=4.0, help='GB of free disk kept beyond running steps\' caps')
     p.add_argument('--temp-cap', type=float, default=6.0, help='GB: running steps\' caps may not sum past this')
     p.add_argument('--only', help='comma-separated step ids (with build-base and build)')
+    p.add_argument('--skip', help="comma-separated step ids left out (a task's own checks already in the catalogue)")
     a = p.parse_args()
 
     root = Path(git(Path.cwd(), 'rev-parse', '--show-toplevel'))
@@ -97,6 +98,8 @@ def main() -> int:
     if a.only:
         keep = set(a.only.split(',')) | {'build-base', 'build'}
         steps = [s for s in steps if s.id in keep]
+    if a.skip:
+        steps = [s for s in steps if s.id not in set(a.skip.split(','))]
     env = dict(os.environ, W=str(root), L=str(evidence), PACK=str(pack), BASE_PACK=str(base_pack), B=str(out / 'base-bin'),
                BASE_SHA=base, CORPUS=str(corpus_dir), JOBS=str(a.jobs), RUN=str(out), FER=str(fer))
     context = dict(full=a.full, record=a.full and a.record, corpus_steps=by_step, identity=None, replay=None)
