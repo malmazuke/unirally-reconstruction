@@ -237,14 +237,35 @@ enum class ScoresPhase : std::uint8_t {
     leaving,   // the way back to RECORDS, the back slide
 };
 
+// TRACK RECORDS' grid (`$80:D5E6`, R-0100): BG2's two HDMA tables, the wipes that open and close
+// them, and the grid's scroll, which eases between rows.
+struct TrackRecordsGrid {
+    // $0C70-$0C95: BG2VOFS's table (channel 5) then BG2HOFS's (channel 6), from `$80:ECD1` or
+    // `$80:ECF7`.
+    std::array<std::uint8_t, 38> tables{};
+    bool hdma_on{};                        // HDMAEN = 0x60
+    std::uint8_t wipe_left{};              // $0076: the wipe's passes left, 0x38 down to 0
+    std::int8_t wipe_speed{};              // $00A1: the grid's horizontal step a pass
+    std::uint16_t scroll{};                // $0000: the grid's vertical offset, a row on 16 pixels
+    std::uint8_t speed_step{};             // $0002: 0-10 into the speed table, 5 still
+    std::uint8_t drive{};                  // $0078: 0 faster down, 1 easing to rest, 2 faster up
+    std::uint8_t column{};                 // $0076 in the loop: the track in each tour, 0-4
+    bool right_latched{}, left_latched{};  // $008F bits 0 and 1
+    std::array<std::uint8_t, 3> holders{}; // $00BC, $00BE, $00C0: the shown records' holders
+};
+
+// HIGH SCORES (`$80:D7CD`, R-0100): the screen's steps after its slide.
+enum class HighScoresPhase : std::uint8_t {
+    entering, // the print and the forward slide
+    colours,  // the leaders' colours, three frames
+    pressing, // `$80:C206`
+    leaving,  // the back slide to RECORDS
+};
+
 struct RecordsDetail {
-    std::uint8_t category{};            // the RECORDS menu's 0-3 choice
-    std::uint8_t rider{};               // TRACK RECORDS' column
-    std::uint8_t tour{};                // TRACK RECORDS' first visible tour
-    std::uint16_t track_scroll{0x01e7}; // BG2's grid offset during the records HDMA band
-    std::uint8_t track_scroll_step{};   // 0 idle, otherwise the next easing-table step
-    bool track_scroll_up{};
-    bool returning{}; // the detail view slides back into the category menu
+    std::uint8_t category{}; // the RECORDS menu's 0-3 choice
+    TrackRecordsGrid grid{};
+    HighScoresPhase high_scores{};
     // PLAYER SCORES and GROUP TABLES (R-0097). Their rider is `FrontEndState::options_rider`
     // (`$00CA`) and their league `LeagueSetup::slot` (`$00CC`): both screens start on the last.
     ScoresPhase phase{};
