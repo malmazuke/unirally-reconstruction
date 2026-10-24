@@ -9,8 +9,10 @@ re-deriving them from forty scripts, a full gate run installs a shim in place of
 unchanged and the corpus is exactly what they ran.
 
 An invocation is stored without its outputs: the replay asks both binaries for every output on
-every frame, a superset of what any check reads. Input files (pads, cartridge images) are stored
-by content in `store/`; packs by path and digest.
+every frame, a superset of what any check reads, except pictures. Drawing a picture costs about
+2 ms, so the replay draws the pictures on the frames the checks asked for (`--picture`, kept as
+ranges) and compares those; everything else it compares on every frame. Input files (pads,
+cartridge images) are stored by content in `store/`; packs by path and digest.
 
 Layout under the corpus directory:
   store/<sha256>       input file contents
@@ -62,6 +64,7 @@ def normalize(argv: list[str], cwd: Path, store: Path | None) -> dict:
     """An invocation's inputs, without its outputs. With `store`, input files are copied there."""
     inputs: list = []
     outputs: list[str] = []
+    pictures: set[int] = set()
     pack = None
     i = 0
     while i < len(argv):
@@ -85,13 +88,29 @@ def normalize(argv: list[str], cwd: Path, store: Path | None) -> dict:
             i += 1 + n
         elif option in OUTPUTS:
             outputs.append(option)
+            if option in ('--picture', '--vram'):
+                pictures.add(int(argv[i + 1]))
             i += 1 + OUTPUTS[option]
         else:
             raise ValueError(f'unknown front_end_runner option {option!r}: teach corpus.py its kind')
     if pack is None:
         raise ValueError('invocation names no content pack')
     key = sha_bytes(json.dumps([pack['sha256'], inputs]).encode())
-    return dict(key=key, pack=pack, inputs=inputs, outputs=sorted(set(outputs)))
+    return dict(key=key, pack=pack, inputs=inputs, outputs=sorted(set(outputs)), pictures=to_ranges(pictures))
+
+
+def to_ranges(frames: set[int]) -> list[list[int]]:
+    out: list[list[int]] = []
+    for f in sorted(frames):
+        if out and out[-1][1] == f - 1:
+            out[-1][1] = f
+        else:
+            out.append([f, f])
+    return out
+
+
+def from_ranges(ranges: list[list[int]]) -> set[int]:
+    return {f for a, b in ranges for f in range(a, b + 1)}
 
 
 def record(log: Path, cwd: Path, argv: list[str]) -> None:
@@ -141,9 +160,10 @@ def load(corpus: Path) -> tuple[dict[str, dict], dict[str, set[str]]]:
         keys = by_step.setdefault(step, set())
         for line in log.read_text().splitlines():
             entry = json.loads(line)
-            case = cases.setdefault(entry['key'], dict(entry, steps=set(), outputs=set()))
+            case = cases.setdefault(entry['key'], dict(entry, steps=set(), outputs=set(), picture_frames=set()))
             case['steps'].add(step)
             case['outputs'].update(entry['outputs'])
+            case['picture_frames'].update(from_ranges(entry.get('pictures', [])))
             keys.add(entry['key'])
     return cases, by_step
 

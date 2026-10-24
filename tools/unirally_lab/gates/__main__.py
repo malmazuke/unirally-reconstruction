@@ -55,6 +55,7 @@ def task_steps(paths: list[str]) -> list[tuple[str, str, str]]:
 
 
 def main() -> int:
+    sys.stdout.reconfigure(line_buffering=True)
     p = argparse.ArgumentParser(prog='python3 -m tools.unirally_lab.gates', description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('command', choices=['run', 'plan'])

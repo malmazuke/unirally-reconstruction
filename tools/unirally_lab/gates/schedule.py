@@ -112,7 +112,7 @@ class Run:
         out = self.out / step.id
         shutil.rmtree(tmp, ignore_errors=True); shutil.rmtree(out, ignore_errors=True)
         tmp.mkdir(parents=True); out.mkdir(parents=True)
-        env = dict(self.env, TMPDIR=str(tmp), G=str(out), STEP=step.id)
+        env = dict(self.env, TMPDIR=str(tmp), G=str(out), STEP=step.id, PYTHONUNBUFFERED='1')
         # Checks against the original are recorded by a recording run; a task's own, every run.
         if step.record and (self.context.get('record') or step.system == 'task') and 'corpus_log' in self.context:
             env['GATES_RECORD'] = str(self.context['corpus_log'](step.id))
@@ -234,12 +234,13 @@ def new_entries_bytes(directory: Path, before: set[str]) -> int:
 
 
 def _kill(proc: subprocess.Popen) -> None:
-    try:
-        os.killpg(proc.pid, signal.SIGTERM)
+    # A group whose members have all exited answers EPERM on macOS, not ESRCH.
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.killpg(proc.pid, sig)
+        except (ProcessLookupError, PermissionError):
+            return
         time.sleep(2)
-        os.killpg(proc.pid, signal.SIGKILL)
-    except ProcessLookupError:
-        pass
 
 
 def write_report(path: Path, report: dict) -> None:

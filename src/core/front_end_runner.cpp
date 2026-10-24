@@ -36,6 +36,7 @@
 #include <iterator>
 #include <map>
 #include <optional>
+#include <set>
 #include <span>
 #include <sstream>
 #include <stdexcept>
@@ -51,10 +52,12 @@ struct Options {
     std::filesystem::path race_timeline, look_timeline, sound_cues, one_player_timeline;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
-    // Digests instead of files: a `frame P digest` line for every drawn picture, `frame R digest`
-    // for the cartridge RAM and `frame V digest` for the VRAM on every frame the runner can write
-    // them, so the gates compare two runs' outputs without storing them (D-0012).
+    // Digests instead of files, so the gates compare two runs' outputs without storing them
+    // (D-0012): `frame R digest` for the cartridge RAM on every frame the runner can write it,
+    // and `frame P digest` and `frame V digest` for the picture and the VRAM on the frames
+    // `--picture-frames` lists (every frame without it; drawing a picture costs about 2 ms).
     std::filesystem::path frame_digests;
+    std::optional<std::set<std::uint32_t>> picture_frames;
     // The original's race initialization frames, in race order, from a capture: the loading time
     // varies by a frame with the sound program's handshake (R-0039, R-0058).
     std::vector<std::uint32_t> race_initializations;
@@ -148,6 +151,22 @@ std::uint32_t parse_number(const std::string& text, int base, std::uint32_t limi
     return static_cast<std::uint32_t>(value);
 }
 
+// `--picture-frames`: frame numbers and `first-last` ranges, separated by white space.
+std::set<std::uint32_t> read_frames(const std::filesystem::path& path) {
+    std::ifstream in(path);
+    if (!in) throw std::runtime_error("cannot open --picture-frames " + path.string());
+    std::set<std::uint32_t> frames;
+    for (std::string item; in >> item;) {
+        const auto dash = item.find('-');
+        const auto first = static_cast<std::uint32_t>(std::stoul(item.substr(0, dash)));
+        const auto last = dash == std::string::npos
+                            ? first
+                            : static_cast<std::uint32_t>(std::stoul(item.substr(dash + 1)));
+        for (auto frame = first; frame <= last; ++frame) frames.insert(frame);
+    }
+    return frames;
+}
+
 Options parse_options(int argc, char** argv) {
     Options options;
     for (int i = 1; i < argc; ++i) {
@@ -173,6 +192,8 @@ Options parse_options(int argc, char** argv) {
             options.sound_cues = value();
         else if (option == "--frame-digests")
             options.frame_digests = value();
+        else if (option == "--picture-frames")
+            options.picture_frames = read_frames(value());
         else if (option == "--picture") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.pictures[frame] = value();
@@ -207,7 +228,7 @@ Options parse_options(int argc, char** argv) {
     if (options.pack.empty() || options.frames == 0)
         throw std::invalid_argument("usage: front_end_runner --content-pack PACK --frames N "
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
-                                    "[--frame-digests OUT.txt] "
+                                    "[--frame-digests OUT.txt [--picture-frames FILE]] "
                                     "[--records FRAME OUT.bin]... [--cartridge-in IMAGE.bin] "
                                     "[--race-initialization FRAME]... "
                                     "[--human-after FRAME] "
@@ -258,15 +279,21 @@ void write_digest(std::uint32_t frame, char kind, std::span<const std::uint8_t> 
     frame_digests << line;
 }
 
-// A picture is drawn on a frame `--picture` names, and on every frame when digests are asked for.
+// Whether a frame's picture and VRAM digests are asked for.
+bool picture_digest_wanted(const Options& options, std::uint32_t frame) {
+    return frame_digests.is_open()
+        && (!options.picture_frames || options.picture_frames->contains(frame));
+}
+
+// A picture is drawn on a frame `--picture` names or whose digest is asked for.
 bool picture_wanted(const Options& options, std::uint32_t frame) {
-    return frame_digests.is_open() || options.pictures.contains(frame);
+    return picture_digest_wanted(options, frame) || options.pictures.contains(frame);
 }
 
 void emit_picture(const Options& options, std::uint32_t frame, const unirally::RgbFrame& picture) {
     if (const auto at = options.pictures.find(frame); at != options.pictures.end())
         write_ppm(at->second, picture);
-    if (frame_digests.is_open()) write_digest(frame, 'P', picture.pixels);
+    if (picture_digest_wanted(options, frame)) write_digest(frame, 'P', picture.pixels);
 }
 
 // Power-on, with the cartridge RAM `--cartridge-in` gives (SAVE-FILES).
@@ -651,7 +678,7 @@ void write_frame_outputs(const Options& options, std::uint32_t frame,
         out.write(reinterpret_cast<const char*>(state.video.vram.data()),
                   static_cast<std::streamsize>(state.video.vram.size()));
     }
-    if (frame_digests.is_open())
+    if (picture_digest_wanted(options, frame))
         write_digest(frame, 'V',
                      std::span(reinterpret_cast<const std::uint8_t*>(state.video.vram.data()),
                                state.video.vram.size() * sizeof state.video.vram[0]));

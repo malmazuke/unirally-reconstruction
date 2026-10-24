@@ -85,14 +85,18 @@ class Corpus(unittest.TestCase):
             corpus.record(log, tmp, argv)
             entry = json.loads(log.read_text())
             self.assertEqual(entry['outputs'], ['--picture', '--sound-cues'])
+            self.assertEqual(entry['pictures'], [[3, 3]])
             stored = entry['inputs'][entry['inputs'].index('--inputs') + 1]
             self.assertEqual((tmp / 'c' / 'store' / stored[1:]).read_text(), '5 0080 0000\n')
             self.assertIn('--record-write', entry['inputs'])
             # The same inputs with other outputs are one case.
             corpus.record(log, tmp, ['--content-pack', 'pack', '--frames', '9', '--inputs', 'in.txt', '--record-write', '1',
                                      '10d3', '3', '--race-initialization', '7', '--race-timeline', 't'])
+            corpus.record(log, tmp, ['--content-pack', 'pack', '--frames', '9', '--inputs', 'in.txt', '--record-write', '1',
+                                     '10d3', '3', '--race-initialization', '7', '--picture', '4', 'q.ppm', '--picture', '6', 'r.ppm'])
             cases, by_step = corpus.load(tmp / 'c')
             self.assertEqual(len(cases), 1)
+            self.assertEqual(next(iter(cases.values()))['picture_frames'], {3, 4, 6})
             self.assertEqual(by_step['step'], {entry['key']})
 
     def test_an_unknown_option_is_refused(self):
@@ -137,6 +141,7 @@ class Replay(unittest.TestCase):
 import sys
 a = sys.argv; opts = {a[i]: a[i + 1] for i in range(1, len(a) - 1) if a[i].startswith('--')}
 if '--rider-word' in opts and '%s' == 'old': sys.exit(1)
+assert '--picture-frames' in opts
 for k in ('--race-timeline', '--one-player-timeline', '--look-timeline', '--sound-cues', '--frame-digests'):
     if k in opts:
         with open(opts[k], 'w') as f:

@@ -1,8 +1,9 @@
 """Replay the front-end corpus through main's runner and the candidate's, comparing every output.
 
 Each case runs on both binaries with every output the runner has, on every frame: the state rows
-(stdout), stderr, the race, one-player and look timelines, the sound cues, and digests of the
-picture, cartridge RAM and VRAM (`--frame-digests`). Outputs are read from pipes and named pipes as
+(stdout), stderr, the race, one-player and look timelines, the sound cues and the cartridge RAM's
+digest; and the digests of the picture and VRAM on every frame its checks compared a picture on
+(`--frame-digests --picture-frames`). Outputs are read from pipes and named pipes as
 they are written and reduced to one 8-byte digest per line, so nothing is stored: a 102,000-frame
 run's 500 MB of rows costs 800 KB of memory and no disk. A difference is reported at its first
 line, with the frame that line names.
@@ -54,6 +55,10 @@ def run_side(side: Side, case: dict, store: Path, streams: tuple[str, ...], tmp:
         i += 1
     for name, path in fifos.items():
         args += [f'--{name}', str(path)]
+    frames_file = tmp / 'picture-frames'
+    from .corpus import to_ranges
+    frames_file.write_text(' '.join(f'{a}-{b}' for a, b in to_ranges(case.get('picture_frames', set()))) + '\n')
+    args += ['--picture-frames', str(frames_file)]
     results: dict[str, list[bytes]] = {}
     opened: dict[str, bool] = {name: False for name in fifos}
 
@@ -124,7 +129,7 @@ def compare_case(key: str, case: dict, base: Side, candidate: Side, current_pack
     differing = [n for n, s in compared.items() if s['first_difference'] is not None]
     same = not differing and b['rc'] == c['rc'] and b['stderr'] == c['stderr']
     row = dict(key=key, steps=sorted(case['steps']), equal=same, rc=[b['rc'], c['rc']],
-               frames=_frames(case), seconds=[b['seconds'], c['seconds']], differing_streams=differing)
+               frames=_frames(case), picture_frames=len(case.get('picture_frames', ())), seconds=[b['seconds'], c['seconds']], differing_streams=differing)
     if differing:
         row['first_differences'] = {n: compared[n] for n in differing}
     if b['stderr'] != c['stderr']:
@@ -153,8 +158,8 @@ def replay(cases: dict[str, dict], store: Path, base: Side, candidate: Side, cur
         option = [f'--{name}', '{tmp}/x']
         if supports(base.binary, base.pack, option) and supports(candidate.binary, candidate.pack, option):
             streams += (name,)
-    if not supports(base.binary, base.pack, ['--frame-digests', '{tmp}/d']):
-        raise RuntimeError(f"main's runner {base.binary} has no --frame-digests: build main with D-0012's runner")
+    if not supports(base.binary, base.pack, ['--frame-digests', '{tmp}/d', '--picture-frames', '/dev/null']):
+        raise RuntimeError(f"main's runner {base.binary} has no --frame-digests --picture-frames: build main with D-0012's runner")
     started = time.time()
     rows = []
     # Longest cases first, so the pool does not end on one long run.
@@ -167,7 +172,8 @@ def replay(cases: dict[str, dict], store: Path, base: Side, candidate: Side, cur
                 progress(n, len(futures))
     differing = [r for r in rows if not r['equal']]
     steps_differing = sorted({s for r in differing for s in r['steps']})
-    summary = dict(cases=len(rows), frames=sum(r['frames'] for r in rows), equal=len(rows) - len(differing),
+    summary = dict(cases=len(rows), frames=sum(r['frames'] for r in rows),
+                   picture_frames=sum(r['picture_frames'] for r in rows), equal=len(rows) - len(differing),
                    differing=len(differing), steps_with_differences=steps_differing,
                    streams=['stdout', 'stderr', *streams], seconds=round(time.time() - started, 1))
     return dict(summary=summary, rows=rows)
