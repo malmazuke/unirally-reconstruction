@@ -443,7 +443,10 @@ echo "  $(python3 -c "import json,sys;d=json.load(open(sys.argv[1]));print('rows
         original(f'pa-pcm-{n}', f"PODIUM-AUDIO: anchored PCM of the candidate's {n} cues and the pass that delivers the music start",
                  command=pa + f'''
 NAMES={n} zsh "$E/podium_pcm.sh" "$RUN/pa-cues/cand" "$G/pcm" 2>&1
-NAMES={n} zsh "$E/native_commands.sh" "$RUN/pa-cues/cand" 2>&1''', also=('race_audio_runner',))
+NAMES={n} zsh "$E/native_commands.sh" "$RUN/pa-cues/cand" 2>&1''', also=('race_audio_runner',),
+                 # measure.sh keeps the schedule's anchored PCM and events: 0.57 GB for tour-cues,
+                 # 2.1 GB for pa-tours-b (measured 24 October 2026).
+                 temp_cap=GB if n == 'tour-cues' else GB * 5 // 2)
         s[-1].after = ('fe-replay', 'pa-cues')
         s[-1].select = lambda run: ((True, "pa-cues ran, so its cue logs are new") if run.outcomes.get('pa-cues') and run.outcomes['pa-cues'].selected
                                     else (False, "pa-cues' cue logs equal main's, so their PCM does"))
