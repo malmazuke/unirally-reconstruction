@@ -63,7 +63,14 @@ A step names the binaries it drives. A binary can only behave differently if one
   `gate_identity`'s method, now per target: `front_end_runner`, `zoom_zoo_runner`, the presentation
   runners, `audio_driver_runner`, the fuzz runner and the app;
 - **the content pack** it reads;
-- **a build-wide file:** CMake files, presets, `third_party/`, the toolchain lock.
+- **a build-wide file:** any `CMakeLists.txt` or `.cmake` file, wherever it is (a definition
+  added in `src/core/CMakeLists.txt` changes no source file), the presets, `third_party/`, the
+  toolchain lock.
+
+The checks' scripts also import the repository's Python: picture readers, projections, the
+runner's own sweeps. No binary's inputs record that, so **any change under `tools/unirally_lab/`
+or to `tools/project.py` selects every step**, and every check against the original runs. A
+tooling change is rare and pays for a full selective run.
 
 Every failed query counts as "changed". A step none of whose binaries changed would replay as it
 did on main, so it does not run. Paths are not guessed from file names: a race-engine file is in
@@ -76,7 +83,7 @@ the front-end checks.
 | --- | --- | --- |
 | Builds of four presets with ctest; the synthetic suite (alone); tooling tests; the function-size and native-symbol rules | every change outside `docs/` and `tasks/` | - |
 | The task's own checks | every run | the original (acceptance of new behaviour) |
-| Front-end replay: every recorded check input through main's `front_end_runner` and the candidate's, every output on every frame | `front_end_runner` changed | main |
+| Front-end replay: every recorded check input through main's `front_end_runner` and the candidate's, every output (pictures on the checks' own picture frames) | `front_end_runner` changed | main |
 | Race equivalence sweep (47 scenarios x 9 schedules, restarts, pictures, the legacy runner) | a race runner changed | main |
 | Eleven frozen differential gates | `zoom_zoo_runner` changed, or their projection or guards changed | the original, by the contract's frozen digest |
 | Track sweeps (track-breadth-2, locked tours) | `zoom_zoo_runner` changed | the original and main |
@@ -99,17 +106,31 @@ initialization frames and record writes the scripts derive from the original, th
 image), then runs the real binary. These logs are the corpus (`local/gates/corpus/`, one log per
 step, input files stored by content). Nothing is re-derived, so the corpus cannot drift from what
 the checks run. A task's own checks are recorded on every run, so the next task inherits them.
+- **The pack.** The checks get the current pack through an alias. A check that takes `$PACK` is
+  then told apart from one that pins a pack, even the same version, and the replay gives a
+  `$PACK` case each side's own pack and a pinned case the pinned pack.
+- **Staleness.** Each check's recording carries a fingerprint: its command and the scripts in the
+  evidence folders the command names. A check whose fingerprint has changed runs against the
+  original, as does a check whose recording logged an error, and a check with recorded runs the
+  replay did not run. Scripts a check reaches in other folders are outside the fingerprint, so
+  changing one calls for a new recording.
 
 **The outputs are all of them.** The replay drops the outputs a check asked for and asks both
-binaries for every output, on every frame:
+binaries for every output:
 - the state rows;
 - stderr;
 - the race, one-player and look timelines;
 - the sound cues;
-- a digest of the picture, the cartridge RAM and the VRAM (`front_end_runner --frame-digests`, new
-  here; one 64-bit digest per frame and kind).
+- on every frame, a digest of the cartridge RAM;
+- on every frame the checks compared a picture on, a digest of the picture and the VRAM.
+
+Each digest is of the bytes the runner would write to the file (`front_end_runner --frame-digests
+--picture-frames`, new here; one 64-bit digest per frame and kind). A bug in how a file is written
+therefore shows up, not only one in the values behind it.
 
 That is a superset of what any check compares, so "equal" is stronger than the check, not weaker.
+An output a check reads that one of the runners cannot give (a newer option) counts as a
+difference.
 
 **Where it differs, the original decides.** A check whose recorded runs differ from main in an
 output it reads runs against the original. Stdout and stderr count for every check; the timelines,
@@ -125,6 +146,9 @@ twin, `<step>@main`, which runs the same command in main's checkout with main's 
 - Different lines mean `changed`, and the run fails. A task that means to change that result reads
   both, records why, and lists the step in `--expect-changed`; then it is `changed (expected)`.
 
+- Equal lines that differ from what the recording run printed on the same main mean `broken`, and
+  the run fails: the check broke the same way on both sides (a deleted capture, a script error).
+
 So a planted regression cannot end in `status=passed` because a measurement went unread (the
 coordinating session's review of the first proofs).
 
@@ -133,8 +157,8 @@ coordinating session's review of the first proofs).
 - **the eleven frozen race gates.** `--frozen-original` checks the contract's frozen digest of the
   original's rows instead of re-projecting both captures. That is the same comparison with the
   original, and it gives the same rows digests and restore counts. It saves little time; what it
-  buys is that a gate no longer needs its 850 MB captures (section 9). They re-project when their
-  projection code or guard manifests change, or with `--reproject`;
+  buys is that a gate no longer needs its 850 MB captures (section 9). They re-project when anything under `tools/unirally_lab/native/`, `reference/` or `content/`, or
+  the native manifests, change (the projection and everything it imports), or with `--reproject`;
 - **the track sweeps**, which are cheap;
 - **the driver check on captured port writes**, whenever the driver changes;
 - **everything, in the full run.**
@@ -162,7 +186,7 @@ A full run's result is recorded in `docs/STATE.md`.
 - **Each step has its own `TMPDIR`.** It is measured every 3 seconds together with the step's output
   directory and anything new in the evidence folders the step is known to write into. A step past
   its cap is stopped and fails. Caps are 1 GB by default and set from measured peaks where a step
-  keeps more: 1.5 GB for the MENU-INPUT and LEAGUE-TOURS captures, 2.5 GB for PODIUM-AUDIO's PCM
+  keeps more: 1.5 GB for the MENU-INPUT and LEAGUE-TOURS captures, 2 GB for MENU-INPUT's review captures, 2.5 GB for PODIUM-AUDIO's PCM
   schedules, 3 GB for `two-pad` and `rv-warn`, which keep thousands of pictures. A finished step's
   files over 64 MB are removed from its output.
 - **The caps of the running steps may not sum past 6 GB**, so the run's own temp stays under that.
@@ -260,4 +284,5 @@ during the run, which also counts the base worktree's build and anything else on
   the guard against that.
 - The corpus is local and ROM-derived in part (record writes, warm-boot images); it follows the
   evidence rules and is re-recorded by any full run.
-- A check whose script is new or changed runs against the original until a full run records it.
+- A check whose command or scripts changed runs against the original until a full run records it
+  again.

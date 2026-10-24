@@ -125,12 +125,46 @@ def main() -> int:
     for s in steps:
         if a.force and s.id.split('@')[0] in a.force.split(','):
             s.select = lambda run: (True, "the task's own checks (--force)")
-    env = dict(os.environ, W=str(root), L=str(evidence), PACK=str(pack), BASE_PACK=str(base_pack), B=str(out / 'base-bin'),
+    # The checks get the current pack through an alias, so the corpus tells `$PACK` from a pinned
+    # pack of the same version.
+    alias = out / 'pack' / pack.name
+    alias.parent.mkdir(parents=True, exist_ok=True)
+    alias.symlink_to(pack)
+    env = dict(os.environ, W=str(root), L=str(evidence), PACK=str(alias), GATES_CURRENT_PACK=str(alias),
+               BASE_PACK=str(base_pack), B=str(out / 'base-bin'),
                BASE_SHA=base, CORPUS=str(corpus_dir), JOBS=str(a.jobs), RUN=str(out), FER=str(fer),
                BASE_TREE=str(main_root / '.worktrees' / 'gates-base'))
     context = dict(full=a.full, record=a.full and a.record, corpus_steps=by_step, identity=None, replay=None,
                    expect_changed=set(filter(None, a.expect_changed.split(','))))
-    context['corpus_log'] = lambda step: corpus.clear_step(corpus_dir, step)
+    def corpus_log(step):
+        corpus.write_meta(corpus_dir, step.id, fingerprint=corpus.fingerprint(step.command, evidence), base=base,
+                          recorded_at=head)
+        return corpus.clear_step(corpus_dir, step.id)
+
+    def corpus_lines(step, lines):
+        (corpus_dir / f'{step.id}.lines').write_text('\n'.join(lines) + '\n')
+
+    def recorded_lines(step_id):
+        meta = corpus.read_meta(corpus_dir, step_id)
+        path = corpus_dir / f'{step_id}.lines'
+        # Only a recording made on this same main says what the check should print here.
+        if meta.get('recorded_at') != base or not path.exists():
+            return None
+        return path.read_text().splitlines()
+
+    context.update(corpus_log=corpus_log, corpus_lines=corpus_lines, recorded_lines=recorded_lines)
+    # A check whose command or scripts changed since its runs were recorded, or whose recording
+    # logged an error, has no corpus to stand on.
+    stale = {}
+    for s in steps:
+        if not s.record or s.system == 'task' or '@' in s.id:
+            continue
+        meta = corpus.read_meta(corpus_dir, s.id)
+        if (corpus_dir / f'{s.id}.jsonl.errors').exists() and (corpus_dir / f'{s.id}.jsonl.errors').stat().st_size:
+            stale[s.id] = 'its recording logged errors'
+        elif s.id in by_step and meta.get('fingerprint') != corpus.fingerprint(s.command, evidence):
+            stale[s.id] = 'its command or scripts changed since its runs were recorded' if meta else 'its runs carry no fingerprint'
+    context['stale'] = stale
     if context['record']:
         corpus_dir.mkdir(parents=True, exist_ok=True)
         (corpus_dir / 'meta.json').write_text(json.dumps(dict(current_pack=str(pack), current_pack_sha256=corpus.sha_path(pack),
@@ -172,7 +206,7 @@ def main() -> int:
                   pack_changed=ident.pack_changed, binaries=ident.binaries),
                   replay_summary=(run.context.get('replay') or {}).get('summary'))
     write_report(out / 'report.json', report)
-    bad = [s for s in report['steps'] if s['status'] in ('failed', 'timeout', 'over-cap', 'stalled', 'changed')]
+    bad = [s for s in report['steps'] if s['status'] in ('failed', 'timeout', 'over-cap', 'stalled', 'changed', 'broken')]
     print(f'gates done in {report["seconds"] / 60:.1f} min; peak step temp {fmt(report["peak_temp"])}; '
           f'peak disk used {fmt(max(0, report["disk_used_peak"]))}; lowest free {fmt(report["min_free"])}')
     for s in report['steps']:

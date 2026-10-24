@@ -144,8 +144,8 @@ class Run:
         tmp.mkdir(parents=True); out.mkdir(parents=True)
         env.update(TMPDIR=str(tmp), G=str(out), STEP=step.id, PYTHONUNBUFFERED='1')
         # Checks against the original are recorded by a recording run; a task's own, every run.
-        if step.record and (self.context.get('record') or step.system == 'task') and 'corpus_log' in self.context:
-            env['GATES_RECORD'] = str(self.context['corpus_log'](step.id))
+        if self.recording(step):
+            env['GATES_RECORD'] = str(self.context['corpus_log'](step))
         # In an evidence directory only what appears after the start is the step's (its mkdtemp).
         watched = [(out, set())] + [(d, entries(d)) for d in (Path(w.format(**self.env)) for w in step.writes)]
         log = (self.out / f'{step.id}.log').open('w')
@@ -157,6 +157,10 @@ class Run:
         with self.lock:
             self.running[step.id] = (proc, tmp, watched)
         self.log(f'  > {step.id} ({step.lane}, why: {o.why})')
+
+    def recording(self, step: Step) -> bool:
+        """Checks against the original are recorded by a recording run; a task's own, every run."""
+        return step.record and (self.context.get('record') or step.system == 'task') and 'corpus_log' in self.context
 
     def _finish(self, sid: str) -> None:
         proc, tmp, _ = self.running[sid]
@@ -179,6 +183,8 @@ class Run:
         with self.lock:
             del self.running[sid]
         self.log(f'  < {sid}: {o.status} in {o.seconds:.0f} s, peak temp {fmt(o.peak_temp)}')
+        if self.recording(step) and 'corpus_lines' in self.context:
+            self.context['corpus_lines'](step, normal_lines(self.out / f'{sid}.log', self.env))
         if sid in self.callbacks:
             self.callbacks[sid](self, o)
         if step.twin and self.outcomes[step.twin].status not in ('pending', 'running'):
@@ -192,7 +198,14 @@ class Run:
         if o.status != 'ran' or t.status != 'ran':
             return
         mine, main = (normal_lines(self.out / f'{x}.log', self.env) for x in (sid, twin))
-        if mine == main:
+        recorded = self.context.get('recorded_lines', lambda _: None)(sid)
+        if mine == main and recorded is not None and mine != recorded:
+            # Equal on both sides but not what the recording run printed on this same main: the
+            # check broke the same way on both (a deleted capture, a script error).
+            o.status = 'broken'
+            o.summary = ['  same on main, but not as recorded:'] + [f'  - {l}' for l in recorded if l not in mine][:20] + \
+                        [f'  + {l}' for l in mine if l not in recorded][:20]
+        elif mine == main:
             o.status = 'same-as-main'
         else:
             o.status = 'changed (expected)' if sid in self.context.get('expect_changed', ()) else 'changed'

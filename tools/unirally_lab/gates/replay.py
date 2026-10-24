@@ -125,7 +125,8 @@ def first_difference(a: list[bytes], b: list[bytes]) -> int | None:
 
 def compare_case(key: str, case: dict, base: Side, candidate: Side, current_pack_sha: str,
                  store: Path, streams: tuple[str, ...], timeout: int) -> dict:
-    if case['pack']['sha256'] == current_pack_sha:
+    current = case['pack'].get('current')
+    if current if current is not None else case['pack']['sha256'] == current_pack_sha:
         base_side, cand_side = base, candidate
     else:
         pinned = Path(case['pack']['path'])
@@ -149,11 +150,18 @@ def compare_case(key: str, case: dict, base: Side, candidate: Side, current_pack
     # A difference concerns only the checks that read that output (stdout and stderr: all).
     from .corpus import reads
     outputs = case.get('step_outputs', {})
-    concerned = sorted(st for st in case['steps'] if set(differing) & reads(outputs.get(st, set(case['outputs']))))
+    # A check concerned by a difference in what it reads, or reading an output this replay could
+    # not compare (one of the runners lacks it): fail closed.
+    uncompared = lambda st: reads(outputs.get(st, set(case['outputs']))) - set(names) - {'stderr'}
+    concerned = sorted(st for st in case['steps']
+                       if set(differing) & reads(outputs.get(st, set(case['outputs']))) or uncompared(st))
+    if not differing and any(uncompared(st) for st in case['steps']):
+        same = False
+        differing = ['uncompared:' + ','.join(sorted(set().union(*(uncompared(st) for st in case['steps']))))]
     row = dict(key=key, steps=sorted(case['steps']), concerned=concerned, equal=same, rc=[b['rc'], c['rc']],
                frames=_frames(case), picture_frames=len(case.get('picture_frames', ())), seconds=[b['seconds'], c['seconds']], differing_streams=differing)
     if differing:
-        row['first_differences'] = {n: compared[n] for n in differing}
+        row['first_differences'] = {n: compared.get(n) for n in differing}
     if b['stderr'] != c['stderr']:
         row['stderr'] = [b['stderr'].decode(errors='replace')[-300:], c['stderr'].decode(errors='replace')[-300:]]
     return row

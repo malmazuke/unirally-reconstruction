@@ -115,17 +115,21 @@ class Scheduler(unittest.TestCase):
             self.assertEqual(seen, ['known'])
 
 
-    def judged(self, mine: str, main: str, expect=()):
+    def judged(self, mine: str, main: str, expect=(), recorded=None):
         with tempfile.TemporaryDirectory() as d:
             steps = [Step('x', 'x', 'echo "  result $V"', reads_status=False, twin='x@main', env=dict(V=mine)),
                      Step('x@main', 'x', 'echo "  result $V"', reads_status=False, twin='x', env=dict(V=main))]
-            report, _ = run_steps(steps, Path(d), context=dict(expect_changed=set(expect)))
+            report, _ = run_steps(steps, Path(d), context=dict(expect_changed=set(expect),
+                                                               recorded_lines=lambda _: recorded))
             return {s['id']: s['status'] for s in report['steps']}
 
     def test_a_report_against_the_original_is_judged_by_its_run_on_main(self):
         self.assertEqual(self.judged('7 equal', '7 equal'), {'x': 'same-as-main', 'x@main': 'reference'})
         self.assertEqual(self.judged('6 equal', '7 equal')['x'], 'changed')
         self.assertEqual(self.judged('6 equal', '7 equal', expect=['x'])['x'], 'changed (expected)')
+        # Equal on both sides but not what the recording run printed on this main: broken on both.
+        self.assertEqual(self.judged('0 equal', '0 equal', recorded=['  result 7 equal'])['x'], 'broken')
+        self.assertEqual(self.judged('7 equal', '7 equal', recorded=['  result 7 equal'])['x'], 'same-as-main')
 
 
 class Corpus(unittest.TestCase):
@@ -155,6 +159,21 @@ class Corpus(unittest.TestCase):
             self.assertEqual(next(iter(cases.values()))['picture_frames'], {3, 4, 6})
             self.assertEqual(by_step['step'], {entry['key']})
 
+    def test_the_current_pack_is_told_from_a_pinned_one(self):
+        import os
+        with tempfile.TemporaryDirectory() as d:
+            tmp = Path(d); (tmp / 'v40.pack').write_bytes(b'p'); (tmp / 'alias').mkdir()
+            (tmp / 'alias' / 'v40.pack').symlink_to(tmp / 'v40.pack')
+            os.environ['GATES_CURRENT_PACK'] = str(tmp / 'alias' / 'v40.pack')
+            try:
+                cur = corpus.normalize(['--content-pack', 'alias/v40.pack', '--frames', '1'], tmp, None)
+                pin = corpus.normalize(['--content-pack', 'v40.pack', '--frames', '1'], tmp, None)
+            finally:
+                del os.environ['GATES_CURRENT_PACK']
+            self.assertTrue(cur['pack']['current']); self.assertFalse(pin['pack']['current'])
+            self.assertEqual(cur['pack']['path'], pin['pack']['path'])
+            self.assertNotEqual(cur['key'], pin['key'])
+
     def test_an_unknown_option_is_refused(self):
         with tempfile.TemporaryDirectory() as d:
             (Path(d) / 'pack').write_bytes(b'p')
@@ -181,6 +200,20 @@ class Corpus(unittest.TestCase):
             self.assertIn('rebuilt', corpus.real_binary(binary).read_text())
             corpus.remove_shim(binary)
             self.assertFalse(corpus.is_shim(binary))
+
+
+class Fingerprint(unittest.TestCase):
+    def test_a_script_in_a_named_folder_changes_it(self):
+        with tempfile.TemporaryDirectory() as d:
+            ev = Path(d); (ev / 'wipe-ram').mkdir(); (ev / 'wipe-ram' / 'compare.py').write_text('a')
+            (ev / 'other').mkdir(); (ev / 'other' / 'x.py').write_text('a')
+            cmd = 'python3 "$L/wipe-ram/compare.py" confirm'
+            before = corpus.fingerprint(cmd, ev)
+            (ev / 'other' / 'x.py').write_text('b')                  # a folder it does not name
+            self.assertEqual(corpus.fingerprint(cmd, ev), before)
+            (ev / 'wipe-ram' / 'compare.py').write_text('b')
+            self.assertNotEqual(corpus.fingerprint(cmd, ev), before)
+            self.assertNotEqual(corpus.fingerprint(cmd + ' cancel', ev), corpus.fingerprint(cmd, ev))
 
 
 class Reads(unittest.TestCase):
@@ -220,6 +253,14 @@ for n in range(int(opts['--frames'])): print(n, 'state')
             self.assertFalse(row['equal'])
             self.assertEqual(row['differing_streams'], ['pictures'])
             self.assertEqual(result['summary']['steps_with_differences'], ['s'])
+            # A check that reads an output neither runner here can give is not taken as equal.
+            (tmp / 'cand').write_text(script % ('old', '0')); (tmp / 'cand').chmod(0o755)
+            case.update(step_outputs={'s': {'--rider-word'}}, outputs={'--rider-word'})
+            result = replay.replay({'k': case}, tmp, replay.Side(tmp / 'main', tmp / 'pack'), replay.Side(tmp / 'cand', tmp / 'pack'),
+                                   'x', jobs=2)
+            row = result['rows'][0]
+            self.assertFalse(row['equal'])
+            self.assertEqual(row['concerned'], ['s'])
 
 
 class Selection(unittest.TestCase):
@@ -234,19 +275,26 @@ class Selection(unittest.TestCase):
             self.context = context
 
     def test_corpus_check_runs_only_where_its_own_runs_differ(self):
-        rows = [dict(steps=['two-pad'], equal=True), dict(steps=['wipe-ram', 'two-pad'], equal=False, differing_streams=['pictures'],
-                                                           concerned=['wipe-ram', 'two-pad'])]
+        rows = [dict(key='a', steps=['two-pad'], equal=True), dict(key='b', steps=['wipe-ram', 'two-pad'], equal=False,
+                                                                   differing_streams=['pictures'], concerned=['wipe-ram', 'two-pad'])]
         ctx = dict(full=False, identity=self.ident({'front_end_runner'}, ['src/core/front_end.cpp']),
                    corpus_steps={'two-pad': {'a', 'b'}, 'look': {'c'}, 'wipe-ram': {'b'}}, replay=dict(rows=rows))
         run = self.FakeRun(ctx)
         self.assertEqual(catalogue.corpus('two-pad')(run)[0], True)
         self.assertEqual(catalogue.corpus('wipe-ram')(run)[0], True)
-        ctx['replay'] = dict(rows=[dict(steps=['look'], equal=True)])
+        ctx['replay'] = dict(rows=[dict(key='c', steps=['look'], equal=True)])
         self.assertEqual(catalogue.corpus('look')(run)[0], False)
         # A difference in an output it never asked for does not concern it.
-        ctx['replay'] = dict(rows=[dict(steps=['look', 'mi-w5'], equal=False, differing_streams=['pictures'], concerned=['mi-w5'])])
+        ctx['corpus_steps']['mi-w5'] = {'c'}
+        ctx['replay'] = dict(rows=[dict(key='c', steps=['look', 'mi-w5'], equal=False, differing_streams=['pictures'], concerned=['mi-w5'])])
         self.assertEqual(catalogue.corpus('look')(run)[0], False)
         self.assertEqual(catalogue.corpus('mi-w5')(run)[0], True)
+        # Recorded runs the replay did not run, or a check whose scripts changed: it runs.
+        ctx['replay'] = dict(rows=[])
+        self.assertEqual(catalogue.corpus('look')(run)[0], True)
+        ctx['replay'] = dict(rows=[dict(key='c', steps=['look'], equal=True)])
+        ctx['stale'] = {'look': 'its command or scripts changed since its runs were recorded'}
+        self.assertEqual(catalogue.corpus('look')(run)[0], True)
         self.assertEqual(catalogue.corpus('unrecorded')(run)[0], True)        # no corpus: run it
 
     def test_unchanged_binary_skips_and_full_runs_everything(self):
@@ -254,6 +302,16 @@ class Selection(unittest.TestCase):
         self.assertEqual(catalogue.drives('zoom_zoo_runner')(run)[0], False)
         self.assertEqual(catalogue.corpus('two-pad')(run)[0], False)
         run.context['full'] = True
+        self.assertEqual(catalogue.drives('zoom_zoo_runner')(run)[0], True)
+        self.assertEqual(catalogue.corpus('two-pad')(run)[0], True)
+
+    def test_tooling_and_cmake_changes_select_everything(self):
+        from tools.unirally_lab.gates import identity
+        self.assertTrue(identity.build_wide('src/core/CMakeLists.txt'))
+        self.assertTrue(identity.build_wide('cmake/warnings.cmake'))
+        self.assertFalse(identity.build_wide('src/core/front_end.cpp'))
+        run = self.FakeRun(dict(full=False, identity=self.ident(set(), ['tools/unirally_lab/compare/ppm.py']),
+                                corpus_steps={'two-pad': {'a'}}, replay=dict(rows=[dict(key='a', steps=['two-pad'], equal=True)])))
         self.assertEqual(catalogue.drives('zoom_zoo_runner')(run)[0], True)
         self.assertEqual(catalogue.corpus('two-pad')(run)[0], True)
 
@@ -266,12 +324,11 @@ class Selection(unittest.TestCase):
         ids = [s.id for s in catalogue.steps(8, [('checks-x-01', 'true', 'bash', GB)])]
         self.assertEqual(len([i for i in ids if i.startswith('gate-')]), 11)
         self.assertEqual(len(ids), len(set(ids)))
-        for required in ('build', 'synthetic', 'fe-replay', 'race-sweep', 'tooling', 'rules', 'mi-w5', 'lt-backs', 'pa-cues', 'pa-pcm-tour-cues'):
-            self.assertIn(required, ids)
+        self.assertEqual(len(catalogue.GATES_SH_SECTIONS), 34)      # the serial gates.sh's sections
+        for section, held_by in catalogue.GATES_SH_SECTIONS.items():
+            for step in held_by:
+                self.assertIn(step, ids, section)
 
-
-if __name__ == '__main__':
-    unittest.main()
 
 
 class FrozenOriginal(unittest.TestCase):
@@ -292,3 +349,7 @@ class FrozenOriginal(unittest.TestCase):
                 self.assertEqual(events, frozen['events'])
                 with self.assertRaises(ValueError):
                     module.frozen_original(ref, dict(frozen, original_sha256='0' * 64))
+
+
+if __name__ == '__main__':
+    unittest.main()

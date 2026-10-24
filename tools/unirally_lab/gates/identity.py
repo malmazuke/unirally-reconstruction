@@ -29,8 +29,18 @@ TARGETS = {
     'app': ('app-debug', 'src/app/unirally.app/Contents/MacOS/unirally'),
 }
 
-# A change to any of these can change how every binary is built: fail closed.
-BUILD_WIDE = ('CMakeLists.txt', 'CMakePresets.json', 'cmake/', 'third_party/', 'tools/locks/')
+# A change to any of these can change how every binary is built: fail closed. CMake files count
+# wherever they are (a definition added in src/core/CMakeLists.txt changes no source file).
+BUILD_WIDE = ('CMakePresets.json', 'cmake/', 'third_party/', 'tools/locks/')
+
+
+def build_wide(name: str) -> bool:
+    return name.startswith(BUILD_WIDE) or name.endswith(('CMakeLists.txt', '.cmake'))
+
+
+# The checks' scripts import the repository's Python (picture readers, projections, the runner's
+# own sweeps), which no binary's inputs record: a change there selects every step.
+TOOLING = ('tools/unirally_lab/', 'tools/project.py')
 
 
 @dataclass
@@ -42,6 +52,9 @@ class Identity:
 
     def changed(self, name: str) -> bool:
         return self.binaries.get(name, {'changed': True})['changed']
+
+    def tooling(self) -> list[str]:
+        return [f for f in self.changed_files if f.startswith(TOOLING)]
 
     def any_code(self) -> bool:
         return any(not f.startswith(('docs/', 'tasks/')) and not f.endswith('.md') for f in self.changed_files)
@@ -71,7 +84,7 @@ def identify(root: Path, base: str, ninja_tool: str, candidate_pack: Path, base_
     files = changed_files(root, base)
     pack_changed = sha_file(candidate_pack) != sha_file(base_pack)
     ident = Identity(base=base, changed_files=files, pack_changed=pack_changed)
-    wide = [f for f in files if f.startswith(BUILD_WIDE)]
+    wide = [f for f in files if build_wide(f)]
     changed = set(files)
     for name, (preset, target) in TARGETS.items():
         build = root / 'build' / preset

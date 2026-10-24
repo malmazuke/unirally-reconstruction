@@ -40,12 +40,34 @@ FROZEN_GATES = [
     (f'dragster-{c}', 'dragster_playable', f'{_DRG}/{c}', f'dragster-ordinary-{c}.freeze.json')
     for c in ('primary', 'random-1', 'reversal', 'random-3', 'regression-landing-held-roll',
               'regression-countdown-actions-tie')]
-# Tracked files the frozen-digest mode trusts unchanged (the projection and its guards).
-FROZEN_TRUSTS = ('tools/unirally_lab/native/zoom_zoo_playable.py', 'tools/unirally_lab/native/dragster_playable.py',
-                 'tools/unirally_lab/native/dragster_playable_reference.py', 'tools/unirally_lab/native/zoom_zoo_race_reference.py',
-                 'tools/unirally_lab/native/zoom_zoo_trial_reference.py', 'tools/unirally_lab/native/zoom_zoo_race.py',
-                 'tests/manifests/native/zoom-zoo-race-guards.reference.json',
-                 'tests/manifests/native/dragster-race-guards.reference.json', 'tests/manifests/native/')
+# Tracked files the frozen-digest mode trusts unchanged: the projection, everything it imports
+# (zoom_zoo_sustained.py, the reference identity, the pack rules) and the contracts and guards.
+FROZEN_TRUSTS = ('tools/unirally_lab/native/', 'tools/unirally_lab/reference/', 'tools/unirally_lab/content/',
+                 'tests/manifests/native/')
+
+
+# Every section of the last serial gates.sh (RECORD-SCREENS', from PODIUM-AUDIO's) and the steps
+# that hold it now; tests/tooling/test_gates.py checks each step exists.
+GATES_SH_SECTIONS = {
+    'presets: build + ctest': ['build'], 'synthetic suite (app-debug)': ['synthetic'],
+    'v1 presentation contracts': ['v1-contracts'], 'hidden app runs': ['app-hidden-dragster', 'app-hidden-front-start'],
+    'fuzz': ['fuzz'], 'the eleven differential gates': ['gate-m4-16-primary', 'gate-dragster-primary'],
+    'race equivalence sweep': ['race-sweep'], 'front-end equivalence': ['fe-equivalence', 'fe-replay'],
+    'the pause menu against the original': ['pause-menu'], 'two-pad races against the original': ['two-pad'],
+    "the race's end against the original": ['race-end'], "the riders' look against the original": ['look'],
+    'a two-human restart against the original': ['restart'], 'two-pad restore checks': ['restores'],
+    "every track's original sweeps": ['track-sweeps'], 'the idle demo rotation': ['idle-demo', 'restores'],
+    "TWO-HUMAN-STUNTS: the league's frozen pictures": ['league-frozen'], 'TWO-HUMAN-STUNTS: checks4': ['checks4'],
+    'CREDITS-NAME': ['credits-name'], 'WIPE-RAM': ['wipe-ram'], "DEMO-AUDIO: the idle demos' cue schedules": ['demo-audio-cues'],
+    "DEMO-AUDIO: the native driver": ['demo-audio-cond'], "DEMO-AUDIO: the app's producer": ['app-demo-audio'],
+    "MODE-AUDIO's schedules": ['mode-audio'], "the split demo's retained pictures": ['split-demo'],
+    "front-end sweep: the differing manifests": ['fe-classify'], "audio: R-0076's seven cue schedules": ['audio-r0076'],
+    'race sweep: every differing picture classified': ['race-sweep-classify'],
+    'MENU-INPUT: checks.sh': ['mi-w5', 'mi-rv-ca', 'mi-cues'], 'LEAGUE-TOURS: checks.sh': ['lt-tours-a-w0', 'lt-cues'],
+    'PODIUM-AUDIO: checks.sh': ['pa-cues', 'pa-anchors', 'pa-cond', 'pa-pcm-tour-cues', 'app-podium-audio', 'pa-league-frozen'],
+    'RECORD-SCREENS: checks.sh': ['rs-rs-track', 'rs-records', 'rs-cues'], 'tooling tests': ['tooling'],
+    'rules: function size and the address index': ['rules'],
+}
 
 
 def code(run):
@@ -58,6 +80,8 @@ def drives(*names, tracked=()):
         if run.context['full']:
             return True, 'full run'
         ident = run.context['identity']
+        if ident.tooling():
+            return True, f'{ident.tooling()[0]} changed: the checks\' Python may import it'
         hit = [n for n in names if ident.changed(n)]
         if hit:
             return True, f'{hit[0]} changed: {ident.binaries[hit[0]]["reason"]}'
@@ -74,9 +98,13 @@ def corpus(step_id, also=()):
         if ctx['full']:
             return True, 'full run'
         ident = ctx['identity']
+        if ident.tooling():
+            return True, f'{ident.tooling()[0]} changed: the check\'s scripts may import it'
         hit = [n for n in also if ident.changed(n)]
         if hit:
             return True, f'{hit[0]} changed'
+        if step_id in ctx.get('stale', {}):
+            return True, f"{ctx['stale'][step_id]}: it runs against the original"
         if not ident.changed('front_end_runner'):
             return False, "front_end_runner unchanged from main, so it replays as main did"
         keys = ctx['corpus_steps'].get(step_id)
@@ -86,6 +114,8 @@ def corpus(step_id, also=()):
         if replay is None:
             return True, 'the replay did not finish: it runs against the original'
         rows = [r for r in replay['rows'] if step_id in r['steps']]
+        if len({r['key'] for r in rows}) < len(keys):
+            return True, f'{len(keys) - len(rows)} of its recorded runs were not replayed: it runs against the original'
         differing = [r for r in rows if not r['equal'] and step_id in r.get('concerned', r['steps'])]
         if differing:
             streams = sorted({n for r in differing for n in r['differing_streams']})
@@ -238,6 +268,16 @@ exit $st''', system='front-end', select=drives('front_end_runner')))
 
     original('fe-equivalence', "the front-end sweep's manifests through main and the candidate (every 500th picture)", '''
 python3 "$C/fe_equivalence.py" "$B/front_end_runner" build/lab-release/src/core/front_end_runner "$BASE_PACK" "$PACK" "$G/fe-equivalence.json" 4 | tr '\\n' ' ' | sed 's/^/  /'; echo''', weight=4)
+    add(Step('fe-classify', "front-end sweep: the differing manifests' state and pictures (diagnostic)", PRELUDE + '''
+F="$RUN/fe-equivalence/fe-equivalence.json"
+echo "  $(python3 -c "
+import json;d=json.load(open('$F'))
+bad=[r for r in d['rows'] if not r['equal']]
+print('differing',len(bad),'state differs in',[r['manifest'] for r in bad if not r['outputs_equal']])")"
+python3 "$C/../split-pause-menu/classify_fe.py" "$F" build/lab-release/src/core/front_end_runner "$PACK" > "$G/classify-fe.json" 2>&1; echo "  classify_fe rc=$?"''',
+             system='front-end', after=('fe-equivalence',), reads_status=False,
+             select=lambda run: (True, 'fe-equivalence ran') if run.outcomes.get('fe-equivalence') and run.outcomes['fe-equivalence'].selected
+             else (False, 'fe-equivalence did not run')))
     original('pause-menu', 'the pause menu against the original (every captured picture)', '''
 for c in menu countdown split "$C/review/fadein" "$C/review/zoomlap" "$L/race-pause-exits/decode/quit" "$L/race-pause-exits/decode/restart" "$L/race-pause-exits/decode/lapquit"; do
   echo "  $(python3 "$C/pictures.py" "$c" --binary build/lab-release/src/core/front_end_runner --pack "$PACK" 2>&1 | tail -1 | sed 's#/Users.*decode/##')"

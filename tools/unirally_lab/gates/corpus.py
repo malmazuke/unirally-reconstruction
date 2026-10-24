@@ -70,8 +70,12 @@ def normalize(argv: list[str], cwd: Path, store: Path | None) -> dict:
     while i < len(argv):
         option = argv[i]
         if option == '--content-pack':
-            path = (cwd / argv[i + 1]).resolve()
-            pack = dict(path=str(path), sha256=sha_path(path))
+            # The runner hands the checks the current pack through an alias, so a check that pins
+            # a pack (even the same version) is told apart from one that takes `$PACK`.
+            given = os.path.abspath(cwd / argv[i + 1])
+            path = Path(given).resolve()
+            current = given == os.environ.get('GATES_CURRENT_PACK')
+            pack = dict(path=str(path), sha256=sha_path(path), current=current)
             i += 2
         elif option in INPUT_FILES:
             data = (cwd / argv[i + 1]).read_bytes()
@@ -95,7 +99,7 @@ def normalize(argv: list[str], cwd: Path, store: Path | None) -> dict:
             raise ValueError(f'unknown front_end_runner option {option!r}: teach corpus.py its kind')
     if pack is None:
         raise ValueError('invocation names no content pack')
-    key = sha_bytes(json.dumps([pack['sha256'], inputs]).encode())
+    key = sha_bytes(json.dumps([pack['sha256'], pack['current'], inputs]).encode())
     return dict(key=key, pack=pack, inputs=inputs, outputs=sorted(set(outputs)), pictures=to_ranges(pictures))
 
 
@@ -152,11 +156,15 @@ def real_binary(binary: Path) -> Path:
 
 
 def load(corpus: Path) -> tuple[dict[str, dict], dict[str, set[str]]]:
-    """Distinct cases by key, and for each step the keys it ran."""
+    """Distinct cases by key, and for each step the keys it ran. A step whose recording logged
+    an error is left out: its corpus may be incomplete."""
     cases: dict[str, dict] = {}
     by_step: dict[str, set[str]] = {}
     for log in sorted(corpus.glob('*.jsonl')):
         step = log.stem
+        errors = log.with_name(log.name + '.errors')
+        if errors.exists() and errors.stat().st_size:
+            continue
         keys = by_step.setdefault(step, set())
         for line in log.read_text().splitlines():
             entry = json.loads(line)
@@ -179,6 +187,31 @@ STREAMS_OF = {'--race-timeline': 'race-timeline', '--one-player-timeline': 'one-
 def reads(outputs: set[str]) -> set[str]:
     """The replay streams a check that asked for these outputs can have read."""
     return {'stdout', 'stderr'} | {STREAMS_OF[o] for o in outputs if o in STREAMS_OF}
+
+
+def fingerprint(command: str, evidence: Path) -> str:
+    """A check's command and the scripts in the evidence folders it names (`$L/<folder>`,
+    `local/evidence/<folder>`, top level and one below). A changed fingerprint means its recorded
+    runs may no longer be what it runs. Scripts it reaches in other folders are not covered."""
+    import re
+    h = hashlib.sha256(command.encode())
+    folders = sorted(set(re.findall(r'(?:\$L|local/evidence)/([A-Za-z0-9._-]+)', command)))
+    for folder in folders:
+        root = evidence / folder
+        for path in sorted([*root.glob('*.py'), *root.glob('*.sh'), *root.glob('*/*.py'), *root.glob('*/*.sh')]):
+            h.update(str(path.relative_to(evidence)).encode()); h.update(path.read_bytes())
+    return h.hexdigest()
+
+
+def write_meta(corpus: Path, step: str, **fields) -> None:
+    (corpus / f'{step}.meta.json').write_text(json.dumps(fields, indent=1) + '\n')
+
+
+def read_meta(corpus: Path, step: str) -> dict:
+    try:
+        return json.loads((corpus / f'{step}.meta.json').read_text())
+    except (OSError, ValueError):
+        return {}
 
 
 def clear_step(corpus: Path, step: str) -> Path:
