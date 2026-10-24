@@ -29,13 +29,18 @@ TARGETS = {
     'app': ('app-debug', 'src/app/unirally.app/Contents/MacOS/unirally'),
 }
 
-# A change to any of these can change how every binary is built: fail closed. CMake files count
-# wherever they are (a definition added in src/core/CMakeLists.txt changes no source file).
+# A change to any of these changes how every binary is built in ways no command line shows (the
+# toolchain, presets, fetched sources): every binary counts as changed.
 BUILD_WIDE = ('CMakePresets.json', 'cmake/', 'third_party/', 'tools/locks/')
 
 
+def cmake_file(name: str) -> bool:
+    """A CMake file anywhere (a definition added in src/core/CMakeLists.txt changes no source)."""
+    return name.endswith(('CMakeLists.txt', '.cmake'))
+
+
 def build_wide(name: str) -> bool:
-    return name.startswith(BUILD_WIDE) or name.endswith(('CMakeLists.txt', '.cmake'))
+    return name.startswith(BUILD_WIDE) or cmake_file(name)
 
 
 # The checks' scripts import the repository's Python (picture readers, projections, the runner's
@@ -96,17 +101,21 @@ def identify(root: Path, base: str, ninja_tool: str, candidate_pack: Path, base_
     files = changed_files(root, base)
     pack_changed = sha_file(candidate_pack) != sha_file(base_pack)
     ident = Identity(base=base, changed_files=files, pack_changed=pack_changed)
-    wide = [f for f in files if build_wide(f)]
+    wide = [f for f in files if f.startswith(BUILD_WIDE)]
+    cmake = [f for f in files if cmake_file(f) and not f.startswith(BUILD_WIDE)]
     changed = set(files)
     for name, (preset, target) in TARGETS.items():
         build = root / 'build' / preset
         if wide:
+            ident.binaries[name] = dict(changed=True, reason=f'build-wide file changed: {wide[0]}')
+            continue
+        if cmake:
             # A CMake change shows in the commands that build the target: compare them with main's.
             mine = build_commands(build, root, ninja_tool, target)
             main = build_commands(base_root / 'build' / preset, base_root, ninja_tool, target) if base_root else None
             if mine is None or main is None or mine != main:
                 why = 'its build commands differ from main\'s' if mine and main else 'its build commands cannot be compared'
-                ident.binaries[name] = dict(changed=True, reason=f'{wide[0]} changed and {why}')
+                ident.binaries[name] = dict(changed=True, reason=f'{cmake[0]} changed and {why}')
                 continue
         try:
             inputs, _ = engine_files(build, root, ninja_tool, target)

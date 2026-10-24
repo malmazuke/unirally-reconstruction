@@ -63,9 +63,11 @@ A step names the binaries it drives. A binary can only behave differently if one
   `gate_identity`'s method, now per target: `front_end_runner`, `zoom_zoo_runner`, the presentation
   runners, `audio_driver_runner`, the fuzz runner and the app;
 - **the content pack** it reads;
-- **a build-wide file:** any `CMakeLists.txt` or `.cmake` file, wherever it is (a definition
-  added in `src/core/CMakeLists.txt` changes no source file), the presets, `third_party/`, the
-  toolchain lock.
+- **a build-wide file:** the presets, `third_party/`, `cmake/` or the toolchain lock, which change
+  builds in ways no command line shows, so every binary counts as changed;
+- **a CMake file anywhere** (a definition added in `src/core/CMakeLists.txt` changes no source
+  file): each target's build commands (`ninja -t commands`) are compared with main's, for whose
+  tree every preset is configured, and a target whose commands differ is changed.
 
 The checks' scripts also import the repository's Python: picture readers, projections, the
 runner's own sweeps. No binary's inputs record that, so **any change under `tools/unirally_lab/`
@@ -109,11 +111,17 @@ the checks run. A task's own checks are recorded on every run, so the next task 
 - **The pack.** The checks get the current pack through an alias. A check that takes `$PACK` is
   then told apart from one that pins a pack, even the same version, and the replay gives a
   `$PACK` case each side's own pack and a pinned case the pinned pack.
-- **Staleness.** Each check's recording carries a fingerprint: its command and the scripts in the
-  evidence folders the command names. A check whose fingerprint has changed runs against the
-  original, as does a check whose recording logged an error, and a check with recorded runs the
-  replay did not run. Scripts a check reaches in other folders are outside the fingerprint, so
-  changing one calls for a new recording.
+- **Staleness.** Each check's recording carries a fingerprint covering three things:
+  - its command;
+  - the scripts and input recipes (schedules, record writes, runner arguments) of every evidence
+    folder the command names, however it names them;
+  - the scripts of every folder those scripts name.
+
+  A check runs against the original when its fingerprint has changed, when its recording logged an
+  error or stopped early (a timeout, a cap), or when the replay did not run all its recorded runs.
+  Capture manifests and scripts two folders away are outside the fingerprint, because gate steps
+  rewrite some reports on every run; changing one calls for a new recording. Only full runs and a
+  task's `--task-checks` record.
 
 **The outputs are all of them.** The replay drops the outputs a check asked for and asks both
 binaries for every output:
@@ -146,8 +154,13 @@ twin, `<step>@main`, which runs the same command in main's checkout with main's 
 - Different lines mean `changed`, and the run fails. A task that means to change that result reads
   both, records why, and lists the step in `--expect-changed`; then it is `changed (expected)`.
 
-- Equal lines that differ from what the recording run printed on the same main mean `broken`, and
-  the run fails: the check broke the same way on both sides (a deleted capture, a script error).
+- Equal lines can still mean `broken`, which fails the run: the check broke the same way on both
+  sides (a deleted capture, a script error). It is `broken` when it prints more error lines than its
+  recording did, or, on the main it was recorded on, anything other than what it printed then.
+- A task's own checks against the original (`--force`) always run and keep their twin. Their
+  `changed` is shown and does not fail the run, and the status line names them to be read.
+  `--no-twin` drops the twin for a forced check main's runner cannot run (an option the task
+  adds), and that check is read without a verdict.
 
 So a planted regression cannot end in `status=passed` because a measurement went unread (the
 coordinating session's review of the first proofs).

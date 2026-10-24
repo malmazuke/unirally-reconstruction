@@ -19,6 +19,8 @@ When a step runs:
 """
 from __future__ import annotations
 
+import re
+
 from .disk import GB
 from .schedule import Step
 
@@ -68,6 +70,18 @@ GATES_SH_SECTIONS = {
     'RECORD-SCREENS: checks.sh': ['rs-rs-track', 'rs-records', 'rs-cues'], 'tooling tests': ['tooling'],
     'rules: function size and the address index': ['rules'],
 }
+
+
+# The folders the shared prelude's variables name, counted in a step's fingerprint only when its
+# body uses the variable.
+PRELUDE_FOLDERS = {'$A': 'audio-first-race', '$O': 'split-pause-menu', '$C': 'classic-pause-menu', '$R': 'split-race-end'}
+
+
+def fingerprint_text(command: str) -> str:
+    """A step's command as its fingerprint reads it: the body, and the prelude folders it uses."""
+    body = command[len(PRELUDE):] if command.startswith(PRELUDE) else command
+    used = [folder for var, folder in PRELUDE_FOLDERS.items() if re.search(re.escape(var) + r'(?![A-Za-z0-9_])', body)]
+    return body + '\n' + ' '.join(used)
 
 
 def code(run):
@@ -196,7 +210,7 @@ for kind in winner loser; do
   echo "  $kind $(grep 'status=' "$G/$kind.log" | tail -1)"; grep -q status=passed "$G/$kind.log" || ok=1
   mv "$A2" "$G/$kind-visual"
 done
-exit $ok''', system='race', select=drives('presentation_runner')))
+exit $ok''', system='race', select=drives('presentation_runner', tracked=('tests/manifests/presentation/',))))
     add(Step('fuzz', 'fuzz (lab-release, 40 seeds; aborts on main too, recorded non-pass)', '''
 build/lab-release/src/app/dragster_fuzz_runner --content-pack "$PACK" --first-seed 1 --seeds 40 --races 2 --max-updates 30000 --failure-cases "$G/fuzz-failures" > "$G/fuzz.log" 2>&1; echo "  fuzz rc=$? $(tail -1 "$G/fuzz.log")"''',
              system='race', reads_status=False, select=drives('dragster_fuzz_runner')))

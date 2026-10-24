@@ -56,6 +56,7 @@ class Step:
     # names the twin (on the step) or the step (on the twin). The twin's `env` and `cwd`
     # (formatted with the run's variables) point it at main's tree, binaries and pack.
     twin: str = ''
+    own: bool = False                  # the task's own check (--force): read; `changed` does not fail
     env: dict = field(default_factory=dict)
     cwd: str = ''
 
@@ -185,6 +186,9 @@ class Run:
         self.log(f'  < {sid}: {o.status} in {o.seconds:.0f} s, peak temp {fmt(o.peak_temp)}')
         if self.recording(step) and 'corpus_lines' in self.context:
             self.context['corpus_lines'](step, normal_lines(self.out / f'{sid}.log', self.env))
+            if o.status in ('timeout', 'over-cap', 'stalled'):
+                # A recording that stopped early holds only some of the check's runs.
+                self.context['corpus_incomplete'](step, o.status)
         if sid in self.callbacks:
             self.callbacks[sid](self, o)
         if step.twin and self.outcomes[step.twin].status not in ('pending', 'running'):
@@ -198,17 +202,23 @@ class Run:
         if o.status != 'ran' or t.status != 'ran':
             return
         mine, main = (normal_lines(self.out / f'{x}.log', self.env) for x in (sid, twin))
-        recorded = self.context.get('recorded_lines', lambda _: None)(sid)
-        if mine == main and recorded is not None and mine != recorded:
-            # Equal on both sides but not what the recording run printed on this same main: the
-            # check broke the same way on both (a deleted capture, a script error).
+        recorded, same_main = self.context.get('recorded_lines', lambda _: (None, False))(sid)
+        # Equal on both sides, but broken the same way on both (a deleted capture, a script error):
+        # more error lines than its recording printed, or, on the very main it was recorded on,
+        # anything other than what it printed then.
+        broken = recorded is not None and mine == main and (
+            error_count(mine) > error_count(recorded) or (same_main and mine != recorded))
+        if broken:
             o.status = 'broken'
             o.summary = ['  same on main, but not as recorded:'] + [f'  - {l}' for l in recorded if l not in mine][:20] + \
                         [f'  + {l}' for l in mine if l not in recorded][:20]
         elif mine == main:
             o.status = 'same-as-main'
         else:
-            o.status = 'changed (expected)' if sid in self.context.get('expect_changed', ()) else 'changed'
+            if self.by_id[sid].own:
+                o.status = 'changed (own check)'
+            else:
+                o.status = 'changed (expected)' if sid in self.context.get('expect_changed', ()) else 'changed'
             o.summary = ['  differs from main:'] + [f'  - {l}' for l in main if l not in mine][:20] + \
                         [f'  + {l}' for l in mine if l not in main][:20]
         t.status = 'reference'
@@ -299,6 +309,13 @@ class Run:
         return dict(seconds=round(time.time() - started, 1), peak_temp=self.peak_total,
                     disk_used_peak=self.start_free - self.min_free, start_free=self.start_free,
                     min_free=self.min_free, steps=[vars(self.outcomes[s.id]) for s in self.steps])
+
+
+ERROR_MARKS = ('Traceback', 'Error', 'No such file', 'no capture', 'not captured', 'MISSING', 'cannot ')
+
+
+def error_count(lines: list[str]) -> int:
+    return sum(any(m in l for m in ERROR_MARKS) for l in lines)
 
 
 def normal_lines(log: Path, env: dict) -> list[str]:

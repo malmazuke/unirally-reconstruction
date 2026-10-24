@@ -115,12 +115,12 @@ class Scheduler(unittest.TestCase):
             self.assertEqual(seen, ['known'])
 
 
-    def judged(self, mine: str, main: str, expect=(), recorded=None):
+    def judged(self, mine: str, main: str, expect=(), recorded=None, same_main=True, own=False):
         with tempfile.TemporaryDirectory() as d:
-            steps = [Step('x', 'x', 'echo "  result $V"', reads_status=False, twin='x@main', env=dict(V=mine)),
+            steps = [Step('x', 'x', 'echo "  result $V"', reads_status=False, twin='x@main', env=dict(V=mine), own=own),
                      Step('x@main', 'x', 'echo "  result $V"', reads_status=False, twin='x', env=dict(V=main))]
             report, _ = run_steps(steps, Path(d), context=dict(expect_changed=set(expect),
-                                                               recorded_lines=lambda _: recorded))
+                                                               recorded_lines=lambda _: (recorded, same_main)))
             return {s['id']: s['status'] for s in report['steps']}
 
     def test_a_report_against_the_original_is_judged_by_its_run_on_main(self):
@@ -130,6 +130,11 @@ class Scheduler(unittest.TestCase):
         # Equal on both sides but not what the recording run printed on this main: broken on both.
         self.assertEqual(self.judged('0 equal', '0 equal', recorded=['  result 7 equal'])['x'], 'broken')
         self.assertEqual(self.judged('7 equal', '7 equal', recorded=['  result 7 equal'])['x'], 'same-as-main')
+        # On another main a different result can be right, but not more errors than recorded.
+        self.assertEqual(self.judged('6 equal', '6 equal', recorded=['  result 7 equal'], same_main=False)['x'], 'same-as-main')
+        self.assertEqual(self.judged('Traceback', 'Traceback', recorded=['  result 7 equal'], same_main=False)['x'], 'broken')
+        # A task's own check keeps its verdict, and its change does not fail the run.
+        self.assertEqual(self.judged('6 equal', '7 equal', own=True)['x'], 'changed (own check)')
 
 
 class Corpus(unittest.TestCase):

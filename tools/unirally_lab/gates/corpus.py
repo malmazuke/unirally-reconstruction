@@ -189,17 +189,61 @@ def reads(outputs: set[str]) -> set[str]:
     return {'stdout', 'stderr'} | {STREAMS_OF[o] for o in outputs if o in STREAMS_OF}
 
 
-def fingerprint(command: str, evidence: Path) -> str:
-    """A check's command and the scripts in the evidence folders it names (`$L/<folder>`,
-    `local/evidence/<folder>`, top level and one below). A changed fingerprint means its recorded
-    runs may no longer be what it runs. Scripts it reaches in other folders are not covered."""
+SMALL = 1 << 20
+SCRIPTS = ('.py', '.sh', '.list')
+# The input recipes a check reads in the folders it names. Capture manifests and reports are left
+# out: gate steps rewrite some (cond-*.json, anchors.json) on every run.
+RECIPES = ('.frontend-inputs.txt', '.record-writes.txt', '.runner-args.txt', '.script.json', '.inputs',
+           '.reset-delays.txt')
+
+
+def _folder_digest(folder: Path, recipes: bool, cache: dict) -> tuple[str, str]:
+    """The digest of a folder's scripts (top level and one below), with its input recipes when
+    `recipes`, and the scripts' text, scanned for further folders."""
+    key = (folder, recipes)
+    if key in cache:
+        return cache[key]
+    h, text = hashlib.sha256(), []
+    for path in sorted([*folder.glob('*'), *folder.glob('*/*')]):
+        script = path.suffix in SCRIPTS
+        if not (script or (recipes and path.name.endswith(RECIPES))):
+            continue
+        try:
+            if path.is_file() and path.stat().st_size < SMALL:
+                data = path.read_bytes()
+                h.update(str(path.relative_to(folder)).encode()); h.update(data)
+                if script:
+                    text.append(data.decode(errors='replace'))
+        except OSError:
+            continue
+    cache[key] = (h.hexdigest(), '\n'.join(text))
+    return cache[key]
+
+
+def fingerprint(command: str, evidence: Path, cache: dict | None = None) -> str:
+    """A check's command; the scripts and input recipes of the evidence folders it names, by any
+    spelling (`$L/x`, or a bare `x` an argument passes to a script); and the scripts of the folders
+    those scripts name. A changed fingerprint means its recorded runs may no longer be what it
+    runs. Capture manifests, and scripts two folders away, are outside it."""
     import re
+    cache = {} if cache is None else cache
+    names = cache.get('names')
+    if names is None:
+        try:
+            names = cache['names'] = {n for n in os.listdir(evidence) if (evidence / n).is_dir()}
+        except OSError:
+            names = cache['names'] = set()
+    mentioned = lambda text: {t for t in re.findall(r'[A-Za-z0-9._-]+', text) if t in names}
     h = hashlib.sha256(command.encode())
-    folders = sorted(set(re.findall(r'(?:\$L|local/evidence)/([A-Za-z0-9._-]+)', command)))
-    for folder in folders:
-        root = evidence / folder
-        for path in sorted([*root.glob('*.py'), *root.glob('*.sh'), *root.glob('*/*.py'), *root.glob('*/*.sh')]):
-            h.update(str(path.relative_to(evidence)).encode()); h.update(path.read_bytes())
+    direct = sorted(mentioned(command))
+    reached: set[str] = set()
+    for name in direct:
+        digest, text = _folder_digest(evidence / name, True, cache)
+        h.update(name.encode()); h.update(digest.encode())
+        reached |= mentioned(text)
+    for name in sorted(reached - set(direct)):
+        digest, _ = _folder_digest(evidence / name, False, cache)
+        h.update(name.encode()); h.update(digest.encode())
     return h.hexdigest()
 
 

@@ -263,11 +263,16 @@ std::map<std::uint32_t, unirally::FrontEndPads> read_inputs(const std::filesyste
     return rows;
 }
 
+// The one way an output file's bytes are written; a digest is of what it writes too.
+void write_bytes(std::ostream& out, std::span<const std::uint8_t> bytes) {
+    out.write(reinterpret_cast<const char*>(bytes.data()),
+              static_cast<std::streamsize>(bytes.size()));
+}
+
 void write_file(const std::filesystem::path& path, std::span<const std::uint8_t> bytes,
                 const std::string& what) {
     std::ofstream out(path, std::ios::binary);
-    out.write(reinterpret_cast<const char*>(bytes.data()),
-              static_cast<std::streamsize>(bytes.size()));
+    write_bytes(out, bytes);
     if (!out) throw std::runtime_error("cannot write front-end " + what);
 }
 
@@ -297,9 +302,13 @@ std::uint64_t digest_of(std::span<const std::uint8_t> bytes) {
 
 void write_digest(const Options& options, std::uint32_t frame, char kind,
                   std::span<const std::uint8_t> bytes) {
+    std::ostringstream written;
+    write_bytes(written, bytes);
+    const auto text = std::move(written).str();
     char line[40];
     std::snprintf(line, sizeof line, "%u %c %016llx\n", frame, kind,
-                  static_cast<unsigned long long>(digest_of(bytes)));
+                  static_cast<unsigned long long>(digest_of(
+                      std::span(reinterpret_cast<const std::uint8_t*>(text.data()), text.size()))));
     *options.frame_digests << line;
 }
 

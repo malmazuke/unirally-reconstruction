@@ -81,6 +81,8 @@ def main() -> int:
     p.add_argument('--skip', help="comma-separated step ids left out")
     p.add_argument('--expect-changed', default='', help="comma-separated checks whose results the task means to change, "
                    "read and recorded: `changed (expected)` does not fail the run")
+    p.add_argument('--no-twin', default='', help="comma-separated forced checks run without their twin on main, because "
+                   "main's runner cannot run them (an option the task adds); they are read")
     p.add_argument('--force', help="comma-separated step ids that always run: a task's own checks already in the catalogue")
     a = p.parse_args()
 
@@ -123,13 +125,19 @@ def main() -> int:
     kept = {s.id for s in steps}
     steps = [s for s in steps if not s.twin or s.twin in kept]      # a twin goes with its step
     forced = set(filter(None, (a.force or '').split(',')))
-    # A task's own checks are its acceptance and are read, as --task-checks are: no twin. (Their
-    # twin on main may not even run them: a task's check can use a runner option it adds.)
-    steps = [s for s in steps if not ('@' in s.id and s.id.split('@')[0] in forced)]
+    no_twin = set(filter(None, a.no_twin.split(',')))
+    if no_twin - forced:
+        print(f'refused: --no-twin names checks that are not forced: {sorted(no_twin - forced)}'); return 2
+    # A task's own checks (--force) always run, keep their twin and verdict, and are read: their
+    # `changed` is expected and does not fail the run. --no-twin drops the twin for a check main's
+    # runner cannot run (a runner option the task adds); that check is read with no verdict.
+    steps = [s for s in steps if not ('@' in s.id and s.id.split('@')[0] in no_twin)]
     for s in steps:
-        if s.id in forced:
+        if s.id.split('@')[0] in forced:
             s.select = lambda run: (True, "the task's own checks (--force)")
-            s.twin, s.system = '', 'task'
+            s.own = '@' not in s.id
+            if s.id in no_twin:
+                s.twin = ''
     # The checks get the current pack through an alias, so the corpus tells `$PACK` from a pinned
     # pack of the same version.
     alias = out / 'pack' / pack.name
@@ -141,8 +149,10 @@ def main() -> int:
                BASE_TREE=str(main_root / '.worktrees' / 'gates-base'))
     context = dict(full=a.full, record=a.full and a.record, corpus_steps=by_step, identity=None, replay=None,
                    expect_changed=set(filter(None, a.expect_changed.split(','))))
+    fp_cache: dict = {}
+
     def corpus_log(step):
-        corpus.write_meta(corpus_dir, step.id, fingerprint=corpus.fingerprint(step.command, evidence), base=base,
+        corpus.write_meta(corpus_dir, step.id, fingerprint=corpus.fingerprint(catalogue.fingerprint_text(step.command), evidence, fp_cache), base=base,
                           recorded_at=head)
         return corpus.clear_step(corpus_dir, step.id)
 
@@ -150,14 +160,18 @@ def main() -> int:
         (corpus_dir / f'{step.id}.lines').write_text('\n'.join(lines) + '\n')
 
     def recorded_lines(step_id):
+        """What a check printed when it was recorded, and whether that was on this same main."""
         meta = corpus.read_meta(corpus_dir, step_id)
         path = corpus_dir / f'{step_id}.lines'
-        # Only a recording made on this same main says what the check should print here.
-        if meta.get('recorded_at') != base or not path.exists():
-            return None
-        return path.read_text().splitlines()
+        if not path.exists():
+            return None, False
+        return path.read_text().splitlines(), meta.get('recorded_at') == base
 
-    context.update(corpus_log=corpus_log, corpus_lines=corpus_lines, recorded_lines=recorded_lines)
+    def corpus_incomplete(step, status):
+        (corpus_dir / f'{step.id}.jsonl.errors').open('a').write(f'recording ended {status}: incomplete\n')
+
+    context.update(corpus_log=corpus_log, corpus_lines=corpus_lines, recorded_lines=recorded_lines,
+                   corpus_incomplete=corpus_incomplete)
     # A check whose command or scripts changed since its runs were recorded, or whose recording
     # logged an error, has no corpus to stand on.
     stale = {}
@@ -167,7 +181,7 @@ def main() -> int:
         meta = corpus.read_meta(corpus_dir, s.id)
         if (corpus_dir / f'{s.id}.jsonl.errors').exists() and (corpus_dir / f'{s.id}.jsonl.errors').stat().st_size:
             stale[s.id] = 'its recording logged errors'
-        elif s.id in by_step and meta.get('fingerprint') != corpus.fingerprint(s.command, evidence):
+        elif s.id in by_step and meta.get('fingerprint') != corpus.fingerprint(catalogue.fingerprint_text(s.command), evidence, fp_cache):
             stale[s.id] = 'its command or scripts changed since its runs were recorded' if meta else 'its runs carry no fingerprint'
     context['stale'] = stale
     if context['record']:
@@ -217,6 +231,9 @@ def main() -> int:
           f'peak disk used {fmt(max(0, report["disk_used_peak"]))}; lowest free {fmt(report["min_free"])}')
     for s in report['steps']:
         print(f'  {s["id"]:30s} {s["status"]:8s} {s["seconds"]:7.0f} s  {fmt(s["peak_temp"]):>8s}  {s["why"]}')
+    own = [s for s in report['steps'] if run.by_id[s['id']].own and s['status'] != 'skipped']
+    if own:
+        print("the task's own checks, to read: " + ', '.join(f'{s["id"]} {s["status"]}' for s in own))
     print('status=' + ('failed' if bad else 'passed') + (f' ({", ".join(s["id"] for s in bad)})' if bad else ''))
     return 1 if bad else 0
 
