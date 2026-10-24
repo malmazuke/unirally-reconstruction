@@ -97,6 +97,17 @@ def corpus(step_id, also=()):
     return select
 
 
+def _twin_select(select):
+    """A twin runs when its step does, unless the candidate is main itself (a full run on main),
+    where its step's lines are the reference and are read."""
+    def twin(run):
+        ident = run.context.get('identity')
+        if ident is not None and not ident.changed_files:
+            return False, 'the candidate is main: nothing to compare with'
+        return select(run)
+    return twin
+
+
 def steps(jobs: int, task_checks: list[tuple[str, str, str]]) -> list[Step]:
     s: list[Step] = []
     add = s.append
@@ -467,7 +478,7 @@ python3 tools/project.py coverage native-symbols --check > "$G/native-symbols.lo
         s.append(Step(x.twin, x.title + ' (on main)', x.command, system=x.system, weight=x.weight,
                       temp_cap=x.temp_cap, timeout=x.timeout, writes=x.writes, shell=x.shell,
                       after=tuple(a + '@main' if a in names else a for a in x.after), reads_status=False,
-                      select=x.select, twin=x.id, cwd='{BASE_TREE}',
+                      select=_twin_select(x.select), twin=x.id, cwd='{BASE_TREE}',
                       env=dict(W='{BASE_TREE}', PACK='{BASE_PACK}', RUN='{RUN}/main',
                                FER='{BASE_TREE}/build/lab-release/src/core/front_end_runner')))
     # Pool order is start order: the long and wide steps first, the corpus checks once the replay
