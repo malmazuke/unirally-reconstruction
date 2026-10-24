@@ -80,7 +80,19 @@ def sha_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def identify(root: Path, base: str, ninja_tool: str, candidate_pack: Path, base_pack: Path) -> Identity:
+def build_commands(build: Path, root: Path, ninja_tool: str, target: str) -> list[str] | None:
+    """A target's compile and link commands, with its checkout's path taken out; None if unknown."""
+    try:
+        out = subprocess.run([ninja_tool, '-C', str(build), '-t', 'commands', target], capture_output=True, text=True)
+    except OSError:
+        return None
+    if out.returncode:
+        return None
+    return sorted(line.replace(str(root), '<root>') for line in out.stdout.splitlines())
+
+
+def identify(root: Path, base: str, ninja_tool: str, candidate_pack: Path, base_pack: Path,
+             base_root: Path | None = None) -> Identity:
     files = changed_files(root, base)
     pack_changed = sha_file(candidate_pack) != sha_file(base_pack)
     ident = Identity(base=base, changed_files=files, pack_changed=pack_changed)
@@ -89,8 +101,13 @@ def identify(root: Path, base: str, ninja_tool: str, candidate_pack: Path, base_
     for name, (preset, target) in TARGETS.items():
         build = root / 'build' / preset
         if wide:
-            ident.binaries[name] = dict(changed=True, reason=f'build-wide file changed: {wide[0]}')
-            continue
+            # A CMake change shows in the commands that build the target: compare them with main's.
+            mine = build_commands(build, root, ninja_tool, target)
+            main = build_commands(base_root / 'build' / preset, base_root, ninja_tool, target) if base_root else None
+            if mine is None or main is None or mine != main:
+                why = 'its build commands differ from main\'s' if mine and main else 'its build commands cannot be compared'
+                ident.binaries[name] = dict(changed=True, reason=f'{wide[0]} changed and {why}')
+                continue
         try:
             inputs, _ = engine_files(build, root, ninja_tool, target)
         except RuntimeError as error:

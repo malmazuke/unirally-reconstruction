@@ -122,9 +122,14 @@ def main() -> int:
         steps = [s for s in steps if s.id not in set(a.skip.split(','))]
     kept = {s.id for s in steps}
     steps = [s for s in steps if not s.twin or s.twin in kept]      # a twin goes with its step
+    forced = set(filter(None, (a.force or '').split(',')))
+    # A task's own checks are its acceptance and are read, as --task-checks are: no twin. (Their
+    # twin on main may not even run them: a task's check can use a runner option it adds.)
+    steps = [s for s in steps if not ('@' in s.id and s.id.split('@')[0] in forced)]
     for s in steps:
-        if a.force and s.id.split('@')[0] in a.force.split(','):
+        if s.id in forced:
             s.select = lambda run: (True, "the task's own checks (--force)")
+            s.twin, s.system = '', 'task'
     # The checks get the current pack through an alias, so the corpus tells `$PACK` from a pinned
     # pack of the same version.
     alias = out / 'pack' / pack.name
@@ -176,7 +181,8 @@ def main() -> int:
     run = Run(steps, env, root, out, temp_root, a.jobs, int(a.disk_floor * GB), int(a.temp_cap * GB), context)
 
     def after_build(run: Run, outcome) -> None:
-        ident = identify(root, base, str(root / 'local/toolchain/ninja-1.13.2-darwin-arm64/ninja'), pack, base_pack)
+        ident = identify(root, base, str(root / 'local/toolchain/ninja-1.13.2-darwin-arm64/ninja'), pack, base_pack,
+                         base_root=main_root / '.worktrees' / 'gates-base')
         run.context['identity'] = ident
         print(f'  identity: {len(ident.changed_files)} files changed, pack {"changed" if ident.pack_changed else "unchanged"}')
         for name, b in ident.binaries.items():

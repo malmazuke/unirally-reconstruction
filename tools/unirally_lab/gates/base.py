@@ -44,6 +44,13 @@ def build(sha: str, out: Path, root: Path) -> int:
     print(f'  base {full[:10]} lab-release build {status[-1] if status else "status=?"}')
     if not status or 'passed' not in status[-1]:
         return 1
+    # The other presets configured only, for their build commands (identity.py compares a target's
+    # commands with main's when a CMake file changed).
+    cmake = main / 'local' / 'toolchain' / 'cmake-3.31.10-darwin-arm64' / 'bin' / 'cmake'
+    ninja = main / 'local' / 'toolchain' / 'ninja-1.13.2-darwin-arm64' / 'ninja'
+    for preset in ('lab-debug', 'app-debug'):
+        with (out / f'configure-{preset}.log').open('w') as f:
+            subprocess.run([str(cmake), '--preset', preset, f'-DCMAKE_MAKE_PROGRAM={ninja}'], cwd=tree, stdout=f, stderr=subprocess.STDOUT)
     for name, rel in BINARIES.items():
         target = out / name
         target.unlink(missing_ok=True)
