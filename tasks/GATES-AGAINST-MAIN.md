@@ -94,3 +94,44 @@ how it was reached.
 | It catches a regression in each gated system | `gam/reg-race`, `gam/reg-picture`, `gam/reg-cue`, `gam/reg-driver` (local, never pushed) | each is selected by its binary and fails a step |
 | No check is lost | every section of `gates.sh` is a catalogue step (`tests/tooling/test_gates.py`) | yes |
 | Tooling | `python3 -m unittest tests.tooling.test_gates` | passes |
+
+## Results - 25 October 2026
+
+Logs and scripts in main `local/evidence/gates-against-main/`: `full-record-2.out`, `rs.out`,
+`pa.out`, `reg-*.out`, the `*-run.sh` that made them; reports under each worktree's
+`artifacts/gates/`. Numbers and the regression table are in
+[D-0012, Measured](../docs/decisions/D-0012-selective-gates-against-main.md#measured).
+
+- **RECORD-SCREENS' change:** 30.0 min (serially 5 h 17 min), 2.7 GB peak.
+- **PODIUM-AUDIO's change:** 43.4 min (serially 4 h 32 min), 4.0 GB peak.
+- **Full run with recording:** 62.7 min, 5.4 GB peak. Its lines agree with PODIUM-AUDIO's last
+  serial run, section by section.
+- **The four deliberate regressions** (race state, a picture bit, a cue, the audio driver) each
+  end `status=failed`, selected through the binary they touch.
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | Re-projecting 850 MB captures is most of a frozen gate's 7 min | `--frozen-original` in the full run | same rows and restores, about the same time: the restores dominate | keep it for what it buys (the captures become diagnostic only); D-0012 corrected |
+| 2 | A replay can compare every picture | `--frame-digests` on every frame | 2.2 ms a picture; 8.8 M frames did not finish in an hour | draw only the checks' own picture frames (`--picture-frames`) |
+| 3 | Real-time app runs can share a lane | eleven at once | the audio producer's late pairs doubled | the audio runs alone |
+| 4 | `--only` is safe | `--only two-pad` | waited 4 h on a left-out dependency, holding the lock | left-out dependencies don't hold; deadlock and stall detection |
+| 5 | A reported line is enough | driver regression | ended `status=passed` (the coordinating session's review) | a twin on main gives every report a verdict |
+| 6 | TMPDIR is a step's disk | split PCM steps | 10.5 GB against a 6 GB budget | output directories counted, bulk pruned, measured disk drop holds new steps |
+
+## Handoff
+
+- **Branch:** `task/gates-against-main`, merged with main `17aee63` (RECORD-SCREENS, whose
+  `--rider-word` and this task's `--frame-digests` are both kept in `front_end_runner.cpp`).
+- **Local state in main.** `local/gates/corpus/` (17 MB) is the corpus; re-record it with
+  `run --full --record` when a check script changes. `local/evidence/gates-against-main/` holds
+  the measurements and `rs_one.sh`, which the catalogue's RECORD-SCREENS steps call.
+  `.worktrees/gates-base` is the runner's base checkout, kept between runs.
+- **Measurement worktrees to remove at close:** `.worktrees/gam-main`, `gam-rs`, `gam-pa` and
+  `gam-reg`, and the local branches `gam/*`, which hold the regressions and are never pushed.
+- **Unverified.** No ASan run locally (the host hangs ASan binaries; Linux CI covers them).
+- **Bootstrap.** This PR's own gates could not replay against main, because main's runner
+  predates `--frame-digests`. Its replacement checks are in the PR. Every later base has the flag.
+- **Follow-ups:**
+  - delete the frozen gates' memory captures under D-0011 (14.3 GB);
+  - split `checks4` (21 minutes, one step);
+  - cache a twin's result per base commit, so a rerun of the gates on the same main skips it.
