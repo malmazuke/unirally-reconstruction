@@ -230,7 +230,7 @@ done''', writes=('{L}/classic-pause-menu',))
 for c in twop vs twop2 vs2 league league-restart twop-plain "$O/review/drfin" "$O/review/leaguefin" "$O/review/leaguecpu" "$O/review/zz2p" "$L/split-hud-gaps/review/zzap"; do
   echo "  $(python3 "$O/split_compare.py" "$c" --no-pictures --opponent-queue --idle-latch 2>&1 | tail -1 | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['capture'],'race frames',d['race_frames'],'differences',d['word_differences'])")"
   echo "  $(python3 "$O/classify.py" "$c" 2>&1 | tail -1 | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['capture'],d['counts'])")"
-done''', writes=('{L}/split-pause-menu',), temp_cap=2 * GB)
+done''', writes=('{L}/split-pause-menu',), temp_cap=3 * GB)  # classify keeps two copies of every picture
     original('race-end', "the race's end against the original (R-0081): words, restores, picture classes", '''
 S2="$TMPDIR/keep"
 for spec in "vs-idle 4588" "zzap-long 8308" "league-idle 99999" "review/vs-opp 4588" "review/vs-late 4263" "review/vs-later 4588"; do
