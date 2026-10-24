@@ -826,13 +826,19 @@ local/locks/heavy-run.sh <TASK> python3 -m tools.unirally_lab.gates run --task-c
   weekly, and when a check script or a captured reference changes.
 - **A task's own checks** are a script, or better a `.list` of independent commands (one per line,
   `$L` is `local/evidence` and `$G` the step's output directory), which run in parallel.
-- **Limits.** Each step has its own `TMPDIR`, capped at 1 GB by default (3 GB for LEAGUE-TOURS' chunked picture compares). Running steps' caps sum to at most
+- **Limits.** Each step has its own `TMPDIR`, capped at 1 GB by default and up to 3 GB where a measured peak needs it (`catalogue.py`). Running steps' caps sum to at most
   6 GB (`--temp-cap`). No step starts with less than 4 GB plus its cap free (`--disk-floor`). The
   synthetic suite and the builds run alone, and the app's real-time runs run only beside each
   other.
 - **Selection is not a pass.** A skipped step is reported with its reason: "unchanged from main" or
-  "its recorded runs equal main". A failed or capped step fails the run (`status=failed`). Steps
-  that compare with the original and print their results (`ran`) are read as before.
+  "its recorded runs equal main". A failed, capped, stalled or timed-out step fails the run
+  (`status=failed`).
+- **Every check gets a verdict.** A check against the original that prints its results runs again
+  on main as `<step>@main` (main's checkout `.worktrees/gates-base`, binaries and pack). Equal lines
+  are `same-as-main`. Different lines are `changed`, which fails the run until the task, having
+  read both (`artifacts/gates/<head>/<step>.log` and `<step>@main.log`), lists the step in
+  `--expect-changed` and records why. A task's own checks (`--task-checks`, `--force`) are its
+  acceptance and are read as before.
 
 ## Citing the differential gates instead of re-running them
 

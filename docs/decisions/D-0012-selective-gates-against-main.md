@@ -161,7 +161,10 @@ A full run's result is recorded in `docs/STATE.md`.
   per line, read from pipes and named pipes as the runners write them.
 - **Each step has its own `TMPDIR`.** It is measured every 3 seconds together with the step's output
   directory and anything new in the evidence folders the step is known to write into. A step past
-  its cap (1 GB by default; 3 GB for LEAGUE-TOURS' captures, which compare pictures in 20,000-frame chunks) is stopped and fails.
+  its cap is stopped and fails. Caps are 1 GB by default and set from measured peaks where a step
+  keeps more: 1.5 GB for the MENU-INPUT and LEAGUE-TOURS captures, 2.5 GB for PODIUM-AUDIO's PCM
+  schedules, 3 GB for `two-pad` and `rv-warn`, which keep thousands of pictures. A finished step's
+  files over 64 MB are removed from its output.
 - **The caps of the running steps may not sum past 6 GB**, so the run's own temp stays under that.
 - **No step starts while free disk is under a 4 GB floor plus its cap.**
 - **Each step's temp is deleted when it ends**, which also fixes the leaked `wipe-ram` pictures.
@@ -201,40 +204,48 @@ reads stays: a selective run may escalate to it, and the full run reads all of t
 
 ## Measured
 
-Runs on 24 October 2026, Apple M2 Max, 12 cores (8 performance), `--jobs 8`; logs in main
-`local/evidence/gates-against-main/`. Peak disk is the drop in free disk during the run; it
-includes temp, logs and the base worktree's build.
+Runs on 24 and 25 October 2026, Apple M2 Max, 12 cores (8 performance), `--jobs 8`; logs in main
+`local/evidence/gates-against-main/`. "Peak temp" is the most the running steps held at once
+(their temp and output directories, measured); "peak disk" is the largest drop in free disk
+during the run, which also counts the base worktree's build and anything else on the disk.
 
-| Run | Old serial `gates.sh` | Runner | Peak disk | Notes |
+| Run (runner `49604f4` unless named) | Old serial `gates.sh` | Runner | Peak temp / disk | Result |
 | --- | --- | --- | --- | --- |
-| RECORD-SCREENS' change (`3f8a1ab` on the runner) | 5 h 17 min (`b6fa277`) | **29.9 min** | 2.7 GB | race gates skipped (`zoom_zoo_runner` unchanged); 2 of 59 checks against the original escalated (`fe-equivalence`, `mi-rv-records`); its own checks as 36 parallel steps |
-| PODIUM-AUDIO's change (`46ad266` on `6c50ac1` with the runner) | 4 h 32 min (`b7efb93`) | **45.6 min** | 3.9 GB | it touched the race engine and the podium's sound: all eleven gates ran, and 21 LEAGUE-TOURS captures escalated (their league tours pass through podiums); its own checks forced |
-| Full run with recording (main `ff1efb6` with the runner) | - | **62.7 min** | 5.4 GB | every step; the corpus: 398 invocations from 59 checks, 8.9 M frames, 233 K with pictures |
+| RECORD-SCREENS' change (`3f8a1ab`) | 5 h 17 min (`b6fa277`) | **30.0 min** | 2.7 / 2.7 GB | race gates skipped (`zoom_zoo_runner` unchanged); its 36 checks in parallel; `changed`: `fe-equivalence` and `mi-rv-records`, the records screens it rewrote |
+| PODIUM-AUDIO's change (`46ad266` on `6c50ac1`) | 4 h 32 min (`b7efb93`) | **43.4 min** | 3.9 / 4.0 GB | it touched the race engine and the podium's sound: the eleven gates passed; `changed`: `lt-cues`, `pa-cues` and the six PCM schedules, where its podium now matches the original (`tour-cues`: 4 podium frames differ on main, 0 on the candidate) |
+| Full run with recording (main `ff1efb6`, runner `228412d`) | - | **62.7 min** | 3.1 / 5.4 GB | every step; corpus 398 invocations from 59 checks, 8.9 M frames, 233 K with pictures |
 
-- **Same results.** Every step's lines were compared with PODIUM-AUDIO's last serial run (same
-  source as main), section by section, and agree. The exceptions are the real-time app's late-pair
-  counts, which vary from run to run (2,686 to 3,775 dropped pairs on the same code), and lines of
-  checks that were skipped because their runs equal main. The frozen gates give the same rows
-  digests and restore counts in `--frozen-original` mode as in re-projection.
+- **Same results as the serial gates.** The full run's lines were compared with PODIUM-AUDIO's
+  last serial run (same source as main), section by section, and agree. The exceptions are the
+  real-time app's late-pair counts, which vary from run to run (2,686 to 3,775 dropped pairs on
+  the same code). The frozen gates give the same rows digests and restore counts with
+  `--frozen-original` as with re-projection.
 - **The replay.** 426 cases (9.0 M frames, 308 K pictures) through both binaries take 6 minutes.
-- **Deliberate regressions** (one commit each on the runner, local branches `gam/reg-*`, never
-  pushed), every one selected through its binary and caught:
+- **Deliberate regressions** (one commit each, local branches `gam/reg-*`, never pushed), each
+  selected through its binary, each ending `status=failed`:
 
-  | Regression | Selected | Caught by |
+  | Regression | Run | What fails |
   | --- | --- | --- |
-  | Race state: `drag_step` 3 to 4 (`speed_limits.cpp`) | every binary | all eleven frozen gates ("native rows differ from the frozen original rows"), the race sweep (423 differing runs), both track sweeps, and 285 of 426 replay cases |
-  | Front-end picture: one bit of one pixel on every 1000th frame | `front_end_runner` and its dependants, not `zoom_zoo_runner` | the replay: 100 cases, only in the picture digests, escalating 83 checks. The old every-500th-frame sweep (`fe-equivalence`) is not among them: its frames miss the regression's |
-  | Sound cues: one frame wait dropped on the main menu | as the picture | the replay: 416 cases, only in the cue log, escalating 95 checks |
-  | Audio driver: `counter_threshold` 4 to 5 (`audio_driver.cpp`) | `audio_driver_runner`, `race_audio_runner` | both driver checks (first row difference 50122, PCM not equal); the replay is equal on all 426 cases, rightly, since the driver is not on the cue path |
+  | Race state: `drag_step` 3 to 4 (`speed_limits.cpp`) | runner `9b1ce41`, the race steps | all eleven frozen gates ("native rows differ from the frozen original rows"), the race sweep (423 differing runs), both track sweeps; the replay finds 285 of 426 cases differing |
+  | Front-end picture: one bit of one pixel on every 1000th frame | runner `86b9466`, the replay and three of the checks it escalates, with their twins | `credits-name` and `mi-kb-input` `changed`; the replay found it in 100 cases, only in the pictures. The old every-500th-frame sweep (`fe-equivalence`) is not among them: its frames miss the regression's |
+  | Sound cues: one frame wait dropped on the main menu | runner `86b9466`, as the picture | `demo-audio-cues` and `mi-cues` `changed`; the replay found it in 416 cases, only in the cue log |
+  | Audio driver: `counter_threshold` 4 to 5 (`audio_driver.cpp`) | runner `49604f4`, the whole selective run (39.1 min, 3.9 GB) | `pa-cond` and `demo-audio-cond` `changed` (first row difference 50122, PCM not equal); the replay is equal on all 426 cases, rightly, since the driver is not on the cue path |
 
-  The escalated checks against the original then report the difference themselves (see the
-  task record).
-- **The first versions failed in useful ways.** Drawing a picture every frame costs 2.2 ms (44.5 s
-  per 20,000 frames against 0.4 s without), so the picture digests follow the checks' own picture
-  frames. Running the app's audio producer beside the hidden runs doubled its late pairs, so it runs
-  alone. A run of one step whose dependency was left out waited four hours holding the lock, so the
-  scheduler now fails steps that can never start and stops a step with no CPU and no output for
-  15 minutes.
+  A picture or cue regression in a task's whole run would also run the other checks it escalates
+  (83 and 95) and their twins; the three per run here show the escalated checks fail.
+- **What the first versions got wrong**, each found by these runs:
+  - Drawing a picture every frame costs 2.2 ms (44.5 s per 20,000 frames against 0.4 s without),
+    so the picture digests follow the checks' own picture frames.
+  - Running the app's audio producer beside the hidden runs doubled its late pairs, so it runs
+    alone.
+  - A run whose one step's dependency was left out waited four hours holding the lock. The
+    scheduler now fails steps that can never start, and stops a step with no CPU and no output
+    for 15 minutes.
+  - A check that only reported let a planted driver regression end `status=passed`, so every such
+    check now has its twin on main.
+  - A step's output directory was not measured, so one run held 10.5 GB against its 6 GB budget.
+    Output now counts, bulk over 64 MB is removed when a step ends, and the measured drop in free
+    disk holds back new steps.
 
 ## Consequences
 
