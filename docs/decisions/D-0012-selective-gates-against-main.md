@@ -36,11 +36,13 @@ never deletes its directory (about 2 GB until the gate exits); `cond.sh` writes 
 evidence folders. The user saw 3.8 GB free during those gates. `local/evidence` holds 109 GB.
 
 **Where the time goes.** The steps are mostly not checking the candidate:
-- each ZOOM ZOO frozen gate spends most of its 7.5 minutes re-projecting two 850 MB captures of the
-  original, whose projected rows' digest its contract already holds (`rows_sha256`);
 - the earlier tasks' scripts compare, picture by picture in Python, native output that the
   candidate did not change with the original's frames;
 - everything runs one step at a time on a 12-core machine.
+
+The frozen race gates are mostly restore runs: hundreds of fresh processes, each replaying the rest
+of a race from a saved state. Re-projecting the captures turned out to be a small part. This
+section's first draft guessed otherwise, and the full run below corrected it.
 
 ## Decision
 
@@ -119,8 +121,9 @@ re-runs only the captures that pass through it.
 - **the task's own checks:** acceptance of new behaviour, and the first acceptance of a capability;
 - **the eleven frozen race gates.** `--frozen-original` checks the contract's frozen digest of the
   original's rows instead of re-projecting both captures. That is the same comparison with the
-  original, without re-reading 850 MB per capture. They re-project when their projection code or
-  guard manifests change, or with `--reproject`;
+  original, and it gives the same rows digests and restore counts. It saves little time; what it
+  buys is that a gate no longer needs its 850 MB captures (section 9). They re-project when their
+  projection code or guard manifests change, or with `--reproject`;
 - **the track sweeps**, which are cheap;
 - **the driver check on captured port writes**, whenever the driver changes;
 - **everything, in the full run.**
