@@ -92,6 +92,23 @@ class Scheduler(unittest.TestCase):
             self.assertLess(report['steps'][0]['seconds'], 30)
 
 
+    def test_selection_waits_for_the_identity(self):
+        with tempfile.TemporaryDirectory() as d:
+            seen = []
+            context = dict(identity=None)
+
+            def build_done(run, outcome):
+                run.context['identity'] = 'known'
+
+            steps = [Step('build', 'b', 'sleep 1', lane='exclusive', needs_identity=False),
+                     Step('later', 'l', 'true', select=lambda run: (seen.append(run.context['identity']) or True, 'test'))]
+            tmp = Path(d); out = tmp / 'out'; out.mkdir(); temp = tmp / 'temp'; temp.mkdir()
+            run = Run(steps, dict(PATH='/usr/bin:/bin'), tmp, out, temp, 4, 0, 64 * GB, context, log=lambda *_: None)
+            run.callbacks['build'] = build_done
+            run.go()
+            self.assertEqual(seen, ['known'])
+
+
 class Corpus(unittest.TestCase):
     def test_inputs_are_stored_by_content_and_outputs_dropped(self):
         with tempfile.TemporaryDirectory() as d:

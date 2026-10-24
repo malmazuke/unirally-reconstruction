@@ -48,6 +48,7 @@ class Step:
     # Decided when the step becomes eligible: (run?, why).
     select: Callable[['Run'], tuple[bool, str]] = lambda run: (True, 'always')
     record: bool = False               # record its front_end_runner invocations (corpus)
+    needs_identity: bool = True        # its selection reads which binaries changed (after the build)
 
 
 @dataclass
@@ -184,6 +185,8 @@ class Run:
                 used = sum(self.by_id[s].weight for s in self.running)
                 caps = sum(self.by_id[s].temp_cap for s in self.running)
                 for step in list(pending):
+                    if step.needs_identity and 'identity' in self.context and self.context['identity'] is None:
+                        break   # selection waits for the builds, in order
                     if not self._deps_done(step):
                         if step.lane != 'pool':
                             break
