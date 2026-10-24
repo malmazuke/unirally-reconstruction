@@ -10,7 +10,9 @@ Lanes:
 Steps start in catalogue order; an exclusive or real-time step waits for the pool to drain and
 holds back the steps after it until it has run.
 
-Each step gets its own `TMPDIR` under the run's temp root and its own output directory. Both, and
+The caps of the running steps may not sum past the run's budget (`--temp-cap`), and no step starts
+while the disk the run has taken (the drop in free space since it began) plus that step's cap would
+pass the budget either. Each step gets its own `TMPDIR` under the run's temp root and its own output directory. Both, and
 anything new in an evidence directory the step is known to write into, are measured every few
 seconds; a step
 past its cap is stopped and fails. No step starts while free disk is under the floor plus its cap.
@@ -252,6 +254,10 @@ class Run:
                     if caps + step.temp_cap > self.cap_total and self.running:
                         continue
                     free = free_bytes(self.out)
+                    # The run's whole footprint, measured or not (a script writing somewhere the
+                    # runner does not watch), holds back new steps past the run's budget.
+                    if self.start_free - free + step.temp_cap > self.cap_total and self.running:
+                        continue
                     if free < self.disk_floor + step.temp_cap:
                         if self.running:
                             continue
