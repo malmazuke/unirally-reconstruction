@@ -23,6 +23,7 @@ import argparse
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -60,6 +61,8 @@ def task_steps(paths: list[str]) -> list[tuple[str, str, str]]:
 
 def main() -> int:
     sys.stdout.reconfigure(line_buffering=True)
+    # A kill from outside (a watchdog, a session) still removes the shim and the temp root.
+    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
     p = argparse.ArgumentParser(prog='python3 -m tools.unirally_lab.gates', description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('command', choices=['run', 'plan'])
