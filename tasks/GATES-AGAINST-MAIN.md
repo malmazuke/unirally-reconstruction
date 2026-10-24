@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **claimed** 24 October 2026 on main `ff1efb6` (Claude Code desktop app, Claude Opus 5.5
+- Status: **in review** 25 October 2026 (tier 1). Claimed 24 October 2026 on main `ff1efb6` (Claude Code desktop app, Claude Opus 5.5
   `claude-opus-5-5`; a side session started by the RECORD-SCREENS coordinator). Queued 11 October
   2026 by [EVIDENCE-RETENTION](EVIDENCE-RETENTION.md), at the user's request. Weekly usage at claim
   46%, 5-hour window 27%.
@@ -129,8 +129,14 @@ Logs and scripts in main `local/evidence/gates-against-main/`: `full-record-2.ou
 - **Measurement worktrees to remove at close:** `.worktrees/gam-main`, `gam-rs`, `gam-pa` and
   `gam-reg`, and the local branches `gam/*`, which hold the regressions and are never pushed.
 - **Unverified.** No ASan run locally (the host hangs ASan binaries; Linux CI covers them).
-- **Bootstrap.** This PR's own gates could not replay against main, because main's runner
-  predates `--frame-digests`. Its replacement checks are in the PR. Every later base has the flag.
+- **This branch's own gates** (`self.out`, base main `17aee63`, 15.0 min, 1.0 GB): all passed.
+  - The eleven frozen gates ran in full re-projection mode, since their tool changed, with
+    unchanged rows and restore counts.
+  - `fe-equivalence` (179 manifests, every 500th picture) and R-0076's cue schedules are
+    `same-as-main`.
+  - The restores, the synthetic suite, tooling and rules passed.
+  - Only `front_end_runner`'s inputs changed. There was no replay, because main's runner predates
+    `--frame-digests`; every later base has it.
 - **Follow-ups:**
   - delete the frozen gates' memory captures under D-0011 (14.3 GB);
   - split `checks4` (21 minutes, one step);
