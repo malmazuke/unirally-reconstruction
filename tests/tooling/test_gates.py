@@ -194,7 +194,7 @@ class Selection(unittest.TestCase):
         ids = [s.id for s in catalogue.steps(8, [])]
         self.assertEqual(len([i for i in ids if i.startswith('gate-')]), 11)
         self.assertEqual(len(ids), len(set(ids)))
-        for required in ('build', 'synthetic', 'fe-replay', 'race-sweep', 'tooling', 'rules', 'mi-w5', 'lt-backs', 'checks-podium-audio'):
+        for required in ('build', 'synthetic', 'fe-replay', 'race-sweep', 'tooling', 'rules', 'mi-w5', 'lt-backs', 'pa-cues', 'pa-pcm'):
             self.assertIn(required, ids)
 
 

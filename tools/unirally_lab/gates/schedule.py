@@ -135,7 +135,7 @@ class Run:
             if o.seconds >= step.timeout:
                 o.status = 'timeout'
             elif not step.reads_status:
-                o.status = 'ran' if o.rc == 0 else 'failed'
+                o.status = 'ran'   # it reports against the original; its lines are read, rc kept
             else:
                 o.status = 'passed' if o.rc == 0 else 'failed'
         text = (self.out / f'{sid}.log').read_text(errors='replace').splitlines()

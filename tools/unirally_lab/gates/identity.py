@@ -24,6 +24,7 @@ TARGETS = {
     'presentation_runner': ('lab-debug', 'src/core/presentation_runner'),
     'split_demo_runner': ('lab-release', 'src/core/split_demo_runner'),
     'audio_driver_runner': ('lab-release', 'tests/native/audio_driver_runner'),
+    'race_audio_runner': ('lab-release', 'tests/native/race_audio_runner'),
     'dragster_fuzz_runner': ('lab-release', 'src/app/dragster_fuzz_runner'),
     'app': ('app-debug', 'src/app/unirally.app/Contents/MacOS/unirally'),
 }

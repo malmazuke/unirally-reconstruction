@@ -133,9 +133,9 @@ frames=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['frames'
 build/lab-release/src/core/front_end_runner --content-pack "$PACK" --frames $frames --inputs "$DA/demo-long.frontend-inputs.txt" $(cat "$DA/demo-long.runner-args.txt" 2>/dev/null) --sound-cues "$G/native-demo-long.cues.txt" > /dev/null 2>&1
 awk '$1 <= 12999' "$G/native-demo-long.cues.txt" > "$G/runner-13000.cues.txt"
 cmp -s "$G/app-demo.resolved.txt" "$G/runner-13000.cues.txt" && echo "  the app's cue log equals front_end_runner's through frame 12999" || { echo "  the app's cue log DIFFERS from front_end_runner's"; exit 1; }''',
-             system='audio', lane='realtime', timeout=1200, select=drives('app')))
+             system='audio', lane='exclusive', timeout=1200, select=drives('app')))
     add(Step('app-podium-audio', "PODIUM-AUDIO: the app's producer through a podium (real time)", '''
-zsh "$L/podium-audio/app_run.sh" "$G/app" 2>&1 | sed 's/^/  /' ''', shell='bash', system='audio', lane='realtime',
+zsh "$L/podium-audio/app_run.sh" "$G/app" 2>&1 | sed 's/^/  /' ''', shell='bash', system='audio', lane='exclusive',
              timeout=1200, reads_status=False, select=drives('app')))
 
     # -- the pool -------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ done''', writes=('{L}/classic-pause-menu',))
 for c in twop vs twop2 vs2 league league-restart twop-plain "$O/review/drfin" "$O/review/leaguefin" "$O/review/leaguecpu" "$O/review/zz2p" "$L/split-hud-gaps/review/zzap"; do
   echo "  $(python3 "$O/split_compare.py" "$c" --no-pictures --opponent-queue --idle-latch 2>&1 | tail -1 | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['capture'],'race frames',d['race_frames'],'differences',d['word_differences'])")"
   echo "  $(python3 "$O/classify.py" "$c" 2>&1 | tail -1 | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['capture'],d['counts'])")"
-done''', writes=('{L}/split-pause-menu',))
+done''', writes=('{L}/split-pause-menu',), temp_cap=2 * GB)
     original('race-end', "the race's end against the original (R-0081): words, restores, picture classes", '''
 S2="$TMPDIR/keep"
 for spec in "vs-idle 4588" "zzap-long 8308" "league-idle 99999" "review/vs-opp 4588" "review/vs-late 4263" "review/vs-later 4588"; do
@@ -305,7 +305,7 @@ for n in rv-late-split rv-early-p2 rv-long; do
   W="$W" E="$RV" N="$G/cues" zsh "$DA/cues.sh" $n > /dev/null 2>&1
   echo "  $n (review): $(python3 "$DA/diff_cues.py" "$RV/$n.cues.txt" "$G/cues/native-$n.cues.txt" 620 --waits --limit=0 | head -1) (lines $(wc -l < "$RV/$n.cues.txt"))"
 done
-echo "  rv-late-split with its way back held and its third title short (late_split_shift.sh): $(TMPDIR="$TMPDIR" zsh "$RV/late_split_shift.sh" "$W" "$W/$PACK" | head -1)"
+echo "  rv-late-split with its way back held and its third title short (late_split_shift.sh): $(TMPDIR="$TMPDIR" zsh "$RV/late_split_shift.sh" "$W" "$PACK" | head -1)"
 echo "  demo-cold (demo-long's first 10,000 frames): $(python3 "$DA/diff_cues.py" "$DA/demo-long.cues.txt" "$G/cues/native-demo-long.cues.txt" 620 9999 --waits --limit=0 | head -1)"''')
     original('mode-audio', "MODE-AUDIO's schedules, R-0077's one-player schedules and the cold cartridge image", '''
 MA="$L/mode-audio"; mkdir -p "$G/cues"
@@ -337,13 +337,13 @@ print(f\\"    {sys.argv[2]:>9}: frames {d['frames_compared']} differing {d['fram
     for spec in ('w5:400 kb-input:400 league-pick:400 league-name:400 opt-backs:400 warnings:400 records-input:400 '
                  'scores-input:400 scores-carry:400 vs-challenger:6600 twop-quit:6600 awards-press:10500').split():
         c, first = spec.split(':')
-        original(f'mi-{c}', f"MENU-INPUT's capture {c} against the original, candidate and main", mi_summary + f'''
+        original(f'mi-{c}', f"MENU-INPUT's capture {c} against the original, candidate and main", temp_cap=GB * 3 // 2, command=mi_summary + f'''
 E=local/evidence/menu-input; B0=$E/base-e304868/front_end_runner; C0=build/lab-release/src/core/front_end_runner
 echo "  {c}:"
 python3 $E/compare.py {c} --probe --binary $C0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from {first} > "$G/{c}-candidate.json" 2>&1 && summary "$G/{c}-candidate.json" candidate
 python3 $E/compare.py {c} --probe --binary $B0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from {first} > "$G/{c}-main.json" 2>&1 && summary "$G/{c}-main.json" main''')
     for c in ('rv-ca', 'rv-scores', 'rv-bars', 'rv-records', 'rv-pick', 'rv-warn', 'rv-kb'):
-        original(f'mi-{c}', f"MENU-INPUT's review capture {c} against the original, candidate and main", mi_summary + f'''
+        original(f'mi-{c}', f"MENU-INPUT's review capture {c} against the original, candidate and main", temp_cap=2 * GB, command=mi_summary + f'''
 R=local/evidence/menu-input-review; B0=local/evidence/menu-input/base-e304868/front_end_runner; C0=build/lab-release/src/core/front_end_runner
 echo "  {c}:"
 python3 $R/compare.py {c} --probe --binary $C0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from 400 > "$G/{c}-candidate.json" 2>&1 && summary "$G/{c}-candidate.json" candidate
@@ -353,15 +353,15 @@ E=local/evidence/menu-input; R=local/evidence/menu-input-review; mkdir -p "$G/cu
 for n in kb-input league-pick league-name opt-backs warnings records-input scores-input scores-carry w5 vs-challenger awards-press; do
   [ -f $E/$n.cues.txt ] || { echo "  $n: no schedule"; continue; }
   W="$PWD" N="$G/cues" zsh $E/cues.sh $n > /dev/null 2>&1
-  echo "  $n: $(python3 $E/diff_cues.py $E/$n.cues.txt $G/cues/native-$n.cues.txt 620 --waits --limit=0 | head -1) (lines $(wc -l < $E/$n.cues.txt | tr -d ' ') / $(wc -l < $G/cues/native-$n.cues.txt | tr -d ' '))"
+  echo "  $n: $(python3 $E/diff_cues.py $E/$n.cues.txt "$G/cues/native-$n.cues.txt" 620 --waits --limit=0 | head -1) (lines $(wc -l < $E/$n.cues.txt | tr -d ' ') / $(wc -l < "$G/cues/native-$n.cues.txt" | tr -d ' '))"
 done
 for n in rv-pick rv-scores; do
   W="$PWD" E="$PWD/$R" N="$G/cues" zsh $E/cues.sh $n > /dev/null 2>&1
-  echo "  $n (review): $(python3 $E/diff_cues.py $R/$n.cues.txt $G/cues/native-$n.cues.txt 620 --waits --limit=0 | head -1)"
+  echo "  $n (review): $(python3 $E/diff_cues.py $R/$n.cues.txt "$G/cues/native-$n.cues.txt" 620 --waits --limit=0 | head -1)"
 done
 RV=local/evidence/mode-audio-review
 W="$PWD" E="$PWD/$RV" N="$G/cues" zsh $E/cues.sh rv-twop-quit > /dev/null 2>&1
-echo "  rv-twop-quit (MODE-AUDIO review): $(python3 $E/diff_cues.py $RV/rv-twop-quit.cues.txt $G/cues/native-rv-twop-quit.cues.txt 620 --waits --limit=0 | head -1)"''')
+echo "  rv-twop-quit (MODE-AUDIO review): $(python3 $E/diff_cues.py $RV/rv-twop-quit.cues.txt "$G/cues/native-rv-twop-quit.cues.txt" 620 --waits --limit=0 | head -1)"''')
     lt_main = {'tours-a-w0', 'tours-a-w2', 'tours-b-w0', 'odd-tours-w0', 'picks-l0', 'podium-back', 'backs'}
     for c in ('tours-a-w0 tours-a-w1 tours-a-w2 tours-a-w3 tours-a-w4 tours-a-w5 tours-a-w6 tours-a-w7 tours-a-w8 tours-b-w0 '
               'tours-b-w1 odd-tours-w0 odd-tours-w1 picks-l0 picks-l1 picks-l2 podium-back t-crawler five-w0 five-w1 backs').split():
@@ -369,7 +369,7 @@ echo "  rv-twop-quit (MODE-AUDIO review): $(python3 $E/diff_cues.py $RV/rv-twop-
 echo "  {c} (main):"; PACK=local/classic-pal-crawler-tracks-v39.pack bash $E/compare_capture.sh {c} "$G/main" $E/base-ceb50cf/front_end_runner | sed 's/^/  /'
 '''
                      if c in lt_main else '')
-        original(f'lt-{c}', f"LEAGUE-TOURS' capture {c} against the original", temp_cap=3 * GB, command=f'''
+        original(f'lt-{c}', f"LEAGUE-TOURS' capture {c} against the original", temp_cap=GB * 3 // 2, command=f'''
 E=local/evidence/league-tours
 echo "  {c} (candidate):"; PACK=local/classic-pal-crawler-tracks-v40.pack bash $E/compare_capture.sh {c} "$G/candidate" build/lab-release/src/core/front_end_runner | sed 's/^/  /'
 ''' + main_side)
@@ -377,11 +377,54 @@ echo "  {c} (candidate):"; PACK=local/classic-pal-crawler-tracks-v40.pack bash $
 E=local/evidence/league-tours
 for n in $(ls $E/cues/*.cues.txt 2>/dev/null | grep -v /native- | xargs -n1 basename | sed 's/.cues.txt//'); do
   PACK="$PWD/local/classic-pal-crawler-tracks-v40.pack" W="$PWD" E="$PWD/$E/cues" N="$G" zsh local/evidence/menu-input/cues.sh $n > /dev/null 2>&1
-  echo "  $n: $(python3 local/evidence/menu-input/diff_cues.py $E/cues/$n.cues.txt $G/native-$n.cues.txt 620 --waits --limit=0 | head -1) (lines $(wc -l < $E/cues/$n.cues.txt | tr -d ' ') / $(wc -l < $G/native-$n.cues.txt 2>/dev/null | tr -d ' '))"
+  echo "  $n: $(python3 local/evidence/menu-input/diff_cues.py $E/cues/$n.cues.txt "$G/native-$n.cues.txt" 620 --waits --limit=0 | head -1) (lines $(wc -l < $E/cues/$n.cues.txt | tr -d ' ') / $(wc -l < "$G/native-$n.cues.txt" 2>/dev/null | tr -d ' '))"
 done''')
-    original('checks-podium-audio', "PODIUM-AUDIO: its captures against the original (checks.sh)", '''
-zsh "$L/podium-audio/checks.sh" "$G/out" > "$G/checks.out" 2>&1; echo "  rc=$?"; grep -E '^  ' "$G/checks.out" | cut -c1-240''',
-             writes=('{L}/podium-audio',), also=('audio_driver_runner',))
+    # PODIUM-AUDIO's checks.sh, one step per section; its section 5, the app's producer in real
+    # time, is the exclusive step app-podium-audio above.
+    pa = '''P="$L/podium-audio"; E="$P/cues"; RV="$L/podium-audio-review/cues"
+PACK40="$W/local/classic-pal-crawler-tracks-v40.pack"; C=build/lab-release/src/core/front_end_runner; B0="$P/base-6c50ac1/front_end_runner"
+'''
+    original('pa-cues', "PODIUM-AUDIO: cue schedules against the original (frame waits included), candidate and main", pa + '''
+O="$G"; mkdir -p "$O/cand" "$O/main"
+for n in tour-cues full-tour pa-t-crawler pa-tours-b pa-tours-a pa-odd-tours rv-press1 rv-press2 rv-up-pad2; do
+  D="$E"; case $n in rv-*) D="$RV";; esac
+  [ -f "$D/$n.cues.txt" ] || { echo "  $n: not captured"; continue; }
+  frames=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['frames'])" "$D/$n.script.json")
+  rw=$(cat "$D/$n.record-writes.txt")
+  for side in cand main; do
+    bin="$C"; [ $side = main ] && bin="$B0"
+    "$bin" --content-pack "$PACK40" --frames "$frames" --inputs "$D/$n.frontend-inputs.txt" $rw --sound-cues "$O/$side/native-$n.cues.txt" > /dev/null 2>&1
+    echo "  $n ($side): $(python3 "$P/podium_windows.py" "$D/$n.cues.txt" "$O/$side/native-$n.cues.txt" 620 | tr '\\n' ' ' | sed 's/  */ /g')"
+  done
+done
+python3 - "$O/cand/native-tour-cues.cues.txt" "$O/cand/native-tour-cues.old-view.txt" <<'PY'
+import sys
+rows, skip = [], 0
+for line in open(sys.argv[1]):
+    r = line.split()
+    if r[1:2] == ['D'] and r[2].startswith('podium'): continue
+    if r[1:3] == ['L', 'podium']: r[2] = 'ddcd'; skip = 3
+    elif skip and r[1] == 'E' and (r[2], r[3]) in (('8', '255'), ('7', '127'), ('1', '2')): skip -= 1; continue
+    rows.append(' '.join(r))
+open(sys.argv[2], 'w').write('\\n'.join(rows) + '\\n')
+PY
+echo "  tour-cues against LEAGUE-TOURS' derivation (its conventions applied to native's log): $(python3 "$E/diff_cues.py" "$L/league-tours/cues/tour-cues.cues.txt" "$O/cand/native-tour-cues.old-view.txt" 620 --waits --limit=5 | tr '\\n' ' ')"
+echo "  main against LEAGUE-TOURS' derivation: $(python3 "$E/diff_cues.py" "$L/league-tours/cues/tour-cues.cues.txt" "$O/main/native-tour-cues.cues.txt" 620 --waits --limit=0 | head -1)"''')
+    add(Step('pa-anchors', "PODIUM-AUDIO: the podium's anchors (D-0010 calibration of the original; no native binary)", pa + '''
+caps=("$L/league-tours/cues/tour-cues"); for n in full-tour pa-t-crawler pa-tours-b pa-tours-a pa-odd-tours; do [ -d "$E/$n-disp2" ] && caps+=("$E/$n"); done
+(cd "$E" && python3 podium_anchors.py "$G/anchors.json" "${caps[@]}") | sed 's/^/  /' ''', system='audio', reads_status=False,
+             select=lambda run: (True, 'full run') if run.context['full'] else (False, 'reads only the original\'s captures')))
+    add(Step('pa-cond', "PODIUM-AUDIO: the native driver on the original's port writes (tour-cues-full)", pa + '''
+R="$PWD/build/lab-release/tests/native/audio_driver_runner" zsh "$E/cond.sh" tour-cues-full title race-62 title award title race-63 > "$G/cond.log" 2>&1
+echo "  $(python3 -c "import json,sys;d=json.load(open(sys.argv[1]));print('rows',d['expected_rows'],d['native_rows'],'first row difference',d['first_row_difference'],'pairs',d['original_pairs'],d['native_pairs'],'pcm equal',d['pcm_equal'])" "$E/cond-tour-cues-full.json" 2>&1 | tail -1)"''',
+             system='audio', reads_status=False, writes=('{L}/podium-audio/cues',), select=drives('audio_driver_runner')))
+    original('pa-pcm', "PODIUM-AUDIO: anchored PCM of the candidate's cues and the pass that delivers the music start", pa + '''
+zsh "$E/podium_pcm.sh" "$RUN/pa-cues/cand" "$G/pcm" 2>&1
+zsh "$E/native_commands.sh" "$RUN/pa-cues/cand" 2>&1''', also=('race_audio_runner',), writes=('{L}/podium-audio',))
+    s[-1].after = ('fe-replay', 'pa-cues')
+    original('pa-league-frozen', "PODIUM-AUDIO: LEAGUE's frozen gate (pack v40)", '''
+python3 "$L/two-human-stunts/league_frozen.py" "$G/league-frozen.json" local/classic-pal-crawler-tracks-v40.pack build/lab-release/src/core/front_end_runner > "$G/league-frozen.log" 2>&1
+echo "  league frozen: $(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['status'])" "$G/league-frozen.json" 2>&1)"''')
     # RECORD-SCREENS' checks join here once it is on main (until then they are its own task checks).
 
     add(Step('demo-audio-cond', "DEMO-AUDIO: the native driver on the demo's sessions (demo-cold-full)", PRELUDE + '''
