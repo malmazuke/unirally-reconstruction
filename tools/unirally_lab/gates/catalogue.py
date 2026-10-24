@@ -453,7 +453,48 @@ NAMES={n} zsh "$E/native_commands.sh" "$RUN/pa-cues/cand" 2>&1''', also=('race_a
     original('pa-league-frozen', "PODIUM-AUDIO: LEAGUE's frozen gate (pack v40)", '''
 python3 "$L/two-human-stunts/league_frozen.py" "$G/league-frozen.json" local/classic-pal-crawler-tracks-v40.pack build/lab-release/src/core/front_end_runner > "$G/league-frozen.log" 2>&1
 echo "  league frozen: $(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['status'])" "$G/league-frozen.json" 2>&1)"''')
-    # RECORD-SCREENS' checks join here once it is on main (until then they are its own task checks).
+    # RECORD-SCREENS' checks.sh (55 minutes serially), one step per item: rs_one.sh in main
+    # local/evidence/gates-against-main runs one item of it with its commands unchanged.
+    rs = 'zsh "$L/gates-against-main/rs_one.sh"'
+    for step_id, args, cap in (
+            ('rs-rs-track', 'compare record-screens rs-track 1000 "$G"', 1.0),
+            ('rs-rs-high', 'compare record-screens rs-high 1000 "$G"', 1.0),
+            ('rs-rs-ca-2p-lap', 'compare record-screens rs-ca-2p-lap 8300 "$G"', 1.0),
+            ('rs-rs-ca-vs-lap', 'compare record-screens rs-ca-vs-lap 8200 "$G"', 1.0),
+            ('rs-rs-ca-2p-stunt', 'compare record-screens rs-ca-2p-stunt 4700 "$G"', 1.0),
+            ('rs-rs-ca-vs-stunt', 'compare record-screens rs-ca-vs-stunt 4700 "$G"', 1.0),
+            ('rs-rs-ca-np', 'compare record-screens rs-ca-np 4700 "$G"', 1.0),
+            ('rs-rs-podium-menu', 'compare record-screens rs-podium-menu 12300 "$G"', 1.0),
+            ('rs-mi-review-rv-records', 'compare menu-input-review rv-records 400 "$G"', 1.0),
+            ('rs-review-wr-track', 'compare record-screens-review wr-track 1000 "$G"', 1.0),
+            ('rs-review-wr-stats', 'compare record-screens-review wr-stats 900 "$G"', 1.0),
+            ('rs-review-wr-stats2', 'compare record-screens-review wr-stats2 900 "$G"', 1.0),
+            ('rs-review-wr-1p-ca', 'compare record-screens-review wr-1p-ca 3400 "$G"', 1.0),
+            ('rs-records', 'records wr-stats2:1699 "$G" ; zsh "$L/gates-against-main/rs_one.sh" records wr-stats:1699 "$G" ; zsh "$L/gates-against-main/rs_one.sh" records wr-track:2149 "$G" ; zsh "$L/gates-against-main/rs_one.sh" records wr-1p-ca:5999 "$G"', 1.0),
+            ('rs-mi-w5', 'compare menu-input w5 400 "$G"', 1.0),
+            ('rs-mi-kb-input', 'compare menu-input kb-input 400 "$G"', 1.0),
+            ('rs-mi-league-pick', 'compare menu-input league-pick 400 "$G"', 1.0),
+            ('rs-mi-league-name', 'compare menu-input league-name 400 "$G"', 1.0),
+            ('rs-mi-opt-backs', 'compare menu-input opt-backs 400 "$G"', 1.0),
+            ('rs-mi-warnings', 'compare menu-input warnings 400 "$G"', 1.0),
+            ('rs-mi-records-input', 'compare menu-input records-input 400 "$G"', 1.0),
+            ('rs-mi-scores-input', 'compare menu-input scores-input 400 "$G"', 1.0),
+            ('rs-mi-scores-carry', 'compare menu-input scores-carry 400 "$G"', 1.0),
+            ('rs-mi-vs-challenger', 'compare menu-input vs-challenger 6600 "$G"', 1.0),
+            ('rs-mi-twop-quit', 'compare menu-input twop-quit 6600 "$G"', 1.0),
+            ('rs-mi-awards-press', 'compare menu-input awards-press 10500 "$G"', 1.0),
+            ('rs-mi-review-rv-ca', 'compare menu-input-review rv-ca 400 "$G"', 1.0),
+            ('rs-mi-review-rv-scores', 'compare menu-input-review rv-scores 400 "$G"', 1.0),
+            ('rs-mi-review-rv-bars', 'compare menu-input-review rv-bars 400 "$G"', 1.0),
+            ('rs-mi-review-rv-pick', 'compare menu-input-review rv-pick 400 "$G"', 1.0),
+            ('rs-mi-review-rv-warn', 'compare menu-input-review rv-warn 400 "$G"', 3.0),
+            ('rs-mi-review-rv-kb', 'compare menu-input-review rv-kb 400 "$G"', 1.0),
+            ('rs-mi-review-rv-ca2', 'compare menu-input-review rv-ca2 400 "$G"', 1.0),
+            ('rs-mi-review-rv-ca3', 'compare menu-input-review rv-ca3 400 "$G"', 1.0),
+            ('rs-mi-review-rv-figs', 'compare menu-input-review rv-figs 400 "$G"', 1.0),
+            ('rs-cues', 'cue record-screens rs-track "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue record-screens rs-high "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue record-screens rs-ca-2p-lap "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue record-screens rs-ca-vs-stunt "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue record-screens rs-podium-menu "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue record-screens-review wr-track "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue record-screens-review wr-stats "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input kb-input "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input league-pick "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input league-name "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input opt-backs "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input warnings "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input records-input "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input scores-input "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input scores-carry "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input w5 "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input vs-challenger "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input awards-press "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input-review rv-pick "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue menu-input-review rv-scores "$G" ; zsh "$L/gates-against-main/rs_one.sh" cue mode-audio-review rv-twop-quit "$G"', 1.0),
+    ):
+        original(step_id, f"RECORD-SCREENS' checks: {args.split(' \"$G')[0]}", command=f'{rs} {args}', temp_cap=int(cap * GB))
 
     add(Step('demo-audio-cond', "DEMO-AUDIO: the native driver on the demo's sessions (demo-cold-full)", PRELUDE + '''
 DA="$L/demo-audio"
