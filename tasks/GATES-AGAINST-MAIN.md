@@ -138,14 +138,19 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
   ids (`checks-rs-checks-NN`) and renamed by hand. The final full run recorded the whole corpus
   afresh, with fingerprints, so nothing renamed remains.
 - **Unverified.** No ASan run locally (the host hangs ASan binaries; Linux CI covers them).
-- **This branch's own gates** (`self.out`, base main `17aee63`, 15.0 min, 1.0 GB): all passed.
-  - The eleven frozen gates ran in full re-projection mode, since their tool changed, with
-    unchanged rows and restore counts.
-  - `fe-equivalence` (179 manifests, every 500th picture) and R-0076's cue schedules are
+- **This branch's own gates** (`self.out`, base main `17aee63`, 22.1 min, 0.5 GB): all passed.
+  - Its tooling change selects everything. The run used `--only` with the steps that can run
+    against a main without `--frame-digests`: no replay, and no check against the original that
+    needs one. Those checks are covered by the next item instead.
+  - The eleven frozen gates ran in full re-projection mode, with unchanged rows and restore
+    counts.
+  - The race sweep and the track sweeps passed. `fe-equivalence` and R-0076's cue schedules are
     `same-as-main`.
-  - The restores, the synthetic suite, tooling and rules passed.
-  - Only `front_end_runner`'s inputs changed. There was no replay, because main's runner predates
-    `--frame-digests`; every later base has it.
+  - The app runs, the restores, the synthetic suite, tooling and rules passed.
+- **The runner change is neutral** (`neutral.out`, `files_replay.py` from the review's
+  experiment C). Every one of the 444 corpus cases went through main `17aee63`'s runner and this
+  branch's without the new options. Exit codes, stdout, stderr, the timelines, the cues, the rider
+  word, and the PPM and cartridge RAM files on three picture frames per case are all identical.
 - **Follow-ups:**
   - delete the frozen gates' memory captures under D-0011 (14.3 GB);
   - split `checks4` (21 minutes, one step);
