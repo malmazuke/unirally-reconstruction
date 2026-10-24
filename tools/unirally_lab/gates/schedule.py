@@ -11,7 +11,8 @@ Steps start in catalogue order; an exclusive or real-time step waits for the poo
 holds back the steps after it until it has run.
 
 Each step gets its own `TMPDIR` under the run's temp root and its own output directory. Both, and
-any evidence directory the step is known to write into, are measured every few seconds; a step
+anything new in an evidence directory the step is known to write into, are measured every few
+seconds; a step
 past its cap is stopped and fails. No step starts while free disk is under the floor plus its cap.
 """
 from __future__ import annotations
@@ -114,7 +115,7 @@ class Run:
                     _kill(proc)
                     continue
                 # No CPU used by its process group and nothing written: a hang, not a slow step.
-                written = size + _size(self.out / f'{sid}.log') + tree_bytes(self.out / sid)
+                written = size + _size(self.out / f'{sid}.log')
                 seen = (cpu.get(proc.pid, 0.0), written)
                 last = self.progress.get(sid)
                 if last is None or (last[1], last[2]) != seen:
@@ -144,7 +145,7 @@ class Run:
         if step.record and (self.context.get('record') or step.system == 'task') and 'corpus_log' in self.context:
             env['GATES_RECORD'] = str(self.context['corpus_log'](step.id))
         # In an evidence directory only what appears after the start is the step's (its mkdtemp).
-        watched = [(d, entries(d)) for d in (Path(w.format(**self.env)) for w in step.writes)]
+        watched = [(out, set())] + [(d, entries(d)) for d in (Path(w.format(**self.env)) for w in step.writes)]
         log = (self.out / f'{step.id}.log').open('w')
         cwd = Path(step.cwd.format(**self.env)) if step.cwd else self.root
         proc = subprocess.Popen([step.shell, '-c', step.command], cwd=cwd, env=env, stdout=log,

@@ -111,11 +111,22 @@ binaries for every output, on every frame:
 
 That is a superset of what any check compares, so "equal" is stronger than the check, not weaker.
 
-**Where it differs, the original decides.** A check whose recorded runs differ from main runs
-against the original. The candidate changed something the check measures, and only the original
-can say whether that is the intended improvement or a regression. Escalation is per check, and
-MENU-INPUT's and LEAGUE-TOURS' scripts are split one step per capture, so one changed screen
-re-runs only the captures that pass through it.
+**Where it differs, the original decides.** A check whose recorded runs differ from main in an
+output it reads runs against the original. Stdout and stderr count for every check; the timelines,
+cues, pictures, cartridge RAM and VRAM count for the checks that asked for them. The candidate
+changed something the check measures, and only the original can say whether that is the intended
+improvement or a regression. MENU-INPUT's and LEAGUE-TOURS' scripts are split one step per capture,
+so one changed screen re-runs only the captures that pass through it.
+
+**Every check gets a verdict.** Most checks against the original print what they measured rather
+than pass or fail; the serial `gates.sh` left those lines to a reader. Here each such step has a
+twin, `<step>@main`, which runs the same command in main's checkout with main's binaries and pack.
+- Lines equal to the twin's mean `same-as-main`: the change did not move what the check measures.
+- Different lines mean `changed`, and the run fails. A task that means to change that result reads
+  both, records why, and lists the step in `--expect-changed`; then it is `changed (expected)`.
+
+So a planted regression cannot end in `status=passed` because a measurement went unread (the
+coordinating session's review of the first proofs).
 
 **What stays against the original whatever main says:**
 - **the task's own checks:** acceptance of new behaviour, and the first acceptance of a capability;
@@ -227,12 +238,10 @@ includes temp, logs and the base worktree's build.
 
 ## Consequences
 
-- **Escalation is by case, not by output.** A recorded invocation is shared by every check that
-  ran the same inputs, so a difference in one output escalates all of them, including checks
-  that never read that output (the picture regression escalated `look`, which reads the look
-  timeline). This errs toward running more. Splitting the frame digests by kind and matching each
-  check's requested outputs would narrow it.
-
+- **A change meant to move a check costs its twin as well.** A changed check runs twice, on the
+  candidate and on main.
+- **Stdout counts for every check.** The state rows are the one output every check can read
+  without asking. A change that moves them escalates every check whose runs it reaches.
 - A typical task's gates are a selective run; the long checks against the original run only where
   the change moved their output.
 - Main's native output becomes the reference for "nothing else moved". A regression accepted into
