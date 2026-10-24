@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Instructions from observed | 35,735 |
 | Instructions from table | 65 |
 | Routines | 759 |
-| Routines cited by native code | 567 |
-| Routine bytes cited by native code | 72,405 |
+| Routines cited by native code | 572 |
+| Routine bytes cited by native code | 73,425 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-2156 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1456, mid 31, sub 459, unk 194 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 95, observed 1851, unknown 194.
+2199 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1490, mid 31, sub 465, unk 197 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 96, observed 1890, unknown 197.
 
 Cited addresses in `unknown` bytes:
 
@@ -135,7 +135,9 @@ Cited addresses in `unknown` bytes:
 | $80:D37B | docs/research/R-0055-rider-menu.md |
 | $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:D4C5 | docs/research/R-0072-options.md |
-| $80:D9D8 | docs/research/R-0072-options.md |
+| $80:D729 | docs/research/R-0100-record-screens.md |
+| $80:D777 | docs/research/R-0100-record-screens.md |
+| $80:D9D8 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
 | $80:DDE3 | docs/research/R-0072-options.md |
 | $80:DDE4 | docs/research/R-0097-menu-input.md |
 | $80:E04B | docs/research/R-0097-menu-input.md |
@@ -144,6 +146,7 @@ Cited addresses in `unknown` bytes:
 | $80:E1B1 | docs/research/R-0097-menu-input.md |
 | $80:E37B | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $80:E3A1 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
+| $80:E536 | docs/research/R-0100-record-screens.md |
 | $80:E708 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E7C4 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E7FB | docs/research/R-0056-tour-track-now-playing.md |
@@ -154,8 +157,8 @@ Cited addresses in `unknown` bytes:
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:ECD1 | docs/research/R-0072-options.md |
-| $80:ECF7 | docs/research/R-0072-options.md |
+| $80:ECD1 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
+| $80:ECF7 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
 | $80:EF3D | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:F2EA | docs/research/R-0067-stunt-result.md |
 | $80:F3E0 | docs/research/R-0067-stunt-result.md |

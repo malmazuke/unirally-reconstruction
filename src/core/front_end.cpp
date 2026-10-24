@@ -264,8 +264,12 @@ bool waits_for_frame(const FrontEndState& state) {
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
-    if (state.screen == FrontEndScreen::records_detail_entry)
-        return shows_scores(state) ? scores_frame_waits(state, next) : next != 1;
+    if (state.screen == FrontEndScreen::records_detail_entry) {
+        if (shows_scores(state)) return scores_frame_waits(state, next);
+        return state.records_detail.category == track_records_category
+                 ? track_records_entry_waits(next)
+                 : high_scores_entry_waits(next);
+    }
     if (state.screen == FrontEndScreen::league_podium_entry) return next <= 7;
     if (state.screen == FrontEndScreen::league_podium) return false;
     if (state.screen == FrontEndScreen::wipe_ram_answer) return wipe_ram_answer_waits(state);
@@ -670,6 +674,31 @@ void load_text(FrontEndState& state, unsigned word) {
         state.video.vram[at] = static_cast<std::uint8_t>(state.text.words[k]);
         state.video.vram[at + 1] = static_cast<std::uint8_t>(state.text.words[k] >> 8U);
     }
+}
+
+void add_hdma_writes(std::vector<SnesLineRegister>& writes, std::span<const std::uint8_t> table,
+                     unsigned bytes, SnesLineRegisterName name) {
+    constexpr unsigned screen_rows = 224;
+    std::size_t at = 0;
+    unsigned line = 0;
+    while (line < screen_rows && at < table.size() && table[at] != 0) {
+        const bool repeat = (table[at] & 0x80U) != 0;
+        const unsigned count = (table[at] & 0x7fU) == 0 ? 0x80U : table[at] & 0x7fU;
+        ++at;
+        for (unsigned k = 0; k < count && line < screen_rows; ++k, ++line) {
+            if (k > 0 && !repeat) continue;
+            if (at + bytes > table.size()) return;
+            const std::uint16_t value = bytes == 2 ? word_at(table, at) : table[at];
+            writes.push_back({static_cast<std::uint8_t>(line), name, value});
+            if (repeat) at += bytes;
+        }
+        if (!repeat) at += bytes;
+    }
+}
+
+void sort_line_registers(std::vector<SnesLineRegister>& writes) {
+    std::stable_sort(writes.begin(), writes.end(),
+                     [](const auto& a, const auto& b) { return a.row < b.row; });
 }
 
 std::span<const std::uint8_t> nth_string(std::span<const std::uint8_t> table, unsigned n) {

@@ -115,22 +115,6 @@ void step_bar(FrontEndState& state, const FrontEndContent& content, const BarLay
     print_text(state.text, state.printer, edge, content.character_table);
 }
 
-// $80:C206: a press of any button of either pad on two frames running, each frame copying the
-// OAM and stepping the decorations; then `$80:C236` hides entries 30-35.
-bool press_seen_twice(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
-    copy_oam(state);
-    step_decorations(state, content);
-    const bool press = (pads.one | pads.two) != 0;
-    auto& seen = state.records_detail.press_seen;
-    if (!seen || !press) {
-        seen = press;
-        return false;
-    }
-    high_bits(state, 32) = four_hidden;
-    high_bits(state, 28) = static_cast<std::uint8_t>((high_bits(state, 28) & 0x0fU) | 0x50U);
-    return true;
-}
-
 void restore_hidden_half(FrontEndState& state) {
     state.slide.hidden_half = state.records_detail.hidden_half;
 }
@@ -510,6 +494,22 @@ void player_scores_leaving(FrontEndState& state, const FrontEndContent& content)
 }
 
 } // namespace
+
+// $80:C206: a press of any button of either pad on two frames running, each frame copying the
+// OAM and stepping the decorations; then `$80:C236` hides entries 30-35.
+bool press_seen_twice(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    copy_oam(state);
+    step_decorations(state, content);
+    const bool press = (pads.one | pads.two) != 0;
+    auto& seen = state.records_detail.press_seen;
+    if (!seen || !press) {
+        seen = press;
+        return false;
+    }
+    high_bits(state, 32) = four_hidden;
+    high_bits(state, 28) = static_cast<std::uint8_t>((high_bits(state, 28) & 0x0fU) | 0x50U);
+    return true;
+}
 
 bool shows_scores(const FrontEndState& state) {
     return state.records_detail.category == player_scores_category

@@ -233,6 +233,7 @@ void print_lap_result(FrontEndState& state, const FrontEndContent& content) {
     const auto scale = graph_scale(times, record_of(state));
     // $80:9017-905A: the player's best lap, a personal best when under the rider's.
     const auto player_best = best_lap(times.player_laps);
+    state.options_rider = state.rider_menu.rider; // $80:903E-9041
     auto& best = personal_best(records, state.rider_menu.rider, track);
     if (player_best < best) {
         best = player_best;
@@ -247,6 +248,7 @@ void print_lap_result(FrontEndState& state, const FrontEndContent& content) {
     // R-0098), or for a computer opponent the word past the riders' table (above).
     const auto opponent_best = best_lap(times.opponent_laps);
     const auto opponent = state.now_playing.opponent;
+    state.options_rider = opponent; // $80:90D6-90D9
     if (opponent < someone) {
         auto& opponent_record = personal_best(records, opponent, track);
         if (opponent_best < opponent_record) {

@@ -182,6 +182,13 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
     state.records = records_from_cartridge(state.cartridge);
     state.records.league_naming = false; // `$80:A0A5` clears `$0742` bit 1 on every boot
     state.one_player = state.cartridge[one_player_mode] == 1;
+    // `$77:10A7`, the done-track markers' step, goes on from the saved value (R-0100); only a cold
+    // start's wipe resets it. A value past the 14 steps, which the menus do not write, is not
+    // modelled and starts from 0.
+    constexpr std::size_t marker_step_byte = 0x10a7;
+    constexpr std::uint8_t marker_steps = 14;
+    if (state.cartridge[marker_step_byte] < marker_steps)
+        state.track_menu.marker_step = state.cartridge[marker_step_byte];
 }
 
 void add_race_cartridge_increments(FrontEndState& state, std::span<const std::uint16_t> offsets) {

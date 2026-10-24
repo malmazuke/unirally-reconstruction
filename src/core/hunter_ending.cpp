@@ -42,7 +42,6 @@ constexpr std::uint32_t page_load_frame = 16, page_tiles_frame = 17, reveal_step
 // single-write entries whose line counts grow by 3 a step, the first entries on odd steps.
 constexpr std::size_t offsets_at = 0, brightness_at = 72, offset_entry = 3, brightness_entry = 2;
 constexpr std::uint8_t reveal_growth = 3;
-constexpr unsigned screen_rows = 224;
 // $83:AC1F: 1,201 passes at most (Y from 0x4B0 down past 0).
 constexpr std::uint32_t timed_wait_passes = 0x4b1;
 
@@ -101,29 +100,6 @@ std::uint16_t word_at(std::span<const std::uint8_t> table, std::size_t at) {
     return static_cast<std::uint16_t>(table[at] | (table[at + 1] << 8U));
 }
 
-// HDMA in direct mode through a table: each entry a line count (bit 7 set: a write on every
-// line), then the data; a count of 0, or the end of the tables native keeps, ends it (the byte
-// after them, `$0CDE`, is 0 in the capture). `bytes` is 1, or 2 for the two writes of mode 2
-// (BG1VOFS's low byte, then its high byte). A write on the table's line n is first seen on row n.
-void add_hdma_writes(std::vector<SnesLineRegister>& writes, std::span<const std::uint8_t> table,
-                     unsigned bytes, SnesLineRegisterName name) {
-    std::size_t at = 0;
-    unsigned line = 0;
-    while (line < screen_rows && at < table.size() && table[at] != 0) {
-        const bool repeat = (table[at] & 0x80U) != 0;
-        const unsigned count = (table[at] & 0x7fU) == 0 ? 0x80U : table[at] & 0x7fU;
-        ++at;
-        for (unsigned k = 0; k < count && line < screen_rows; ++k, ++line) {
-            if (k > 0 && !repeat) continue;
-            if (at + bytes > table.size()) return;
-            const std::uint16_t value = bytes == 2 ? word_at(table, at) : table[at];
-            writes.push_back({static_cast<std::uint8_t>(line), name, value});
-            if (repeat) at += bytes;
-        }
-        if (!repeat) at += bytes;
-    }
-}
-
 // The picture's HDMA writes: channel 5 to BG1VOFS from `$0C70`, which runs on into channel 6's
 // table (its last entry's lines are blanked), and channel 6 to INIDISP from `$0CB8`.
 void write_reveal_lines(FrontEndState& state) {
@@ -133,8 +109,7 @@ void write_reveal_lines(FrontEndState& state) {
     add_hdma_writes(writes, tables.subspan(offsets_at), 2,
                     SnesLineRegisterName::bg1_vertical_offset);
     add_hdma_writes(writes, tables.subspan(brightness_at), 1, SnesLineRegisterName::display);
-    std::stable_sort(writes.begin(), writes.end(),
-                     [](const auto& a, const auto& b) { return a.row < b.row; });
+    sort_line_registers(writes);
 }
 
 // $80:E2D8-E2F6: the tables copied to work RAM.

@@ -160,6 +160,7 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
         switch (row.kind) {
         case RowKind::blank: continue;
         case RowKind::opponent: {
+            state.options_rider = state.now_playing.opponent; // $80:D009-D00F
             rider = state.second_rider;
             auto& best = personal_best(records, rider, track);
             if (row.time < best) {
@@ -175,6 +176,7 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
         }
         case RowKind::player: {
             rider = state.rider_menu.rider;
+            state.options_rider = rider; // $80:CFA3-CFA9
             auto& best = personal_best(records, rider, track);
             if (row.time < best) {
                 best = row.time;
@@ -681,6 +683,8 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
     // VS CHAMPIONS (`$80:F8E7`, from $80:C051) starts in the frame the records end, and 2P's
     // continuation (`$80:ADE3`, from $80:BD98) prints after that frame's wait (R-0095).
     if (frame + 1 == result_scoring_frame(state)) {
+        // $83:879B-879E: the 1P scoring's rider word goes in before its frame wait (`$83:A923`).
+        if (state.mode == FrontEndMode::one_player) state.options_rider = state.rider_menu.rider;
         if (state.mode == FrontEndMode::versus) {
             enter_vs_champions(state, content);
             return;
