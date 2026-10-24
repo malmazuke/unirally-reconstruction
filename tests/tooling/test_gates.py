@@ -109,6 +109,19 @@ class Scheduler(unittest.TestCase):
             self.assertEqual(seen, ['known'])
 
 
+    def judged(self, mine: str, main: str, expect=()):
+        with tempfile.TemporaryDirectory() as d:
+            steps = [Step('x', 'x', 'echo "  result $V"', reads_status=False, twin='x@main', env=dict(V=mine)),
+                     Step('x@main', 'x', 'echo "  result $V"', reads_status=False, twin='x', env=dict(V=main))]
+            report, _ = run_steps(steps, Path(d), context=dict(expect_changed=set(expect)))
+            return {s['id']: s['status'] for s in report['steps']}
+
+    def test_a_report_against_the_original_is_judged_by_its_run_on_main(self):
+        self.assertEqual(self.judged('7 equal', '7 equal'), {'x': 'same-as-main', 'x@main': 'reference'})
+        self.assertEqual(self.judged('6 equal', '7 equal')['x'], 'changed')
+        self.assertEqual(self.judged('6 equal', '7 equal', expect=['x'])['x'], 'changed (expected)')
+
+
 class Corpus(unittest.TestCase):
     def test_inputs_are_stored_by_content_and_outputs_dropped(self):
         with tempfile.TemporaryDirectory() as d:
@@ -164,6 +177,12 @@ class Corpus(unittest.TestCase):
             self.assertFalse(corpus.is_shim(binary))
 
 
+class Reads(unittest.TestCase):
+    def test_streams_a_check_reads(self):
+        self.assertEqual(corpus.reads(set()), {'stdout', 'stderr'})
+        self.assertEqual(corpus.reads({'--look-timeline', '--picture'}), {'stdout', 'stderr', 'look-timeline', 'pictures'})
+
+
 class Replay(unittest.TestCase):
     def test_first_difference(self):
         self.assertIsNone(replay.first_difference([b'a', b'b'], [b'a', b'b']))
@@ -182,18 +201,18 @@ assert '--picture-frames' in opts
 for k in ('--race-timeline', '--one-player-timeline', '--look-timeline', '--sound-cues', '--frame-digests'):
     if k in opts:
         with open(opts[k], 'w') as f:
-            for n in range(int(opts['--frames'])): f.write(f'{n} {k} {%s if k == '--frame-digests' and n == 3 else 0}\\n')
+            for n in range(int(opts['--frames'])): f.write(f'{n} {"P" if k == "--frame-digests" else k} {%s if k == '--frame-digests' and n == 3 else 0}\\n')
 for n in range(int(opts['--frames'])): print(n, 'state')
 '''
             for name, bug in (('main', '0'), ('cand', '1')):
                 path = tmp / name
                 path.write_text(script % ('old', bug)); path.chmod(0o755)
-            case = dict(key='k', pack=dict(path=str(tmp / 'pack'), sha256='x'), inputs=['--frames', '6'], steps={'s'}, outputs=set())
+            case = dict(key='k', pack=dict(path=str(tmp / 'pack'), sha256='x'), inputs=['--frames', '6'], steps={'s'}, outputs={'--picture'})
             result = replay.replay({'k': case}, tmp, replay.Side(tmp / 'main', tmp / 'pack'), replay.Side(tmp / 'cand', tmp / 'pack'),
                                    'x', jobs=2)
             row = result['rows'][0]
             self.assertFalse(row['equal'])
-            self.assertEqual(row['differing_streams'], ['frame-digests'])
+            self.assertEqual(row['differing_streams'], ['pictures'])
             self.assertEqual(result['summary']['steps_with_differences'], ['s'])
 
 
@@ -209,7 +228,8 @@ class Selection(unittest.TestCase):
             self.context = context
 
     def test_corpus_check_runs_only_where_its_own_runs_differ(self):
-        rows = [dict(steps=['two-pad'], equal=True), dict(steps=['wipe-ram', 'two-pad'], equal=False)]
+        rows = [dict(steps=['two-pad'], equal=True), dict(steps=['wipe-ram', 'two-pad'], equal=False, differing_streams=['pictures'],
+                                                           concerned=['wipe-ram', 'two-pad'])]
         ctx = dict(full=False, identity=self.ident({'front_end_runner'}, ['src/core/front_end.cpp']),
                    corpus_steps={'two-pad': {'a', 'b'}, 'look': {'c'}, 'wipe-ram': {'b'}}, replay=dict(rows=rows))
         run = self.FakeRun(ctx)
@@ -217,6 +237,10 @@ class Selection(unittest.TestCase):
         self.assertEqual(catalogue.corpus('wipe-ram')(run)[0], True)
         ctx['replay'] = dict(rows=[dict(steps=['look'], equal=True)])
         self.assertEqual(catalogue.corpus('look')(run)[0], False)
+        # A difference in an output it never asked for does not concern it.
+        ctx['replay'] = dict(rows=[dict(steps=['look', 'mi-w5'], equal=False, differing_streams=['pictures'], concerned=['mi-w5'])])
+        self.assertEqual(catalogue.corpus('look')(run)[0], False)
+        self.assertEqual(catalogue.corpus('mi-w5')(run)[0], True)
         self.assertEqual(catalogue.corpus('unrecorded')(run)[0], True)        # no corpus: run it
 
     def test_unchanged_binary_skips_and_full_runs_everything(self):

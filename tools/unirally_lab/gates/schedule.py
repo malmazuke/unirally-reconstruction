@@ -49,6 +49,12 @@ class Step:
     select: Callable[['Run'], tuple[bool, str]] = lambda run: (True, 'always')
     record: bool = False               # record its front_end_runner invocations (corpus)
     needs_identity: bool = True        # its selection reads which binaries changed (after the build)
+    # A step that reports against the original gets its verdict from a twin run on main: `twin`
+    # names the twin (on the step) or the step (on the twin). The twin's `env` and `cwd`
+    # (formatted with the run's variables) point it at main's tree, binaries and pack.
+    twin: str = ''
+    env: dict = field(default_factory=dict)
+    cwd: str = ''
 
 
 @dataclass
@@ -56,7 +62,9 @@ class Outcome:
     id: str
     selected: bool
     why: str
-    status: str = 'pending'            # passed | failed | ran | skipped | timeout | over-cap | stalled
+    # passed | failed | ran | skipped | timeout | over-cap | stalled; for a step with a twin on
+    # main: same-as-main | changed | changed (expected)
+    status: str = 'pending'
     rc: int | None = None
     seconds: float = 0.0
     peak_temp: int = 0
@@ -126,18 +134,22 @@ class Run:
     def _start(self, step: Step) -> None:
         o = self.outcomes[step.id]
         tmp = self.temp_root / step.id
-        out = self.out / step.id
+        env = dict(self.env, **{k: v.format(**self.env) for k, v in step.env.items()})
+        # A twin keeps its step's directory name under its own RUN, so `$RUN/<step>` paths hold.
+        out = Path(env['RUN']) / step.id.split('@')[0] if 'RUN' in env else self.out / step.id
         shutil.rmtree(tmp, ignore_errors=True); shutil.rmtree(out, ignore_errors=True)
         tmp.mkdir(parents=True); out.mkdir(parents=True)
-        env = dict(self.env, TMPDIR=str(tmp), G=str(out), STEP=step.id, PYTHONUNBUFFERED='1')
+        env.update(TMPDIR=str(tmp), G=str(out), STEP=step.id, PYTHONUNBUFFERED='1')
         # Checks against the original are recorded by a recording run; a task's own, every run.
         if step.record and (self.context.get('record') or step.system == 'task') and 'corpus_log' in self.context:
             env['GATES_RECORD'] = str(self.context['corpus_log'](step.id))
         # In an evidence directory only what appears after the start is the step's (its mkdtemp).
         watched = [(d, entries(d)) for d in (Path(w.format(**self.env)) for w in step.writes)]
         log = (self.out / f'{step.id}.log').open('w')
-        proc = subprocess.Popen([step.shell, '-c', step.command], cwd=self.root, env=env, stdout=log,
+        cwd = Path(step.cwd.format(**self.env)) if step.cwd else self.root
+        proc = subprocess.Popen([step.shell, '-c', step.command], cwd=cwd, env=env, stdout=log,
                                 stderr=subprocess.STDOUT, start_new_session=True)
+        log.close()                     # the child keeps its own descriptor
         o.status, o.started = 'running', time.time()
         with self.lock:
             self.running[step.id] = (proc, tmp, watched)
@@ -163,6 +175,25 @@ class Run:
         self.log(f'  < {sid}: {o.status} in {o.seconds:.0f} s, peak temp {fmt(o.peak_temp)}')
         if sid in self.callbacks:
             self.callbacks[sid](self, o)
+        if step.twin and self.outcomes[step.twin].status not in ('pending', 'running'):
+            self._judge(*(sorted((sid, step.twin), key=lambda x: '@' in x)))
+
+    def _judge(self, sid: str, twin: str) -> None:
+        """A step that reports against the original passes when its lines equal its twin's on
+        main: the change did not move what it measures. Otherwise it is `changed`, which fails the
+        run unless the task expects it (`--expect-changed`) after reading both."""
+        o, t = self.outcomes[sid], self.outcomes[twin]
+        if o.status != 'ran' or t.status != 'ran':
+            return
+        mine, main = (normal_lines(self.out / f'{x}.log', self.env) for x in (sid, twin))
+        if mine == main:
+            o.status = 'same-as-main'
+        else:
+            o.status = 'changed (expected)' if sid in self.context.get('expect_changed', ()) else 'changed'
+            o.summary = ['  differs from main:'] + [f'  - {l}' for l in main if l not in mine][:20] + \
+                        [f'  + {l}' for l in mine if l not in main][:20]
+        t.status = 'reference'
+        self.log(f'  = {sid}: {o.status} against its run on main')
 
     def go(self) -> dict:
         stop = threading.Event()
@@ -245,6 +276,23 @@ class Run:
         return dict(seconds=round(time.time() - started, 1), peak_temp=self.peak_total,
                     disk_used_peak=self.start_free - self.min_free, start_free=self.start_free,
                     min_free=self.min_free, steps=[vars(self.outcomes[s.id]) for s in self.steps])
+
+
+def normal_lines(log: Path, env: dict) -> list[str]:
+    """A step's reported lines, without what differs only by where it ran."""
+    import re
+    try:
+        text = log.read_text(errors='replace')
+    except OSError:
+        return []
+    if env.get('RUN'):
+        text = text.replace(env['RUN'] + '/main', '<run>').replace(env['RUN'], '<run>')
+    for key in ('W', 'BASE_TREE'):            # the candidate's checkout and main's are one tree
+        if env.get(key):
+            text = text.replace(env[key], '<tree>')
+    text = re.sub(r'/(private/)?var/folders/\S*|/tmp/\S*', '<tmp>', text)
+    text = re.sub(r'"seconds": [0-9.]+', '"seconds": -', text)
+    return [l.rstrip() for l in text.splitlines() if l.startswith('  ')]
 
 
 def group_cpu_seconds() -> dict[int, float]:

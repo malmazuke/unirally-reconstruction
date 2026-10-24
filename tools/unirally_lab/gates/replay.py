@@ -35,6 +35,18 @@ def line_digests(stream) -> list[bytes]:
     return out
 
 
+# `--frame-digests` lines are `frame K digest`; each kind is its own stream.
+DIGEST_KINDS = {b'P': 'pictures', b'R': 'records', b'V': 'vram'}
+
+
+def kind_digests(stream) -> dict[str, list[bytes]]:
+    out: dict[str, list[bytes]] = {name: [] for name in DIGEST_KINDS.values()}
+    for line in stream:
+        kind = line.split(b' ', 2)[1:2]
+        out[DIGEST_KINDS.get(kind[0] if kind else b'?', 'pictures')].append(hashlib.blake2b(line, digest_size=8).digest())
+    return out
+
+
 @dataclass
 class Side:
     binary: Path
@@ -65,7 +77,10 @@ def run_side(side: Side, case: dict, store: Path, streams: tuple[str, ...], tmp:
     def read(name: str, path: Path) -> None:
         with open(path, 'rb') as f:
             opened[name] = True
-            results[name] = line_digests(f)
+            if name == 'frame-digests':
+                results.update(kind_digests(f))
+            else:
+                results[name] = line_digests(f)
 
     threads = [threading.Thread(target=read, args=(n, p), daemon=True) for n, p in fifos.items()]
     for t in threads:
@@ -123,12 +138,19 @@ def compare_case(key: str, case: dict, base: Side, candidate: Side, current_pack
             fc = pool.submit(run_side, cand_side, case, store, streams, tc, timeout)
             b, c = fb.result(), fc.result()
     compared = {}
-    for name in ('stdout',) + streams:
+    names = [n for n in ('stdout',) + streams if n != 'frame-digests'] + list(DIGEST_KINDS.values())
+    for name in names:
         x, y = b['streams'].get(name, []), c['streams'].get(name, [])
         compared[name] = dict(lines=len(y), base_lines=len(x), first_difference=first_difference(x, y))
     differing = [n for n, s in compared.items() if s['first_difference'] is not None]
-    same = not differing and b['rc'] == c['rc'] and b['stderr'] == c['stderr']
-    row = dict(key=key, steps=sorted(case['steps']), equal=same, rc=[b['rc'], c['rc']],
+    if b['rc'] != c['rc'] or b['stderr'] != c['stderr']:
+        differing.append('stderr')
+    same = not differing
+    # A difference concerns only the checks that read that output (stdout and stderr: all).
+    from .corpus import reads
+    outputs = case.get('step_outputs', {})
+    concerned = sorted(st for st in case['steps'] if set(differing) & reads(outputs.get(st, set(case['outputs']))))
+    row = dict(key=key, steps=sorted(case['steps']), concerned=concerned, equal=same, rc=[b['rc'], c['rc']],
                frames=_frames(case), picture_frames=len(case.get('picture_frames', ())), seconds=[b['seconds'], c['seconds']], differing_streams=differing)
     if differing:
         row['first_differences'] = {n: compared[n] for n in differing}
@@ -171,7 +193,7 @@ def replay(cases: dict[str, dict], store: Path, base: Side, candidate: Side, cur
             if progress:
                 progress(n, len(futures))
     differing = [r for r in rows if not r['equal']]
-    steps_differing = sorted({s for r in differing for s in r['steps']})
+    steps_differing = sorted({s for r in differing for s in r.get('concerned', r['steps'])})
     summary = dict(cases=len(rows), frames=sum(r['frames'] for r in rows),
                    picture_frames=sum(r['picture_frames'] for r in rows), equal=len(rows) - len(differing),
                    differing=len(differing), steps_with_differences=steps_differing,

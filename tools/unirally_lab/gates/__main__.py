@@ -79,6 +79,8 @@ def main() -> int:
     p.add_argument('--temp-cap', type=float, default=6.0, help='GB: running steps\' caps may not sum past this')
     p.add_argument('--only', help='comma-separated step ids (with build-base and build)')
     p.add_argument('--skip', help="comma-separated step ids left out")
+    p.add_argument('--expect-changed', default='', help="comma-separated checks whose results the task means to change, "
+                   "read and recorded: `changed (expected)` does not fail the run")
     p.add_argument('--force', help="comma-separated step ids that always run: a task's own checks already in the catalogue")
     a = p.parse_args()
 
@@ -114,15 +116,20 @@ def main() -> int:
     steps = catalogue.steps(a.jobs, task)
     if a.only:
         keep = set(a.only.split(',')) | {'build-base', 'build'}
+        keep |= {k + '@main' for k in keep}
         steps = [s for s in steps if s.id in keep]
     if a.skip:
         steps = [s for s in steps if s.id not in set(a.skip.split(','))]
+    kept = {s.id for s in steps}
+    steps = [s for s in steps if not s.twin or s.twin in kept]      # a twin goes with its step
     for s in steps:
-        if a.force and s.id in a.force.split(','):
+        if a.force and s.id.split('@')[0] in a.force.split(','):
             s.select = lambda run: (True, "the task's own checks (--force)")
     env = dict(os.environ, W=str(root), L=str(evidence), PACK=str(pack), BASE_PACK=str(base_pack), B=str(out / 'base-bin'),
-               BASE_SHA=base, CORPUS=str(corpus_dir), JOBS=str(a.jobs), RUN=str(out), FER=str(fer))
-    context = dict(full=a.full, record=a.full and a.record, corpus_steps=by_step, identity=None, replay=None)
+               BASE_SHA=base, CORPUS=str(corpus_dir), JOBS=str(a.jobs), RUN=str(out), FER=str(fer),
+               BASE_TREE=str(main_root / '.worktrees' / 'gates-base'))
+    context = dict(full=a.full, record=a.full and a.record, corpus_steps=by_step, identity=None, replay=None,
+                   expect_changed=set(filter(None, a.expect_changed.split(','))))
     context['corpus_log'] = lambda step: corpus.clear_step(corpus_dir, step)
     if context['record']:
         corpus_dir.mkdir(parents=True, exist_ok=True)
@@ -165,7 +172,7 @@ def main() -> int:
                   pack_changed=ident.pack_changed, binaries=ident.binaries),
                   replay_summary=(run.context.get('replay') or {}).get('summary'))
     write_report(out / 'report.json', report)
-    bad = [s for s in report['steps'] if s['status'] in ('failed', 'timeout', 'over-cap')]
+    bad = [s for s in report['steps'] if s['status'] in ('failed', 'timeout', 'over-cap', 'stalled', 'changed')]
     print(f'gates done in {report["seconds"] / 60:.1f} min; peak step temp {fmt(report["peak_temp"])}; '
           f'peak disk used {fmt(max(0, report["disk_used_peak"]))}; lowest free {fmt(report["min_free"])}')
     for s in report['steps']:

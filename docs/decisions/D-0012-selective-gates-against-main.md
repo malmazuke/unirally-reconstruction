@@ -183,14 +183,55 @@ LEAGUE-TOURS' are.
 When an escalated check needs a capture that D-0011 removed, the task regenerates it from its
 recipe and checks the recorded digests, as D-0011 says. Since the frozen gates now read only their
 `reference.json`, their memory captures (`memory.wram`/`memory.sram`, 850 MB per ZOOM ZOO capture)
-are needed only to locate a first mismatch or to re-project. They are candidates for D-0011
-deletion with their recipes kept. Deleting them is a separate step, not part of this decision.
+are needed only to locate a first mismatch or to re-project. That is 14.3 GB (48 files) under the
+frozen gates' capture folders. They are candidates for D-0011 deletion with their recipes kept.
+Deleting them is a separate step, not part of this decision. Every other capture a catalogue step
+reads stays: a selective run may escalate to it, and the full run reads all of them.
 
 ## Measured
 
-(Filled from the runs in GATES-AGAINST-MAIN.)
+Runs on 24 October 2026, Apple M2 Max, 12 cores (8 performance), `--jobs 8`; logs in main
+`local/evidence/gates-against-main/`. Peak disk is the drop in free disk during the run; it
+includes temp, logs and the base worktree's build.
+
+| Run | Old serial `gates.sh` | Runner | Peak disk | Notes |
+| --- | --- | --- | --- | --- |
+| RECORD-SCREENS' change (`3f8a1ab` on the runner) | 5 h 17 min (`b6fa277`) | **29.9 min** | 2.7 GB | race gates skipped (`zoom_zoo_runner` unchanged); 2 of 59 checks against the original escalated (`fe-equivalence`, `mi-rv-records`); its own checks as 36 parallel steps |
+| PODIUM-AUDIO's change (`46ad266` on `6c50ac1` with the runner) | 4 h 32 min (`b7efb93`) | **45.6 min** | 3.9 GB | it touched the race engine and the podium's sound: all eleven gates ran, and 21 LEAGUE-TOURS captures escalated (their league tours pass through podiums); its own checks forced |
+| Full run with recording (main `ff1efb6` with the runner) | - | **62.7 min** | 5.4 GB | every step; the corpus: 398 invocations from 59 checks, 8.9 M frames, 233 K with pictures |
+
+- **Same results.** Every step's lines were compared with PODIUM-AUDIO's last serial run (same
+  source as main), section by section, and agree. The exceptions are the real-time app's late-pair
+  counts, which vary from run to run (2,686 to 3,775 dropped pairs on the same code), and lines of
+  checks that were skipped because their runs equal main. The frozen gates give the same rows
+  digests and restore counts in `--frozen-original` mode as in re-projection.
+- **The replay.** 426 cases (9.0 M frames, 308 K pictures) through both binaries take 6 minutes.
+- **Deliberate regressions** (one commit each on the runner, local branches `gam/reg-*`, never
+  pushed), every one selected through its binary and caught:
+
+  | Regression | Selected | Caught by |
+  | --- | --- | --- |
+  | Race state: `drag_step` 3 to 4 (`speed_limits.cpp`) | every binary | all eleven frozen gates ("native rows differ from the frozen original rows"), the race sweep (423 differing runs), both track sweeps, and 285 of 426 replay cases |
+  | Front-end picture: one bit of one pixel on every 1000th frame | `front_end_runner` and its dependants, not `zoom_zoo_runner` | the replay: 100 cases, only in the picture digests, escalating 83 checks. The old every-500th-frame sweep (`fe-equivalence`) is not among them: its frames miss the regression's |
+  | Sound cues: one frame wait dropped on the main menu | as the picture | the replay: 416 cases, only in the cue log, escalating 95 checks |
+  | Audio driver: `counter_threshold` 4 to 5 (`audio_driver.cpp`) | `audio_driver_runner`, `race_audio_runner` | both driver checks (first row difference 50122, PCM not equal); the replay is equal on all 426 cases, rightly, since the driver is not on the cue path |
+
+  The escalated checks against the original then report the difference themselves (see the
+  task record).
+- **The first versions failed in useful ways.** Drawing a picture every frame costs 2.2 ms (44.5 s
+  per 20,000 frames against 0.4 s without), so the picture digests follow the checks' own picture
+  frames. Running the app's audio producer beside the hidden runs doubled its late pairs, so it runs
+  alone. A run of one step whose dependency was left out waited four hours holding the lock, so the
+  scheduler now fails steps that can never start and stops a step with no CPU and no output for
+  15 minutes.
 
 ## Consequences
+
+- **Escalation is by case, not by output.** A recorded invocation is shared by every check that
+  ran the same inputs, so a difference in one output escalates all of them, including checks
+  that never read that output (the picture regression escalated `look`, which reads the look
+  timeline). This errs toward running more. Splitting the frame digests by kind and matching each
+  check's requested outputs would narrow it.
 
 - A typical task's gates are a selective run; the long checks against the original run only where
   the change moved their output.

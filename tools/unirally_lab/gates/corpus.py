@@ -160,12 +160,25 @@ def load(corpus: Path) -> tuple[dict[str, dict], dict[str, set[str]]]:
         keys = by_step.setdefault(step, set())
         for line in log.read_text().splitlines():
             entry = json.loads(line)
-            case = cases.setdefault(entry['key'], dict(entry, steps=set(), outputs=set(), picture_frames=set()))
+            case = cases.setdefault(entry['key'], dict(entry, steps=set(), outputs=set(), picture_frames=set(),
+                                                       step_outputs={}))
             case['steps'].add(step)
             case['outputs'].update(entry['outputs'])
+            case['step_outputs'].setdefault(step, set()).update(entry['outputs'])
             case['picture_frames'].update(from_ranges(entry.get('pictures', [])))
             keys.add(entry['key'])
     return cases, by_step
+
+
+# The replay's streams each output option feeds. Stdout and stderr are read by every check.
+STREAMS_OF = {'--race-timeline': 'race-timeline', '--one-player-timeline': 'one-player-timeline',
+              '--look-timeline': 'look-timeline', '--sound-cues': 'sound-cues', '--picture': 'pictures',
+              '--vram': 'vram', '--records': 'records', '--frame-digests': 'pictures', '--rider-word': 'rider-word'}
+
+
+def reads(outputs: set[str]) -> set[str]:
+    """The replay streams a check that asked for these outputs can have read."""
+    return {'stdout', 'stderr'} | {STREAMS_OF[o] for o in outputs if o in STREAMS_OF}
 
 
 def clear_step(corpus: Path, step: str) -> Path:

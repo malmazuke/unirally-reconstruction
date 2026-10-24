@@ -86,9 +86,13 @@ def corpus(step_id, also=()):
         if replay is None:
             return True, 'the replay did not finish: it runs against the original'
         rows = [r for r in replay['rows'] if step_id in r['steps']]
-        differing = [r for r in rows if not r['equal']]
+        differing = [r for r in rows if not r['equal'] and step_id in r.get('concerned', r['steps'])]
         if differing:
-            return True, f'{len(differing)} of its {len(rows)} recorded runs differ from main'
+            streams = sorted({n for r in differing for n in r['differing_streams']})
+            return True, f'{len(differing)} of its {len(rows)} recorded runs differ from main in what it reads ({", ".join(streams)})'
+        other = sum(not r['equal'] for r in rows)
+        if other:
+            return False, f'its {len(rows)} recorded runs equal main in every output it reads ({other} differ only in outputs it does not read)'
         return False, f'all {len(rows)} of its recorded runs equal main on every output and frame'
     return select
 
@@ -135,8 +139,8 @@ awk '$1 <= 12999' "$G/native-demo-long.cues.txt" > "$G/runner-13000.cues.txt"
 cmp -s "$G/app-demo.resolved.txt" "$G/runner-13000.cues.txt" && echo "  the app's cue log equals front_end_runner's through frame 12999" || { echo "  the app's cue log DIFFERS from front_end_runner's"; exit 1; }''',
              system='audio', lane='exclusive', timeout=1200, select=drives('app')))
     add(Step('app-podium-audio', "PODIUM-AUDIO: the app's producer through a podium (real time)", '''
-zsh "$L/podium-audio/app_run.sh" "$G/app" 2>&1 | sed 's/^/  /' ''', shell='bash', system='audio', lane='exclusive',
-             timeout=1200, reads_status=False, select=drives('app')))
+zsh "$L/podium-audio/app_run.sh" "$G/app" > "$G/app_run.txt" 2>&1; sed 's/^/  /' "$G/app_run.txt"
+! grep -q DIFFERS "$G/app_run.txt"''', shell='bash', system='audio', lane='exclusive', timeout=1200, select=drives('app')))
 
     # -- the pool -------------------------------------------------------------------------------
     add(Step('v1-contracts', 'v1 presentation contracts (legacy DRAGSTER renderer, dragster.v1 pack)', PRELUDE + '''
@@ -453,6 +457,19 @@ python3 -m unittest discover -s tests/tooling > "$G/tooling.log" 2>&1; rc=$?; ec
 n=$(grep -c 'warning: function' "$G/function-size.log"); echo "  functions over 80 lines: $n"
 python3 tools/project.py coverage native-symbols --check > "$G/native-symbols.log" 2>&1; echo "  native-symbols $(grep status= "$G/native-symbols.log" | tail -1)"
 [ "$n" = 0 ] && grep -q status=passed "$G/native-symbols.log"''', system='rules', weight=4, select=code))
+    # Every step that reports against the original without a verdict of its own (except a task's
+    # own checks, which are its acceptance, and pa-anchors, which runs no native binary) gets a
+    # twin that runs it on main's tree, binaries and pack; its verdict is whether they agree.
+    twins = [x for x in s if not x.reads_status and x.system != 'task' and x.lane == 'pool' and x.id != 'pa-anchors']
+    names = {x.id for x in twins}
+    for x in twins:
+        x.twin = x.id + '@main'
+        s.append(Step(x.twin, x.title + ' (on main)', x.command, system=x.system, weight=x.weight,
+                      temp_cap=x.temp_cap, timeout=x.timeout, writes=x.writes, shell=x.shell,
+                      after=tuple(a + '@main' if a in names else a for a in x.after), reads_status=False,
+                      select=x.select, twin=x.id, cwd='{BASE_TREE}',
+                      env=dict(W='{BASE_TREE}', PACK='{BASE_PACK}', RUN='{RUN}/main',
+                               FER='{BASE_TREE}/build/lab-release/src/core/front_end_runner')))
     # Pool order is start order: the long and wide steps first, the corpus checks once the replay
     # has said which of them must run.
     first = [x for x in s if x.lane != 'pool']
