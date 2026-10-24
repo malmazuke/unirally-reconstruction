@@ -14,7 +14,8 @@ in parallel where they do not contend. Prints one line per step and writes `repo
               the contract's frozen digest (always when the projection or its guards changed)
   --task-checks FILE   the task's own checks (run as `SHELL FILE OUTDIR`, the shell from its first
               line); repeatable. A file of commands, one per line, named *.list, runs each line
-              as its own step, in parallel.
+              as its own step, in parallel; a line ending `# cap=GB` gets that temp cap (1 GB
+              otherwise).
 """
 from __future__ import annotations
 
@@ -46,11 +47,14 @@ def task_steps(paths: list[str]) -> list[tuple[str, str, str]]:
         name = path.stem if path.suffix == '.list' else path.parent.name
         if path.suffix == '.list':
             for n, line in enumerate(l for l in path.read_text().splitlines() if l.strip() and not l.startswith('#')):
-                out.append((f'checks-{name}-{n + 1:02d}', line, 'zsh' if line.startswith('zsh ') else 'bash'))
+                # A line may end with `# cap=GB`: its temp cap, when it keeps more than 1 GB.
+                command, _, note = line.partition('# cap=')
+                cap = int(float(note) * GB) if note else GB
+                out.append((f'checks-{name}-{n + 1:02d}', command.strip(), 'zsh' if command.startswith('zsh ') else 'bash', cap))
         else:
             first = path.read_text().split('\n', 1)[0]
             shell = 'zsh' if 'zsh' in first else 'bash'
-            out.append((f'checks-{name}', f'{shell} "{path}" "$G/out" > "$G/checks.out" 2>&1; echo "  rc=$?"; grep -E "^  " "$G/checks.out" | cut -c1-240', 'bash'))
+            out.append((f'checks-{name}', f'{shell} "{path}" "$G/out" > "$G/checks.out" 2>&1; echo "  rc=$?"; grep -E "^  " "$G/checks.out" | cut -c1-240', 'bash', 3 * GB))
     return out
 
 
@@ -71,7 +75,8 @@ def main() -> int:
     p.add_argument('--disk-floor', type=float, default=4.0, help='GB of free disk kept beyond running steps\' caps')
     p.add_argument('--temp-cap', type=float, default=6.0, help='GB: running steps\' caps may not sum past this')
     p.add_argument('--only', help='comma-separated step ids (with build-base and build)')
-    p.add_argument('--skip', help="comma-separated step ids left out (a task's own checks already in the catalogue)")
+    p.add_argument('--skip', help="comma-separated step ids left out")
+    p.add_argument('--force', help="comma-separated step ids that always run: a task's own checks already in the catalogue")
     a = p.parse_args()
 
     root = Path(git(Path.cwd(), 'rev-parse', '--show-toplevel'))
@@ -109,6 +114,9 @@ def main() -> int:
         steps = [s for s in steps if s.id in keep]
     if a.skip:
         steps = [s for s in steps if s.id not in set(a.skip.split(','))]
+    for s in steps:
+        if a.force and s.id in a.force.split(','):
+            s.select = lambda run: (True, "the task's own checks (--force)")
     env = dict(os.environ, W=str(root), L=str(evidence), PACK=str(pack), BASE_PACK=str(base_pack), B=str(out / 'base-bin'),
                BASE_SHA=base, CORPUS=str(corpus_dir), JOBS=str(a.jobs), RUN=str(out), FER=str(fer))
     context = dict(full=a.full, record=a.full and a.record, corpus_steps=by_step, identity=None, replay=None)

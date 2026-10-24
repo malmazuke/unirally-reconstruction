@@ -233,7 +233,7 @@ class Selection(unittest.TestCase):
         self.assertEqual(catalogue.drives('zoom_zoo_runner', tracked=catalogue.FROZEN_TRUSTS)(run)[0], True)
 
     def test_every_frozen_gate_and_section_is_in_the_catalogue(self):
-        ids = [s.id for s in catalogue.steps(8, [])]
+        ids = [s.id for s in catalogue.steps(8, [('checks-x-01', 'true', 'bash', GB)])]
         self.assertEqual(len([i for i in ids if i.startswith('gate-')]), 11)
         self.assertEqual(len(ids), len(set(ids)))
         for required in ('build', 'synthetic', 'fe-replay', 'race-sweep', 'tooling', 'rules', 'mi-w5', 'lt-backs', 'pa-cues', 'pa-pcm'):

@@ -387,7 +387,8 @@ done''')
     pa = '''P="$L/podium-audio"; E="$P/cues"; RV="$L/podium-audio-review/cues"
 PACK40="$W/local/classic-pal-crawler-tracks-v40.pack"; C=build/lab-release/src/core/front_end_runner; B0="$P/base-6c50ac1/front_end_runner"
 '''
-    original('pa-cues', "PODIUM-AUDIO: cue schedules against the original (frame waits included), candidate and main", pa + '''
+    # pa-pcm measures pa-cues' cue logs with race_audio_runner: it runs when pa-cues does.
+    original('pa-cues', "PODIUM-AUDIO: cue schedules against the original (frame waits included), candidate and main", also=('race_audio_runner',), command=pa + '''
 O="$G"; mkdir -p "$O/cand" "$O/main"
 for n in tour-cues full-tour pa-t-crawler pa-tours-b pa-tours-a pa-odd-tours rv-press1 rv-press2 rv-up-pad2; do
   D="$E"; case $n in rv-*) D="$RV";; esac
@@ -425,6 +426,8 @@ echo "  $(python3 -c "import json,sys;d=json.load(open(sys.argv[1]));print('rows
 zsh "$E/podium_pcm.sh" "$RUN/pa-cues/cand" "$G/pcm" 2>&1
 zsh "$E/native_commands.sh" "$RUN/pa-cues/cand" 2>&1''', also=('race_audio_runner',), writes=('{L}/podium-audio',))
     s[-1].after = ('fe-replay', 'pa-cues')
+    s[-1].select = lambda run: ((True, "pa-cues ran, so its cue logs are new") if run.outcomes.get('pa-cues') and run.outcomes['pa-cues'].selected
+                                else (False, "pa-cues' cue logs equal main's, so their PCM does"))
     original('pa-league-frozen', "PODIUM-AUDIO: LEAGUE's frozen gate (pack v40)", '''
 python3 "$L/two-human-stunts/league_frozen.py" "$G/league-frozen.json" local/classic-pal-crawler-tracks-v40.pack build/lab-release/src/core/front_end_runner > "$G/league-frozen.log" 2>&1
 echo "  league frozen: $(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['status'])" "$G/league-frozen.json" 2>&1)"''')
@@ -437,8 +440,8 @@ echo "  $(python3 -c "import json;d=json.load(open('$DA/cond-demo-cold-full.json
              system='audio', reads_status=False, writes=('{L}/demo-audio',), select=drives('audio_driver_runner')))
 
     # -- the task's own checks: always ------------------------------------------------------------
-    for step_id, command, shell in task_checks:
-        add(Step(step_id, f"the task's own checks: {step_id}", command, shell=shell, system='task',
+    for step_id, command, shell, cap in task_checks:
+        add(Step(step_id, f"the task's own checks: {step_id}", command, shell=shell, system='task', temp_cap=cap,
                  reads_status=False, record=True, timeout=5400, select=lambda run: (True, "the task's own acceptance")))
 
     # -- static checks ---------------------------------------------------------------------------
