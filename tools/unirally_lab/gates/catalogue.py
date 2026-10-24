@@ -173,8 +173,9 @@ rc=$?; echo "  rc=$rc $(tail -2 "$G/equivalence.log" | tr '\\n' ' ')"; exit $rc'
     add(Step('race-sweep-classify', 'race sweep: every differing picture classified by its frame\'s state', PRELUDE + '''
 python3 "$C/classify_sweep.py" "$RUN/race-sweep/equivalence.json" "$B" "$BASE_PACK" | sed 's/^/  /' ''',
              system='race', after=('race-sweep',), reads_status=False,
-             select=lambda run: (run.outcomes['race-sweep'].status == 'failed', 'the race sweep found differences'
-                                 if run.outcomes['race-sweep'].status == 'failed' else 'the race sweep found none')))
+             select=lambda run: (True, 'the race sweep found differences')
+             if run.outcomes.get('race-sweep') and run.outcomes['race-sweep'].status == 'failed'
+             else (False, 'the race sweep did not run or found none')))
     add(Step('track-sweeps', "every track's original sweeps (track-breadth-2, locked tours): candidate and main", PRELUDE + '''
 st=0
 for sw in "$L/track-breadth/track-breadth-2/sweep" "$L/locked-tours/sweep"; do

@@ -72,6 +72,26 @@ class Scheduler(unittest.TestCase):
             self.assertEqual(status, {'first': 'passed', 'later': 'failed', 'never': 'skipped'})
 
 
+    def test_a_dependency_left_out_does_not_hold_a_step_back(self):
+        with tempfile.TemporaryDirectory() as d:
+            report, _ = run_steps([Step('later', 'l', 'true', after=('not-in-this-run',))], Path(d))
+            self.assertEqual(report['steps'][0]['status'], 'passed')
+
+    def test_steps_that_can_never_start_fail_instead_of_waiting(self):
+        with tempfile.TemporaryDirectory() as d:
+            steps = [Step('a', 'a', 'true', after=('b',)), Step('b', 'b', 'true', after=('a',))]
+            started = time.time()
+            report, _ = run_steps(steps, Path(d))
+            self.assertLess(time.time() - started, 30)
+            self.assertEqual({s['status'] for s in report['steps']}, {'failed'})
+
+    def test_a_step_with_no_cpu_and_no_output_is_stopped(self):
+        with tempfile.TemporaryDirectory() as d:
+            report, _ = run_steps([Step('hang', 'h', 'sleep 60', stall=4)], Path(d))
+            self.assertEqual(report['steps'][0]['status'], 'stalled')
+            self.assertLess(report['steps'][0]['seconds'], 30)
+
+
 class Corpus(unittest.TestCase):
     def test_inputs_are_stored_by_content_and_outputs_dropped(self):
         with tempfile.TemporaryDirectory() as d:

@@ -40,6 +40,7 @@ class Step:
     weight: int = 1
     temp_cap: int = 1 * GB
     timeout: int = 3600
+    stall: int = 900                   # seconds with no CPU used and nothing written: stopped
     writes: tuple[str, ...] = ()       # other directories it writes into, measured with its temp
     shell: str = 'bash'
     after: tuple[str, ...] = ()        # steps that must have finished first
@@ -54,7 +55,7 @@ class Outcome:
     id: str
     selected: bool
     why: str
-    status: str = 'pending'            # passed | failed | ran | skipped | timeout | over-cap
+    status: str = 'pending'            # passed | failed | ran | skipped | timeout | over-cap | stalled
     rc: int | None = None
     seconds: float = 0.0
     peak_temp: int = 0
@@ -83,6 +84,7 @@ class Run:
         self.start_free = self.min_free
         self.peak_total = 0
         self.callbacks: dict[str, Callable[['Run', Outcome], None]] = {}
+        self.progress: dict[str, tuple[float, float, int]] = {}   # id -> (last change, cpu, bytes)
 
     # -- monitoring ---------------------------------------------------------------------------
     def _monitor(self, stop: threading.Event) -> None:
@@ -90,6 +92,8 @@ class Run:
             total = 0
             with self.lock:
                 items = list(self.running.items())
+            cpu = group_cpu_seconds()
+            now = time.time()
             for sid, (proc, tmp, watched) in items:
                 size = tree_bytes(tmp) + sum(new_entries_bytes(d, before) for d, before in watched)
                 total += size
@@ -99,12 +103,24 @@ class Run:
                     o.status = 'over-cap'
                     self.log(f'  ! {sid}: temp {fmt(size)} over its cap {fmt(self.by_id[sid].temp_cap)}; stopping it')
                     _kill(proc)
+                    continue
+                # No CPU used by its process group and nothing written: a hang, not a slow step.
+                written = size + _size(self.out / f'{sid}.log') + tree_bytes(self.out / sid)
+                seen = (cpu.get(proc.pid, 0.0), written)
+                last = self.progress.get(sid)
+                if last is None or (last[1], last[2]) != seen:
+                    self.progress[sid] = (now, *seen)
+                elif now - last[0] > self.by_id[sid].stall and proc.poll() is None:
+                    o.status = 'stalled'
+                    self.log(f'  ! {sid}: no CPU and no output for {now - last[0]:.0f} s; stopping it')
+                    _kill(proc)
             self.peak_total = max(self.peak_total, total)
             self.min_free = min(self.min_free, free_bytes(self.out))
 
     # -- scheduling ---------------------------------------------------------------------------
     def _deps_done(self, step: Step) -> bool:
-        return all(self.outcomes.get(d) and self.outcomes[d].status not in ('pending', 'running') for d in step.after)
+        # A dependency left out of this run (--only, --skip) does not hold a step back.
+        return all(d not in self.by_id or self.outcomes[d].status not in ('pending', 'running') for d in step.after)
 
     def _start(self, step: Step) -> None:
         o = self.outcomes[step.id]
@@ -210,6 +226,14 @@ class Run:
                         continue
                     self._start(step); pending.remove(step)
                     used += step.weight; caps += step.temp_cap; lanes.add('pool')
+                if pending and not self.running:
+                    # Nothing runs and nothing could start: fail what is left rather than wait.
+                    for step in pending:
+                        o = self.outcomes[step.id]
+                        o.status = 'failed'
+                        o.why = f'{o.why or "never started"}; nothing could start it (waiting on {", ".join(step.after) or "none"})'
+                        self.log(f'  ! {step.id}: {o.why}')
+                    pending.clear()
                 time.sleep(0.5)
         finally:
             for sid, (proc, _, _) in list(self.running.items()):
@@ -218,6 +242,33 @@ class Run:
         return dict(seconds=round(time.time() - started, 1), peak_temp=self.peak_total,
                     disk_used_peak=self.start_free - self.min_free, start_free=self.start_free,
                     min_free=self.min_free, steps=[vars(self.outcomes[s.id]) for s in self.steps])
+
+
+def group_cpu_seconds() -> dict[int, float]:
+    """CPU seconds used so far by each process group's live members (`ps`, macOS and Linux)."""
+    try:
+        text = subprocess.run(['ps', '-A', '-o', 'pgid=,time='], capture_output=True, text=True, timeout=30).stdout
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    out: dict[int, float] = {}
+    for line in text.splitlines():
+        parts = line.split()
+        if len(parts) != 2:
+            continue
+        days, _, clock = parts[1].rpartition('-')     # [days-][hours:]minutes:seconds
+        seconds = 0.0
+        for field in clock.split(':'):
+            seconds = seconds * 60 + float(field)
+        seconds += 86400 * int(days or 0)
+        out[int(parts[0])] = out.get(int(parts[0]), 0.0) + seconds
+    return out
+
+
+def _size(path: Path) -> int:
+    try:
+        return path.stat().st_size
+    except OSError:
+        return 0
 
 
 def entries(directory: Path) -> set[str]:
