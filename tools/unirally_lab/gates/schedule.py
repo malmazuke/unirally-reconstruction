@@ -173,6 +173,9 @@ class Run:
         text = (self.out / f'{sid}.log').read_text(errors='replace').splitlines()
         o.summary = [l for l in text if l.startswith('  ') or 'status=' in l][-60:] or text[-8:]
         shutil.rmtree(tmp, ignore_errors=True)
+        # Results stay; bulk a step leaves behind (a stopped step's audio, say) does not.
+        for path, size in prune_large(Path(self.running[sid][2][0][0])):
+            self.log(f'  ~ {sid}: removed {fmt(size)} {path.name} from its output')
         with self.lock:
             del self.running[sid]
         self.log(f'  < {sid}: {o.status} in {o.seconds:.0f} s, peak temp {fmt(o.peak_temp)}')
@@ -327,6 +330,21 @@ def _size(path: Path) -> int:
         return path.stat().st_size
     except OSError:
         return 0
+
+
+LARGE = 64 << 20
+
+
+def prune_large(directory: Path) -> list[tuple[Path, int]]:
+    """Delete files over 64 MB under a finished step's output directory."""
+    removed = []
+    for path in directory.rglob('*'):
+        try:
+            if path.is_file() and not path.is_symlink() and (size := path.stat().st_size) > LARGE:
+                path.unlink(); removed.append((path, size))
+        except OSError:
+            continue
+    return removed
 
 
 def entries(directory: Path) -> set[str]:

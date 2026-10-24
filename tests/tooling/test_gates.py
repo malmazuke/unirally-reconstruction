@@ -61,6 +61,12 @@ class Scheduler(unittest.TestCase):
             self.assertEqual(used.name, 'a')
             self.assertFalse(used.exists())
 
+    def test_bulk_left_in_a_step_output_is_removed(self):
+        with tempfile.TemporaryDirectory() as d:
+            report, out = run_steps([Step('a', 'a', 'head -c 70000000 /dev/zero > "$G/big"; echo ok > "$G/small"', temp_cap=200_000_000)], Path(d))
+            self.assertFalse((out / 'a' / 'big').exists())
+            self.assertTrue((out / 'a' / 'small').exists())
+
     def test_unselected_and_dependent_steps(self):
         with tempfile.TemporaryDirectory() as d:
             steps = [Step('first', 'f', 'sleep 0.5; echo done > "$G/x"'),
