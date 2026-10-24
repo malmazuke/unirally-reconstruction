@@ -437,12 +437,16 @@ caps=("$L/league-tours/cues/tour-cues"); for n in full-tour pa-t-crawler pa-tour
 R="$PWD/build/lab-release/tests/native/audio_driver_runner" zsh "$E/cond.sh" tour-cues-full title race-62 title award title race-63 > "$G/cond.log" 2>&1
 echo "  $(python3 -c "import json,sys;d=json.load(open(sys.argv[1]));print('rows',d['expected_rows'],d['native_rows'],'first row difference',d['first_row_difference'],'pairs',d['original_pairs'],d['native_pairs'],'pcm equal',d['pcm_equal'])" "$E/cond-tour-cues-full.json" 2>&1 | tail -1)"''',
              system='audio', reads_status=False, writes=('{L}/podium-audio/cues',), select=drives('audio_driver_runner')))
-    original('pa-pcm', "PODIUM-AUDIO: anchored PCM of the candidate's cues and the pass that delivers the music start", pa + '''
-zsh "$E/podium_pcm.sh" "$RUN/pa-cues/cand" "$G/pcm" 2>&1
-zsh "$E/native_commands.sh" "$RUN/pa-cues/cand" 2>&1''', also=('race_audio_runner',), writes=('{L}/podium-audio',))
-    s[-1].after = ('fe-replay', 'pa-cues')
-    s[-1].select = lambda run: ((True, "pa-cues ran, so its cue logs are new") if run.outcomes.get('pa-cues') and run.outcomes['pa-cues'].selected
-                                else (False, "pa-cues' cue logs equal main's, so their PCM does"))
+    # One step per podium schedule (podium_pcm.sh and native_commands.sh take NAMES): together
+    # they were a 20-minute step at the end of the run.
+    for n in ('tour-cues', 'full-tour', 'pa-t-crawler', 'pa-tours-b', 'pa-tours-a', 'pa-odd-tours'):
+        original(f'pa-pcm-{n}', f"PODIUM-AUDIO: anchored PCM of the candidate's {n} cues and the pass that delivers the music start",
+                 command=pa + f'''
+NAMES={n} zsh "$E/podium_pcm.sh" "$RUN/pa-cues/cand" "$G/pcm" 2>&1
+NAMES={n} zsh "$E/native_commands.sh" "$RUN/pa-cues/cand" 2>&1''', also=('race_audio_runner',))
+        s[-1].after = ('fe-replay', 'pa-cues')
+        s[-1].select = lambda run: ((True, "pa-cues ran, so its cue logs are new") if run.outcomes.get('pa-cues') and run.outcomes['pa-cues'].selected
+                                    else (False, "pa-cues' cue logs equal main's, so their PCM does"))
     original('pa-league-frozen', "PODIUM-AUDIO: LEAGUE's frozen gate (pack v40)", '''
 python3 "$L/two-human-stunts/league_frozen.py" "$G/league-frozen.json" local/classic-pal-crawler-tracks-v40.pack build/lab-release/src/core/front_end_runner > "$G/league-frozen.log" 2>&1
 echo "  league frozen: $(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['status'])" "$G/league-frozen.json" 2>&1)"''')
