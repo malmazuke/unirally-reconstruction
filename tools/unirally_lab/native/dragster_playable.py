@@ -303,7 +303,21 @@ def prefix_restore_boundaries(document, rows, events):
     return sorted(f for f in frames if first <= f < last)
 
 
-def compare(a, b, contract, binary, pack, out, restores=True, prefix=False):
+def frozen_original(directory, frozen):
+    """An original as its frozen contract recorded it, without reading its memory capture.
+
+    The contract froze the digests of the original's report, of its projected rows and of the guard
+    manifests, and its events, from two captures that agreed. A gate asks whether the candidate's
+    rows equal those rows, which their digest answers (D-0012). The rows come back as None for the
+    caller to compare by digest.
+    """
+    document = json.loads((directory/'reference.json').read_text())
+    if digest(document) != frozen.get('original_sha256'):
+        raise ValueError('original report differs from the frozen contract')
+    return document, None, frozen['events']
+
+
+def compare(a, b, contract, binary, pack, out, restores=True, prefix=False, frozen_only=False):
     """Gate native against a frozen original.
 
     `prefix` gates the race and loading prefix of an incomplete inventory
@@ -317,11 +331,17 @@ def compare(a, b, contract, binary, pack, out, restores=True, prefix=False):
     binary = binary.resolve(); pack = pack.resolve()
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT); diff = sha(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=ROOT))
     binary_sha = sha(binary.read_bytes()); pack_sha = sha(pack.read_bytes())
-    reference, rows, events = original(a, allow_incomplete=prefix); repeat, other, other_events = original(b, allow_incomplete=prefix)
-    if reference != repeat or rows != other or events != other_events:
-        raise ValueError('original repeats differ')
     frozen = json.loads(contract.read_text())
-    if any(frozen.get(key) != value for key, value in inventory(reference, rows, events).items() if not (prefix and key in ('events', 'kind'))):
+    if frozen_only:
+        reference, rows, events = frozen_original(a, frozen)
+    else:
+        reference, rows, events = original(a, allow_incomplete=prefix); repeat, other, other_events = original(b, allow_incomplete=prefix)
+        if reference != repeat or rows != other or events != other_events:
+            raise ValueError('original repeats differ')
+    expected = inventory(reference, rows or [], events)
+    if frozen_only:
+        expected['rows_sha256'] = frozen.get('rows_sha256')
+    if any(frozen.get(key) != value for key, value in expected.items() if not (prefix and key in ('events', 'kind'))):
         raise ValueError('frozen original inventory differs')
     rules, rules_sha = load_rules(ROOT/TWO_TRACK_RULES_PATH); validate_pack(pack.read_bytes(), rules, rules_sha)
     first, last = INITIALIZATION_FRAME, reference['frames'][1]
@@ -330,12 +350,11 @@ def compare(a, b, contract, binary, pack, out, restores=True, prefix=False):
                 or frozen.get('race_and_loading_frames', [None, None])[0] != first):
             raise ValueError('prefix gate needs an incomplete inventory')
         last = frozen['race_and_loading_frames'][1]
-        rows = rows[:last-first+1]
-        if digest(rows) != frozen['race_and_loading_rows_sha256']:
-            raise ValueError('frozen race and loading prefix differs')
+        if rows is not None:
+            rows = rows[:last-first+1]
+            if digest(rows) != frozen['race_and_loading_rows_sha256']:
+                raise ValueError('frozen race and loading prefix differs')
         events = dict(events, gated_frames=[first, last])
-    boundaries = [f for f in (restore_boundaries(reference, rows, events) if restores and not prefix else
-                              prefix_restore_boundaries(reference, rows, events) if restores else []) if f < last]
     with tempfile.TemporaryDirectory(prefix='dragster-playable-native-') as directory:
         root = Path(directory); local_pack = root/'classic.pack'; local_pack.write_bytes(pack.read_bytes())
         inputs = root/'inputs.txt'; seed = root/'restore.bin'
@@ -357,6 +376,12 @@ def compare(a, b, contract, binary, pack, out, restores=True, prefix=False):
             return output
 
         actual = execute(first)
+        if rows is None:
+            if digest(actual) != frozen['race_and_loading_rows_sha256' if prefix else 'rows_sha256']:
+                raise ValueError('native rows differ from the frozen original rows; rerun without --frozen-original for the first mismatch')
+            rows = actual
+        boundaries = [f for f in (restore_boundaries(reference, rows, events) if restores and not prefix else
+                                  prefix_restore_boundaries(reference, rows, events) if restores else []) if f < last]
         if actual != rows:
             for i, (x, y) in enumerate(zip(actual, rows)):
                 if x != y:
@@ -379,6 +404,7 @@ def compare(a, b, contract, binary, pack, out, restores=True, prefix=False):
     result = dict(status='passed', acceptance=not prefix, case=reference['case']['id'], source_commit=head.decode().strip(), source_diff_sha256=diff,
                   binary_sha256=binary_sha, pack_sha256=pack_sha, contract_sha256=sha(contract.read_bytes()), frames=[first, last],
                   state_bytes=742, rows_sha256=digest(rows), restore_frames=boundaries, events=events,
+                  original='frozen contract digest' if frozen_only else 'both captures re-projected',
                   native_inputs='validated two-track pack and live-compatible controller stream; native initialization, no original state')
     out.parent.mkdir(parents=True, exist_ok=True); out.write_text(json.dumps(result, indent=2)+'\n')
     with (out.parent/'validation-ledger.jsonl').open('a') as stream:
@@ -397,6 +423,8 @@ def main():
     p.add_argument('--out', type=Path)
     p.add_argument('--no-restores', action='store_true')
     p.add_argument('--prefix', action='store_true', help='gate the race and loading prefix of an incomplete inventory')
+    p.add_argument('--frozen-original', action='store_true',
+                   help="compare with the contract's frozen row digest instead of re-projecting both captures (D-0012)")
     a = p.parse_args()
     if a.command == 'explore':
         print(json.dumps(explore(a.reference, a.binary, a.pack), indent=1))
@@ -407,7 +435,7 @@ def main():
         print(json.dumps(dict(case=r['case']['id'], rows=r['rows_sha256'], prefix=r['race_and_loading_rows_sha256'],
                               prefix_frames=r['race_and_loading_frames'], events=r['events'])))
     else:
-        r = compare(a.reference, a.repeat, a.contract, a.binary, a.pack, a.out, not a.no_restores, a.prefix)
+        r = compare(a.reference, a.repeat, a.contract, a.binary, a.pack, a.out, not a.no_restores, a.prefix, a.frozen_original)
         print(json.dumps({k: v for k, v in r.items() if k != 'restore_frames'}, indent=1)); print('restores', len(r['restore_frames']))
 
 
