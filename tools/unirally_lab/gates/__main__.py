@@ -152,9 +152,10 @@ def main() -> int:
     fp_cache: dict = {}
 
     def corpus_log(step):
+        log = corpus.clear_step(corpus_dir, step.id)          # first: it clears the new meta too
         corpus.write_meta(corpus_dir, step.id, fingerprint=corpus.fingerprint(catalogue.fingerprint_text(step.command), evidence, fp_cache), base=base,
                           recorded_at=head)
-        return corpus.clear_step(corpus_dir, step.id)
+        return log
 
     def corpus_lines(step, lines):
         (corpus_dir / f'{step.id}.lines.new').write_text('\n'.join(lines) + '\n')

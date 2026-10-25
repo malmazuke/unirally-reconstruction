@@ -144,20 +144,28 @@ class Recording(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tmp = Path(d); c = tmp / 'corpus'; c.mkdir()
             (c / 'x.jsonl').write_text('old\n')
-            ctx = dict(record=True, corpus_log=lambda step: corpus.clear_step(c, step.id),
+            def log(step):
+                path = corpus.clear_step(c, step.id)
+                corpus.write_meta(c, step.id, fingerprint='new')
+                return path
+            ctx = dict(record=True, corpus_log=log,
                        corpus_lines=lambda step, lines: (c / f'{step.id}.lines.new').write_text('\n'.join(lines)),
                        corpus_promote=lambda step: corpus.promote(c, step.id),
                        corpus_discard=lambda step: corpus.discard(c, step.id))
             step = Step('x', 'x', command, record=True, reads_status=False, timeout=timeout)
+            (c / 'x.meta.json').write_text('{"fingerprint": "old"}')
             report, _ = run_steps([step], tmp, context=ctx)
+            self.last_meta = corpus.read_meta(c, 'x').get('fingerprint')
             return report['steps'][0]['status'], (c / 'x.jsonl').read_text()
 
     def test_a_finished_check_replaces_its_recording(self):
         self.assertEqual(self.record('echo new >> "$GATES_RECORD"'), ('ran', 'new\n'))
+        self.assertEqual(self.last_meta, 'new')                 # its fingerprint goes with it
 
     def test_a_check_stopped_partway_keeps_the_earlier_recording(self):
         self.assertEqual(self.record('echo half >> "$GATES_RECORD"; set -u; echo "$UNSET"; echo rest >> "$GATES_RECORD"'),
                          ('failed', 'old\n'))
+        self.assertEqual(self.last_meta, 'old')
         self.assertEqual(self.record('echo half >> "$GATES_RECORD"; sleep 30', timeout=1)[1], 'old\n')
 
 
