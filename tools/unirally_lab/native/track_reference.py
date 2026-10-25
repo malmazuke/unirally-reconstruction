@@ -34,6 +34,7 @@ from ..content.commands import write_track_override
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from .zoom_zoo_trial import BUTTONS as RUNNER_BUTTONS  # the runner's controller-row bit order
 from ..reference.core_identity import accepted_reference, require_core
+from ..capture_files import open_capture
 
 FIRST_RECORDED_FRAME = 1100
 MENU_STARTS = ((300, 305), (620, 625), (750, 755), (900, 905))
@@ -239,7 +240,7 @@ def original_rows(directory):
     finish, loading, archive, extras_archive, tail_archive = [None, None], None, None, None, b''
     captions = caption_rows = None
     mode = None
-    with (directory/'memory.wram').open('rb') as ws, (directory/'memory.sram').open('rb') as ss:
+    with open_capture(directory/'memory.wram') as ws, open_capture(directory/'memory.sram') as ss:
         for frame in range(first, last+1):
             w, s = ws.read(131072), ss.read(8192)
             if sha(w) != document['wram_sha256'][frame-first] or sha(s) != document['sram_sha256'][frame-first]:
