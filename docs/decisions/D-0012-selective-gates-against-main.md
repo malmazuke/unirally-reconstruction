@@ -1,7 +1,7 @@
 # D-0012 - Gates that choose their checks and compare with main
 
-- Status: proposed by [GATES-AGAINST-MAIN](../../tasks/GATES-AGAINST-MAIN.md) (tier 1), 24 October
-  2026, at the user's request; adopted when that task merges.
+- Status: adopted 25 October 2026 with [GATES-AGAINST-MAIN](../../tasks/GATES-AGAINST-MAIN.md)
+  (tier 1, #84), at the user's request of 24 October 2026.
 - Owner: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop app, a side session of the
   RECORD-SCREENS coordinator.
 - Related: [D-0003](D-0003-human-readable-native-code.md) (frozen differential checks),

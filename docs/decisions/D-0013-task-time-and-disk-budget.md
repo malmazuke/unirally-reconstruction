@@ -2,7 +2,7 @@
 
 - Status: adopted on the user's instruction, 25 October 2026 (TASK-EFFICIENCY, Claude Opus 5.5)
 - Related: [D-0011](D-0011-evidence-retention.md) (evidence retention),
-  [D-0012](D-0012-selective-gates-against-main.md) (selective gates against main, in review on
+  [D-0012](D-0012-selective-gates-against-main.md) (selective gates against main, adopted with
   [#84](https://github.com/malmazuke/unirally-reconstruction/pull/84)),
   [TASK-EFFICIENCY](../../tasks/TASK-EFFICIENCY.md)
 

@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **in review** 25 October 2026 (tier 1). Claimed 24 October 2026 on main `ff1efb6` (Claude Code desktop app, Claude Opus 5.5
+- Status: **accepted** 25 October 2026 (tier 1, [#84](https://github.com/malmazuke/unirally-reconstruction/pull/84),
+  review round 4 approved `2964ffd`), integrated by merge commit; closeout in main
+  `artifacts/gates-against-main-integration/closeout.json`. Claimed 24 October 2026 on main `ff1efb6` (Claude Code desktop app, Claude Opus 5.5
   `claude-opus-5-5`; a side session started by the RECORD-SCREENS coordinator). Queued 11 October
   2026 by [EVIDENCE-RETENTION](EVIDENCE-RETENTION.md), at the user's request. Weekly usage at claim
   46%, 5-hour window 27%.
@@ -123,6 +125,26 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
 | 8 | Twins judge every reporting check | RECORD-SCREENS with its checks forced | 39 false `changed`: main's runner lacks its `--rider-word`; 66.6 min, as the CMake rule selected everything | a task's own checks have no twin; a CMake change compares build commands: 34.1 min |
 | 9 | The round-1 fixes close the gaps (review round 2) | the reviewer's truncated recordings, edited scripts, write_file regression | seven gaps: early-stopped recordings trusted, `--force` unjudged, fingerprints miss reached folders, `broken` nearly inert | incomplete recordings dropped, forced checks keep their twin unless `--no-twin`, a wider fingerprint, error-line `broken`, one `write_bytes`; the planted truncation is caught |
 
+## Review
+
+Tier 1, by an independent Claude Opus 5.5 subagent in its own checkout, posted on #84. Each finding
+has a reply on the pull request.
+- **Round 1** (6a6f435) returned 11 findings. The worst: the replay digested in-memory values
+  rather than written bytes, selection ignored the Python the checks import, and only top-level
+  CMake files counted. Fixed in b1ec9bb and 5bff2f9.
+- **Round 2** (70ddf7b) returned 7: early-stopped recordings were trusted, `--force` dropped the
+  verdict, the fingerprint missed reached folders, `broken` was nearly inert. Fixed in 649024b.
+- **Round 3** (8902229) returned one medium finding, an interrupted or aborted recording still
+  trusted, fixed in 1be76c4 and its follow-ups, and three low ones.
+- **Round 4** (2964ffd) approved. Its two low findings are follow-ups:
+  - a check that fails inside a pipeline still exits 0, so its error lines can become the
+    recorded baseline. One does: LEAGUE-TOURS' `odd-tours-w0` main side (`base-ceb50cf`) raises a
+    `JSONDecodeError`, as in LEAGUE-TOURS' own serial gates;
+  - capture manifests are outside the fingerprint.
+
+The coordinating session's checks led to the twin verdicts (a planted driver regression had ended
+`status=passed`), the run-wide disk guard, and forced checks without twins.
+
 ## Handoff
 
 - **Branch:** `task/gates-against-main`, merged with main `17aee63` (RECORD-SCREENS, whose
@@ -154,6 +176,8 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
   branch's without the new options. Exit codes, stdout, stderr, the timelines, the cues, the rider
   word, and the PPM and cartridge RAM files on three picture frames per case are all identical.
 - **Follow-ups:**
+  - refuse to promote a recording whose lines carry error marks a step does not declare expected,
+    and fix or record LEAGUE-TOURS' `odd-tours-w0` main side (review round 4);
   - the fingerprint leaves out capture manifests, whose pads a check reads: count them, but not the
     few reports gate steps rewrite (`cond-*.json`, `anchors.json`) (review round 3);
   - folder names like `league` and `options` match ordinary words in scripts, so a fingerprint
