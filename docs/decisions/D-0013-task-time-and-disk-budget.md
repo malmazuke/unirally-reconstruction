@@ -11,9 +11,10 @@
 On 24 October 2026 the user said: "This isn't sustainable. Come up with a plan for drastically
 reducing both the task time and the disk space usage."
 
-- **Time.** RECORD-SCREENS (#83) took about 23 hours from claim to merge, for about 5 hours of work:
+- **Time.** RECORD-SCREENS (#83) took 23 h 09 min from claim to merge, for about 5 hours of work
+  ([TASK-EFFICIENCY](../../tasks/TASK-EFFICIENCY.md) gives each figure's source):
   - the worker's captures and code took 3 h 06 min, and its review fixes 65 min;
-  - the reviewer's own work took about 30 min;
+  - the reviewer's own work took about 55 min over two rounds;
   - two full gate runs took 5 h 18 min and 13 h, the second with about 7 h of laptop sleep;
   - the reviewer waited 4 h 48 min on the heavy-run lock behind the gates.
 
@@ -29,7 +30,7 @@ reducing both the task time and the disk space usage."
 ### Time
 
 1. **Gates.** Gate through the selective runner of D-0012:
-   - **Measured.** On #84 it took 34 min on RECORD-SCREENS' change (5 h 17 min serially) and 39 min
+   - **Measured.** On #84 it took 34 min on RECORD-SCREENS' change (5 h 18 min serially) and 39 min
      on PODIUM-AUDIO's.
    - **After a review round,** rerun only the steps whose inputs the fix changed, with the previously
      gated head as the base, plus the task's own checks. Never rerun the full set.
@@ -59,8 +60,10 @@ reducing both the task time and the disk space usage."
    - the rest get macOS's transparent filesystem compression;
    - every replacement is checked byte for byte before an atomic swap.
 
-   It runs on all evidence once, and then at every task's closeout. macOS does not compress files
-   larger than about 500 MB this way; they are only stored once where identical.
+   It runs through `heavy-run.sh` on all evidence once, then at every task's closeout. A second run
+   only compresses what is new. macOS does not compress files larger than about 500 MB this way;
+   the tool doesn't try (`--max-compress`, 480 MiB), and such files are only stored once where
+   identical. A copy whose mode or extended attributes differ from the first's is left as it is.
 2. **Free-disk floor.** `heavy-run.sh` refuses to start a run with less than 15 GB free (exit 75).
    - D-0012's runner caps its own temporary use at 6 GB and checks free disk before each step.
 3. **Per-task budget.** After compaction, a task's new evidence should stay under 1 GB.
@@ -78,7 +81,8 @@ reducing both the task time and the disk space usage."
   through the runner's pool, so two at once would finish no sooner. The timeout probe that made
   concurrent runs fail spuriously is fixed anyway: `test_native_reports.py` gave ctest a 1-second
   default timeout for every test, and the expected-timeout probe now relies on its own `TIMEOUT 1`
-  property.
+  property. The same 1-second figure also capped each of `native_fresh_process_repeatability`'s
+  three fresh processes (`lab_commands.py`), a second source of the same flake.
 - **Files over about 500 MB** (49 files, 39.6 GB before compaction) stay uncompressed. Compressing
   them needs either a reader change (`.zst` with a reading helper) or deleting them under D-0011.
   The compaction results in TASK-EFFICIENCY say what remains.
