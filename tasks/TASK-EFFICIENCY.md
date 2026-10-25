@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **in review**, 25 October 2026. Claimed on main `17aee63` (Claude Code desktop app,
+- Status: **accepted** 25 October 2026 (tier 2, [#85](https://github.com/malmazuke/unirally-reconstruction/pull/85),
+  approved in review round 2), integrated by merge commit. Claimed on main `17aee63` (Claude Code desktop app,
   Claude Opus 5.5 `claude-opus-5-5`; coordinator, primary and integrator), on the user's
   instruction.
 - Task provider: Anthropic.
@@ -126,4 +127,41 @@ approved, with eight low findings.
 
 ## Results
 
-(The compaction of main's evidence follows the re-review.)
+**Compaction.**
+- Run at `6db9b8c5`, through `heavy-run.sh` once GATES-AGAINST-MAIN's batch released the lock, on
+  25 October 2026 (main `artifacts/compact/run-2.out`).
+- Over main's `local/evidence` and `artifacts`, 2,006 files of 1 MiB or more took 102.39 GB on disk:
+  - 586 identical copies became clones;
+  - 1,275 files were compressed;
+  - 108 were not compressible by the filesystem.
+- Compression saved 42.84 GB; with the clones, the data volume's free space rose by 46.61 GB, from
+  45 GB to 88 GB. `status=passed`, with no failure.
+- `du` still reports 66 GB for `local/evidence`, because it counts each clone's shared blocks again.
+  The free-space figure is the real saving.
+
+**What is left.**
+- Files over 480 MiB, which macOS does not compress transparently: about 40 GB (`league-tours` 12 GB,
+  `m4-16-playable-zoom-zoo` 6.4 GB, `league-tours-review` 6.2 GB, `zoom-zoo-opposing-input` 5.2 GB, and
+  others). They are 20 `series.bin` probe captures and 19 `memory.wram` race captures, some stored
+  once as clones.
+- They are the inputs of the differential gates and of earlier tasks' `checks.sh`. Shrinking them
+  needs a reader for a compressed copy in the race-capture readers, which #84 also changes, and in
+  the probe scripts. So it waits for #84 and is queued as EVIDENCE-LARGE-FILES.
+
+**Timeout probe.** Not run locally: GATES-AGAINST-MAIN held the heavy-run lock throughout. Hosted CI on
+the final head ran the synthetic suite, `test_native_reports.py` included, on Linux and macOS: pass.
+
+## Handoff (closeout)
+
+- Commits on `task/task-efficiency`, all on main `17aee63`:
+  - `c08524d8`: D-0013, the tool and the timeout probe;
+  - `c86e8990`: the Linux tests;
+  - `cf817a22`: review round 1;
+  - `6db9b8c5`: review round 2;
+  - then this record.
+- The closing session removes `.worktrees/task-efficiency` and `.worktrees/task-efficiency-review`
+  and the local branch. Main keeps `artifacts/compact/` (the run's output). The untracked copy of
+  the tool in main was deleted when review round 1 began.
+- `local/locks/heavy-run.sh` (local) has the stall watchdog, keep-awake and the 15 GB floor. Its
+  pre-watchdog copy is `heavy-run.sh.bak-20261024`.
+- Queued: EVIDENCE-LARGE-FILES, the files over 480 MiB, after #84.

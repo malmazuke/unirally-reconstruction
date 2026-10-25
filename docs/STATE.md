@@ -1,5 +1,20 @@
 # Project state
 
+**25 October 2026: TASK-EFFICIENCY is accepted (tier 2, #85) and integrated by merge commit.**
+On the user's instruction to cut task time and disk use drastically,
+[D-0013](docs/decisions/D-0013-task-time-and-disk-budget.md) sets the rules:
+- **Gates** run selectively (D-0012) and rerun only what a fix touches.
+- **Order:** worker, then reviewer, then gates, so nobody waits on the heavy-run lock.
+- **Liveness:** agents check a job's progress rather than only waiting for it.
+- **Every heavy run** keeps the Mac awake and refuses to start below 15 GB free.
+- **Every closeout** runs `tools/compact_evidence.py`, with a 1 GB budget for a task's new evidence.
+
+Results:
+- The compaction stored 586 identical files once and compressed 1,275, freeing 46.61 GB: free disk
+  went from 45 GB to 88 GB, and every swap was checked byte for byte.
+- The synthetic suite's timeout probe no longer fails spuriously under load.
+- The about 40 GB of files over 480 MiB are queued as EVIDENCE-LARGE-FILES, after #84.
+
 **24 October 2026: RECORD-SCREENS is accepted (tier 1, #83) and integrated by merge commit.**
 OPTIONS' records screens now run as the original does, and PLAYER SCORES starts on the right rider
 after any result:
