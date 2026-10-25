@@ -102,9 +102,9 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
 `artifacts/gates/`. Numbers and the regression tables are in
 [D-0012, Measured](../docs/decisions/D-0012-selective-gates-against-main.md#measured).
 
-- **RECORD-SCREENS' change:** 34.1 min (serially 5 h 17 min), 2.8 GB peak (`rs-final2.out`).
-- **PODIUM-AUDIO's change:** 38.6 min (serially 4 h 32 min), 4.1 GB peak (`pa-final2.out`).
-- **Full run with recording:** 83.6 min, 4.0 GB peak, `status=passed` (`full-final.out`). An
+- **RECORD-SCREENS' change:** 34.3 min (serially 5 h 17 min), 2.7 GB temp (`rs-r2.out`).
+- **PODIUM-AUDIO's change:** 43.6 min (serially 4 h 32 min), 4.0 GB peak (`pa-r2.out`).
+- **Full run with recording:** 83.4 min, 4.0 GB peak, `status=passed` (`full-r2.out`). An
   earlier full run's lines agree with PODIUM-AUDIO's last serial run, section by section
   (`full-record-2.out`).
 - **The four deliberate regressions** (race state, a picture bit, a cue, the audio driver) and the
@@ -120,6 +120,7 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
 | 5 | A reported line is enough | driver regression | ended `status=passed` (the coordinating session's review) | a twin on main gives every report a verdict |
 | 6 | TMPDIR is a step's disk | split PCM steps | 10.5 GB against a 6 GB budget | output directories counted, bulk pruned, measured disk drop holds new steps |
 | 7 | Skipping is sound (review round 1) | the reviewer's planted PPM-writer, `parse_ppm` and CMake-definition changes | each skipped the checks that would catch it; ten further gaps | digests of the bytes written, tooling and CMake select, fingerprints, pack alias, uncompared outputs, `broken`; each case now caught (D-0012) |
+| 9 | The round-1 fixes close the gaps (review round 2) | the reviewer's truncated recordings, edited scripts, write_file regression | seven gaps: early-stopped recordings trusted, `--force` unjudged, fingerprints miss reached folders, `broken` nearly inert | incomplete recordings dropped, forced checks keep their twin unless `--no-twin`, a wider fingerprint, error-line `broken`, one `write_bytes`; the planted truncation is caught |
 | 8 | Twins judge every reporting check | RECORD-SCREENS with its checks forced | 39 false `changed`: main's runner lacks its `--rider-word`; 66.6 min, as the CMake rule selected everything | a task's own checks have no twin; a CMake change compares build commands: 34.1 min |
 
 ## Handoff

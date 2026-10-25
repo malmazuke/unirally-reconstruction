@@ -246,11 +246,14 @@ Runs on 24 and 25 October 2026, Apple M2 Max, 12 cores (8 performance), `--jobs 
 (their temp and output directories, measured); "peak disk" is the largest drop in free disk
 during the run, which also counts the base worktree's build and anything else on the disk.
 
-| Run (runner `5bff2f9` unless named) | Old serial `gates.sh` | Runner | Peak temp / disk | Result |
+| Run (runner `649024b`) | Old serial `gates.sh` | Runner | Peak temp / disk | Result |
 | --- | --- | --- | --- | --- |
-| RECORD-SCREENS' change (main without it, against main with it) | 5 h 17 min (`b6fa277`) | **34.1 min** | 2.7 / 2.8 GB | it adds sources in `src/core/CMakeLists.txt`, and the command comparison leaves `zoom_zoo_runner` and the audio runners unchanged, so the race gates and PCM schedules do not run; its 36 checks run in parallel, as its own (no twin); `changed`: `fe-equivalence`, `fe-classify`, `mi-rv-records`, the records screens it rewrote |
-| PODIUM-AUDIO's change (main without it or RECORD-SCREENS, against that with it) | 4 h 32 min (`b7efb93`) | **38.6 min** | 3.9 / 4.1 GB | it touched the race engine and the podium's sound: the eleven gates passed; its own checks read; `changed`: `lt-cues`, LEAGUE-TOURS' tour schedule, whose podium now matches the original (its PCM steps show `tour-cues` 4 podium frames differing on main, 0 on the candidate) |
-| Full run with recording (main `17aee63` with the runner, `b1ec9bb`) | - | **83.6 min** | 3.1 / 4.0 GB | every step, `status=passed`; the corpus it recorded, with the measurement runs since: 570 invocations from 95 checks, 444 distinct cases, 9.2 M frames, 308 K with pictures |
+| RECORD-SCREENS' change (main without it, against main with it) | 5 h 17 min (`b6fa277`) | **34.3 min** | 2.7 / 5.3 GB | it adds sources in `src/core/CMakeLists.txt`, and the command comparison leaves `zoom_zoo_runner` and the audio runners unchanged, so the race gates and PCM schedules do not run; its 36 checks run in parallel, as its own, without twins (main's runner has no `--rider-word`) and listed to read; `changed`: `fe-equivalence`, `fe-classify`, `mi-rv-records`, the records screens it rewrote |
+| PODIUM-AUDIO's change (main without it or RECORD-SCREENS, against that with it) | 4 h 32 min (`b7efb93`) | **43.6 min** | 3.9 / 4.0 GB | it touched the race engine and the podium's sound: the eleven gates passed; its own checks keep their twins: `pa-cues` and the six PCM schedules `changed (own check)`, the podium now matching the original (`tour-cues`: 4 podium frames differ on main, 0 on the candidate); `changed`: `lt-cues`, LEAGUE-TOURS' tour schedule, which that fix moves |
+| Full run with recording (main `17aee63` with the runner) | - | **83.4 min** | 3.1 / 4.0 GB | every step, `status=passed`, no recording errors |
+
+The disk figure is the drop in free space, which counts anything else written meanwhile (the
+base worktree's rebuild among it); the temp figure is what the run's steps held.
 
 - **Same results as the serial gates.** The full run's lines were compared with PODIUM-AUDIO's
   last serial run (same source as main), section by section, and agree. The exceptions are the
@@ -277,6 +280,7 @@ during the run, which also counts the base worktree's build and anything else on
   | B: `front_end_runner` writes PPM files with red and blue swapped | the replay equal, every picture check skipped | the replay's digests are of the file bytes: `mi-kb-input` `changed` |
   | A: `parse_ppm` (the checks' picture reader) drops a byte | every corpus check skipped | `tools/unirally_lab/` changed selects every check; `mi-kb-input` and `split-demo` `changed` against their twins, which run main's reader |
   | C: a compile definition in `src/core/CMakeLists.txt` | every binary "same" | runner `5bff2f9`: every binary's build commands differ from main's, so all are selected (the definition is harmless and they pass) |
+  | D (round 2): every output file loses its last byte in the one writer | the replay equal | runner `649024b`: files and digests share `write_bytes`; `mi-kb-input` `changed` (`rev-d.out`) |
 
 - **Why RECORD-SCREENS' change once took 66.6 minutes** (runner `b1ec9bb`): the first CMake rule
   marked every binary changed because it adds sources, and its forced checks had twins on main,
