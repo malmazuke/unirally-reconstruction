@@ -98,6 +98,9 @@ Do not spend the entire session producing source code before running an experime
 
 ## Unattended operation and stopping conditions
 
+Task time and disk follow [D-0013](decisions/D-0013-task-time-and-disk-budget.md): worker, then reviewer, then gates; gates rerun only what a fix touches; every heavy run goes through `local/locks/heavy-run.sh`, which stops a stalled job, keeps the machine awake and refuses to start below 15 GB free; the closeout runs `tools/compact_evidence.py`.
+
+
 Operating defaults, adjustable from measured runs under D-0004 (enforced by agents; no scheduler exists):
 
 - One active child by default; a second independent child needs the recorded D-0004 justification.
