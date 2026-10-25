@@ -2,9 +2,12 @@
 
 ## Assignment
 
-- Status: **queued** 25 October 2026 by [TASK-EFFICIENCY](TASK-EFFICIENCY.md) (D-0013). Unclaimed.
-  Ready once [#84](https://github.com/malmazuke/unirally-reconstruction/pull/84) (GATES-AGAINST-MAIN)
-  merges, because both change the race-capture readers.
+- Status: **claimed** 26 October 2026 on main `e3a41066`, on the user's instruction (Claude Code
+  desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator, primary and integrator; a fresh
+  subagent reviews). Queued 25 October 2026 by [TASK-EFFICIENCY](TASK-EFFICIENCY.md) (D-0013), after
+  [#84](https://github.com/malmazuke/unirally-reconstruction/pull/84), now merged.
+- Branch `task/evidence-large-files` in `.worktrees/evidence-large-files`.
+- Task provider: Anthropic.
 - Milestone: M4 (process).
 - Review tier: **1**. It changes how the differential gates read their reference captures.
 
