@@ -89,7 +89,7 @@ class NativeReportTests(unittest.TestCase):
             self.assertEqual(r.returncode, EXIT_OK, r.stderr[-2000:])
             report = Path(tmp) / "test.json"
             r = run_cli("test", "--suite", "synthetic", "--preset", "lab-failure-probe", "--no-python-tests",
-                        "--artifacts", str(Path(tmp) / "art"), "--report", str(report), "--test-timeout", "1")
+                        "--artifacts", str(Path(tmp) / "art"), "--report", str(report), "--test-timeout", "30")
             self.assertEqual(r.returncode, EXIT_TIMEOUT, r.stderr[-2000:])
             rep = json.loads(report.read_text())
             self.assertEqual(rep["status"], "failed")
@@ -153,7 +153,7 @@ class NativeReportTests(unittest.TestCase):
             self.assertEqual(run_cli("build", "--preset", "lab-failure-probe").returncode, EXIT_OK)
             report = Path(tmp) / "test.json"
             r = run_cli("test", "--suite", "synthetic", "--preset", "lab-failure-probe", "--no-python-tests",
-                        "--artifacts", str(Path(tmp) / "art"), "--report", str(report), "--test-timeout", "1")
+                        "--artifacts", str(Path(tmp) / "art"), "--report", str(report), "--test-timeout", "30")
             self.assertEqual(r.returncode, EXIT_TIMEOUT)
             rep = json.loads(report.read_text())
             check = next(c for c in rep["checks"] if c["name"] == "native_build_available")
