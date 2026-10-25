@@ -157,7 +157,7 @@ def main() -> int:
         return corpus.clear_step(corpus_dir, step.id)
 
     def corpus_lines(step, lines):
-        (corpus_dir / f'{step.id}.lines').write_text('\n'.join(lines) + '\n')
+        (corpus_dir / f'{step.id}.lines.new').write_text('\n'.join(lines) + '\n')
 
     def recorded_lines(step_id):
         """What a check printed when it was recorded, and whether that was on this same main."""
@@ -167,11 +167,9 @@ def main() -> int:
             return None, False
         return path.read_text().splitlines(), meta.get('recorded_at') == base
 
-    def corpus_incomplete(step, status):
-        (corpus_dir / f'{step.id}.jsonl.errors').open('a').write(f'recording ended {status}: incomplete\n')
-
     context.update(corpus_log=corpus_log, corpus_lines=corpus_lines, recorded_lines=recorded_lines,
-                   corpus_incomplete=corpus_incomplete)
+                   corpus_promote=lambda step: corpus.promote(corpus_dir, step.id),
+                   corpus_discard=lambda step: corpus.discard(corpus_dir, step.id))
     # A check whose command or scripts changed since its runs were recorded, or whose recording
     # logged an error, has no corpus to stand on.
     stale = {}

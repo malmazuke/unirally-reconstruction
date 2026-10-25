@@ -118,7 +118,11 @@ the checks run. A task's own checks are recorded on every run, so the next task 
   - the scripts of every folder those scripts name.
 
   A check runs against the original when its fingerprint has changed, when its recording logged an
-  error or stopped early (a timeout, a cap), or when the replay did not run all its recorded runs.
+  error, or when the replay did not run all its recorded runs.
+- **A recording is all or nothing.** A step records into a new log, which becomes its corpus only
+  when the step finishes `ran` or `passed` with exit status 0. A timeout, a cap, a stall, a script
+  stopped partway, or an interrupted run leaves the earlier recording as it was, and in a
+  recording run the step fails.
   Capture manifests and scripts two folders away are outside the fingerprint, because gate steps
   rewrite some reports on every run; changing one calls for a new recording. Only full runs and a
   task's `--task-checks` record.
@@ -155,8 +159,9 @@ twin, `<step>@main`, which runs the same command in main's checkout with main's 
   both, records why, and lists the step in `--expect-changed`; then it is `changed (expected)`.
 
 - Equal lines can still mean `broken`, which fails the run: the check broke the same way on both
-  sides (a deleted capture, a script error). It is `broken` when it prints more error lines than its
-  recording did, or, on the main it was recorded on, anything other than what it printed then.
+  sides (a deleted capture, a script error). It is `broken` when it prints fewer lines or more error
+  lines than its recording did ("Traceback", "no capture", "no schedule" and the like), or, on the
+  main it was recorded on, anything other than what it printed then.
 - A task's own checks against the original (`--force`) always run and keep their twin. Their
   `changed` is shown and does not fail the run, and the status line names them to be read.
   `--no-twin` drops the twin for a forced check main's runner cannot run (an option the task

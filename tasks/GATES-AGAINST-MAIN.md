@@ -153,6 +153,11 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
   branch's without the new options. Exit codes, stdout, stderr, the timelines, the cues, the rider
   word, and the PPM and cartridge RAM files on three picture frames per case are all identical.
 - **Follow-ups:**
+  - the fingerprint leaves out capture manifests, whose pads a check reads: count them, but not the
+    few reports gate steps rewrite (`cond-*.json`, `anchors.json`) (review round 3);
+  - the fingerprint over-includes: every script in `gates-against-main` counts for all 36 rs-*
+    steps (move `rs_one.sh` into `record-screens/`), and folder names like `league` and `options`
+    match ordinary words;
   - delete the frozen gates' memory captures under D-0011 (14.3 GB);
   - split `checks4` (21 minutes, one step);
   - cache a twin's result per base commit, so a rerun of the gates on the same main skips it.

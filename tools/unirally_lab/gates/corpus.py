@@ -248,7 +248,7 @@ def fingerprint(command: str, evidence: Path, cache: dict | None = None) -> str:
 
 
 def write_meta(corpus: Path, step: str, **fields) -> None:
-    (corpus / f'{step}.meta.json').write_text(json.dumps(fields, indent=1) + '\n')
+    (corpus / f'{step}.meta.json.new').write_text(json.dumps(fields, indent=1) + '\n')
 
 
 def read_meta(corpus: Path, step: str) -> dict:
@@ -259,12 +259,35 @@ def read_meta(corpus: Path, step: str) -> dict:
 
 
 def clear_step(corpus: Path, step: str) -> Path:
-    """Start a step's log afresh; returns its path."""
+    """Start a step's new recording; returns the log the shim writes. It becomes the step's corpus
+    only through `promote`, when the step has finished as it should: a run that is interrupted,
+    or a check that stops partway, leaves the previous recording as it was."""
     corpus.mkdir(parents=True, exist_ok=True)
-    log = corpus / f'{step}.jsonl'
-    log.unlink(missing_ok=True)
+    for name in (f'{step}.jsonl.new', f'{step}.jsonl.new.errors', f'{step}.meta.json.new', f'{step}.lines.new'):
+        (corpus / name).unlink(missing_ok=True)
+    return corpus / f'{step}.jsonl.new'
+
+
+def promote(corpus: Path, step: str) -> bool:
+    """Make a finished recording the step's corpus; False (and nothing changed) if it logged an
+    error."""
+    errors = corpus / f'{step}.jsonl.new.errors'
+    if errors.exists() and errors.stat().st_size:
+        return False
+    new = corpus / f'{step}.jsonl.new'
+    if not new.exists():
+        new.write_text('')                  # the check ran front_end_runner on nothing this time
+    for name in ('jsonl', 'meta.json', 'lines'):
+        if (corpus / f'{step}.{name}.new').exists():
+            (corpus / f'{step}.{name}.new').replace(corpus / f'{step}.{name}')
     (corpus / f'{step}.jsonl.errors').unlink(missing_ok=True)
-    return log
+    errors.unlink(missing_ok=True)
+    return True
+
+
+def discard(corpus: Path, step: str) -> None:
+    for name in (f'{step}.jsonl.new', f'{step}.jsonl.new.errors', f'{step}.meta.json.new', f'{step}.lines.new'):
+        (corpus / name).unlink(missing_ok=True)
 
 
 def copy_corpus(source: Path, target: Path) -> None:

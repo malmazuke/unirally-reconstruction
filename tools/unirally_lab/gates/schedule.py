@@ -185,10 +185,18 @@ class Run:
             del self.running[sid]
         self.log(f'  < {sid}: {o.status} in {o.seconds:.0f} s, peak temp {fmt(o.peak_temp)}')
         if self.recording(step) and 'corpus_lines' in self.context:
-            self.context['corpus_lines'](step, normal_lines(self.out / f'{sid}.log', self.env))
-            if o.status in ('timeout', 'over-cap', 'stalled'):
-                # A recording that stopped early holds only some of the check's runs.
-                self.context['corpus_incomplete'](step, o.status)
+            # A recording counts only if the check finished as it should: a timeout, a cap, a stall
+            # or a non-zero exit (a script stopped by `set -u`, say) leaves only some of its runs.
+            if o.status in ('ran', 'passed') and o.rc == 0:
+                self.context['corpus_lines'](step, normal_lines(self.out / f'{sid}.log', self.env))
+                if not self.context['corpus_promote'](step):
+                    o.status, o.why = 'failed', o.why + '; its recording logged errors'
+            else:
+                self.context['corpus_discard'](step)
+                if self.context.get('record'):
+                    o.why += f'; recording incomplete (status {o.status}, exit {o.rc}): its earlier corpus stands'
+                    o.status = 'failed'
+                self.log(f'  ! {sid}: recording discarded (exit {o.rc})')
         if sid in self.callbacks:
             self.callbacks[sid](self, o)
         if step.twin and self.outcomes[step.twin].status not in ('pending', 'running'):
@@ -206,8 +214,9 @@ class Run:
         # Equal on both sides, but broken the same way on both (a deleted capture, a script error):
         # more error lines than its recording printed, or, on the very main it was recorded on,
         # anything other than what it printed then.
+        # Fewer lines than recorded: a capture it no longer reaches (a step's `|| continue`).
         broken = recorded is not None and mine == main and (
-            error_count(mine) > error_count(recorded) or (same_main and mine != recorded))
+            error_count(mine) > error_count(recorded) or len(mine) < len(recorded) or (same_main and mine != recorded))
         if broken:
             o.status = 'broken'
             o.summary = ['  same on main, but not as recorded:'] + [f'  - {l}' for l in recorded if l not in mine][:20] + \
@@ -311,7 +320,7 @@ class Run:
                     min_free=self.min_free, steps=[vars(self.outcomes[s.id]) for s in self.steps])
 
 
-ERROR_MARKS = ('Traceback', 'Error', 'No such file', 'no capture', 'not captured', 'MISSING', 'cannot ')
+ERROR_MARKS = ('Traceback', 'Error', 'No such file', 'no capture', 'no schedule', 'not captured', 'MISSING', 'cannot ')
 
 
 def error_count(lines: list[str]) -> int:
