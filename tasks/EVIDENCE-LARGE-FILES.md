@@ -30,3 +30,32 @@ about 144× (D-0013).
 - **The proof.** The gates give the same row digests before and after; D-0012's runner reports
   `same-as-main`.
 - **The target.** `local/evidence` under 15 GB.
+
+## What was done
+
+- **The tracked reader.** `tools/unirally_lab/capture_files.py` (`stored_path`, `open_capture`,
+  `read_capture`) reads a capture kept raw or as `NAME.zst`, preferring the raw file.
+  - It decodes with `compression.zstd` (Python 3.14) or the `zstd` command.
+  - The three race-capture readers (`zoom_zoo_playable.py`, `dragster_playable.py`,
+    `track_reference.py`) open `memory.wram` and `memory.sram` through it. Each still checks every
+    frame against its recorded SHA-256, so a wrong decode stops the check rather than passing.
+  - Tests: `tests/tooling/test_capture_files.py`.
+- **The evidence scripts** (local, not tracked). `local/evidence/evidence-large-files/patch_readers.py`
+  rewrote the series-capture reads of 93 scripts in place, with backups in `script-backups/` and
+  every patched script parsing:
+  - whole-file reads `(X).read_bytes()` and `open(X, 'rb').read()` of `series.bin`,
+    `wram-series.bin` and `sram-series.bin` became `_capture_bytes(X)`;
+  - three seek-and-read streams became `_open_capture(X)`;
+  - each patched script gains these two small functions.
+
+  15 scripts name such a file without reading it this way. They are 14 capture writers and
+  `classic-pause-menu/pictures.py`, whose captures stay raw.
+- **The files.** `local/evidence/evidence-large-files/convert.py` stores each evidence file over
+  480 MiB of these kinds as `NAME.zst` (zstd -10): the series and race captures, plus raw cue
+  `events.bin` files and one native cond log, which no current check reads.
+  - Each file is compressed, decompressed again and compared by SHA-256 before the raw file is
+    deleted.
+  - The digests are in `converted.sha256`, the log in `convert.out`.
+- **Future captures.** `tools/compact_evidence.py` now does the same at every closeout: a capture
+  kind over `--max-compress` becomes `NAME.zst`, checked the same way, and identical `.zst` files
+  are cloned.
