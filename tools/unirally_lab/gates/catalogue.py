@@ -411,9 +411,9 @@ print(f\\"    {sys.argv[2]:>9}: frames {d['frames_compared']} differing {d['fram
 E=local/evidence/menu-input; B0=$E/base-e304868/front_end_runner; C0=build/lab-release/src/core/front_end_runner
 echo "  {c}:"
 python3 $E/compare.py {c} --probe --binary $C0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from {first} > "$G/{c}-candidate.json" 2>&1 && summary "$G/{c}-candidate.json" candidate \\
-  || echo "    candidate: could not run: $(tail -1 "$G/{c}-candidate.json" | cut -c1-160)"
+  || echo "    candidate: could not run: $(grep . "$G/{c}-candidate.json" | tail -1 | cut -c1-160)"
 python3 $E/compare.py {c} --probe --binary $B0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from {first} > "$G/{c}-main.json" 2>&1 && summary "$G/{c}-main.json" main \\
-  || echo "         main: could not run: $(tail -1 "$G/{c}-main.json" | cut -c1-160)"''')
+  || echo "         main: could not run: $(grep . "$G/{c}-main.json" | tail -1 | cut -c1-160)"''')
     for c in ('rv-ca', 'rv-scores', 'rv-bars', 'rv-records', 'rv-pick', 'rv-warn', 'rv-kb'):
         # rv-warn keeps 6,700 pictures a side.
         original(f'mi-{c}', f"MENU-INPUT's review capture {c} against the original, candidate and main",
@@ -421,9 +421,9 @@ python3 $E/compare.py {c} --probe --binary $B0 --pack local/classic-pal-crawler-
 R=local/evidence/menu-input-review; B0=local/evidence/menu-input/base-e304868/front_end_runner; C0=build/lab-release/src/core/front_end_runner
 echo "  {c}:"
 python3 $R/compare.py {c} --probe --binary $C0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from 400 > "$G/{c}-candidate.json" 2>&1 && summary "$G/{c}-candidate.json" candidate \\
-  || echo "    candidate: could not run: $(tail -1 "$G/{c}-candidate.json" | cut -c1-160)"
+  || echo "    candidate: could not run: $(grep . "$G/{c}-candidate.json" | tail -1 | cut -c1-160)"
 python3 $R/compare.py {c} --probe --binary $B0 --pack local/classic-pal-crawler-tracks-v39.pack --pictures-from 400 > "$G/{c}-main.json" 2>&1 && summary "$G/{c}-main.json" main \\
-  || echo "         main: could not run: $(tail -1 "$G/{c}-main.json" | cut -c1-160)"''')
+  || echo "         main: could not run: $(grep . "$G/{c}-main.json" | tail -1 | cut -c1-160)"''')
     original('mi-cues', "MENU-INPUT's sound schedules against the original's (frame waits included)", '''
 E=local/evidence/menu-input; R=local/evidence/menu-input-review; mkdir -p "$G/cues"
 for n in kb-input league-pick league-name opt-backs warnings records-input scores-input scores-carry w5 vs-challenger awards-press; do
