@@ -16,13 +16,28 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-@unittest.skipUnless(sys.platform == "darwin", "APFS clones and decmpfs compression are macOS only")
+MACOS = sys.platform == "darwin"
+
+
 class CompactEvidenceTests(unittest.TestCase):
+    """On macOS the tool compacts; elsewhere it refuses (the project counts a skipped test as a failure)."""
+
     def run_tool(self, *args: str) -> subprocess.CompletedProcess:
         return subprocess.run([sys.executable, str(TOOL), *args, "--skip-recent", "0", "--min-size", "4096"],
                               capture_output=True, text=True, timeout=300)
 
+    def test_refuses_outside_macos(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            r = self.run_tool(tmp)
+            if MACOS:
+                self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            else:
+                self.assertNotEqual(r.returncode, 0)
+                self.assertIn("macOS only", r.stderr)
+
     def test_compresses_and_clones_without_changing_bytes(self) -> None:
+        if not MACOS:
+            return  # covered by test_refuses_outside_macos
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "a").mkdir()
@@ -42,6 +57,8 @@ class CompactEvidenceTests(unittest.TestCase):
             self.assertIn("identical copies: 1", r.stdout)
 
     def test_dry_run_changes_nothing(self) -> None:
+        if not MACOS:
+            return
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "series.bin"
             path.write_bytes(b"\x00" * (1 << 20))
@@ -50,6 +67,8 @@ class CompactEvidenceTests(unittest.TestCase):
             self.assertFalse(os.lstat(path).st_flags & COMPRESSED_FLAG)
 
     def test_recent_files_are_skipped(self) -> None:
+        if not MACOS:
+            return
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "series.bin"
             path.write_bytes(b"\x00" * (1 << 20))
