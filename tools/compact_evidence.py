@@ -17,6 +17,11 @@ skips files modified in the last --skip-recent minutes; evidence is written once
 A copy left uncloned because its mode or attributes differ is not compressed either. Each run
 re-reads and re-clones identical copies (cheap, but not free) and compresses only what is new.
 
+3. Large captures. A file over --max-compress whose name is a capture kind the readers open as raw
+   or NAME.zst (tools/unirally_lab/capture_files.py: memory.wram, memory.sram, series.bin,
+   wram-series.bin, sram-series.bin) is stored as NAME.zst (zstd -10) instead, checked by
+   decompressing it again; identical .zst files are then cloned (EVIDENCE-LARGE-FILES).
+
 Every replacement is written to a scratch directory `.compact-scratch` at the root (same volume, so
 the final rename is atomic), checked byte for byte (SHA-256), and swapped in only if the original
 still has the size, mtime and inode it had when it was read. A reader with the file open keeps the
@@ -43,6 +48,7 @@ COMPRESSED_FLAG = 0x20  # UF_COMPRESSED, set on a decmpfs-compressed file
 ALREADY_PACKED = {'.png', '.gz', '.zst', '.zip', '.xz', '.bz2', '.jpg', '.dylib', '.pack'}
 SCRATCH = '.compact-scratch'
 # Attributes the filesystem keeps for its own bookkeeping, not part of a file's identity.
+CAPTURE_KINDS = {'memory.wram', 'memory.sram', 'series.bin', 'wram-series.bin', 'sram-series.bin'}
 SYSTEM_XATTRS = {'com.apple.decmpfs', 'com.apple.ResourceFork', 'com.apple.provenance'}
 
 
@@ -138,6 +144,36 @@ class Compactor:
             shutil.rmtree(work, ignore_errors=True)
         return before, disk_bytes(path), 'compressed'
 
+    def pack_zst(self, path, info):
+        """Store a large capture as NAME.zst. Returns (bytes before, bytes after, note)."""
+        before = disk_bytes(path)
+        if shutil.disk_usage(path.parent).free < self.min_free + info.st_size:
+            return before, before, 'skipped: too little free disk'
+        digest = sha256(path)
+        work = self.scratch / f'{os.getpid()}-{info.st_ino}'
+        work.mkdir(parents=True)
+        try:
+            packed = work / (path.name + '.zst')
+            subprocess.run(['zstd', '-q', '-T0', '-10', str(path), '-o', str(packed)], check=True)
+            unpacked = hashlib.sha256()
+            reader = subprocess.Popen(['zstd', '-dcq', str(packed)], stdout=subprocess.PIPE)
+            try:
+                while chunk := reader.stdout.read(1 << 24):
+                    unpacked.update(chunk)
+            finally:
+                reader.stdout.close()
+                status = reader.wait()
+            if status != 0 or unpacked.hexdigest() != digest:
+                raise RuntimeError('the .zst does not decompress to the original')
+            if identity(path.lstat()) != identity(info):
+                raise RuntimeError('the original changed while it was being compacted')
+            target = path.with_name(path.name + '.zst')
+            os.replace(packed, target)
+            path.unlink()
+        finally:
+            shutil.rmtree(work, ignore_errors=True)
+        return before, disk_bytes(target), 'stored as .zst'
+
     def clone(self, source, duplicate):
         """Replace `duplicate` (same bytes as `source`) with a clone of `source` that keeps its own metadata."""
         info = duplicate.lstat()
@@ -195,6 +231,10 @@ def main():
             shutil.rmtree(stale)
 
     files = list(candidates(roots, args.min_size, args.skip_recent * 60))
+    large = [(p, i) for p, i in files if p.name in CAPTURE_KINDS and i.st_size > args.max_compress]
+    if large and not shutil.which('zstd'):
+        sys.exit('compact_evidence: large captures need the zstd command')
+    files = [(p, i) for p, i in files if (p, i) not in large]
     print(f'{len(files)} files, {sum(disk_bytes(p) for p, _ in files) / 1e9:.2f} GB on disk', flush=True)
 
     # Identical files first, so only the first of each group is compressed and the rest clone it.
@@ -211,7 +251,8 @@ def main():
     to_compress = [(p, i) for p, i in files if p not in later_copies
                    and not i.st_flags & COMPRESSED_FLAG and i.st_size <= args.max_compress]
     print(f'identical copies: {len(pairs)}; to compress: {len(to_compress)} (the rest are already '
-          f'compressed, over {args.max_compress >> 20} MiB or later copies)', flush=True)
+          f'compressed, over {args.max_compress >> 20} MiB or later copies); large captures to .zst: '
+          f'{len(large)}', flush=True)
     if args.dry_run:
         return 0
 
@@ -224,6 +265,23 @@ def main():
         notes[note] = notes.get(note, 0) + 1
         saved += before - after
     for note in run_pass(pairs, lambda s, d: compactors[root_of(d)].clone(s, d), args.jobs, failures):
+        notes[note] = notes.get(note, 0) + 1
+    packed = []
+    for path, info in large:  # one at a time: each uses every core
+        try:
+            before, after, note = compactors[root_of(path)].pack_zst(path, info)
+        except Exception as exc:
+            failures.append(f'{path}: {exc}')
+            continue
+        notes[note] = notes.get(note, 0) + 1
+        saved += before - after
+        if note == 'stored as .zst':
+            packed.append(path.with_name(path.name + '.zst'))
+    zst_groups = {}
+    for path in sorted(packed):
+        zst_groups.setdefault((path.stat().st_size, sha256(path)), []).append(path)
+    zst_pairs = [(paths[0], d) for paths in zst_groups.values() for d in paths[1:]]
+    for note in run_pass(zst_pairs, lambda s, d: compactors[root_of(d)].clone(s, d), args.jobs, failures):
         notes[note] = notes.get(note, 0) + 1
 
     for root in roots:
