@@ -511,9 +511,9 @@ NAMES={n} zsh "$E/native_commands.sh" "$RUN/pa-cues/cand" 2>&1''', also=('race_a
     original('pa-league-frozen', "PODIUM-AUDIO: LEAGUE's frozen gate (pack v40)", '''
 python3 "$L/two-human-stunts/league_frozen.py" "$G/league-frozen.json" local/classic-pal-crawler-tracks-v40.pack build/lab-release/src/core/front_end_runner > "$G/league-frozen.log" 2>&1
 echo "  league frozen: $(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['status'])" "$G/league-frozen.json" 2>&1)"''')
-    # RECORD-SCREENS' checks.sh (55 minutes serially), one step per item: rs_one.sh in main
-    # local/evidence/gates-against-main runs one item of it with its commands unchanged.
-    rs = 'zsh "$L/gates-against-main/rs_one.sh"'
+    # RECORD-SCREENS' checks.sh (55 minutes serially), one step per item: rs_one.sh beside it in
+    # main local/evidence/record-screens runs one item of it with its commands unchanged.
+    rs = 'zsh "$L/record-screens/rs_one.sh"'
     for step_id, args, cap in (
             ('rs-rs-track', 'compare record-screens rs-track 1000 "$G"', 1.0),
             ('rs-rs-high', 'compare record-screens rs-high 1000 "$G"', 1.0),

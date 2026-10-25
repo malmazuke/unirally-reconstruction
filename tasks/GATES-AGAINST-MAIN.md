@@ -129,7 +129,8 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
   `--rider-word` and this task's `--frame-digests` are both kept in `front_end_runner.cpp`).
 - **Local state in main.** `local/gates/corpus/` (17 MB) is the corpus; re-record it with
   `run --full --record` when a check script changes. `local/evidence/gates-against-main/` holds
-  the measurements and `rs_one.sh`, which the catalogue's RECORD-SCREENS steps call.
+  the measurements; `local/evidence/record-screens/rs_one.sh` is what the catalogue's RECORD-SCREENS
+  steps call (it was in `gates-against-main/`, whose changing scripts made their fingerprints stale).
   `.worktrees/gates-base` is the runner's base checkout, kept between runs.
 - **Measurement worktrees to remove at close:** `.worktrees/gam-main`, `gam-rs`, `gam-pa`,
   `gam-reg` and `gam-review`, and the local branches `gam/*`, which hold the regressions, the
@@ -155,9 +156,8 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
 - **Follow-ups:**
   - the fingerprint leaves out capture manifests, whose pads a check reads: count them, but not the
     few reports gate steps rewrite (`cond-*.json`, `anchors.json`) (review round 3);
-  - the fingerprint over-includes: every script in `gates-against-main` counts for all 36 rs-*
-    steps (move `rs_one.sh` into `record-screens/`), and folder names like `league` and `options`
-    match ordinary words;
+  - folder names like `league` and `options` match ordinary words in scripts, so a fingerprint
+    covers more folders than it needs (it errs toward re-recording);
   - delete the frozen gates' memory captures under D-0011 (14.3 GB);
   - split `checks4` (21 minutes, one step);
   - cache a twin's result per base commit, so a rerun of the gates on the same main skips it.
