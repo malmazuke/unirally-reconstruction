@@ -12,6 +12,11 @@ at least --min-size:
    extended attributes. A copy whose mode or extended attributes differ from the first's is left
    as it is.
 
+A process that keeps a file open for writing across the swap writes to the old copy, so the tool
+skips files modified in the last --skip-recent minutes; evidence is written once and then only read.
+A copy left uncloned because its mode or attributes differ is not compressed either. Each run
+re-reads and re-clones identical copies (cheap, but not free) and compresses only what is new.
+
 Every replacement is written to a scratch directory `.compact-scratch` at the root (same volume, so
 the final rename is atomic), checked byte for byte (SHA-256), and swapped in only if the original
 still has the size, mtime and inode it had when it was read. A reader with the file open keeps the
@@ -58,13 +63,20 @@ def identity(info):
 
 
 def xattrs(path):
-    out = subprocess.run(['xattr', str(path)], capture_output=True, text=True).stdout.split()
-    return {name: subprocess.run(['xattr', '-px', name, str(path)], capture_output=True, text=True).stdout
-            for name in out if name not in SYSTEM_XATTRS}
+    """Extended attributes by name (names may hold spaces); a value that cannot be read is unique."""
+    names = subprocess.run(['xattr', str(path)], capture_output=True, text=True).stdout.splitlines()
+    values = {}
+    for name in names:
+        if name in SYSTEM_XATTRS:
+            continue
+        read = subprocess.run(['xattr', '-px', name, str(path)], capture_output=True, text=True)
+        values[name] = read.stdout if read.returncode == 0 else object()
+    return values
 
 
 def is_apfs(path):
-    mount = subprocess.run(['df', str(path)], capture_output=True, text=True).stdout.splitlines()[-1].split()[-1]
+    fields = subprocess.run(['df', '-P', str(path)], capture_output=True, text=True).stdout.splitlines()[-1].split()
+    mount = ' '.join(fields[5:])  # the mount point is the sixth field and may hold spaces
     info = plistlib.loads(subprocess.run(['diskutil', 'info', '-plist', mount], capture_output=True).stdout)
     return info.get('FilesystemType') == 'apfs'
 
@@ -222,7 +234,9 @@ def main():
         print(f'FAILED {failure}')
     freed = shutil.disk_usage(roots[0]).free - free_before
     print(f'compression saved {saved / 1e9:.2f} GB')
-    print(f'status={"failed" if failures else "passed"} freed={freed / 1e9:.2f}GB '
+    short = notes.get('skipped: too little free disk', 0)
+    status = 'failed' if failures else 'incomplete' if short else 'passed'
+    print(f'status={status} freed={freed / 1e9:.2f}GB '
           f'(the volume\'s free space before and after, so other writers count too)')
     return 1 if failures else 0
 

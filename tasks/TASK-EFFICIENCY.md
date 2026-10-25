@@ -45,8 +45,9 @@ plan.
 Taken by the coordinator on 24 and 25 October 2026.
 - **Claim to merge.** RECORD-SCREENS took 23 h 09 min: claim commit `ce33f1e` at 22 October
   23:50:57 UTC; #83 merged 23 October 23:00:00 UTC (`gh pr view 83`).
-- **The worker.** 3 h 06 min (harness, 11,146,621 ms) and its round-1 fixes 65 min (3,929,022 ms).
-  Recorded in RECORD-SCREENS' gates section.
+- **The worker.** 3 h 06 min (harness, 11,146,621 ms; RECORD-SCREENS' gates section) and its
+  round-1 fixes 65 min (harness, 3,929,022 ms; RECORD-SCREENS' ignored closeout file
+  `artifacts/record-screens-integration/closeout.json`).
 - **The reviewer.**
   - Round 1 ran 5 h 29 min by the harness (19,744,219 ms). Its capture script was written at
     03:14 UTC, and it took the heavy-run lock when the gates released it at 08:16 UTC, after
@@ -102,6 +103,26 @@ was rewritten:
      another directory.
    - A root not on APFS is refused, since clones would be full copies.
    - `ditto -c` is always waited for.
+
+## Review round 2 (approved `cf817a22`)
+
+[Review](https://github.com/malmazuke/unirally-reconstruction/pull/85#pullrequestreview-5640937045):
+approved, with eight low findings.
+- **Fixed in the commit after `cf817a22`:**
+  - Extended attribute names with spaces: the tool now reads one name a line, and an attribute it
+    cannot read counts as different.
+  - The APFS check takes the mount point from `df -P`'s sixth field onwards, so a mount point with
+    spaces is read whole.
+  - A run that skips files for lack of disk ends `status=incomplete`, not `passed`.
+  - The docstring and D-0013 now say that a file held open for writing across a swap loses later
+    writes, and that reruns re-clone identical copies.
+  - The 65 min is sourced to RECORD-SCREENS' closeout file.
+- **Accepted as limits:**
+  - A copy left uncloned for its mode or attributes is not compressed. In main's evidence that is
+    at most one file.
+  - Two concurrent runs remove each other's scratch. `heavy-run.sh` serialises them, and originals
+    are never at risk.
+  - The "any directory" test passes an explicit root.
 
 ## Results
 

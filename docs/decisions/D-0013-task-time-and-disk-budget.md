@@ -61,7 +61,9 @@ reducing both the task time and the disk space usage."
    - every replacement is checked byte for byte before an atomic swap.
 
    It runs through `heavy-run.sh` on all evidence once, then at every task's closeout. A second run
-   only compresses what is new. macOS does not compress files larger than about 500 MB this way;
+   compresses only what is new, though it re-reads identical copies to clone them again. A file
+   held open for writing across a swap would lose later writes to the old copy, so files modified
+   in the last hour are skipped. macOS does not compress files larger than about 500 MB this way;
    the tool doesn't try (`--max-compress`, 480 MiB), and such files are only stored once where
    identical. A copy whose mode or extended attributes differ from the first's is left as it is.
 2. **Free-disk floor.** `heavy-run.sh` refuses to start a run with less than 15 GB free (exit 75).
