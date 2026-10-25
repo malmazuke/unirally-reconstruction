@@ -1,5 +1,32 @@
 # Project state
 
+**25 October 2026: GATES-AGAINST-MAIN is accepted (tier 1, #84) and integrated by merge commit.**
+Pre-merge gates are one runner, `python3 -m tools.unirally_lab.gates run`
+([D-0012](decisions/D-0012-selective-gates-against-main.md)); each task's `gates.sh` and the
+appending of earlier tasks' `checks.sh` stop.
+- **It selects** the steps a change can affect: from ninja's recorded inputs per binary, the pack,
+  CMake commands, build-wide files and the tooling the checks import.
+- **It compares with main.** Every check against the original that drives `front_end_runner`
+  runs only where its own recorded invocations (the corpus, `local/gates/corpus/`), replayed
+  through main's runner and the candidate's, differ in an output it reads. It then runs on main as
+  well, and a different result fails the run until the task lists it as expected.
+- **It stores no picture.** The runner's digests of the file bytes stream through pipes. Each step
+  has a capped temp directory, and steps run in parallel lanes with the synthetic suite alone.
+- **The eleven frozen race gates** check the contract's frozen digest of the original's rows.
+
+Results: RECORD-SCREENS' change took 34.3 min (serially 5 h 17 min) and PODIUM-AUDIO's 43.6 min
+(4 h 32 min), each under 4 GB of temp; a full run against the original takes 83 min. Every one of
+seven planted regressions, four of them the reviewer's, ends in a failed run. The review took four
+rounds (11, 7, 1 and 2 findings).
+
+Recorded limits:
+- a full run with `--record` is due before milestones, after every fifth merged task, and when a
+  check script changes;
+- capture manifests are outside the corpus fingerprint;
+- the frozen gates' memory captures (14.3 GB) can go under D-0011.
+
+[GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
+
 **25 October 2026: TASK-EFFICIENCY is accepted (tier 2, #85) and integrated by merge commit.**
 On the user's instruction to cut task time and disk use drastically,
 [D-0013](docs/decisions/D-0013-task-time-and-disk-budget.md) sets the rules:

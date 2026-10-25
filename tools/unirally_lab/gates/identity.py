@@ -1,0 +1,130 @@
+"""Which native binaries a change can alter.
+
+A binary's behaviour is a function of the files it is compiled from, the build configuration and
+the content pack it reads. Ninja records the first exactly (`gate_identity` uses the same
+records), so a binary none of whose recorded inputs changed between main and the candidate, built
+the same way and reading the same pack, replays every input exactly as main's did. Every query
+that fails is reported as "changed": the selection that skips a check must fail closed.
+"""
+from __future__ import annotations
+
+import hashlib
+import subprocess
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from ..native.gate_identity import engine_files
+
+# The binaries the gates drive, by ninja target, and the preset each is built in.
+TARGETS = {
+    'front_end_runner': ('lab-release', 'src/core/front_end_runner'),
+    'zoom_zoo_runner': ('lab-release', 'src/core/zoom_zoo_runner'),
+    'classic_race_presentation_runner': ('lab-release', 'src/core/classic_race_presentation_runner'),
+    'movement_runner': ('lab-release', 'src/core/movement_runner'),
+    'presentation_runner': ('lab-debug', 'src/core/presentation_runner'),
+    'split_demo_runner': ('lab-release', 'src/core/split_demo_runner'),
+    'audio_driver_runner': ('lab-release', 'tests/native/audio_driver_runner'),
+    'race_audio_runner': ('lab-release', 'tests/native/race_audio_runner'),
+    'dragster_fuzz_runner': ('lab-release', 'src/app/dragster_fuzz_runner'),
+    'app': ('app-debug', 'src/app/unirally.app/Contents/MacOS/unirally'),
+}
+
+# A change to any of these changes how every binary is built in ways no command line shows (the
+# toolchain, presets, fetched sources): every binary counts as changed.
+BUILD_WIDE = ('CMakePresets.json', 'cmake/', 'third_party/', 'tools/locks/')
+
+
+def cmake_file(name: str) -> bool:
+    """A CMake file anywhere (a definition added in src/core/CMakeLists.txt changes no source)."""
+    return name.endswith(('CMakeLists.txt', '.cmake'))
+
+
+def build_wide(name: str) -> bool:
+    return name.startswith(BUILD_WIDE) or cmake_file(name)
+
+
+# The checks' scripts import the repository's Python (picture readers, projections, the runner's
+# own sweeps), which no binary's inputs record: a change there selects every step.
+TOOLING = ('tools/unirally_lab/', 'tools/project.py')
+
+
+@dataclass
+class Identity:
+    base: str
+    changed_files: list[str]
+    pack_changed: bool
+    binaries: dict[str, dict] = field(default_factory=dict)  # name -> {changed, files, reason}
+
+    def changed(self, name: str) -> bool:
+        return self.binaries.get(name, {'changed': True})['changed']
+
+    def tooling(self) -> list[str]:
+        return [f for f in self.changed_files if f.startswith(TOOLING)]
+
+    def any_code(self) -> bool:
+        return any(not f.startswith(('docs/', 'tasks/')) and not f.endswith('.md') for f in self.changed_files)
+
+
+def git(root: Path, *args: str) -> str:
+    return subprocess.check_output(['git', *args], cwd=root, text=True)
+
+
+def changed_files(root: Path, base: str) -> list[str]:
+    """Files whose content differs from `base`: committed, staged and unstaged, plus untracked
+    files git would track (an untracked source a glob picks up still changes the build)."""
+    names = set(git(root, 'diff', '--name-only', base).split())
+    names.update(git(root, 'ls-files', '--others', '--exclude-standard').split())
+    return sorted(names)
+
+
+def sha_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open('rb') as f:
+        for block in iter(lambda: f.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def build_commands(build: Path, root: Path, ninja_tool: str, target: str) -> list[str] | None:
+    """A target's compile and link commands, with its checkout's path taken out; None if unknown."""
+    try:
+        out = subprocess.run([ninja_tool, '-C', str(build), '-t', 'commands', target], capture_output=True, text=True)
+    except OSError:
+        return None
+    if out.returncode:
+        return None
+    return sorted(line.replace(str(root), '<root>') for line in out.stdout.splitlines())
+
+
+def identify(root: Path, base: str, ninja_tool: str, candidate_pack: Path, base_pack: Path,
+             base_root: Path | None = None) -> Identity:
+    files = changed_files(root, base)
+    pack_changed = sha_file(candidate_pack) != sha_file(base_pack)
+    ident = Identity(base=base, changed_files=files, pack_changed=pack_changed)
+    wide = [f for f in files if f.startswith(BUILD_WIDE)]
+    cmake = [f for f in files if cmake_file(f) and not f.startswith(BUILD_WIDE)]
+    changed = set(files)
+    for name, (preset, target) in TARGETS.items():
+        build = root / 'build' / preset
+        if wide:
+            ident.binaries[name] = dict(changed=True, reason=f'build-wide file changed: {wide[0]}')
+            continue
+        if cmake:
+            # A CMake change shows in the commands that build the target: compare them with main's.
+            mine = build_commands(build, root, ninja_tool, target)
+            main = build_commands(base_root / 'build' / preset, base_root, ninja_tool, target) if base_root else None
+            if mine is None or main is None or mine != main:
+                why = 'its build commands differ from main\'s' if mine and main else 'its build commands cannot be compared'
+                ident.binaries[name] = dict(changed=True, reason=f'{cmake[0]} changed and {why}')
+                continue
+        try:
+            inputs, _ = engine_files(build, root, ninja_tool, target)
+        except RuntimeError as error:
+            ident.binaries[name] = dict(changed=True, reason=f'inputs unknown: {error}')
+            continue
+        hit = sorted(changed.intersection(inputs))
+        reason = f'{len(hit)} of its {len(inputs)} input files changed' if hit else f'none of its {len(inputs)} input files changed'
+        if pack_changed:
+            reason += '; the content pack changed'
+        ident.binaries[name] = dict(changed=bool(hit) or pack_changed, reason=reason, files=hit[:20])
+    return ident

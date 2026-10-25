@@ -67,11 +67,11 @@ def object_is_current(build: Path, root: Path, object_path: str, inputs: list[st
                            f'({stale[0]}); build the preset')
 
 
-def engine_files(build: Path, root: Path, tool: str) -> list[str]:
-    objects = [line.strip() for line in ninja(['inputs', BINARY_TARGET], build, tool)
+def engine_files(build: Path, root: Path, tool: str, target: str = BINARY_TARGET) -> list[str]:
+    objects = [line.strip() for line in ninja(['inputs', target], build, tool)
                if line.strip().endswith('.o')]
     if not objects:
-        raise RuntimeError(f'ninja named no objects for {BINARY_TARGET}')
+        raise RuntimeError(f'ninja named no objects for {target}')
     seen: set[str] = set()
     for object_path in objects:
         lines = ninja(['deps', object_path], build, tool)
