@@ -120,8 +120,8 @@ Logs and scripts in main `local/evidence/gates-against-main/` (the `*.out` files
 | 5 | A reported line is enough | driver regression | ended `status=passed` (the coordinating session's review) | a twin on main gives every report a verdict |
 | 6 | TMPDIR is a step's disk | split PCM steps | 10.5 GB against a 6 GB budget | output directories counted, bulk pruned, measured disk drop holds new steps |
 | 7 | Skipping is sound (review round 1) | the reviewer's planted PPM-writer, `parse_ppm` and CMake-definition changes | each skipped the checks that would catch it; ten further gaps | digests of the bytes written, tooling and CMake select, fingerprints, pack alias, uncompared outputs, `broken`; each case now caught (D-0012) |
-| 9 | The round-1 fixes close the gaps (review round 2) | the reviewer's truncated recordings, edited scripts, write_file regression | seven gaps: early-stopped recordings trusted, `--force` unjudged, fingerprints miss reached folders, `broken` nearly inert | incomplete recordings dropped, forced checks keep their twin unless `--no-twin`, a wider fingerprint, error-line `broken`, one `write_bytes`; the planted truncation is caught |
 | 8 | Twins judge every reporting check | RECORD-SCREENS with its checks forced | 39 false `changed`: main's runner lacks its `--rider-word`; 66.6 min, as the CMake rule selected everything | a task's own checks have no twin; a CMake change compares build commands: 34.1 min |
+| 9 | The round-1 fixes close the gaps (review round 2) | the reviewer's truncated recordings, edited scripts, write_file regression | seven gaps: early-stopped recordings trusted, `--force` unjudged, fingerprints miss reached folders, `broken` nearly inert | incomplete recordings dropped, forced checks keep their twin unless `--no-twin`, a wider fingerprint, error-line `broken`, one `write_bytes`; the planted truncation is caught |
 
 ## Handoff
 
