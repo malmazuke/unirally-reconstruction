@@ -11,7 +11,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.unirally_lab.capture_files import open_capture, read_capture, stored_path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # the suite may load this module first
+from tools.unirally_lab.capture_files import open_capture, read_capture, stored_path  # noqa: E402
 
 DATA = bytes(range(256)) * 4096 + b"\x00" * 65536
 HAVE_ZSTD = importlib.util.find_spec("compression.zstd") is not None if sys.version_info >= (3, 14) else False

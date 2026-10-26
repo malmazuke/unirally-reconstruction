@@ -124,6 +124,7 @@ if sys.platform == "darwin":
             self.assertFalse(compressed(path))
 
         def test_large_captures_are_stored_as_zst(self) -> None:
+            sys.path.insert(0, str(ROOT))
             from tools.unirally_lab.capture_files import read_capture
             for name in ("a/series.bin", "b/series.bin", "c/memory.wram"):
                 write_old(self.root / name, SERIES)
