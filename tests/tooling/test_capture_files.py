@@ -66,5 +66,26 @@ if HAVE_ZSTD or HAVE_ZSTD_CLI:
                 self.assertEqual(read_capture(path), DATA)
 
 
+if HAVE_ZSTD_CLI:
+    class CommandFallbackTests(unittest.TestCase):
+        """Without compression.zstd (Python before 3.14) the zstd command decodes."""
+
+        def test_zst_reads_through_the_zstd_command(self) -> None:
+            import builtins
+            from unittest import mock
+            real_import = builtins.__import__
+
+            def no_stdlib_zstd(name, *args, **kwargs):
+                if name == "compression" or name.startswith("compression."):
+                    raise ImportError(name)
+                return real_import(name, *args, **kwargs)
+
+            with tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "series.bin"
+                write_zst(path.with_name("series.bin.zst"), DATA)
+                with mock.patch("builtins.__import__", no_stdlib_zstd):
+                    self.assertEqual(read_capture(path), DATA)
+
+
 if __name__ == "__main__":
     unittest.main()
