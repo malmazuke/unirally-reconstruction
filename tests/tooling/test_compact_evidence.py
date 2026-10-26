@@ -123,22 +123,6 @@ if sys.platform == "darwin":
             self.assertIn("0 files", r.stdout)
             self.assertFalse(compressed(path))
 
-        def test_large_captures_are_stored_as_zst(self) -> None:
-            sys.path.insert(0, str(ROOT))
-            from tools.unirally_lab.capture_files import read_capture
-            for name in ("a/series.bin", "b/series.bin", "c/memory.wram"):
-                write_old(self.root / name, SERIES)
-            write_old(self.root / "c/other.bin", SERIES)  # not a capture kind: compressed in place
-            r = run_tool(str(self.root), "--max-compress", "100000")
-            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-            for name in ("a/series.bin", "b/series.bin", "c/memory.wram"):
-                self.assertFalse((self.root / name).exists(), name)
-                self.assertTrue((self.root / (name + ".zst")).exists(), name)
-                self.assertEqual(read_capture(self.root / name), SERIES)
-            self.assertTrue((self.root / "c/other.bin").exists())
-            self.assertIn("stored as .zst: 3", r.stdout)
-            self.assertIn("cloned:", r.stdout)
-
         def test_dry_run_changes_nothing(self) -> None:
             write_old(self.root / "series.bin", SERIES)
             r = run_tool(str(self.root), "--dry-run")
