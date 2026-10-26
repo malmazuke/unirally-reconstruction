@@ -52,10 +52,60 @@ about 144× (D-0013).
   `classic-pause-menu/pictures.py`, whose captures stay raw.
 - **The files.** `local/evidence/evidence-large-files/convert.py` stores each evidence file over
   480 MiB of these kinds as `NAME.zst` (zstd -10): the series and race captures, plus raw cue
-  `events.bin` files and one native cond log, which no current check reads.
+  `events.bin` files and one native cond log.
   - Each file is compressed, decompressed again and compared by SHA-256 before the raw file is
     deleted.
   - The digests are in `converted.sha256`, the log in `convert.out`.
-- **Future captures.** `tools/compact_evidence.py` now does the same at every closeout: a capture
-  kind over `--max-compress` becomes `NAME.zst`, checked the same way, and identical `.zst` files
-  are cloned.
+
+## Review round 1 (returned on `c0acb7f5`) - the fixes
+
+[Review](https://github.com/malmazuke/unirally-reconstruction/pull/86#pullrequestreview-5645362122).
+1. **The tests' import.** `test_capture_files.py` now puts the checkout root on `sys.path`: the suite
+   discovers from `tests/tooling` and loads this module first. Fixed in `5264ecec`; the full gate
+   run's synthetic step had failed on it.
+2. **Cue `events.bin` files the gates read.** `podium-audio/cues/events.py` reads the three
+   `pa-*-disp1` cue captures (steps `pa-anchors` and `pa-pcm-*`).
+   - They were restored raw, digest-checked against `converted.sha256`, before the running full
+     gate run reached those steps, and the steps match main.
+   - The `demo-long` events and the native cond log stay converted: no current check reads them.
+3. **Three scripts the patcher broke.** `attract-demo/compare_trailer.py`,
+   `compare_camera_trailer.py` and `compare_corrected_trailer.py` had a method call's parentheses
+   taken as the read. They are restored from `script-backups/`; their inputs were never converted.
+4. **Readers outside the helper.**
+   - The three `stunt-events/decode` race captures, read raw by their decode scripts, are restored
+     raw.
+   - The closeout's automatic `.zst` step for future large captures is dropped (`96be8587`), because
+     evidence readers and `track_reference.py`'s `memory.sram` seek still open those files raw.
+   - Unpatched scripts that name a series file in other forms read none of the converted captures
+     except through the tracked readers. The full gate run, which runs every check, is the proof.
+5. **Decoder coverage.** A new test makes the `zstd` command decode with the standard library
+   module hidden, wherever the command exists (`47bc0a69`). The evidence scripts' helper also falls
+   back to the `zstd` command before Python 3.14.
+6. **Nits.** The compaction nits went with the dropped step, and D-0013's "Not done" bullet is
+   updated. `open_capture`'s command fallback holding a whole capture in memory is recorded as a
+   limit.
+
+## Results
+
+- **Converted.** 46 files, 38.64 GB, became 0.765 GB of `.zst`, each checked against its SHA-256
+  (`convert.out`). After the restorations, 40 stay converted:
+  - the league-tours, league-tours-review and two-human-stunts probes;
+  - the M4-16, opposing-input, rider-art and dragster race captures;
+  - the idle demo's series;
+  - the `demo-long` cue events and the cond log.
+- **Still raw over 480 MiB.** 5.6 GB in nine files:
+  - the restored `stunt-events` and podium cue files;
+  - M4-16's `baseline-a/b.wram`, which is not a capture kind the readers handle;
+  - one `events.bin.gz`.
+- **Disk.**
+  - Free disk is 117 GB, against 92 GB before this task and 45 GB before TASK-EFFICIENCY.
+  - `local/evidence` sums to 36.2 GB counted per path. That counts each of TASK-EFFICIENCY's 586
+    APFS clones in full, so the physical figure is lower; APFS gives no per-directory measure of
+    it.
+- **Gates.** `gates run --full` at `c0acb7f5` took 222.7 min, with a peak step temp of 2.33 GB
+  (main `local/evidence/evidence-large-files/gates-full-c0acb7f5.out`).
+  - Every one of the 105 checks against the original, and each one's run on main, is
+    `same-as-main`, including the LEAGUE-TOURS checks that read the converted probes and the race
+    gates that read `memory.wram.zst`.
+  - 31 steps passed. The synthetic step failed on finding 1, fixed since.
+  - The full run with its main-side twins is the pre-milestone run, not a task's gate.
