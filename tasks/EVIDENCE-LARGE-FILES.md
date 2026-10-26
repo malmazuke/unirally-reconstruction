@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **claimed** 26 October 2026 on main `e3a41066`, on the user's instruction (Claude Code
+- Status: **accepted** 26 October 2026 (tier 1, [#86](https://github.com/malmazuke/unirally-reconstruction/pull/86),
+  approved in review round 2 at `2ab91928`), integrated by merge commit. Claimed on main `e3a41066`,
+  on the user's instruction (Claude Code
   desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator, primary and integrator; a fresh
   subagent reviews). Queued 25 October 2026 by [TASK-EFFICIENCY](TASK-EFFICIENCY.md) (D-0013), after
   [#84](https://github.com/malmazuke/unirally-reconstruction/pull/84), now merged.
@@ -109,3 +111,40 @@ about 144× (D-0013).
     gates that read `memory.wram.zst`.
   - 31 steps passed. The synthetic step failed on finding 1, fixed since.
   - The full run with its main-side twins is the pre-milestone run, not a task's gate.
+
+## Review round 2 (approved `2ab91928`)
+
+[Review](https://github.com/malmazuke/unirally-reconstruction/pull/86#pullrequestreview-5646324173):
+approved.
+- **Round 1's fixes:** every one checked against the files and the record.
+- **The converted captures were really read.** The 11 race gates ran in full (not frozen-digest)
+  mode and passed. A main-side twin reads the same converted files, so `same-as-main` alone could
+  not show this. Instead, the reviewer compared against the last gate run before the conversion
+  (RECORD-SCREENS' `gates-3f8a1ab.out`), and these match it:
+  - all 84 LEAGUE-TOURS `lt-*` lines;
+  - the idle demo (34 of 34 cycles, 963 of 1,006 pictures);
+  - `pa-anchors`.
+- **Not caused here:** `lt-odd-tours-w0`'s main side fails as it did in LEAGUE-TOURS' accepted checks.
+- **Notes:**
+  - `two-human-stunts/podium_spin.py` still opens `series.bin` directly. No current check runs it.
+  - The evidence helpers' command fallback was added about 10 minutes into the full run. Both
+    versions decode the same way on Python 3.14.
+- **The synthetic step** passed on its rerun at `2ab91928` (`gates-synthetic-2ab91928.out`), and
+  hosted CI is green on all three checks.
+
+## Handoff (closeout)
+
+- Commits on `task/evidence-large-files`:
+  - `3d2c15b7`: the claim;
+  - `db5ef228`: the reader and the race readers;
+  - `990232ae`: the automatic step, dropped in `96be8587`;
+  - `c0acb7f5`: the record;
+  - `5264ecec`, `47bc0a69`, `2ab91928`: round 1's fixes and records;
+  - then this record.
+- Main `local/evidence/evidence-large-files/` keeps:
+  - the patcher, its `script-backups/` and the converter;
+  - `converted.sha256`;
+  - the conversion and gate logs.
+- The closing session removes `.worktrees/evidence-large-files` and
+  `.worktrees/evidence-large-files-review` and the local branch.
+- To read a converted capture without the helpers, run `zstd -d NAME.zst`.

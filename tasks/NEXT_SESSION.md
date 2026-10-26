@@ -27,6 +27,18 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](./GATES-AGAINST-MAIN.md) holds the detail.
 
+**26 October 2026: EVIDENCE-LARGE-FILES is accepted (tier 1, #86) and integrated by merge commit.**
+The evidence captures over 480 MiB, which macOS will not compress transparently, are stored as
+`NAME.zst`:
+- **Converted:** 46 files, 38.64 GB, became 0.765 GB, each checked by SHA-256. Six were restored
+  raw because their readers open them directly, so 40 stay converted.
+- **Readers:** the three race-capture readers read through `tools/unirally_lab/capture_files.py`,
+  and 90 local evidence scripts were patched to read either form.
+- **Proof:** a full gate run (`--full`, every check) found all 105 checks against the original
+  `same-as-main`. The review matched the LEAGUE-TOURS checks line for line against a run from
+  before the conversion.
+- **Disk:** 117 GB free, against 45 GB before TASK-EFFICIENCY.
+
 **25 October 2026: TASK-EFFICIENCY is accepted (tier 2, #85) and integrated by merge commit.**
 On the user's instruction to cut task time and disk use drastically,
 [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md) sets the rules:
