@@ -85,6 +85,7 @@ reducing both the task time and the disk space usage."
   default timeout for every test, and the expected-timeout probe now relies on its own `TIMEOUT 1`
   property. The same 1-second figure also capped each of `native_fresh_process_repeatability`'s
   three fresh processes (`lab_commands.py`), a second source of the same flake.
-- **Files over about 500 MB** (49 files, 39.6 GB before compaction) stay uncompressed. Compressing
-  them needs either a reader change (`.zst` with a reading helper) or deleting them under D-0011.
-  The compaction results in TASK-EFFICIENCY say what remains.
+- **Files over about 500 MB** (49 files, 39.6 GB before compaction). EVIDENCE-LARGE-FILES stored 40
+  of them as `NAME.zst`, read through `tools/unirally_lab/capture_files.py`: 38.64 GB became
+  0.77 GB. Nine (5.6 GB) stay raw, because their readers open them directly. A new capture over
+  that size is the task's to slim at closeout; it is not converted automatically.

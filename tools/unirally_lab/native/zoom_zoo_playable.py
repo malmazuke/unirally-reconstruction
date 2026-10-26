@@ -16,6 +16,7 @@ from .zoom_zoo_race import restore_frames
 from .zoom_zoo_trial import BUTTONS
 from ..content.pack import load_rules,validate_pack,TWO_TRACK_RULES_PATH
 from ..reference.core_identity import accepted_reference
+from ..capture_files import open_capture
 
 
 ROLL_WORDS=[0x1215,0x123f,0x121b,0x1221,0x124f,0xfdf,0x1009,0x42f,0x433,0x42b,0x54b,0x124b]
@@ -34,7 +35,7 @@ def original(directory, *, allow_incomplete=False):
         raise ValueError('original memory inventory incomplete')
     rows=[];finish=[None,None];loading=None;archive=None;charge_archive=None;announcements_archive=None;roll_archive=None;weights_archive=None;pause_archive=None;paused_updates=0;countdown_paused=0;previous=None
     guards=json.loads((ROOT/"tests/manifests/native/zoom-zoo-race-guards.reference.json").read_text())["items"]
-    with (directory/'memory.wram').open('rb') as ws,(directory/'memory.sram').open('rb') as ss:
+    with open_capture(directory/'memory.wram') as ws,open_capture(directory/'memory.sram') as ss:
         for frame in range(first,last+1):
             w,s=ws.read(131072),ss.read(8192)
             if len(w)!=131072 or len(s)!=8192 or sha(w)!=document['wram_sha256'][frame-first] or sha(s)!=document['sram_sha256'][frame-first]:

@@ -21,6 +21,7 @@ from .dragster_playable_reference import INITIALIZATION_FRAME, FIRST_RECORDED_FR
 from .classic_race_layout import describe
 from ..content.pack import load_rules, validate_pack, TWO_TRACK_RULES_PATH
 from ..reference.core_identity import accepted_reference
+from ..capture_files import open_capture
 
 MAGIC = b'URDG0001'
 # ZOOM ZOO applies its constant-domain guards from end-1649, the M4-12 seed.
@@ -62,7 +63,7 @@ def original(directory, *, allow_incomplete=False, collect_guards=False):
     announcements_archive = roll_archive = weights_archive = pause_archive = None
     paused_updates = 0; countdown_paused = 0; previous = None; guard_violations = {}; left_result = None; projection_error = None
     guards = guard_items()
-    with (directory/'memory.wram').open('rb') as ws, (directory/'memory.sram').open('rb') as ss:
+    with open_capture(directory/'memory.wram') as ws, open_capture(directory/'memory.sram') as ss:
         for frame in range(first, last+1):
             w, s = ws.read(131072), ss.read(8192)
             if len(w) != 131072 or len(s) != 8192 or sha(w) != document['wram_sha256'][frame-first] or sha(s) != document['sram_sha256'][frame-first]:
