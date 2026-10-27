@@ -231,6 +231,9 @@ struct LeagueSetup {
     // `$00AC` = 2 at the standings (`$80:A66F-A67A`): back from NOW PLAYING (`$80:BF05`), the
     // standings slide back in; from anywhere else `$00AC` is 1 and they slide forward (R-0098).
     bool table_slides_back{};
+    // The standings' entry frames still to run without a frame wait: a print of five or more
+    // rows runs past its frame (R-0102).
+    std::uint8_t table_frames_late{};
     bool slots_slide_back{}; // `$00AC` != 1 at the slots (`$80:EF7B`): back from PICK TOUR
 };
 
@@ -286,6 +289,9 @@ struct RecordsDetail {
     std::uint16_t hidden_half{};
     bool press_seen{};      // `$80:C206` saw a press on its last frame
     bool group_reprinted{}; // GROUP TABLES printed again: the next frame uploads the text
+    // RECORDS' entry frames still to run without a frame wait: `$83:97BD`'s statistics with
+    // RECORDS' print can run past OPTIONS' choice frame (R-0102).
+    std::uint8_t statistics_frames_late{};
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
@@ -495,6 +501,9 @@ struct RaceResult {
     // How many times or scores `$80:C786` placed in the track's top three; each placing runs the
     // checksums (`$83:90F4`) again.
     std::uint8_t records_placed{};
+    // In a league, the exit frames of the pair's count and of the standings' frame wait
+    // (`league_exit_frames`, R-0102), set on the exit's frame 1.
+    std::uint32_t league_count_frame{}, league_standings_frame{};
     std::array<LapGraphDot, 20> dots{}; // the player's laps, then the opponent's
     StuntTally tally{};                 // a stunt result's
 };

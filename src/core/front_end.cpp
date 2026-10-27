@@ -264,6 +264,12 @@ bool waits_for_frame(const FrontEndState& state) {
     // OK's name check runs past its frame without a frame wait (R-0101).
     if (state.screen == FrontEndScreen::rename_keyboard && state.keyboard.check_frames != 0)
         return false;
+    // RECORDS' statistics, and a long standings' print, can run past their frame (R-0102).
+    if (state.screen == FrontEndScreen::league_table_entry && state.league.table_frames_late != 0)
+        return false;
+    if (state.screen == FrontEndScreen::records_entry
+        && state.records_detail.statistics_frames_late != 0)
+        return false;
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;

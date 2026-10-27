@@ -97,9 +97,16 @@ inline std::uint8_t& oam_byte(FrontEndState& state, unsigned entry, unsigned fie
 // In a league the pair's points and the awards' printing (about 176 scanlines) come before the
 // awards' first frame wait, so it takes both riders' placings (three checksum runs) to push them a
 // frame on (R-0095: traced on organic-stunt-tricks' DRAGSTER, two placings, and its BOWL, one).
+inline std::uint32_t league_awards_scoring_frame(unsigned records_placed) {
+    return records_placed >= 2 ? 3 : 2;
+}
+// Before the standings with another pair to race the frame comes from the work's cost
+// (`time_league_exit`, R-0102), set on the exit's frame 1.
 inline std::uint32_t result_scoring_frame(const FrontEndState& state) {
     const auto placed = state.race_result.records_placed;
-    if (state.mode == FrontEndMode::league) return placed >= 2 ? 3 : 2;
+    if (state.mode == FrontEndMode::league && state.race_result.league_standings_frame != 0)
+        return state.race_result.league_standings_frame;
+    if (state.mode == FrontEndMode::league) return league_awards_scoring_frame(placed);
     return placed != 0 ? 3 : 2;
 }
 // $83:9E47: the rider's best time (or score) on the track, `$77:0829 + 2 x (50 x rider + track)`.
@@ -269,6 +276,9 @@ void store_league_stunt_totals(FrontEndState&, bool against_computer);
 void store_league_race_totals(FrontEndState&);
 void restore_league_pair(FrontEndState&);
 void count_league_pair(FrontEndState&);
+// On the pair's exit frame 1, after the records: the exit frames of the count and of the
+// standings' or the awards' frame wait (R-0102).
+void time_league_exit(FrontEndState&);
 void finish_league_pair(FrontEndState&, const FrontEndContent&);
 void league_awards_frame(FrontEndState&, const FrontEndContent&, FrontEndPads);
 void choose_league_slot(FrontEndState& state, const FrontEndContent& content);

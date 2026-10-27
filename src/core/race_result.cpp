@@ -678,6 +678,7 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
         }
         if (state.mode == FrontEndMode::versus) count_versus_result(state);
         update_records(state);
+        if (state.mode == FrontEndMode::league) time_league_exit(state);
         if (state.mode == FrontEndMode::one_player) state.records.tries = 3;
     }
     // VS CHAMPIONS (`$80:F8E7`, from $80:C051) starts in the frame the records end, and 2P's
@@ -694,9 +695,9 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
             return;
         }
     }
-    // $80:AF54 counts the pair in the frame before the awards' (R-0098: `tours-a` 11465 after
-    // two record placings, 22585 after a stunt event with none).
-    if (frame + 1 == result_scoring_frame(state) && state.mode == FrontEndMode::league)
+    // $80:AF54 counts the pair once the records' checksum runs are done (R-0098: `tours-a` 11465
+    // after two record placings, 22585 after a stunt event with none; R-0102).
+    if (frame == state.race_result.league_count_frame && state.mode == FrontEndMode::league)
         count_league_pair(state);
     if (frame == 1) return;
     if (frame < scoring) return; // `$80:C786`'s overrun: no wait, no OAM copy

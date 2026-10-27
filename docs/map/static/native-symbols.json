@@ -895,6 +895,24 @@
    "region": "rom"
   },
   {
+   "address": "$80:971D",
+   "native": [
+    "src/core/menu_overruns.cpp:count_percentage",
+    "src/core/menu_overruns.cpp:statistics_clocks"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:973B",
+   "native": [
+    "src/core/menu_overruns.cpp:quotient_bit_clocks"
+   ],
+   "range_ends": [
+    "$80:973F"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:974B",
    "native": [
     "src/core/tour_menu.cpp:(file)",
@@ -1913,8 +1931,11 @@
   {
    "address": "$80:A547",
    "native": [
-    "src/core/league_menu.cpp:enter_league_table",
-    "src/core/league_menu.cpp:leave_league_awards"
+    "src/core/league_menu.cpp:leave_league_awards",
+    "src/core/league_menu.cpp:show_league_table",
+    "src/core/menu_overruns.hpp:LeagueExitFrames",
+    "src/core/menu_overruns.hpp:StandingsWork",
+    "src/core/menu_overruns.hpp:standings_print_frames_late"
    ],
    "region": "rom"
   },
@@ -1925,6 +1946,13 @@
    ],
    "range_ends": [
     "$80:A65E"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A627",
+   "native": [
+    "src/core/menu_overruns.hpp:StandingsWork::new_ranks"
    ],
    "region": "rom"
   },
@@ -2490,9 +2518,12 @@
    "address": "$80:AF54",
    "native": [
     "src/core/league_menu.cpp:count_league_pair",
+    "src/core/league_menu.cpp:played_after_count",
+    "src/core/menu_overruns.hpp:LeagueExitFrames",
     "src/core/race_result.cpp:race_result_exit_frame"
    ],
    "range_ends": [
+    "$80:AFCF",
     "$80:AFEF"
    ],
    "region": "rom"
@@ -2500,7 +2531,8 @@
   {
    "address": "$80:AFC3",
    "native": [
-    "src/core/front_end.hpp:LeagueSetup::more_pairs"
+    "src/core/front_end.hpp:LeagueSetup::more_pairs",
+    "src/core/league_menu.cpp:another_pair"
    ],
    "range_ends": [
     "$80:AFE7"
@@ -3455,6 +3487,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:BE57",
+   "native": [
+    "src/core/menu_overruns.cpp:standings_start_clocks"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:BE5F",
    "native": [
     "src/core/league_menu.cpp:league_table_frame"
@@ -4083,7 +4122,10 @@
    "native": [
     "src/core/front_end.hpp:RaceResult::records_placed",
     "src/core/front_end_screens.hpp:champions_overrun_frames",
-    "src/core/front_end_screens.hpp:result_scoring_frame",
+    "src/core/front_end_screens.hpp:league_awards_scoring_frame",
+    "src/core/menu_overruns.cpp:league_exit_frames",
+    "src/core/menu_overruns.cpp:records_start_clocks",
+    "src/core/menu_overruns.hpp:LeagueExitFrames",
     "src/core/race_result.cpp:(file)",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/race_result.cpp:update_records"
@@ -4093,6 +4135,7 @@
   {
    "address": "$80:C7C4",
    "native": [
+    "src/core/menu_overruns.hpp:LeagueExitWork::lap_race",
     "src/core/race_result.cpp:update_records"
    ],
    "region": "rom"
@@ -4136,6 +4179,7 @@
    "address": "$80:C868",
    "native": [
     "src/core/front_end_screens.hpp:best_lap",
+    "src/core/menu_overruns.hpp:LeagueExitWork::lap_race",
     "src/core/race_result.cpp:update_records"
    ],
    "region": "rom"
@@ -4769,10 +4813,19 @@
    "address": "$80:D525",
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/menu_overruns.hpp:records_statistics_frames_late",
     "src/core/options_menu.cpp:enter_records_menu"
    ],
    "range_ends": [
     "$80:D53C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D527",
+   "native": [
+    "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
+    "src/core/options_menu.cpp:enter_records_menu"
    ],
    "region": "rom"
   },
@@ -6227,6 +6280,18 @@
    "region": "rom"
   },
   {
+   "address": "$80:EFE9",
+   "native": [
+    "src/core/league_menu.cpp:standings_order",
+    "src/core/menu_overruns.cpp:sort_store_clocks",
+    "src/core/menu_overruns.hpp:StandingsWork::sort_stores"
+   ],
+   "range_ends": [
+    "$80:EFF4"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:F02B",
    "native": [
     "src/core/local_modes.cpp:versus_ranking"
@@ -6561,6 +6626,7 @@
    "address": "$80:F4B8",
    "native": [
     "src/core/lap_result.cpp:graph_object_sizes",
+    "src/core/menu_overruns.hpp:LeagueExitFrames",
     "src/core/race_result.cpp:hide_result_objects",
     "src/core/race_result.cpp:lap_graph_frame",
     "src/core/race_result.cpp:race_result_exit_frame"
@@ -6992,6 +7058,7 @@
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
+    "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines",
     "src/core/name_check.hpp:NameCheck::frames_late"
    ],
    "region": "rom"
@@ -7000,6 +7067,7 @@
    "address": "$80:FAE3",
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank",
+    "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
     "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks"
    ],
    "region": "rom"
@@ -9391,7 +9459,8 @@
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/front_end.cpp:front_end_screens::begin_demo_return"
+    "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+    "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines"
    ],
    "region": "rom"
   },
@@ -11088,7 +11157,7 @@
     "src/core/award.cpp:(file)",
     "src/core/front_end.cpp:ends_with_queue_wait",
     "src/core/front_end.cpp:waits_for_frame",
-    "src/core/front_end_screens.hpp:result_scoring_frame",
+    "src/core/front_end_screens.hpp:league_awards_scoring_frame",
     "src/core/race_result.cpp:(file)",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/race_result.cpp:score_race"
@@ -11281,8 +11350,52 @@
   {
    "address": "$83:8BE7",
    "native": [
+    "src/core/league_menu.cpp:standings_work",
+    "src/core/menu_overruns.hpp:StandingsWork",
     "src/core/now_playing.cpp:name_line",
     "src/core/text_printer.hpp:five_digit_text"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8BFE",
+   "native": [
+    "src/core/menu_overruns.hpp:StandingsWork"
+   ],
+   "range_ends": [
+    "$83:8C36"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8C31",
+   "native": [
+    "src/core/menu_overruns.cpp:higher_digit_unit_clocks"
+   ],
+   "range_ends": [
+    "$83:8C36"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8C3B",
+   "native": [
+    "src/core/menu_overruns.cpp:unit_digit_unit_clocks",
+    "src/core/menu_overruns.hpp:StandingsWork"
+   ],
+   "range_ends": [
+    "$83:8C3E"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8C64",
+   "native": [
+    "src/core/menu_overruns.cpp:leading_zero_clocks",
+    "src/core/menu_overruns.hpp:StandingsWork"
+   ],
+   "range_ends": [
+    "$83:8C76"
    ],
    "region": "rom"
   },
@@ -11408,6 +11521,7 @@
     "src/core/front_end.hpp:OnePlayerRecords::statistics",
     "src/core/front_end.hpp:RaceResult::records_placed",
     "src/core/front_end_screens.hpp:champions_overrun_frames",
+    "src/core/menu_overruns.hpp:LeagueExitFrames",
     "src/core/race_result.cpp:insert_record",
     "src/core/wipe_ram.cpp:reset_busy_frames"
    ],
@@ -11692,8 +11806,41 @@
   {
    "address": "$83:97BD",
    "native": [
+    "src/core/front_end.hpp:RecordsDetail::statistics_frames_late",
     "src/core/high_scores.cpp:find_largest",
+    "src/core/menu_overruns.cpp:count_statistics",
+    "src/core/menu_overruns.cpp:statistics_clocks",
+    "src/core/menu_overruns.hpp:records_statistics_frames_late",
+    "src/core/options_menu.cpp:enter_records_menu",
     "src/core/records_scores.cpp:player_figures"
+   ],
+   "range_ends": [
+    "$83:9869"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:984F",
+   "native": [
+    "src/core/menu_overruns.cpp:count_statistics"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:986A",
+   "native": [
+    "src/core/menu_overruns.cpp:count_statistics",
+    "src/core/menu_overruns.cpp:statistics_clocks"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9878",
+   "native": [
+    "src/core/menu_overruns.cpp:percentage_clocks"
+   ],
+   "range_ends": [
+    "$83:9DB2"
    ],
    "region": "rom"
   },
@@ -11829,7 +11976,20 @@
     "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
     "src/core/front_end_screens.hpp:cartridge_percentage",
     "src/core/high_scores.cpp:high_score_leaders",
-    "src/core/local_modes.cpp:versus_percentage"
+    "src/core/local_modes.cpp:versus_percentage",
+    "src/core/menu_overruns.cpp:count_percentage",
+    "src/core/menu_overruns.cpp:statistics_clocks",
+    "src/core/menu_overruns.hpp:records_statistics_frames_late"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9D85",
+   "native": [
+    "src/core/menu_overruns.cpp:halving_clocks"
+   ],
+   "range_ends": [
+    "$83:9DA0"
    ],
    "region": "rom"
   },
@@ -12074,7 +12234,7 @@
     "src/core/award.cpp:award_frame_waits",
     "src/core/front_end.cpp:ends_with_queue_wait",
     "src/core/front_end.cpp:waits_for_frame",
-    "src/core/front_end_screens.hpp:result_scoring_frame",
+    "src/core/front_end_screens.hpp:league_awards_scoring_frame",
     "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
     "src/core/hunter_ending.cpp:timed_wait_pass",
@@ -15658,7 +15818,9 @@
    "native": [
     "src/core/front_end.cpp:demo_return_frame",
     "src/core/front_end.hpp:PaletteCycle::delay",
-    "src/core/front_end.hpp:PaletteCycle::pending_nmi"
+    "src/core/front_end.hpp:PaletteCycle::pending_nmi",
+    "src/core/menu_overruns.cpp:palette_step_clocks",
+    "src/core/menu_overruns.hpp:PaletteDelay"
    ],
    "region": "wram"
   },
@@ -18262,7 +18424,8 @@
   {
    "address": "$77:0230",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::statistics"
+    "src/core/front_end.hpp:OnePlayerRecords::statistics",
+    "src/core/menu_overruns.cpp:count_statistics"
    ],
    "region": "sram"
   },
@@ -18911,6 +19074,11 @@
   {
    "address": "$00:4212",
    "native": [
+    "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines",
+    "src/core/menu_overruns.cpp:records_start_clocks",
+    "src/core/menu_overruns.cpp:standings_read_clocks",
+    "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
+    "src/core/menu_overruns.hpp:LeagueExitFrames::standings",
     "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks",
     "src/core/name_check.cpp:frame_wait_clocks"
    ],
@@ -21303,6 +21471,11 @@
     "$80:C206"
    ]
   },
+  "src/core/front_end.hpp:RecordsDetail::statistics_frames_late": {
+   "rom": [
+    "$83:97BD"
+   ]
+  },
   "src/core/front_end.hpp:RecordsDetail::window_left, RecordsDetail::window_right": {
    "wram": [
     "$007A",
@@ -21925,6 +22098,13 @@
     "$80:D2C1"
    ]
   },
+  "src/core/front_end_screens.hpp:league_awards_scoring_frame": {
+   "rom": [
+    "$80:C786",
+    "$83:879A",
+    "$83:A923"
+   ]
+  },
   "src/core/front_end_screens.hpp:load_main_menu_screen": {
    "rom": [
     "$80:D20E"
@@ -22052,13 +22232,6 @@
    "rom": [
     "$80:D20E",
     "$83:A721"
-   ]
-  },
-  "src/core/front_end_screens.hpp:result_scoring_frame": {
-   "rom": [
-    "$80:C786",
-    "$83:879A",
-    "$83:A923"
    ]
   },
   "src/core/front_end_screens.hpp:result_tail_frame": {
@@ -22795,6 +22968,11 @@
     "$80:E27E"
    ]
   },
+  "src/core/league_menu.cpp:another_pair": {
+   "rom": [
+    "$80:AFC3"
+   ]
+  },
   "src/core/league_menu.cpp:choose_league_pair": {
    "rom": [
     "$83:958C",
@@ -22826,11 +23004,6 @@
     "$00D0"
    ]
   },
-  "src/core/league_menu.cpp:enter_league_table": {
-   "rom": [
-    "$80:A547"
-   ]
-  },
   "src/core/league_menu.cpp:finish_league_pair": {
    "rom": [
     "$80:8917"
@@ -22859,6 +23032,11 @@
     "$80:B05B",
     "$80:C206",
     "$83:91F7"
+   ]
+  },
+  "src/core/league_menu.cpp:played_after_count": {
+   "rom": [
+    "$80:AF54"
    ]
   },
   "src/core/league_menu.cpp:print_award_bonus": {
@@ -22917,9 +23095,20 @@
     "$83:95CA"
    ]
   },
+  "src/core/league_menu.cpp:show_league_table": {
+   "rom": [
+    "$80:A547"
+   ]
+  },
   "src/core/league_menu.cpp:standings_order": {
    "rom": [
-    "$80:EFD4"
+    "$80:EFD4",
+    "$80:EFE9"
+   ]
+  },
+  "src/core/league_menu.cpp:standings_work": {
+   "rom": [
+    "$83:8BE7"
    ]
   },
   "src/core/league_menu.cpp:store_league_race_totals": {
@@ -23068,6 +23257,167 @@
     "$80:C206",
     "$80:C236",
     "$80:C24C"
+   ]
+  },
+  "src/core/menu_overruns.cpp:count_percentage": {
+   "rom": [
+    "$80:971D",
+    "$83:9D80"
+   ]
+  },
+  "src/core/menu_overruns.cpp:count_statistics": {
+   "rom": [
+    "$83:97BD",
+    "$83:984F",
+    "$83:986A"
+   ],
+   "sram": [
+    "$77:0230"
+   ]
+  },
+  "src/core/menu_overruns.cpp:halving_clocks": {
+   "rom": [
+    "$83:9D85"
+   ]
+  },
+  "src/core/menu_overruns.cpp:higher_digit_unit_clocks": {
+   "rom": [
+    "$83:8C31"
+   ]
+  },
+  "src/core/menu_overruns.cpp:leading_zero_clocks": {
+   "rom": [
+    "$83:8C64"
+   ]
+  },
+  "src/core/menu_overruns.cpp:league_exit_frames": {
+   "rom": [
+    "$80:C786"
+   ]
+  },
+  "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines": {
+   "io": [
+    "$00:4212"
+   ],
+   "rom": [
+    "$80:FADF",
+    "$82:8035"
+   ]
+  },
+  "src/core/menu_overruns.cpp:palette_step_clocks": {
+   "wram": [
+    "$00C8"
+   ]
+  },
+  "src/core/menu_overruns.cpp:percentage_clocks": {
+   "rom": [
+    "$83:9878"
+   ]
+  },
+  "src/core/menu_overruns.cpp:quotient_bit_clocks": {
+   "rom": [
+    "$80:973B"
+   ]
+  },
+  "src/core/menu_overruns.cpp:records_start_clocks": {
+   "io": [
+    "$00:4212"
+   ],
+   "rom": [
+    "$80:C786"
+   ]
+  },
+  "src/core/menu_overruns.cpp:sort_store_clocks": {
+   "rom": [
+    "$80:EFE9"
+   ]
+  },
+  "src/core/menu_overruns.cpp:standings_read_clocks": {
+   "io": [
+    "$00:4212"
+   ]
+  },
+  "src/core/menu_overruns.cpp:standings_start_clocks": {
+   "rom": [
+    "$80:BE57"
+   ]
+  },
+  "src/core/menu_overruns.cpp:statistics_clocks": {
+   "rom": [
+    "$80:971D",
+    "$83:97BD",
+    "$83:986A",
+    "$83:9D80"
+   ]
+  },
+  "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks": {
+   "io": [
+    "$00:4212"
+   ],
+   "rom": [
+    "$80:D527",
+    "$80:FAE3"
+   ]
+  },
+  "src/core/menu_overruns.cpp:unit_digit_unit_clocks": {
+   "rom": [
+    "$83:8C3B"
+   ]
+  },
+  "src/core/menu_overruns.hpp:LeagueExitFrames": {
+   "rom": [
+    "$80:A547",
+    "$80:AF54",
+    "$80:C786",
+    "$80:F4B8",
+    "$83:90F4"
+   ]
+  },
+  "src/core/menu_overruns.hpp:LeagueExitFrames::standings": {
+   "io": [
+    "$00:4212"
+   ]
+  },
+  "src/core/menu_overruns.hpp:LeagueExitWork::lap_race": {
+   "rom": [
+    "$80:C7C4",
+    "$80:C868"
+   ]
+  },
+  "src/core/menu_overruns.hpp:PaletteDelay": {
+   "wram": [
+    "$00C8"
+   ]
+  },
+  "src/core/menu_overruns.hpp:StandingsWork": {
+   "rom": [
+    "$80:A547",
+    "$83:8BE7",
+    "$83:8BFE",
+    "$83:8C3B",
+    "$83:8C64"
+   ]
+  },
+  "src/core/menu_overruns.hpp:StandingsWork::new_ranks": {
+   "rom": [
+    "$80:A627"
+   ]
+  },
+  "src/core/menu_overruns.hpp:StandingsWork::sort_stores": {
+   "rom": [
+    "$80:EFE9"
+   ]
+  },
+  "src/core/menu_overruns.hpp:records_statistics_frames_late": {
+   "rom": [
+    "$80:D525",
+    "$83:97BD",
+    "$83:9D80"
+   ]
+  },
+  "src/core/menu_overruns.hpp:standings_print_frames_late": {
+   "rom": [
+    "$80:A547"
    ]
   },
   "src/core/movement.cpp:update_movement": {
@@ -23496,7 +23846,9 @@
   },
   "src/core/options_menu.cpp:enter_records_menu": {
    "rom": [
-    "$80:D525"
+    "$80:D525",
+    "$80:D527",
+    "$83:97BD"
    ],
    "wram": [
     "$0089"
@@ -29546,10 +29898,10 @@
   }
  },
  "totals": {
-  "addresses": 2106,
+  "addresses": 2120,
   "io_addresses": 12,
-  "native_symbols": 1549,
-  "rom_addresses": 1663,
+  "native_symbols": 1579,
+  "rom_addresses": 1677,
   "sram_addresses": 65,
   "wram_addresses": 366
  }

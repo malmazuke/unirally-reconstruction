@@ -1,5 +1,6 @@
 // The saved league's standings and pairing entry. $80:BDD4-BEE4; R-0073.
 #include "front_end_screens.hpp"
+#include "menu_overruns.hpp"
 
 #include <algorithm>
 #include <array>
@@ -30,7 +31,9 @@ std::array<std::uint8_t, league_rows> league_members(const FrontEndState& state)
 
 // Lowest score moves to the end; a later equal value wins that comparison.
 // $80:EFD4-F02A; R-0073.
-RowOrder standings_order(const FrontEndState& state) {
+// `stores`, when given, counts `$80:EFE9-EFF4`'s stores of the lowest so far (R-0102: the print's
+// time depends on them).
+RowOrder standings_order(const FrontEndState& state, unsigned* stores = nullptr) {
     RowOrder rows{0, 1, 2, 3, 4, 5, 6, 7};
     const auto& points = state.records.league_scores[state.league.slot];
     for (std::size_t last = rows.size(); last-- > 0;) {
@@ -40,6 +43,7 @@ RowOrder standings_order(const FrontEndState& state) {
             if (points[rows[index]] <= lowest) {
                 lowest = points[rows[index]];
                 chosen = index;
+                if (stores != nullptr) ++*stores;
             }
         }
         std::swap(rows[chosen], rows[last]);
@@ -329,30 +333,113 @@ void print_award_bonus(FrontEndState& state, const FrontEndContent& content) {
 }
 } // namespace
 
-// $80:AF54-AFEF in the result's way out, the frame before a long record placing pushes the rest
-// on (R-0098): each rider of the pair has played once more, and with another pair to race the
-// cursor moves to it.
-void count_league_pair(FrontEndState& state) {
+namespace {
+// `$80:AF54-AFCF`: each rider of the pair at the cursor has played once more.
+std::array<std::uint16_t, league_rows> played_after_count(const FrontEndState& state) {
     const auto slot = state.league.slot;
     const auto cursor = state.records.league_pair_cursor[slot];
     const auto members = league_members(state);
+    auto played = state.records.league_played[slot];
     for (unsigned at = cursor; at < std::min<unsigned>(cursor + 2, league_rows); ++at) {
         const auto rider = state.records.league_pairings[slot][at];
         if (rider == someone) continue;
         const auto row = static_cast<unsigned>(std::find(members.begin(), members.end(), rider)
                                                - members.begin());
-        ++state.records.league_played[slot][row];
+        ++played[row];
     }
-    state.league.more_pairs =
-        cursor < 6 && state.records.league_pairings[slot][cursor + 2] != someone;
+    return played;
+}
+
+// `$80:AFC3-AFE7`: another pair races after the one at the cursor.
+bool another_pair(const FrontEndState& state) {
+    const auto slot = state.league.slot;
+    const auto cursor = state.records.league_pair_cursor[slot];
+    return cursor < 6 && state.records.league_pairings[slot][cursor + 2] != someone;
+}
+
+// The standings' rows and the digits of their played and points words, `played` as given:
+// `$83:8BE7` counts the tens and above down in one kind of loop and the units in another, then
+// blanks the leading zeros; the ranks, a new one wherever the points change; and the sort's
+// stores, which depend on the rows' order.
+StandingsWork standings_work(const FrontEndState& state,
+                             const std::array<std::uint16_t, league_rows>& played) {
+    const auto members = league_members(state);
+    StandingsWork work;
+    constexpr unsigned digits_printed = 5;
+    const auto add = [&](unsigned value) {
+        work.unit_digit_units += value % 10;
+        unsigned digits = 1;
+        for (value /= 10; value != 0; value /= 10, ++digits) work.higher_digit_units += value % 10;
+        work.leading_zeros += digits_printed - digits;
+    };
+    std::vector<std::uint16_t> points;
+    for (unsigned row = 0; row < league_rows; ++row) {
+        if (members[row] == someone) continue;
+        ++work.rows;
+        add(played[row]);
+        const auto row_points = state.records.league_scores[state.league.slot][row];
+        add(row_points);
+        if (std::find(points.begin(), points.end(), row_points) == points.end())
+            points.push_back(row_points);
+    }
+    // The standings run in points order, so each distinct value after the highest starts a rank.
+    work.new_ranks = points.empty() ? 0U : static_cast<unsigned>(points.size() - 1);
+    standings_order(state, &work.sort_stores);
+    return work;
+}
+
+// The palette cycle's delay as this frame's NMI left it, while the cycle runs (R-0102).
+PaletteDelay palette_delay(const FrontEndState& state) {
+    if (!state.cycle.running) return std::nullopt;
+    return static_cast<std::uint8_t>(state.cycle.delay);
+}
+
+// `$80:A547` and the standings' entry, after whatever frames the print's cost gives (R-0102).
+void show_league_table(FrontEndState& state, const FrontEndContent& content, bool slides_back,
+                       std::uint8_t frames_late) {
+    // `$80:A547` leaves entries 104-111 as they were: the awards' way out and NOW PLAYING's back
+    // hide them themselves, PICK TOUR and the slots leave them shown off screen (R-0098).
+    print_table(state, content);
+    state.league.table_frames_late = frames_late;
+    state.league.table_slides_back = slides_back;
+    state.screen = FrontEndScreen::league_table_entry;
+    state.latches = {};
+    state.league.previous_buttons = 0;
+}
+} // namespace
+
+// $80:AF54-AFEF in the result's way out, once the records' checksum runs are done (R-0098,
+// R-0102): each rider of the pair has played once more, and with another pair to race the cursor
+// moves to it.
+void count_league_pair(FrontEndState& state) {
+    const auto slot = state.league.slot;
+    state.records.league_played[slot] = played_after_count(state);
+    state.league.more_pairs = another_pair(state);
     if (state.league.more_pairs)
-        state.records.league_pair_cursor[slot] = static_cast<std::uint8_t>(cursor + 2);
+        state.records.league_pair_cursor[slot] =
+            static_cast<std::uint8_t>(state.records.league_pair_cursor[slot] + 2);
+}
+
+// The way out's cost (R-0102): the count's frame after the records and their checksum runs; with
+// another pair, the standings' print after the count, its numbers as the count leaves them. The
+// awards keep R-0095's frames, which the same work measures give.
+void time_league_exit(FrontEndState& state) {
+    LeagueExitWork work;
+    work.records_placed = state.race_result.records_placed;
+    work.lap_race = state.race_result.times.lap_race;
+    work.standings = standings_work(state, played_after_count(state));
+    work.palette_delay = palette_delay(state);
+    const auto frames = league_exit_frames(work);
+    auto& result = state.race_result;
+    result.league_count_frame = frames.count;
+    result.league_standings_frame =
+        another_pair(state) ? frames.standings : league_awards_scoring_frame(result.records_placed);
 }
 
 // Then the standings for the next pair, or the awards ($80:8917).
 void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
     if (state.league.more_pairs) {
-        enter_league_table(state, content);
+        show_league_table(state, content, false, 0); // the way out's frames hold the print's
         return;
     }
     award_points(state, content);
@@ -462,16 +549,17 @@ void choose_league_slot(FrontEndState& state, const FrontEndContent& content) {
 }
 
 void enter_league_table(FrontEndState& state, const FrontEndContent& content, bool slides_back) {
-    // `$80:A547` leaves entries 104-111 as they were: the awards' way out and NOW PLAYING's back
-    // hide them themselves, PICK TOUR and the slots leave them shown off screen (R-0098).
-    print_table(state, content);
-    state.league.table_slides_back = slides_back;
-    state.screen = FrontEndScreen::league_table_entry;
-    state.latches = {};
-    state.league.previous_buttons = 0;
+    const auto standings = standings_work(state, state.records.league_played[state.league.slot]);
+    show_league_table(state, content, slides_back,
+                      standings_print_frames_late(standings, palette_delay(state)));
 }
 
 void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content) {
+    if (state.league.table_frames_late != 0) { // the print runs on: only the NMI
+        --state.league.table_frames_late;
+        state.script_frame = 0;
+        return;
+    }
     if (state.script_frame == 1) {
         copy_oam(state);
         start_slide(state, content, state.league.table_slides_back);
