@@ -1950,6 +1950,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:A627",
+   "native": [
+    "src/core/menu_overruns.hpp:StandingsWork::new_ranks"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:A66F",
    "native": [
     "src/core/front_end.hpp:LeagueSetup::table_slides_back"
@@ -6269,6 +6276,18 @@
    "range_ends": [
     "$80:F024",
     "$80:F02A"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EFE9",
+   "native": [
+    "src/core/league_menu.cpp:standings_order",
+    "src/core/menu_overruns.cpp:sort_store_clocks",
+    "src/core/menu_overruns.hpp:StandingsWork::sort_stores"
+   ],
+   "range_ends": [
+    "$80:EFF4"
    ],
    "region": "rom"
   },
@@ -23081,7 +23100,8 @@
   },
   "src/core/league_menu.cpp:standings_order": {
    "rom": [
-    "$80:EFD4"
+    "$80:EFD4",
+    "$80:EFE9"
    ]
   },
   "src/core/league_menu.cpp:standings_work": {
@@ -23300,6 +23320,11 @@
     "$80:C786"
    ]
   },
+  "src/core/menu_overruns.cpp:sort_store_clocks": {
+   "rom": [
+    "$80:EFE9"
+   ]
+  },
   "src/core/menu_overruns.cpp:standings_start_clocks": {
    "rom": [
     "$80:BE57"
@@ -23359,6 +23384,16 @@
     "$83:8BFE",
     "$83:8C3B",
     "$83:8C64"
+   ]
+  },
+  "src/core/menu_overruns.hpp:StandingsWork::new_ranks": {
+   "rom": [
+    "$80:A627"
+   ]
+  },
+  "src/core/menu_overruns.hpp:StandingsWork::sort_stores": {
+   "rom": [
+    "$80:EFE9"
    ]
   },
   "src/core/menu_overruns.hpp:records_statistics_frames_late": {
@@ -29851,10 +29886,10 @@
   }
  },
  "totals": {
-  "addresses": 2118,
+  "addresses": 2120,
   "io_addresses": 12,
-  "native_symbols": 1574,
-  "rom_addresses": 1675,
+  "native_symbols": 1577,
+  "rom_addresses": 1677,
   "sram_addresses": 65,
   "wram_addresses": 366
  }

@@ -3499,6 +3499,19 @@
   ]
  },
  {
+  "address": "$80:A627",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A627",
+  "native": [
+   "src/core/league_menu.cpp:print_standings",
+   "src/core/menu_overruns.hpp:StandingsWork::new_ranks"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
   "address": "$80:A66F",
   "class": "observed",
   "comment": "instruction start",
@@ -10863,7 +10876,26 @@
    "docs/research/R-0073-league.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0097-menu-input.md",
-   "tasks/MENU-INPUT.md"
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "tasks/MENU-INPUT.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
+  ]
+ },
+ {
+  "address": "$80:EFE9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EFE9",
+  "native": [
+   "src/core/audio_cpu_menu_league.cpp:sort_ranking",
+   "src/core/league_menu.cpp:standings_order",
+   "src/core/menu_overruns.cpp:sort_store_clocks",
+   "src/core/menu_overruns.hpp:StandingsWork::sort_stores",
+   "src/core/records_scores.cpp:sort_group_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
  {

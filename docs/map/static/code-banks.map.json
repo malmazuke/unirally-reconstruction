@@ -1685,6 +1685,7 @@
     "src/core/league_menu.cpp:show_league_table",
     "src/core/menu_overruns.hpp:LeagueExitFrames",
     "src/core/menu_overruns.hpp:StandingsWork",
+    "src/core/menu_overruns.hpp:StandingsWork::new_ranks",
     "src/core/menu_overruns.hpp:standings_print_frames_late"
    ],
    "observed_entries": {},
@@ -4675,6 +4676,8 @@
    "native": [
     "src/core/audio_cpu_menu_league.cpp:sort_ranking",
     "src/core/league_menu.cpp:standings_order",
+    "src/core/menu_overruns.cpp:sort_store_clocks",
+    "src/core/menu_overruns.hpp:StandingsWork::sort_stores",
     "src/core/records_scores.cpp:sort_group_rows"
    ],
    "observed_entries": {},
@@ -19337,16 +19340,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2228,
+  "cited_addresses": 2230,
   "cited_by_class": {
    "data": 16,
    "inferred": 97,
-   "observed": 1917,
+   "observed": 1919,
    "unknown": 198
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1514,
+   "loc": 1516,
    "mid": 31,
    "sub": 469,
    "unk": 198

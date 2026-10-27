@@ -256,3 +256,44 @@ unchanged). `ctest` app-debug and lab-debug 41/41; `clang-tidy` clean on `menu_o
   1 h 22 min under the lock, records alongside it.
 - Evidence: the reviewer's `review-3/` (band traces, `wait_exit.py`); `pairs_refit.py` updated;
   `checks-r3/`.
+
+## Review round 4 (returned on `e5865232`) - the fix
+
+Review: main `local/evidence/podium-return-timing/review-4/review.md` (changes requested; the poll
+term, the RECORDS claim and the rank term confirmed, the rank term for rows in points order). The
+edge of round 3 holds only when the members' rows already stand in points order: the standings'
+selection sort (`$80:EFD4`) stores the lowest so far (`$80:EFE9-EFF4`) for each points word at or
+below it, over all eight rows, so its cost depends on the rows' order. Seven new reviewer traces
+(`review-4/band/`): 3, 5, 6, 5, 3, 6 and 3, 6, 5 at units 16 are on time in the original where the
+model said late; 8, 8, 6, 8, 6, 8, 7, 8, 8 and 9, 8, 5 late, as it said.
+
+Fix in `a359ad0c`:
+- `standings_order` counts the sort's stores (`StandingsWork::sort_stores`, 36 for rows in points
+  order, 24 for 3, 5, 6). A store costs 55 CPU clocks with the refresh, one fitted figure: the
+  listing gives 58 for a lower word and 48 for an equal one, but over the band's 24 traces the
+  split fits within about 119 clocks and one figure of 54-56 within about 48, so the band does not
+  support the split.
+- Refit (`pairs_refit.py`): 220,040 + 39,600 a row. All 51 traced way outs (27 and 24 band) are in
+  their measured frames (`model.py`, `model-r4.txt`); the model's wait entry is within -12 to +75
+  clocks of the band's and -1,428 to +710 of the leagues' (from -1,327 to +1,490 without the
+  sort); the nearest boundary of a modelled read is 92 clocks (6, 5, 3), with 5, 5, 3 101 and
+  5, 4, 3 94 on the on-time side and the three units-16 traces in other orders 305-645.
+- The edge, three members, two placings, a one-run race, one-digit points: units 15 on time and 16
+  late with the rows in points order; other orders move it up (5, 3, 6 19/20, 3, 5, 6 and 3, 6, 5
+  22/23). R-0102, the code's comments and Not covered say so; the `new_ranks` comment says it
+  counts distinct values, which are the new ranks because the rows print in points order.
+- `menu_overrun_tests` adds 3, 5, 6 at units 16 in frame 3.
+
+Checks: `model.py` 51 of 51 (rc 0); `ctest` app-debug and lab-debug 41/41; `clang-tidy` clean on
+`menu_overruns.cpp` and `league_menu.cpp`; `clang-format` applied; `coverage native-symbols
+--check` passed after `regen.sh`. `checks.list` not rerun this round, on the coordinator's
+instruction (no measured league way out has moved frame in three rounds; the gates run all of it
+after the review).
+
+## Handoff (worker, review round 4)
+
+- Commits: `a359ad0c` (the sort stores, the refit, the test), then the records commit (R-0102,
+  this record, `model.py`, the maps).
+- Time (harness clock): 18:30 UTC (the review's return) to 18:34 UTC by `date -u` in the session.
+- Evidence: the reviewer's `review-4/` as it is; `model.py` (the sort term and the 7 traces),
+  `pairs_refit.py` (the band's row orders), `model-r4.txt`.

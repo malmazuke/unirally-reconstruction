@@ -26,7 +26,8 @@ core with its instruction ring:
   outs with a standings print after them (`odd-tours` 9, `four` 4, `five` 14).
 - `cycles_records.py` costs `$83:97BD` step by step (each step at the least it took, as R-0101's
   `cycles.py`) at the seven RECORDS entries.
-- The reviews' band (`review-1/band/` 7, `review-2/band/` 4, this task's `band-r2/` 2): odd-tours'
+- The reviews' band (`review-1/band/` 7, `review-2/band/` 4, this task's `band-r2/` 2, `review-3/band/` 4,
+  `review-4/band/` 7): odd-tours'
   first way out traced with the league's points words edited at frame 12,900 (`make_band.py`),
   to place the three-row standings' boundary; `digit_steps.py` costs the decimal conversion's
   loops on one of them.
@@ -76,34 +77,49 @@ side's work ran past a frame and the other's did not.
      entry). In 6 of `odd-tours`' 9 way outs and all of `four`'s and `five`'s it does; the first
      fit (89 a digit unit, one constant a league) absorbed it and over-estimated the prints that
      stay inside a frame by about 450 clocks.
-   - The band (`review-1/band/`, `review-2/band/`, `band-r2/`, `review-3/band/`): odd-tours'
-     first way out (three rows, two placings, a one-run race; played 1, 1, 0) traced with its
-     points words edited before it, 17 traces. A trace's measured frame is that of its wait's
-     first `$4212` read: the frame before the first `$80:FAF1` after the print (review round 3).
-     With one-digit points, units summing 2, 12, 14 (5, 4, 3) and 15 (5, 5, 3) are on time
+   - The band (`review-1/band/`, `review-2/band/`, `band-r2/`, `review-3/band/`,
+     `review-4/band/`): odd-tours' first way out (three rows, two placings, a one-run race;
+     played 1, 1, 0) traced with its points words edited before it, 24 traces. A trace's measured
+     frame is that of its wait's first `$4212` read: the frame before the first `$80:FAF1` after
+     the print (review round 3). With one-digit points in points order, units summing 2, 12, 14 (5, 4, 3) and 15 (5, 5, 3) are on time
      (waits entered 1,990, 1,032, 694 and 732 clocks before the frame's end); 16 (6, 5, 3), 17,
      18, 22 and 23 (both 8, 7, 6 and the tie 7, 7, 7) are entered 92-514 clocks before it and
      late, and 24-28 are entered after it. Two-digit points: 19, 18, 10 (entered 478 before)
      and 28, 27, 25 late. Rounds 1 and 2 took the frame of the wait's entry and so put the edge
      at 19-26 and then 22/23.
-   - The ranks: the prints split by ties. Against one tie (8, 7, 7), no tie (8, 7, 6) costs about
-     125 clocks more and a three-way tie (7, 7, 7) about 145 less: each rank printed after the
-     first costs about 100 clocks (fitted on the band; the ordinals' strings, not traced).
+   - The ranks: with the rows in points order the prints split by ties. Against one tie (8, 7,
+     7), no tie (8, 7, 6) costs about 125 clocks more and a three-way tie (7, 7, 7) about 145
+     less: each rank printed after the first costs about 100 clocks (fitted on the band; by the
+     listing a new rank takes `$80:A627`'s branch not taken and `LDX $16`/`STX $14`, 58 clocks,
+     before its ordinal's own print). The distinct points less one count the new ranks because
+     the rows print in points order.
+   - The rows' order (review round 4, `review-4/band/`: 8, 8, 6, 8, 6, 8, 7, 8, 8, 9, 8, 5, and at
+     units 16 3, 5, 6, 5, 3, 6 and 3, 6, 5): the standings' selection sort (`$80:EFD4-F024`)
+     stores the lowest so far (`$80:EFE9-EFF4`, `STA $00`, `STX $04`) for each points word at or
+     below it, over all eight rows, the empty rows' 0 included. Rows already in points order
+     make 36 stores; 3, 5, 6 makes 24, and other orders print up to about 800 clocks quicker. By
+     the listing a store costs 58 clocks over a skip for a lower word and 48 for an equal one;
+     the band does not separate the two (a single 54-56 fits its 24 traces within about 48
+     clocks, the 58/48 split within about 119), so the model takes 55 a store, fitted. The three
+     units-16 traces in other orders are on time (waits entered 960-1,308 clocks before the
+     frame's end) where 6, 5, 3 in points order is late.
    - The model (`menu_overruns.cpp`, `model.py`): the count's frame is 1 + (25,200 + 227,224 +
      224,765 per placing + 4,480 for a lap race) / 425,568. The standings' wait adds 226,738 for
-     the count, then the print: 221,930 + 39,650 a row + 100 a new rank + the digit loops' and
-     the leading zeros' clocks with the refresh, + 1,060 for each frame end the print passes;
-     then the poll, 596 clocks, to the first read, whose frame is the standings' frame. The
-     title and row constants give all 44 traced way outs (27 and 17 band) their measured frames
-     with the largest margin (`pairs_refit.py`'s search with the error kept within 1,500); the
-     loop costs are the trace's. The model's wait entry is within -12 to +75 clocks of the band's
-     and within -1,327 to +1,490 of the leagues' (other names and content); the nearest boundary
-     of a modelled read is 92 clocks (6, 5, 3, late), with 5, 5, 3 and 5, 4, 3 101 and 93 clocks
-     on the on-time side: the band's units are about 93 clocks apart, so the edge cannot be
-     placed more finely than that.
+     the count, then the print: 220,040 + 39,600 a row + 100 a new rank + the digit loops', the
+     leading zeros' and the sort's stores' clocks with the refresh, + 1,060 for each frame end
+     the print passes; then the poll, 596 clocks, to the first read, whose frame is the
+     standings' frame. The title and row constants give all 51 traced way outs (27 and 24 band)
+     their measured frames with the largest margin (`pairs_refit.py`'s search with the error
+     kept within 1,500); the loop costs are the trace's. The model's wait entry is within -12 to
+     +75 clocks of the band's and within -1,428 to +710 of the leagues' (other names and content;
+     before the sort term, -1,327 to +1,490); the nearest boundary of a modelled read is 92
+     clocks (6, 5, 3, late), with 5, 5, 3 and 5, 4, 3 101 and 94 clocks on the on-time side: the
+     band's units are about 93 clocks apart, so the edge cannot be placed more finely than that.
    - What that gives: a three-member way out after two placings in a one-run race, with
-     one-digit numbers, ends in exit frame 3 while its standings' units sum to 15 or less and in
-     frame 4 from 16 (a tie moves the edge by about a unit); `odd-tours`' first event (2) is on
+     one-digit numbers and the rows already in points order, ends in exit frame 3 while its
+     standings' units sum to 15 or less and in frame 4 from 16 (a tie moves the edge by about a
+     unit). In another order the sort stores fewer and the edge moves up, by up to about 8 units
+     (`pairs_refit.py`: 5, 3, 6 19/20; 3, 5, 6 and 3, 6, 5 22/23). `odd-tours`' first event (2) is on
      time and every later one with two placings is late. In a lap race it is always late. With
      no placing three rows fit in frame 2. In four- and five-member leagues the standings are
      always a frame later than native's
@@ -200,8 +216,8 @@ counted under the same recorded limits):
 The remaining differences: the podium's way back (finding 5) in every two-member window and after
 each podium; a race's return two frames apart in `five` 19,780, as on main (after the race R-0098 lists as
 loading a frame off at 16,596; R-0077), which leaves `five` w0's later menus two frames apart; HUNTER's two-view pictures (SPLIT-HUNTER-PICTURES) and the odd league's
-computer result objects (R-0098); one text-map frame per late print. `model.py`: 44 of 44 way outs (27
-and 17 band traces, each by its wait's first read) and 7 of 7 RECORDS entries in their measured
+computer result objects (R-0098); one text-map frame per late print. `model.py`: 51 of 51 way outs (27
+and 24 band traces, each by its wait's first read) and 7 of 7 RECORDS entries in their measured
 frames. LEAGUE's frozen gate (first tour, pack v40):
 passed.
 
@@ -214,15 +230,16 @@ passed.
   which only an exact sound side from boot could give.
 - **The model's reach.** Its constants come from three leagues of the default riders 0, 2, 4, 6
   and 8: other names change the print's cost by an unmeasured amount per letter, and a league's
-  name (the standings' title) too. The model's wait entry is up to 1,490 clocks off the
+  name (the standings' title) too. The model's wait entry is -1,428 to +710 clocks off the
   leagues' and -12 to +75 off the band's.
 - **The three-member knife edge** (review rounds 2 and 3): a three-member league's way out after
   two placings in a one-run race has its frame wait's first read within a few hundred clocks of
-  exit frame 3's end for units of about 14-17 (one-digit points). The model puts 15 on time and
-  16 late, as the band measures, with about 100 clocks either side; the ranks' cost (fitted,
-  about 100 clocks a rank), other names, tens digits and the poll's own spread (576-616 clocks
-  for the first poll here, 460-1,002 for later ones) can move a way out near this edge by a
-  frame. The band (17 traces) is the evidence. The
+  exit frame 3's end for units of about 14-17 with the rows in points order and up to about
+  22-23 in other orders (one-digit points). The model puts each band trace in its measured
+  frame with about 100 clocks to spare at best near the edge; the ranks' and the sort stores'
+  costs (fitted, about 100 clocks a rank and 55 a store), other names, tens digits and the
+  poll's own spread (576-616 clocks for the first poll here, 460-1,002 for later ones) can move
+  a way out near the edge by a frame. The band (24 traces) is the evidence. The
   `$80:C786` start varies by 1,742 clocks with the NMI's work and is taken as 25,200. Six to eight
   members, and stunt events that place a score, are extrapolated.
 - **One text-map frame** where the original's print starts in the frame before its late wait
@@ -247,6 +264,7 @@ zsh $E/review-1/band/run_band.sh           # the reviews' band (make_band.py's e
 zsh $E/review-2/band/run_band.sh           #   and review-2/band, band-r2 likewise
 zsh $E/band-r2/run_band.sh
 zsh $E/review-3/band/run_band.sh           # with read labels; review-3/wait_exit.py lists each wait's frames
+zsh $E/review-4/band/run_band.sh           # the rows in other orders
 python3 $E/pairs_refit.py                  # the title and row constants
 python3 $E/cycles_records.py local/evidence/record-screens-review/wr-stats2.json 900 OUT.json
 python3 $E/podium_upload.py local/evidence/league/organic-cycle-five.json 12100 12200 12 OUT.json
