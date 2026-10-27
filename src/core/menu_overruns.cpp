@@ -97,29 +97,51 @@ StatisticsCounts count_statistics(const OnePlayerRecords& records) {
 // runs one checksum and one more for each time placed, and a lap race's best laps add to it; the
 // count with its checksum. The standings' print to its frame wait: the title, the rows and each
 // new rank (its ordinal, about 100 clocks fitted on the band), fitted over 51 way outs (the band's
-// 24 decide the edge, the leagues' largest error 1,428 clocks; they include the names of the
+// 24 decide the edge, the leagues' error -528 to +510 clocks; they include the names of the
 // measured leagues, the default riders 0, 2, 4, 6 and 8, so other names move them a little); the
 // sort's stores (55 clocks each, fitted on the band: the listing gives 58 for a lower word and 48
 // for an equal one, which the band does not separate); the digit loops and the leading zeros' pass
 // at their CPU cost a pass (from the instruction trace, `digit_steps.py`; the hundreds and above
 // are taken as the tens' loop, which they repeat); the NMI when the print runs past a frame's end;
 // and the wait's poll of the sound queue before its first `$4212` read (576-616 clocks traced after
-// the print, review round 3).
+// the print, review round 3); and the palette cycle's steps in the NMIs the work runs through.
 constexpr std::uint32_t records_start_clocks = 25200;
 constexpr std::uint32_t records_clocks = 227224, placing_clocks = 224765, lap_race_clocks = 4480;
 constexpr std::uint32_t count_clocks = 226738;
-constexpr std::uint32_t standings_title_clocks = 220040, standings_row_clocks = 39600;
+constexpr std::uint32_t standings_title_clocks = 220340, standings_row_clocks = 39500;
 constexpr std::uint32_t new_rank_clocks = 100;
 constexpr std::uint32_t sort_store_clocks = 55;         // $80:EFE9-EFF4, a store
 constexpr std::uint32_t higher_digit_unit_clocks = 122; // $83:8C31-8C36, a pass
 constexpr std::uint32_t unit_digit_unit_clocks = 90;    // $83:8C3B-8C3E, a pass
 constexpr std::uint32_t leading_zero_clocks = 200;      // $83:8C64-8C76, a pass
 constexpr std::uint32_t frame_wait_poll_clocks = 596;
+// The NMI that steps the palette cycle (`$00C8` run out), over an ordinary one: fitted on the 13
+// league way outs that cross one (review round 5; their errors -744 to -1,384 before it).
+constexpr std::uint32_t palette_step_clocks = 1100;
 // Elsewhere the print's JSR (`$80:BE57`) comes 15,484-25,010 clocks into its frame (`five`'s).
 constexpr std::uint32_t standings_start_clocks = 25000;
 
-// The clocks from vblank's start in the frame of `start` to the print's frame wait's first
-// `$4212` read.
+// Work from `start` that takes `clocks`, with every palette step in the NMIs it runs through: the
+// work's first frame's NMI left the delay at `delay`, so the NMI k frame ends later steps when
+// k = delay + 1, 8, ... (frame ends counted from the first frame's start).
+std::uint32_t with_palette_steps(std::uint32_t start, std::uint32_t clocks, PaletteDelay delay) {
+    const auto end = start + clocks;
+    if (!delay) return end;
+    constexpr std::uint32_t cycle_frames = 7; // the delay runs 6 down to 0, then steps
+    std::uint32_t steps = 0;
+    for (auto frame_end = start / frame_clocks + 1; frame_end <= end / frame_clocks; ++frame_end)
+        if ((frame_end + cycle_frames - 1 - *delay) % cycle_frames == 0) ++steps;
+    return end + palette_step_clocks * steps;
+}
+
+// The work's first frame starts after its NMI: a step there (the delay just set to 6) moves the
+// start on.
+std::uint32_t after_first_nmi(std::uint32_t start, PaletteDelay delay) {
+    constexpr std::uint8_t just_stepped = 6;
+    return start + (delay == just_stepped ? palette_step_clocks : 0);
+}
+
+// The clocks from vblank's start in the frame of `start` to the print's frame wait's entry.
 std::uint32_t standings_wait_clocks(std::uint32_t start, const StandingsWork& standings) {
     const auto digits = higher_digit_unit_clocks * standings.higher_digit_units
                       + unit_digit_unit_clocks * standings.unit_digit_units
@@ -127,8 +149,14 @@ std::uint32_t standings_wait_clocks(std::uint32_t start, const StandingsWork& st
                       + sort_store_clocks * standings.sort_stores;
     const auto wait = start + standings_title_clocks + standings_row_clocks * standings.rows
                     + new_rank_clocks * standings.new_ranks + with_refresh(digits);
-    return wait + nmi_clocks * (wait / frame_clocks - start / frame_clocks)
-         + frame_wait_poll_clocks;
+    return wait + nmi_clocks * (wait / frame_clocks - start / frame_clocks);
+}
+
+// To the frame wait's first `$4212` read: the print, its palette steps, then the poll.
+std::uint32_t standings_read_clocks(std::uint32_t start, const StandingsWork& standings,
+                                    PaletteDelay delay) {
+    const auto wait = standings_wait_clocks(start, standings);
+    return with_palette_steps(start, wait - start, delay) + frame_wait_poll_clocks;
 }
 
 } // namespace
@@ -144,16 +172,21 @@ std::uint8_t records_statistics_frames_late(const OnePlayerRecords& records) {
 }
 
 LeagueExitFrames league_exit_frames(const LeagueExitWork& work) {
-    const auto counted = records_start_clocks + records_clocks
-                       + placing_clocks * work.records_placed
-                       + (work.lap_race ? lap_race_clocks : 0);
-    const auto printed = standings_wait_clocks(counted + count_clocks, work.standings);
+    const auto delay = work.palette_delay;
+    const auto counted = with_palette_steps(after_first_nmi(records_start_clocks, delay),
+                                            records_clocks + placing_clocks * work.records_placed
+                                                + (work.lap_race ? lap_race_clocks : 0),
+                                            delay);
+    const auto printed = standings_read_clocks(with_palette_steps(counted, count_clocks, delay),
+                                               work.standings, delay);
     // Exit frame 1 is `$80:C786`'s; each frame boundary the work passes moves what follows on.
     return {1 + counted / frame_clocks, 1 + printed / frame_clocks};
 }
 
-std::uint8_t standings_print_frames_late(const StandingsWork& standings) {
-    return static_cast<std::uint8_t>(standings_wait_clocks(standings_start_clocks, standings)
+std::uint8_t standings_print_frames_late(const StandingsWork& standings,
+                                         PaletteDelay palette_delay) {
+    const auto start = after_first_nmi(standings_start_clocks, palette_delay);
+    return static_cast<std::uint8_t>(standings_read_clocks(start, standings, palette_delay)
                                      / frame_clocks);
 }
 

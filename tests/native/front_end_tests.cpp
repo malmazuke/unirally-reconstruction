@@ -2335,7 +2335,8 @@ void menu_overrun_tests() {
   // in another order the sort stores fewer and the edge moves up
   // (odd-tours' first way out with its points edited, the reviews' band:
   // 5, 5, 3 on time, 6, 5, 3 late, 3, 5, 6 on time); five members in 4.
-  LeagueExitWork work{2, false, {3, 0, 2, 24, 0, 36}};
+  // The band's palette delay is 3: no step in its way out's NMIs.
+  LeagueExitWork work{2, false, {3, 0, 2, 24, 0, 36}, 3};
   require(league_exit_frames(work).count == 2 &&
           league_exit_frames(work).standings == 3);
   work.standings = {3, 0, 15, 24, 1, 36}; // points 5, 5, 3
@@ -2348,6 +2349,14 @@ void menu_overrun_tests() {
   require(league_exit_frames(work).standings == 3);
   work.standings = {3, 0, 23, 24, 0, 36}; // points 7, 7, 7
   require(league_exit_frames(work).standings == 4);
+  // The palette cycle's step (review round 5): with the delay at 1 the NMI at
+  // the second frame end, during the count, steps the cycle, and 5, 4, 3's
+  // standings come a frame later; with the cycle not running none does.
+  work.standings = {3, 0, 14, 24, 2, 36};
+  work.palette_delay = 1;
+  require(league_exit_frames(work).standings == 4);
+  work.palette_delay = std::nullopt;
+  require(league_exit_frames(work).standings == 3);
   require(league_exit_frames({2, false, {5, 0, 2, 40, 0, 36}}).standings == 4);
   // One placing counts a frame later than none; with no placing three rows
   // print in frame 2, five in frame 3.
@@ -2356,9 +2365,13 @@ void menu_overrun_tests() {
   require(league_exit_frames({0, false, {3, 3, 30, 21, 2, 36}}).standings == 2 &&
           league_exit_frames({0, false, {5, 5, 36, 35, 4, 36}}).standings == 3);
   // The print alone runs past its frame with five rows only.
-  require(standings_print_frames_late({5, 0, 0, 40, 0, 36}) == 1 &&
-          standings_print_frames_late({4, 20, 40, 24, 3, 36}) == 0 &&
-          standings_print_frames_late({3, 20, 40, 18, 2, 36}) == 0);
+  require(standings_print_frames_late({5, 0, 0, 40, 0, 36}, 3) == 1 &&
+          standings_print_frames_late({4, 20, 40, 24, 3, 36}, 3) == 0 &&
+          standings_print_frames_late({3, 20, 40, 18, 2, 36}, 3) == 0);
+  // A four-row print with large numbers ends about 1,000 clocks short of its
+  // frame's end; after an NMI that stepped the cycle (delay 6) it runs over.
+  require(standings_print_frames_late({4, 90, 40, 16, 3, 36}, 3) == 0 &&
+          standings_print_frames_late({4, 90, 40, 16, 3, 36}, 6) == 1);
 }
 
 int main() try {

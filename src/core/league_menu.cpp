@@ -388,6 +388,12 @@ StandingsWork standings_work(const FrontEndState& state,
     return work;
 }
 
+// The palette cycle's delay as this frame's NMI left it, while the cycle runs (R-0102).
+PaletteDelay palette_delay(const FrontEndState& state) {
+    if (!state.cycle.running) return std::nullopt;
+    return static_cast<std::uint8_t>(state.cycle.delay);
+}
+
 // `$80:A547` and the standings' entry, after whatever frames the print's cost gives (R-0102).
 void show_league_table(FrontEndState& state, const FrontEndContent& content, bool slides_back,
                        std::uint8_t frames_late) {
@@ -422,6 +428,7 @@ void time_league_exit(FrontEndState& state) {
     work.records_placed = state.race_result.records_placed;
     work.lap_race = state.race_result.times.lap_race;
     work.standings = standings_work(state, played_after_count(state));
+    work.palette_delay = palette_delay(state);
     const auto frames = league_exit_frames(work);
     auto& result = state.race_result;
     result.league_count_frame = frames.count;
@@ -543,7 +550,8 @@ void choose_league_slot(FrontEndState& state, const FrontEndContent& content) {
 
 void enter_league_table(FrontEndState& state, const FrontEndContent& content, bool slides_back) {
     const auto standings = standings_work(state, state.records.league_played[state.league.slot]);
-    show_league_table(state, content, slides_back, standings_print_frames_late(standings));
+    show_league_table(state, content, slides_back,
+                      standings_print_frames_late(standings, palette_delay(state)));
 }
 
 void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content) {

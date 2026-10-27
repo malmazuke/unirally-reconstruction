@@ -5,6 +5,7 @@
 #include "front_end.hpp"
 
 #include <cstdint>
+#include <optional>
 
 namespace unirally::front_end_screens {
 
@@ -40,10 +41,16 @@ struct StandingsWork {
     unsigned sort_stores{};
 };
 
+// The palette cycle's delay `$00C8` (6 down to 0) as the work's first frame's NMI leaves it, or
+// no value when the cycle is not running: the NMI after which the delay was 0 steps the cycle and
+// runs about 1,100 clocks longer, which pushes everything after it on (review round 5).
+using PaletteDelay = std::optional<std::uint8_t>;
+
 struct LeagueExitWork {
     unsigned records_placed{}; // times placed in the track's top three
     bool lap_race{};           // `$80:C868`'s best laps take longer than `$80:C7C4`'s totals
     StandingsWork standings{}; // as the count leaves them
+    PaletteDelay palette_delay{};
 };
 
 LeagueExitFrames league_exit_frames(const LeagueExitWork& work);
@@ -51,6 +58,7 @@ LeagueExitFrames league_exit_frames(const LeagueExitWork& work);
 // The standings' print (`$80:A547`) where it starts a frame's work (from PICK TOUR, the slots,
 // NOW PLAYING's Y and the awards' way out): the frames it runs past that frame before the frame
 // wait, 1 for five or more rows (`five`: every such print), 0 for fewer.
-std::uint8_t standings_print_frames_late(const StandingsWork& standings);
+std::uint8_t standings_print_frames_late(const StandingsWork& standings,
+                                         PaletteDelay palette_delay);
 
 } // namespace unirally::front_end_screens
