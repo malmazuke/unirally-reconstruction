@@ -27,6 +27,20 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**27 October 2026: NAME-CHECK is accepted (tier 1, #87) and integrated by merge commit.**
+The keyboard's OK runs the original's word check natively (`$83:84D9`):
+- **Refusal:** a name holding one of the 71 listed words is refused with `$80:A4C9`'s line and the
+  keyboard stays open. Pack v41 reads the list and the line from the ROM when the pack is built.
+- **Lag:** a cost model of the check gives the frames OK's commit runs late (rider names of 8
+  letters one, league names of 8-17 one or two); all 24 measured calls land in their measured frame.
+- **Results:** pictures and sound schedules equal the original's for refused, accepted and long
+  rider and league names (main: 119 of 1,206 pictures on `nc-refuse`). Gates pass against main.
+- **Limits:** an accepted 15-letter league name with 118-134 matched characters may be a frame off;
+  a league refusal's print across a frame boundary is not split; R-0097's one-frame text buffers
+  remain. The gate catalogue does not hold this task's checks yet.
+- **Time:** about 4 h 15 min from claim to merge (D-0013's target 6 h), half of it gates.
+[R-0101](research/R-0101-name-check.md) and [NAME-CHECK](../tasks/NAME-CHECK.md) hold the detail.
+
 **26 October 2026: EVIDENCE-LARGE-FILES is accepted (tier 1, #86) and integrated by merge commit.**
 The evidence captures over 480 MiB, which macOS will not compress transparently, are stored as
 `NAME.zst`:
