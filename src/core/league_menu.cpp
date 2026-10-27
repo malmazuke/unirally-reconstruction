@@ -330,81 +330,94 @@ void print_award_bonus(FrontEndState& state, const FrontEndContent& content) {
 }
 } // namespace
 
-// $80:AF54-AFEF in the result's way out, the frame before a long record placing pushes the rest
-// on (R-0098): each rider of the pair has played once more, and with another pair to race the
-// cursor moves to it.
-void count_league_pair(FrontEndState& state) {
+namespace {
+// `$80:AF54-AFCF`: each rider of the pair at the cursor has played once more.
+std::array<std::uint16_t, league_rows> played_after_count(const FrontEndState& state) {
     const auto slot = state.league.slot;
     const auto cursor = state.records.league_pair_cursor[slot];
     const auto members = league_members(state);
+    auto played = state.records.league_played[slot];
     for (unsigned at = cursor; at < std::min<unsigned>(cursor + 2, league_rows); ++at) {
         const auto rider = state.records.league_pairings[slot][at];
         if (rider == someone) continue;
         const auto row = static_cast<unsigned>(std::find(members.begin(), members.end(), rider)
                                                - members.begin());
-        ++state.records.league_played[slot][row];
+        ++played[row];
     }
-    state.league.more_pairs =
-        cursor < 6 && state.records.league_pairings[slot][cursor + 2] != someone;
-    if (state.league.more_pairs)
-        state.records.league_pair_cursor[slot] = static_cast<std::uint8_t>(cursor + 2);
+    return played;
 }
 
-namespace {
-// `$83:8BE7` subtracts each power of ten once per unit of its digit.
-unsigned digit_sum(unsigned value) {
-    unsigned sum = 0;
-    for (; value != 0; value /= 10) sum += value % 10;
-    return sum;
+// `$80:AFC3-AFE7`: another pair races after the one at the cursor.
+bool another_pair(const FrontEndState& state) {
+    const auto slot = state.league.slot;
+    const auto cursor = state.records.league_pair_cursor[slot];
+    return cursor < 6 && state.records.league_pairings[slot][cursor + 2] != someone;
 }
-} // namespace
 
-namespace {
-// The standings' rows and the digits of their played and points words, `played` as given.
-LeagueExitWork standings_work(const FrontEndState& state,
-                              const std::array<std::uint16_t, league_rows>& played) {
+// The standings' rows and the digits of their played and points words, `played` as given:
+// `$83:8BE7` counts the tens and above down in one kind of loop and the units in another.
+StandingsWork standings_work(const FrontEndState& state,
+                             const std::array<std::uint16_t, league_rows>& played) {
     const auto members = league_members(state);
-    LeagueExitWork work;
+    StandingsWork work;
+    const auto add = [&](unsigned value) {
+        work.unit_digit_units += value % 10;
+        for (value /= 10; value != 0; value /= 10) work.higher_digit_units += value % 10;
+    };
     for (unsigned row = 0; row < league_rows; ++row) {
         if (members[row] == someone) continue;
-        ++work.members;
-        work.standings_digits +=
-            digit_sum(played[row]) + digit_sum(state.records.league_scores[state.league.slot][row]);
+        ++work.rows;
+        add(played[row]);
+        add(state.records.league_scores[state.league.slot][row]);
     }
     return work;
 }
+
+// `$80:A547` and the standings' entry, after whatever frames the print's cost gives (R-0102).
+void show_league_table(FrontEndState& state, const FrontEndContent& content, bool slides_back,
+                       std::uint8_t frames_late) {
+    // `$80:A547` leaves entries 104-111 as they were: the awards' way out and NOW PLAYING's back
+    // hide them themselves, PICK TOUR and the slots leave them shown off screen (R-0098).
+    print_table(state, content);
+    state.league.table_frames_late = frames_late;
+    state.league.table_slides_back = slides_back;
+    state.screen = FrontEndScreen::league_table_entry;
+    state.latches = {};
+    state.league.previous_buttons = 0;
+}
 } // namespace
+
+// $80:AF54-AFEF in the result's way out, once the records' checksum runs are done (R-0098,
+// R-0102): each rider of the pair has played once more, and with another pair to race the cursor
+// moves to it.
+void count_league_pair(FrontEndState& state) {
+    const auto slot = state.league.slot;
+    state.records.league_played[slot] = played_after_count(state);
+    state.league.more_pairs = another_pair(state);
+    if (state.league.more_pairs)
+        state.records.league_pair_cursor[slot] =
+            static_cast<std::uint8_t>(state.records.league_pair_cursor[slot] + 2);
+}
 
 // The way out's cost (R-0102): the count's frame after the records and their checksum runs; with
 // another pair, the standings' print after the count, its numbers as the count leaves them. The
-// awards keep R-0095's frames (2, or 3 after two placings), which the same work measures give.
+// awards keep R-0095's frames, which the same work measures give.
 void time_league_exit(FrontEndState& state) {
-    const auto slot = state.league.slot;
-    const auto cursor = state.records.league_pair_cursor[slot];
-    const auto& pairings = state.records.league_pairings[slot];
-    const auto members = league_members(state);
-    auto played = state.records.league_played[slot];
-    for (unsigned at = cursor; at < std::min<unsigned>(cursor + 2, league_rows); ++at) {
-        if (pairings[at] == someone) continue;
-        const auto row = std::find(members.begin(), members.end(), pairings[at]) - members.begin();
-        ++played.at(static_cast<std::size_t>(row));
-    }
-    auto work = standings_work(state, played);
+    LeagueExitWork work;
     work.records_placed = state.race_result.records_placed;
     work.lap_race = state.race_result.times.lap_race;
+    work.standings = standings_work(state, played_after_count(state));
     const auto frames = league_exit_frames(work);
-    const bool more_pairs = cursor < 6 && pairings[cursor + 2] != someone;
     auto& result = state.race_result;
     result.league_count_frame = frames.count;
     result.league_standings_frame =
-        more_pairs ? frames.standings : (result.records_placed >= 2 ? 3U : 2U);
+        another_pair(state) ? frames.standings : league_awards_scoring_frame(result.records_placed);
 }
 
 // Then the standings for the next pair, or the awards ($80:8917).
 void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
     if (state.league.more_pairs) {
-        enter_league_table(state, content);
-        state.league.table_frames_late = 0; // the way out's frames hold the print's (R-0102)
+        show_league_table(state, content, false, 0); // the way out's frames hold the print's
         return;
     }
     award_points(state, content);
@@ -514,16 +527,8 @@ void choose_league_slot(FrontEndState& state, const FrontEndContent& content) {
 }
 
 void enter_league_table(FrontEndState& state, const FrontEndContent& content, bool slides_back) {
-    // `$80:A547` leaves entries 104-111 as they were: the awards' way out and NOW PLAYING's back
-    // hide them themselves, PICK TOUR and the slots leave them shown off screen (R-0098).
-    print_table(state, content);
-    const auto work = standings_work(state, state.records.league_played[state.league.slot]);
-    state.league.table_frames_late =
-        standings_print_frames_late(work.members, work.standings_digits);
-    state.league.table_slides_back = slides_back;
-    state.screen = FrontEndScreen::league_table_entry;
-    state.latches = {};
-    state.league.previous_buttons = 0;
+    const auto standings = standings_work(state, state.records.league_played[state.league.slot]);
+    show_league_table(state, content, slides_back, standings_print_frames_late(standings));
 }
 
 void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content) {

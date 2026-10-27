@@ -79,7 +79,9 @@ StatisticsCounts count_statistics(const OnePlayerRecords& records) {
             keep_largest(values[at], largest[at], counts);
         const std::array<std::uint16_t, 3> parts{wins, losses, stats[2]};
         for (std::size_t at = 0; at < parts.size(); ++at) {
-            const auto percentage = races == 0 ? races : count_percentage(parts[at], races, counts);
+            // `$83:986A` hands back the races, 0, for a rider without races.
+            const auto percentage =
+                races == 0 ? std::uint16_t{0} : count_percentage(parts[at], races, counts);
             keep_largest(percentage, largest_percentage[at], counts);
         }
         largest_percentage.fill(100);
@@ -89,21 +91,30 @@ StatisticsCounts count_statistics(const OnePlayerRecords& records) {
 
 // --- A league pair's way out ---
 
-// Measured over 27 way outs of three leagues (R-0102, trace_pairs.sh, pairs_fit.py): `$80:C786`
-// is called this long after vblank (24,918-26,660), runs one checksum and one more for each time
-// placed, and a lap race's best laps add to it; the count with its checksum; the standings'
-// print by its rows and the units of its numbers. The print's constant includes the names of the
-// measured leagues (the default riders 0, 2, 4, 6 and 8), so other names move it a little.
+// Measured over 27 way outs of three leagues and 7 of one with edited points (R-0102,
+// trace_pairs.sh, the review's band): `$80:C786` is called this long after vblank (24,918-26,660),
+// runs one checksum and one more for each time placed, and a lap race's best laps add to it; the
+// count with its checksum. The standings' print to its frame wait: the title and the rows (the
+// two constants fitted over the 34; they include the names of the measured leagues, the default
+// riders 0, 2, 4, 6 and 8, so other names move them a little), the digit loops at their CPU cost
+// per unit (from the instruction trace, `digit_steps.py`; the hundreds and above are taken as the
+// tens' loop, which they repeat) and the NMI when the print runs past a frame's end.
 constexpr std::uint32_t records_start_clocks = 25200;
 constexpr std::uint32_t records_clocks = 227224, placing_clocks = 224765, lap_race_clocks = 4480;
 constexpr std::uint32_t count_clocks = 226738;
-constexpr std::uint32_t three_row_standings_clocks = 346381, row_clocks = 41214, digit_clocks = 89;
+constexpr std::uint32_t standings_title_clocks = 221460, standings_row_clocks = 41320;
+constexpr std::uint32_t higher_digit_unit_clocks = 122; // $83:8C31-8C36, a pass
+constexpr std::uint32_t unit_digit_unit_clocks = 90;    // $83:8C3B-8C3E, a pass
 // Elsewhere the print's JSR (`$80:BE57`) comes 15,484-25,010 clocks into its frame (`five`'s).
 constexpr std::uint32_t standings_start_clocks = 25000;
 
-std::uint32_t standings_clocks(unsigned members, unsigned digits) {
-    const auto rows = members < 3 ? 3U : members;
-    return three_row_standings_clocks + row_clocks * (rows - 3) + digit_clocks * digits;
+// The clocks from `start` (after vblank) to the print's frame wait.
+std::uint32_t standings_wait_clocks(std::uint32_t start, const StandingsWork& standings) {
+    const auto digits = higher_digit_unit_clocks * standings.higher_digit_units
+                      + unit_digit_unit_clocks * standings.unit_digit_units;
+    const auto wait = start + standings_title_clocks + standings_row_clocks * standings.rows
+                    + with_refresh(digits);
+    return wait + nmi_clocks * (wait / frame_clocks - start / frame_clocks);
 }
 
 } // namespace
@@ -122,15 +133,14 @@ LeagueExitFrames league_exit_frames(const LeagueExitWork& work) {
     const auto counted = records_start_clocks + records_clocks
                        + placing_clocks * work.records_placed
                        + (work.lap_race ? lap_race_clocks : 0);
-    const auto printed =
-        counted + count_clocks + standings_clocks(work.members, work.standings_digits);
+    const auto printed = standings_wait_clocks(counted + count_clocks, work.standings);
     // Exit frame 1 is `$80:C786`'s; each frame boundary the work passes moves what follows on.
     return {1 + counted / frame_clocks, 1 + printed / frame_clocks};
 }
 
-std::uint8_t standings_print_frames_late(unsigned members, unsigned standings_digits) {
-    const auto wait = standings_start_clocks + standings_clocks(members, standings_digits);
-    return static_cast<std::uint8_t>(wait / frame_clocks);
+std::uint8_t standings_print_frames_late(const StandingsWork& standings) {
+    return static_cast<std::uint8_t>(standings_wait_clocks(standings_start_clocks, standings)
+                                     / frame_clocks);
 }
 
 } // namespace unirally::front_end_screens

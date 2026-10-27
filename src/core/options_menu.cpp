@@ -247,14 +247,14 @@ void enter_records_menu(FrontEndState& state, const FrontEndContent& content) {
     // $80:D525-D53C; R-0072 observation 5. `$0089`, the decorations' delay, goes on (R-0097).
     // `$83:97BD` (`$80:D527`) runs first; with dense statistics it and the print end after the
     // choice's frame, and the print is taken as the last of those frames' work (R-0102).
-    auto& late = state.records_detail.statistics_frames;
+    auto& late = state.records_detail.statistics_frames_late;
     late = records_statistics_frames_late(state.records);
     if (late == 0) print_choices(state, content, content.records_menu_text);
     state.screen = FrontEndScreen::records_entry;
 }
 
 void records_entry_frame(FrontEndState& state, const FrontEndContent& content) {
-    auto& late = state.records_detail.statistics_frames;
+    auto& late = state.records_detail.statistics_frames_late;
     if (late != 0) { // only the NMI: no frame wait, no slide
         if (--late == 0) print_choices(state, content, content.records_menu_text);
         state.script_frame = 0;

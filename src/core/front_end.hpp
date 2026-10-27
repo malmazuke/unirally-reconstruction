@@ -291,7 +291,7 @@ struct RecordsDetail {
     bool group_reprinted{}; // GROUP TABLES printed again: the next frame uploads the text
     // RECORDS' entry frames still to run without a frame wait: `$83:97BD`'s statistics with
     // RECORDS' print can run past OPTIONS' choice frame (R-0102).
-    std::uint8_t statistics_frames{};
+    std::uint8_t statistics_frames_late{};
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):

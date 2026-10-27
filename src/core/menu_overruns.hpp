@@ -23,13 +23,19 @@ struct LeagueExitFrames {
     std::uint32_t standings{}; // the exit frame the standings' print ends with its frame wait
 };
 
+// What the standings' print (`$80:A547`) costs by: its rows and the digits of every played and
+// points word it prints. `$83:8BE7` turns a word into decimal by subtracting each power of ten
+// once per unit of its digit (`$83:8BFE-8C36`) and counting the units down (`$83:8C3B-8C3E`).
+struct StandingsWork {
+    unsigned rows{};
+    unsigned higher_digit_units{}; // the tens and above, summed
+    unsigned unit_digit_units{};   // the units, summed
+};
+
 struct LeagueExitWork {
     unsigned records_placed{}; // times placed in the track's top three
     bool lap_race{};           // `$80:C868`'s best laps take longer than `$80:C7C4`'s totals
-    unsigned members{};        // rows the standings print
-    // The digits of every played and points word the standings print, summed: `$83:8BE7` turns
-    // a word into decimal by subtracting each power of ten once per unit.
-    unsigned standings_digits{};
+    StandingsWork standings{}; // as the count leaves them
 };
 
 LeagueExitFrames league_exit_frames(const LeagueExitWork& work);
@@ -37,6 +43,6 @@ LeagueExitFrames league_exit_frames(const LeagueExitWork& work);
 // The standings' print (`$80:A547`) where it starts a frame's work (from PICK TOUR, the slots,
 // NOW PLAYING's Y and the awards' way out): the frames it runs past that frame before the frame
 // wait, 1 for five or more rows (`five`: every such print), 0 for fewer.
-std::uint8_t standings_print_frames_late(unsigned members, unsigned standings_digits);
+std::uint8_t standings_print_frames_late(const StandingsWork& standings);
 
 } // namespace unirally::front_end_screens

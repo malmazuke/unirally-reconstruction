@@ -268,7 +268,7 @@ bool waits_for_frame(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::league_table_entry && state.league.table_frames_late != 0)
         return false;
     if (state.screen == FrontEndScreen::records_entry
-        && state.records_detail.statistics_frames != 0)
+        && state.records_detail.statistics_frames_late != 0)
         return false;
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;

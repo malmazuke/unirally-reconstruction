@@ -2329,23 +2329,27 @@ void menu_overrun_tests() {
     stats = {1000, 400, 700, 0};
   require(records_statistics_frames_late(records) == 1);
   // A league pair's way out: a three-member league's standings after two
-  // placings end in exit frame 3 with few digits (odd-tours' first event) and
-  // in frame 4 with more (its later events); five members always in 4.
-  LeagueExitWork work{2, false, 3, 2};
+  // placings in a one-run race end in exit frame 3 up to units summing 22
+  // and in frame 4 from 28 (odd-tours' first way out with its points edited,
+  // the review's band); five members end in 4.
+  LeagueExitWork work{2, false, {3, 0, 2}};
   require(league_exit_frames(work).count == 2 &&
           league_exit_frames(work).standings == 3);
-  work.standings_digits = 37;
+  work.standings.unit_digit_units = 22;
+  require(league_exit_frames(work).standings == 3);
+  work.standings.unit_digit_units = 28;
   require(league_exit_frames(work).standings == 4);
+  require(league_exit_frames({2, false, {5, 0, 2}}).standings == 4);
   // One placing counts a frame later than none; with no placing three rows
   // print in frame 2, five in frame 3.
-  require(league_exit_frames({0, false, 3, 33}).count == 1 &&
-          league_exit_frames({1, false, 5, 4}).count == 2);
-  require(league_exit_frames({0, false, 3, 33}).standings == 2 &&
-          league_exit_frames({0, false, 5, 41}).standings == 3);
+  require(league_exit_frames({0, false, {3, 3, 30}}).count == 1 &&
+          league_exit_frames({1, false, {5, 0, 4}}).count == 2);
+  require(league_exit_frames({0, false, {3, 3, 30}}).standings == 2 &&
+          league_exit_frames({0, false, {5, 5, 36}}).standings == 3);
   // The print alone runs past its frame with five rows only.
-  require(standings_print_frames_late(5, 0) == 1 &&
-          standings_print_frames_late(4, 60) == 0 &&
-          standings_print_frames_late(3, 60) == 0);
+  require(standings_print_frames_late({5, 0, 0}) == 1 &&
+          standings_print_frames_late({4, 20, 40}) == 0 &&
+          standings_print_frames_late({3, 20, 40}) == 0);
 }
 
 int main() try {
