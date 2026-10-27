@@ -401,3 +401,18 @@ VS_REMATCH_TABLES = (
 def v38_new_entries(rom: bytes) -> list[dict[str, Any]]:
     """A VS tie's REMATCH (R-0095)."""
     return [table_entry(rom, *table) for table in VS_REMATCH_TABLES]
+
+
+# Profile v41 (NAME-CHECK, R-0101): the keyboard's OK (`$80:A4AA-A4B6`) runs `$83:84D9`, which
+# compares the name with 71 words at every position; on a match it prints `$80:A4C9` and keeps the
+# keyboard open (`$80:A4B8-A4C6`). The words' entry is the pointer table at `$83:8537` (71 words in
+# bank `$83`) and the words after it, each ended by 0xFF, up to the compare at `$83:8779`.
+NAME_CHECK_TABLES = (
+    ("front-end.name-check-words", 0x838537, 0x242),
+    ("front-end.name-refused-text", 0x80A4C9, None),
+)
+
+
+def v41_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The keyboard's name check: its word list and its refusal (R-0101)."""
+    return [table_entry(rom, *table) for table in NAME_CHECK_TABLES]

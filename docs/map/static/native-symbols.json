@@ -224,7 +224,8 @@
   {
    "address": "$80:8587",
    "native": [
-    "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller"
+    "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller",
+    "src/core/name_check.cpp:nmi_clocks"
    ],
    "region": "rom"
   },
@@ -1816,7 +1817,7 @@
     "src/core/options_menu.cpp:press_keyboard_ok"
    ],
    "range_ends": [
-    "$80:A4AC"
+    "$80:A4B6"
    ],
    "region": "rom"
   },
@@ -1831,6 +1832,46 @@
    "address": "$80:A495",
    "native": [
     "src/core/options_menu.cpp:press_keyboard_ok"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A4B2",
+   "native": [
+    "src/core/name_check.cpp:call_clocks"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A4B6",
+   "native": [
+    "src/core/name_check.cpp:call_clocks"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A4B8",
+   "native": [
+    "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks",
+    "src/core/options_menu.cpp:refuse_name"
+   ],
+   "range_ends": [
+    "$80:A4C6"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A4C4",
+   "native": [
+    "src/core/front_end.hpp:KeyboardEditor::check_frames"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A4C9",
+   "native": [
+    "src/core/content_pack.cpp:name_check_required",
+    "src/core/front_end.hpp:FrontEndContent::name_check_words, FrontEndContent::name_refused_text"
    ],
    "region": "rom"
   },
@@ -6950,14 +6991,16 @@
     "src/core/front_end_screens.hpp:champions_overrun_frames",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
-    "src/core/hunter_ending.cpp:hunter_ending_waits"
+    "src/core/hunter_ending.cpp:hunter_ending_waits",
+    "src/core/name_check.hpp:NameCheck::frames_late"
    ],
    "region": "rom"
   },
   {
    "address": "$80:FAE3",
    "native": [
-    "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank"
+    "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank",
+    "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks"
    ],
    "region": "rom"
   },
@@ -10912,6 +10955,130 @@
    ],
    "range_ends": [
     "$83:84D8"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:84D9",
+   "native": [
+    "src/core/content_pack.cpp:name_check_required",
+    "src/core/front_end.hpp:KeyboardEditor::check_frames",
+    "src/core/name_check.hpp:NameCheck",
+    "src/core/name_check.hpp:check_name",
+    "src/core/options_menu.cpp:press_keyboard_ok"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:84DD",
+   "native": [
+    "src/core/name_check.cpp:count_check"
+   ],
+   "range_ends": [
+    "$83:8534"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:84EE",
+   "native": [
+    "src/core/name_check.cpp:call_clocks",
+    "src/core/name_check.cpp:position_clocks"
+   ],
+   "range_ends": [
+    "$83:8500"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8501",
+   "native": [
+    "src/core/name_check.cpp:word_clocks"
+   ],
+   "range_ends": [
+    "$83:850D"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8505",
+   "native": [
+    "src/core/name_check.cpp:word_table_address"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:850F",
+   "native": [
+    "src/core/name_check.cpp:match_saving"
+   ],
+   "range_ends": [
+    "$83:851A"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:851B",
+   "native": [
+    "src/core/name_check.cpp:word_clocks"
+   ],
+   "range_ends": [
+    "$83:8525"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:851E",
+   "native": [
+    "src/core/name_check.cpp:word_count"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8528",
+   "native": [
+    "src/core/name_check.cpp:position_clocks"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:852D",
+   "native": [
+    "src/core/name_check.cpp:match_saving"
+   ],
+   "range_ends": [
+    "$83:8534"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8537",
+   "native": [
+    "src/core/content_pack.cpp:name_check_required",
+    "src/core/front_end.hpp:FrontEndContent::name_check_words, FrontEndContent::name_refused_text",
+    "src/core/name_check.cpp:word_table_address",
+    "src/core/name_check.hpp:check_name"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8779",
+   "native": [
+    "src/core/name_check.cpp:matched_characters",
+    "src/core/name_check.cpp:word_clocks"
+   ],
+   "range_ends": [
+    "$83:8799"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:877E",
+   "native": [
+    "src/core/name_check.cpp:character_clocks"
+   ],
+   "range_ends": [
+    "$83:878C"
    ],
    "region": "rom"
   },
@@ -15292,6 +15459,13 @@
    "region": "wram"
   },
   {
+   "address": "$0094",
+   "native": [
+    "src/core/front_end.hpp:KeyboardEditor::check_frames"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$009B",
    "native": [
     "src/core/front_end.hpp:FrontEndMode",
@@ -18735,6 +18909,14 @@
    "region": "io"
   },
   {
+   "address": "$00:4212",
+   "native": [
+    "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks",
+    "src/core/name_check.cpp:frame_wait_clocks"
+   ],
+   "region": "io"
+  },
+  {
    "address": "$00:4218",
    "native": [
     "src/core/front_end.hpp:FrontEndPads",
@@ -19745,6 +19927,13 @@
     "$81:8476"
    ]
   },
+  "src/core/content_pack.cpp:name_check_required": {
+   "rom": [
+    "$80:A4C9",
+    "$83:84D9",
+    "$83:8537"
+   ]
+  },
   "src/core/content_pack.cpp:pause_messages_required": {
    "rom": [
     "$83:F516"
@@ -20296,6 +20485,12 @@
     "$83:FB56"
    ]
   },
+  "src/core/front_end.hpp:FrontEndContent::name_check_words, FrontEndContent::name_refused_text": {
+   "rom": [
+    "$80:A4C9",
+    "$83:8537"
+   ]
+  },
   "src/core/front_end.hpp:FrontEndContent::result_fifth_row": {
    "rom": [
     "$80:D1DB"
@@ -20551,6 +20746,15 @@
    ],
    "wram": [
     "$00DC"
+   ]
+  },
+  "src/core/front_end.hpp:KeyboardEditor::check_frames": {
+   "rom": [
+    "$80:A4C4",
+    "$83:84D9"
+   ],
+   "wram": [
+    "$0094"
    ]
   },
   "src/core/front_end.hpp:KeyboardEditor::latches": {
@@ -22901,6 +23105,93 @@
     "$83:E90D"
    ]
   },
+  "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks": {
+   "io": [
+    "$00:4212"
+   ],
+   "rom": [
+    "$80:A4B8",
+    "$80:FAE3"
+   ]
+  },
+  "src/core/name_check.cpp:call_clocks": {
+   "rom": [
+    "$80:A4B2",
+    "$80:A4B6",
+    "$83:84EE"
+   ]
+  },
+  "src/core/name_check.cpp:character_clocks": {
+   "rom": [
+    "$83:877E"
+   ]
+  },
+  "src/core/name_check.cpp:count_check": {
+   "rom": [
+    "$83:84DD"
+   ]
+  },
+  "src/core/name_check.cpp:frame_wait_clocks": {
+   "io": [
+    "$00:4212"
+   ]
+  },
+  "src/core/name_check.cpp:match_saving": {
+   "rom": [
+    "$83:850F",
+    "$83:852D"
+   ]
+  },
+  "src/core/name_check.cpp:matched_characters": {
+   "rom": [
+    "$83:8779"
+   ]
+  },
+  "src/core/name_check.cpp:nmi_clocks": {
+   "rom": [
+    "$80:8587"
+   ]
+  },
+  "src/core/name_check.cpp:position_clocks": {
+   "rom": [
+    "$83:84EE",
+    "$83:8528"
+   ]
+  },
+  "src/core/name_check.cpp:word_clocks": {
+   "rom": [
+    "$83:8501",
+    "$83:851B",
+    "$83:8779"
+   ]
+  },
+  "src/core/name_check.cpp:word_count": {
+   "rom": [
+    "$83:851E"
+   ]
+  },
+  "src/core/name_check.cpp:word_table_address": {
+   "rom": [
+    "$83:8505",
+    "$83:8537"
+   ]
+  },
+  "src/core/name_check.hpp:NameCheck": {
+   "rom": [
+    "$83:84D9"
+   ]
+  },
+  "src/core/name_check.hpp:NameCheck::frames_late": {
+   "rom": [
+    "$80:FADF"
+   ]
+  },
+  "src/core/name_check.hpp:check_name": {
+   "rom": [
+    "$83:84D9",
+    "$83:8537"
+   ]
+  },
   "src/core/neon_lighting.cpp:(file)": {
    "rom": [
     "$80:87C6",
@@ -23352,7 +23643,8 @@
     "$80:A41A",
     "$80:A491",
     "$80:A493",
-    "$80:A495"
+    "$80:A495",
+    "$83:84D9"
    ]
   },
   "src/core/options_menu.cpp:read_keyboard_pad": {
@@ -23372,6 +23664,11 @@
     "$80:B97A",
     "$80:D54B",
     "$80:DACF"
+   ]
+  },
+  "src/core/options_menu.cpp:refuse_name": {
+   "rom": [
+    "$80:A4B8"
    ]
   },
   "src/core/options_menu.cpp:rename_commit_frame": {
@@ -29249,11 +29546,11 @@
   }
  },
  "totals": {
-  "addresses": 2086,
-  "io_addresses": 11,
-  "native_symbols": 1530,
-  "rom_addresses": 1645,
+  "addresses": 2106,
+  "io_addresses": 12,
+  "native_symbols": 1549,
+  "rom_addresses": 1663,
   "sram_addresses": 65,
-  "wram_addresses": 365
+  "wram_addresses": 366
  }
 }

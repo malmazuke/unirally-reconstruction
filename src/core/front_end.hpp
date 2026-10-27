@@ -84,6 +84,10 @@ struct FrontEndContent {
     // it writes (`$83:FB56-FB89`); the credits picture is assets 0xBF (tiles), 0xC0 (map) and 0xC1
     // (colours). Empty in an older pack, where no name is a cheat.
     std::span<const std::uint8_t> name_cheats;
+    // The keyboard's name check (profile v41, R-0101): the words OK compares a name with (the
+    // pointer table at `$83:8537` and the words) and the refusal it prints (`$80:A4C9`). Empty in
+    // an older pack, where every name is accepted at once.
+    std::span<const std::uint8_t> name_check_words, name_refused_text;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -197,6 +201,10 @@ struct KeyboardEditor {
     std::uint8_t latches{0x10};
     // $0076: frames before a held Left or Right moves again, 18 after its press, then 6.
     std::uint8_t repeat_wait{};
+    // OK's name check (`$83:84D9`, R-0101): the frames it still runs past OK's frame, and whether
+    // it refuses the name (`$0094` cleared, `$80:A4C4`).
+    std::uint8_t check_frames{};
+    bool check_refused{};
 };
 
 // DEFINE LEAGUE ($80:9BC4-9EBC): six slots, each with a 16-rider membership mask.

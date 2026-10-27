@@ -31,6 +31,7 @@ V36_ENTRIES = 565  # the whole v36 inventory, before v37's name cheats
 V37_ENTRIES = 569  # the whole v37 inventory, before v38's REMATCH
 V38_ENTRIES = 570  # the whole v38 inventory, before v39's demo sound set
 V39_ENTRIES = 576  # the whole v39 inventory, before v40's opponent voice classes
+V40_ENTRIES = 577  # the whole v40 inventory, before v41's name check
 
 
 def through_league(rules: dict) -> list[dict]:
@@ -768,7 +769,7 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "ad0b0d8e2902eeb48cf9bdfa5503ab399d090e1a657c109e82d65a57781b55f0")
-        added = rules["entries"][V39_ENTRIES:]
+        added = rules["entries"][V39_ENTRIES:V40_ENTRIES]
         # $81:C5D1-C608, the bytes after the 72 race-finish reward classes that `$81:C241` reads
         # for events 200-255 (R-0098).
         self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
@@ -778,6 +779,32 @@ class AudioEntryTests(unittest.TestCase):
                          ("physics.reward.opponent-voice-classes", 0x81C5D1, 56))
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("league_tours_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_name_check_preserves_v40_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:V40_ENTRIES]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "6ec8be7656a87b579ae30d25a53d4f0ee41bb33213f4c9de341eb98c7fa51b96")
+        added = rules["entries"][V40_ENTRIES:]
+        # `$83:8537-8778`: the 71 word pointers and the words `$83:84D9` reads; `$80:A4C9`: the
+        # refusal OK prints on a match, up to its 0xFF (R-0101).
+        self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
+                         [("front-end.name-check-words", 0x242,
+                           {"kind": "raw", "pieces": [{"file_offset": 0x18537, "length": 0x242}]}),
+                          ("front-end.name-refused-text", 18,
+                           {"kind": "raw", "pieces": [{"file_offset": 0x24C9, "length": 18}]})])
+        self.assertEqual(front_end_rules.NAME_CHECK_TABLES,
+                         (("front-end.name-check-words", 0x838537, 0x242),
+                          ("front-end.name-refused-text", 0x80A4C9, None)))
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("name_check_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

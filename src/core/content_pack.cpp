@@ -1115,6 +1115,15 @@ const std::array<RequiredEntry, 1> league_tours_required{{
     {"physics.reward.opponent-voice-classes", 56,
      "f2cd6fe8eae5fa4b59457d79930ac6596a0561d22af59562df0b0eb3031658d9"},
 }};
+// The keyboard's name check (profile v41): the 71 words `$83:84D9` compares a name with, as the
+// pointer table at `$83:8537` and the words after it, and the refusal OK prints on a match
+// (`$80:A4C9`). R-0101.
+const std::array<RequiredEntry, 2> name_check_required{{
+    {"front-end.name-check-words", 578,
+     "9fca6768f2547ddcfa12e982031dca903d2159823f436a61e7495374f448d1e5"},
+    {"front-end.name-refused-text", 18,
+     "866a6b35016bed4ed307e24a25ffe9c1c6ab6ada44778b13b6544249a517b6c2"},
+}};
 const std::array<RequiredEntry, 33> audio_required{{
     {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
     {"audio.title-score", 2200, "b4e402d0d05207e0ceadc32e8b4ebd4d052677c42f0e36f4ab5883c74ff1eb6b"},
@@ -1247,14 +1256,14 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 } // namespace
 
 namespace {
-constexpr std::array<std::string_view, 13> supported_profiles{
+constexpr std::array<std::string_view, 14> supported_profiles{
     "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v29",
     "classic.pal.crawler.tracks.v30",  "classic.pal.crawler.tracks.v31",
     "classic.pal.crawler.tracks.v32",  "classic.pal.crawler.tracks.v33",
     "classic.pal.crawler.tracks.v34",  "classic.pal.crawler.tracks.v35",
     "classic.pal.crawler.tracks.v36",  "classic.pal.crawler.tracks.v37",
     "classic.pal.crawler.tracks.v38",  "classic.pal.crawler.tracks.v39",
-    "classic.pal.crawler.tracks.v40"};
+    "classic.pal.crawler.tracks.v40",  "classic.pal.crawler.tracks.v41"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1289,6 +1298,8 @@ constexpr std::string_view demo_audio_rules_sha =
     "b924e432850a0b54a0f1ddbc0b51c5dae01d3033b1e712d83befdac0f651c1e2";
 constexpr std::string_view league_tours_rules_sha =
     "177d550f5ae268301efc11d8ab8b30599e9cb1b7caa6a9a057d5f6e6e42eaaf3";
+constexpr std::string_view name_check_rules_sha =
+    "408ec862a6182bb39e5ca13f16df4b8f61cd43d66be7922549cd75fb82fbb3fa";
 constexpr std::string_view wipe_ram_rules_sha =
     "2197ac131df15667004640dd5f2b62cf4fdbad7b5dfd9e5033a39a525754a089";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
@@ -1313,7 +1324,8 @@ enum class PackVariant {
     credits_name,
     two_human_stunts,
     demo_audio,
-    league_tours
+    league_tours,
+    name_check
 };
 struct PackHeader {
     PackVariant variant;
@@ -1332,7 +1344,8 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const auto variant = profile == supported_profiles[12] ? PackVariant::league_tours
+    const auto variant = profile == supported_profiles[13] ? PackVariant::name_check
+                       : profile == supported_profiles[12] ? PackVariant::league_tours
                        : profile == supported_profiles[11] ? PackVariant::demo_audio
                        : profile == supported_profiles[10] ? PackVariant::two_human_stunts
                        : profile == supported_profiles[9]  ? PackVariant::credits_name
@@ -1351,7 +1364,8 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
     if (start != (tracks ? tracks_start : dragster_start))
         throw std::invalid_argument("Classic pack start state is unsupported");
     if (rules_identity
-        != hex_digest(variant == PackVariant::league_tours         ? league_tours_rules_sha
+        != hex_digest(variant == PackVariant::name_check           ? name_check_rules_sha
+                      : variant == PackVariant::league_tours       ? league_tours_rules_sha
                       : variant == PackVariant::demo_audio         ? demo_audio_rules_sha
                       : variant == PackVariant::two_human_stunts   ? two_human_stunts_rules_sha
                       : variant == PackVariant::credits_name       ? credits_name_rules_sha
@@ -1416,8 +1430,10 @@ std::vector<RequiredEntry> required_entries(PackVariant variant) {
         out.insert(out.end(), two_human_stunts_required.begin(), two_human_stunts_required.end());
     if (variant >= PackVariant::demo_audio)
         out.insert(out.end(), demo_audio_required.begin(), demo_audio_required.end());
-    if (variant == PackVariant::league_tours)
+    if (variant >= PackVariant::league_tours)
         out.insert(out.end(), league_tours_required.begin(), league_tours_required.end());
+    if (variant == PackVariant::name_check)
+        out.insert(out.end(), name_check_required.begin(), name_check_required.end());
     return out;
 }
 

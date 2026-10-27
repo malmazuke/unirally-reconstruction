@@ -6,6 +6,7 @@
 #include "cartridge_ram.hpp"
 #include "front_end.hpp"
 #include "front_end_screens.hpp"
+#include "name_check.hpp"
 #include "race_demo_controls.hpp"
 #include "snes_screen.hpp"
 #include "text_printer.hpp"
@@ -2270,6 +2271,51 @@ void race_cartridge_increment_tests() {
   require(refuses([&] { unirally::add_race_cartridge_increments(state, tallies); }));
 }
 
+// NAME-CHECK (R-0101): `$83:84D9` on a synthetic word list laid out as the
+// ROM's (71 pointers into bank $83 from $83:8537, then the words, each ended
+// by 0xFF): word 0 "abc", word 70 "bcd", the others "qqqq".
+std::vector<std::uint8_t> synthetic_name_words() {
+  constexpr unsigned count = 71, table = 0x8537;
+  std::vector<std::uint8_t> out(2 * count);
+  for (unsigned i = 0; i < count; ++i) {
+    const auto address = table + static_cast<unsigned>(out.size());
+    out[2 * i] = static_cast<std::uint8_t>(address & 0xffU);
+    out[2 * i + 1] = static_cast<std::uint8_t>(address >> 8U);
+    const std::string word = i == 0 ? "abc" : i == count - 1 ? "bcd" : "qqqq";
+    out.insert(out.end(), word.begin(), word.end());
+    out.push_back(0xff);
+  }
+  return out;
+}
+
+void name_check_tests() {
+  using unirally::front_end_screens::check_name;
+  const auto words = synthetic_name_words();
+  const auto check = [&](const std::string &name) {
+    return check_name({reinterpret_cast<const std::uint8_t *>(name.data()),
+                       name.size()},
+                      words);
+  };
+  // A word anywhere refuses the name; a word cut short by the name's end
+  // does not.
+  require(check("abcxy").refused && check("xxabc").refused);
+  require(check("xbcd").refused && check("abcd").refused);
+  require(!check("xxab").refused && !check("bc").refused);
+  // An older pack has no list: every name is accepted at once.
+  require(!check_name({reinterpret_cast<const std::uint8_t *>("abc"), 3}, {})
+               .refused);
+  // About 39 lines a character: seven fit in OK's frame, eight run one frame
+  // past it, sixteen two (the captures' nc-lengths and nc-league, R-0101).
+  require(check("xxxxxxx").frames_late == 0);
+  require(check("xxxxxxxx").frames_late == 1);
+  require(check(std::string(15, 'x')).frames_late == 1);
+  require(check(std::string(16, 'x')).frames_late == 2);
+  // A match ends the check: a word early in a long name keeps it in its
+  // frame.
+  require(check("abc" + std::string(14, 'x')).frames_late == 0);
+  require(refuses([&] { check_name({}, std::vector<std::uint8_t>(10)); }));
+}
+
 int main() try {
   text_printer_tests();
   text_variable_tests();
@@ -2298,6 +2344,7 @@ int main() try {
   faedine_tests();
   demo_name_tests();
   demo_sound_tests();
+  name_check_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());
