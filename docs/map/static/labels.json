@@ -349,7 +349,8 @@
   "comment": "routine start",
   "label": "sub_808587",
   "native": [
-   "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller"
+   "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller",
+   "src/core/name_check.cpp:nmi_clocks"
   ],
   "source_records": [
    "docs/research/R-0006-observed-code-map.md",
@@ -3007,6 +3008,18 @@
   ]
  },
  {
+  "address": "$80:A256",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A256",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
   "address": "$80:A25F",
   "class": "observed",
   "comment": "instruction start",
@@ -3287,7 +3300,34 @@
    "src/core/options_menu.cpp:press_keyboard_ok"
   ],
   "source_records": [
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$80:A4A2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A4A2",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:press_keyboard_ok"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$80:A4AA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A4AA",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:press_keyboard_ok"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
   ]
  },
  {
@@ -3296,10 +3336,13 @@
   "comment": "instruction start",
   "label": "loc_80A4B8",
   "native": [
-   "src/core/front_end.hpp:KeyboardEditor"
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks",
+   "src/core/options_menu.cpp:refuse_name"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0101-name-check.md",
    "tasks/NAME-CHECK.md"
   ]
  },
@@ -3309,10 +3352,13 @@
   "comment": "unknown",
   "label": "unk_80A4C9",
   "native": [
+   "src/core/content_pack.cpp:name_check_required",
+   "src/core/front_end.hpp:FrontEndContent::name_check_words, FrontEndContent::name_refused_text",
    "src/core/front_end.hpp:KeyboardEditor"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0101-name-check.md",
    "tasks/NAME-CHECK.md"
   ]
  },
@@ -7016,6 +7062,7 @@
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -8707,7 +8754,8 @@
    "src/core/options_menu.cpp:enter_records_menu"
   ],
   "source_records": [
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
  {
@@ -8894,6 +8942,7 @@
   ],
   "source_records": [
    "docs/research/R-0100-record-screens.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -8909,7 +8958,8 @@
    "src/core/high_scores.cpp:print_high_scores"
   ],
   "source_records": [
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -9756,6 +9806,7 @@
   ],
   "source_records": [
    "docs/research/R-0100-record-screens.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -11994,7 +12045,8 @@
    "src/core/front_end_screens.hpp:champions_overrun_frames",
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
-   "src/core/hunter_ending.cpp:hunter_ending_waits"
+   "src/core/hunter_ending.cpp:hunter_ending_waits",
+   "src/core/name_check.hpp:NameCheck::frames_late"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -12010,10 +12062,12 @@
   "comment": "instruction start",
   "label": "loc_80FAE3",
   "native": [
-   "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank"
+   "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank",
+   "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0101-name-check.md",
    "tasks/AUDIO-TITLE-MENU.md"
   ]
  },
@@ -12039,7 +12093,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0101-name-check.md"
   ]
  },
  {
@@ -12118,6 +12173,7 @@
    "docs/research/R-0098-league-tours.md",
    "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/README.md",
    "tasks/RECORD-SCREENS.md"
   ]
@@ -22037,11 +22093,138 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_8384D9",
+  "native": [
+   "src/core/content_pack.cpp:name_check_required",
+   "src/core/front_end.hpp:KeyboardEditor::check_frames",
+   "src/core/name_check.hpp:NameCheck",
+   "src/core/name_check.hpp:check_name",
+   "src/core/options_menu.cpp:press_keyboard_ok"
+  ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0101-name-check.md",
    "tasks/MENU-INPUT.md",
    "tasks/NAME-CHECK.md",
    "tasks/README.md"
+  ]
+ },
+ {
+  "address": "$83:84DD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8384DD",
+  "native": [
+   "src/core/name_check.cpp:count_check"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:84EE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8384EE",
+  "native": [
+   "src/core/name_check.cpp:call_clocks",
+   "src/core/name_check.cpp:count_check",
+   "src/core/name_check.cpp:position_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:8501",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838501",
+  "native": [
+   "src/core/name_check.cpp:count_check",
+   "src/core/name_check.cpp:word_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:8505",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838505",
+  "native": [
+   "src/core/name_check.cpp:count_check",
+   "src/core/name_check.cpp:word_clocks",
+   "src/core/name_check.cpp:word_table_address"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:850F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83850F",
+  "native": [
+   "src/core/name_check.cpp:count_check",
+   "src/core/name_check.cpp:match_saving"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:851B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83851B",
+  "native": [
+   "src/core/name_check.cpp:count_check",
+   "src/core/name_check.cpp:word_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:851E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83851E",
+  "native": [
+   "src/core/name_check.cpp:count_check",
+   "src/core/name_check.cpp:word_clocks",
+   "src/core/name_check.cpp:word_count"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:8528",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838528",
+  "native": [
+   "src/core/name_check.cpp:count_check",
+   "src/core/name_check.cpp:position_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:852D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83852D",
+  "native": [
+   "src/core/name_check.cpp:count_check",
+   "src/core/name_check.cpp:match_saving"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
   ]
  },
  {
@@ -22059,9 +22242,43 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_838537",
+  "native": [
+   "src/core/content_pack.cpp:name_check_required",
+   "src/core/front_end.hpp:FrontEndContent::name_check_words, FrontEndContent::name_refused_text",
+   "src/core/name_check.cpp:word_table_address",
+   "src/core/name_check.hpp:check_name"
+  ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0101-name-check.md",
    "tasks/NAME-CHECK.md"
+  ]
+ },
+ {
+  "address": "$83:8779",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_838779",
+  "native": [
+   "src/core/name_check.cpp:matched_characters",
+   "src/core/name_check.cpp:word_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
+  ]
+ },
+ {
+  "address": "$83:877E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83877E",
+  "native": [
+   "src/core/name_check.cpp:character_clocks",
+   "src/core/name_check.cpp:matched_characters",
+   "src/core/name_check.cpp:word_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0101-name-check.md"
   ]
  },
  {
@@ -22098,7 +22315,8 @@
    "src/core/race_result.cpp:race_result_exit_frame"
   ],
   "source_records": [
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -22111,6 +22329,7 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -23295,7 +23514,10 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "tasks/NEXT_SESSION.md",
+   "tasks/PODIUM-RETURN-TIMING.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
@@ -23581,7 +23803,8 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
-   "tasks/MENU-INPUT.md"
+   "tasks/MENU-INPUT.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
  {
@@ -24015,7 +24238,8 @@
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0076-first-race-audio.md",
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "tasks/RECORD-SCREENS.md"
   ]
  },
  {
