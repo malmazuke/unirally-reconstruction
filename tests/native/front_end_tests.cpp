@@ -6,6 +6,7 @@
 #include "cartridge_ram.hpp"
 #include "front_end.hpp"
 #include "front_end_screens.hpp"
+#include "menu_overruns.hpp"
 #include "name_check.hpp"
 #include "race_demo_controls.hpp"
 #include "snes_screen.hpp"
@@ -2316,6 +2317,37 @@ void name_check_tests() {
   require(refuses([&] { check_name({}, std::vector<std::uint8_t>(10)); }));
 }
 
+void menu_overrun_tests() {
+  using namespace unirally::front_end_screens;
+  // RECORDS' entry (R-0102): no statistics fit in OPTIONS' choice frame; 48
+  // percentages of large numbers run a frame past it (review's wr-stats2).
+  unirally::OnePlayerRecords records{};
+  require(records_statistics_frames_late(records) == 0);
+  records.statistics[3] = {1000, 400, 700, 0};
+  require(records_statistics_frames_late(records) == 0);
+  for (auto &stats : records.statistics)
+    stats = {1000, 400, 700, 0};
+  require(records_statistics_frames_late(records) == 1);
+  // A league pair's way out: a three-member league's standings after two
+  // placings end in exit frame 3 with few digits (odd-tours' first event) and
+  // in frame 4 with more (its later events); five members always in 4.
+  LeagueExitWork work{2, false, 3, 2};
+  require(league_exit_frames(work).count == 2 &&
+          league_exit_frames(work).standings == 3);
+  work.standings_digits = 37;
+  require(league_exit_frames(work).standings == 4);
+  // One placing counts a frame later than none; with no placing three rows
+  // print in frame 2, five in frame 3.
+  require(league_exit_frames({0, false, 3, 33}).count == 1 &&
+          league_exit_frames({1, false, 5, 4}).count == 2);
+  require(league_exit_frames({0, false, 3, 33}).standings == 2 &&
+          league_exit_frames({0, false, 5, 41}).standings == 3);
+  // The print alone runs past its frame with five rows only.
+  require(standings_print_frames_late(5, 0) == 1 &&
+          standings_print_frames_late(4, 60) == 0 &&
+          standings_print_frames_late(3, 60) == 0);
+}
+
 int main() try {
   text_printer_tests();
   text_variable_tests();
@@ -2345,6 +2377,7 @@ int main() try {
   demo_name_tests();
   demo_sound_tests();
   name_check_tests();
+  menu_overrun_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

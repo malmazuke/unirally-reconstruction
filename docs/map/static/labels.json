@@ -932,7 +932,8 @@
    "src/core/league_menu.cpp:finish_league_pair"
   ],
   "source_records": [
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -1845,6 +1846,31 @@
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:971D",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80971D",
+  "native": [
+   "src/core/menu_overruns.cpp:count_percentage",
+   "src/core/menu_overruns.cpp:statistics_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
+  "address": "$80:973B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80973B",
+  "native": [
+   "src/core/menu_overruns.cpp:quotient_bit_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -2891,6 +2917,21 @@
   ]
  },
  {
+  "address": "$80:A115",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A115",
+  "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/demo_sound.cpp:return_session_frames",
+   "src/core/league_completion.cpp:league_podium_exit_frame",
+   "src/core/race_result.cpp:race_return_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
   "address": "$80:A119",
   "class": "observed",
   "comment": "instruction start",
@@ -3359,7 +3400,8 @@
   "source_records": [
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0101-name-check.md",
-   "tasks/NAME-CHECK.md"
+   "tasks/NAME-CHECK.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {
@@ -3433,11 +3475,14 @@
   "label": "sub_80A547",
   "native": [
    "src/core/league_menu.cpp:enter_league_table",
-   "src/core/league_menu.cpp:leave_league_awards"
+   "src/core/league_menu.cpp:leave_league_awards",
+   "src/core/menu_overruns.hpp:LeagueExitFrames",
+   "src/core/menu_overruns.hpp:standings_print_frames_late"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -4383,11 +4428,13 @@
   "label": "sub_80AF54",
   "native": [
    "src/core/league_menu.cpp:count_league_pair",
+   "src/core/menu_overruns.hpp:LeagueExitFrames",
    "src/core/race_result.cpp:race_result_exit_frame"
   ],
   "source_records": [
    "docs/research/R-0073-league.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -4398,10 +4445,25 @@
   "native": [
    "src/core/front_end.hpp:LeagueSetup::more_pairs",
    "src/core/league_menu.cpp:count_league_pair",
+   "src/core/menu_overruns.hpp:LeagueExitFrames",
    "src/core/race_result.cpp:race_result_exit_frame"
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:AFEB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AFEB",
+  "native": [
+   "src/core/league_menu.cpp:count_league_pair",
+   "src/core/menu_overruns.hpp:LeagueExitFrames",
+   "src/core/race_result.cpp:race_result_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -6396,7 +6458,21 @@
    "src/core/league_menu.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
+  "address": "$80:BE57",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE57",
+  "native": [
+   "src/core/league_menu.cpp:(file)",
+   "src/core/menu_overruns.cpp:standings_start_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -6495,6 +6571,24 @@
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:BF2C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF2C",
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
+  "address": "$80:BF32",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF32",
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -7461,6 +7555,9 @@
    "src/core/front_end.hpp:RaceResult::records_placed",
    "src/core/front_end_screens.hpp:champions_overrun_frames",
    "src/core/front_end_screens.hpp:result_scoring_frame",
+   "src/core/menu_overruns.cpp:league_exit_frames",
+   "src/core/menu_overruns.cpp:records_start_clocks",
+   "src/core/menu_overruns.hpp:LeagueExitFrames",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:update_records"
@@ -7469,7 +7566,9 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0067-stunt-result.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
  {
@@ -7478,6 +7577,7 @@
   "comment": "instruction start",
   "label": "loc_80C7C4",
   "native": [
+   "src/core/menu_overruns.hpp:LeagueExitWork::lap_race",
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
@@ -7551,10 +7651,12 @@
   "label": "loc_80C868",
   "native": [
    "src/core/front_end_screens.hpp:best_lap",
+   "src/core/menu_overruns.hpp:LeagueExitWork::lap_race",
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
    "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
@@ -8737,11 +8839,13 @@
   "label": "loc_80D525",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/menu_overruns.hpp:records_statistics_frames_late",
    "src/core/options_menu.cpp:enter_records_menu"
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -8751,10 +8855,13 @@
   "label": "loc_80D527",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
+   "src/core/menu_overruns.hpp:records_statistics_frames_late",
    "src/core/options_menu.cpp:enter_records_menu"
   ],
   "source_records": [
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
    "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
@@ -11304,6 +11411,7 @@
   "label": "sub_80F4B8",
   "native": [
    "src/core/lap_result.cpp:graph_object_sizes",
+   "src/core/menu_overruns.hpp:LeagueExitFrames",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame",
    "src/core/race_result.cpp:race_result_exit_frame"
@@ -11311,7 +11419,8 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -12046,6 +12155,7 @@
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
    "src/core/hunter_ending.cpp:hunter_ending_waits",
+   "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines",
    "src/core/name_check.hpp:NameCheck::frames_late"
   ],
   "source_records": [
@@ -12053,7 +12163,8 @@
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0096-demo-audio.md",
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -12078,6 +12189,7 @@
   "label": "loc_80FAF1",
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
    "tasks/AUDIO-TITLE-MENU.md"
   ]
  },
@@ -12094,7 +12206,8 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0101-name-check.md"
+   "docs/research/R-0101-name-check.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -18076,6 +18189,15 @@
   ]
  },
  {
+  "address": "$82:8286",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_828286",
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
   "address": "$82:8294",
   "class": "observed",
   "comment": "routine start",
@@ -18090,7 +18212,8 @@
   "comment": "routine start",
   "label": "sub_8282A5",
   "source_records": [
-   "docs/research/R-0099-podium-audio.md"
+   "docs/research/R-0099-podium-audio.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -22105,6 +22228,7 @@
    "docs/research/R-0101-name-check.md",
    "tasks/MENU-INPUT.md",
    "tasks/NAME-CHECK.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/README.md"
   ]
  },
@@ -22117,7 +22241,8 @@
    "src/core/name_check.cpp:count_check"
   ],
   "source_records": [
-   "docs/research/R-0101-name-check.md"
+   "docs/research/R-0101-name-check.md",
+   "tasks/NAME-CHECK.md"
   ]
  },
  {
@@ -22840,12 +22965,24 @@
   "comment": "routine start",
   "label": "sub_838BE7",
   "native": [
+   "src/core/league_menu.cpp:digit_sum",
+   "src/core/menu_overruns.hpp:LeagueExitWork::standings_digits",
    "src/core/now_playing.cpp:name_line",
    "src/core/text_printer.hpp:five_digit_text"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
+  "address": "$83:8BFE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838BFE",
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -23021,6 +23158,7 @@
    "src/core/front_end.hpp:OnePlayerRecords::statistics",
    "src/core/front_end.hpp:RaceResult::records_placed",
    "src/core/front_end_screens.hpp:champions_overrun_frames",
+   "src/core/menu_overruns.hpp:LeagueExitFrames",
    "src/core/race_result.cpp:insert_record",
    "src/core/wipe_ram.cpp:reset_busy_frames"
   ],
@@ -23031,6 +23169,7 @@
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
    "tasks/FIFTH-WIN-COMPLETION.md"
   ]
  },
@@ -23385,7 +23524,8 @@
    "src/core/front_end_screens.hpp:cartridge_percentage"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -23509,15 +23649,64 @@
   "comment": "routine start",
   "label": "sub_8397BD",
   "native": [
+   "src/core/front_end.hpp:RecordsDetail::statistics_frames",
    "src/core/high_scores.cpp:find_largest",
+   "src/core/menu_overruns.cpp:count_statistics",
+   "src/core/menu_overruns.cpp:statistics_clocks",
+   "src/core/menu_overruns.hpp:records_statistics_frames_late",
+   "src/core/options_menu.cpp:enter_records_menu",
    "src/core/records_scores.cpp:player_figures"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
    "tasks/NEXT_SESSION.md",
    "tasks/PODIUM-RETURN-TIMING.md",
    "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
+  "address": "$83:984F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83984F",
+  "native": [
+   "src/core/front_end.hpp:RecordsDetail::statistics_frames",
+   "src/core/high_scores.cpp:find_largest",
+   "src/core/menu_overruns.cpp:count_statistics",
+   "src/core/menu_overruns.cpp:statistics_clocks",
+   "src/core/menu_overruns.hpp:records_statistics_frames_late",
+   "src/core/options_menu.cpp:enter_records_menu",
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
+  "address": "$83:986A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83986A",
+  "native": [
+   "src/core/menu_overruns.cpp:count_statistics",
+   "src/core/menu_overruns.cpp:statistics_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
+  "address": "$83:9878",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839878",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -23529,12 +23718,14 @@
    "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/front_end.hpp:SavedMenus",
    "src/core/league_completion.cpp:league_podium_exit_frame",
+   "src/core/menu_overruns.cpp:percentage_clocks",
    "src/core/race_result.cpp:restore_menus"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
@@ -23543,6 +23734,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83988A",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
   "source_records": [
    "docs/research/R-0077-one-player-audio.md"
   ]
@@ -23556,6 +23750,7 @@
    "src/core/front_end.cpp:choose_idle_demo",
    "src/core/front_end.hpp:SavedMenus",
    "src/core/lap_result.cpp:saved_word_under_opponent_best",
+   "src/core/menu_overruns.cpp:percentage_clocks",
    "src/core/now_playing.cpp:race_fade_frame"
   ],
   "source_records": [
@@ -23571,6 +23766,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8398B8",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
   ]
@@ -23581,7 +23779,8 @@
   "comment": "instruction start",
   "label": "loc_8398EE",
   "native": [
-   "src/core/league_menu.cpp:choose_league_slot"
+   "src/core/league_menu.cpp:choose_league_slot",
+   "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
@@ -23595,6 +23794,7 @@
   "native": [
    "src/core/audio_cpu_menu_defaults.cpp:initialize_cold_track_work",
    "src/core/league_menu.cpp:end_award_passes",
+   "src/core/menu_overruns.cpp:percentage_clocks",
    "src/core/now_playing.cpp:race_kind",
    "src/core/tour_menu.cpp:print_tour_menu",
    "src/core/track_menu.cpp:choose_track"
@@ -23613,7 +23813,8 @@
   "comment": "routine start",
   "label": "sub_839987",
   "native": [
-   "src/core/front_end.cpp:wipe_cartridge"
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0092-wipe-ram.md"
@@ -23625,7 +23826,8 @@
   "comment": "instruction start",
   "label": "loc_8399A8",
   "native": [
-   "src/core/local_modes.cpp:choose_next_track"
+   "src/core/local_modes.cpp:choose_next_track",
+   "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -23637,6 +23839,7 @@
   "comment": "instruction start",
   "label": "loc_8399AD",
   "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::stunt_event"
   ],
   "source_records": [
@@ -23649,7 +23852,8 @@
   "comment": "routine start",
   "label": "sub_8399C2",
   "native": [
-   "src/core/front_end_screens.hpp:versus_tie"
+   "src/core/front_end_screens.hpp:versus_tie",
+   "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -23664,7 +23868,8 @@
    "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
    "src/core/audio_cpu_scene.cpp:native_audio_park_arrow",
    "src/core/front_end.cpp:lay_out_menu_objects",
-   "src/core/front_end.cpp:load_nintendo_screen"
+   "src/core/front_end.cpp:load_nintendo_screen",
+   "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -23678,7 +23883,8 @@
   "label": "sub_8399FA",
   "native": [
    "src/core/front_end.cpp:parked_x, parked_y",
-   "src/core/front_end_screens.hpp:park_arrow"
+   "src/core/front_end_screens.hpp:park_arrow",
+   "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -23694,6 +23900,7 @@
    "src/core/audio_cpu_scene.hpp:AudioCpuDecorationWorkState",
    "src/core/front_end.hpp:MenuDecorations",
    "src/core/front_end_screens.hpp:step_decorations",
+   "src/core/menu_overruns.cpp:percentage_clocks",
    "src/core/screen_slide.cpp:(file)",
    "src/core/wipe_ram.cpp:wipe_ram_answer_frame"
   ],
@@ -23712,7 +23919,8 @@
   "comment": "unknown",
   "label": "unk_839AF9",
   "native": [
-   "src/core/front_end_screens.hpp:pair_tiles, cycle_tiles, left_sway, right_sway, trio_tiles, wave_tiles"
+   "src/core/front_end_screens.hpp:pair_tiles, cycle_tiles, left_sway, right_sway, trio_tiles, wave_tiles",
+   "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -23723,6 +23931,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_839B01",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
   ]
@@ -23732,6 +23943,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_839B09",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
   ]
@@ -23741,6 +23955,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_839B13",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
   ]
@@ -23750,6 +23967,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_839B27",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -23760,6 +23980,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_839B31",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
   ]
@@ -23770,6 +23993,7 @@
   "comment": "instruction start",
   "label": "loc_839BB5",
   "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks",
    "src/core/options_menu.cpp:clear_defined_player"
   ],
   "source_records": [
@@ -23782,7 +24006,8 @@
   "comment": "instruction start",
   "label": "loc_839BE1",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today"
+   "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today",
+   "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -23797,14 +24022,32 @@
    "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
    "src/core/front_end_screens.hpp:cartridge_percentage",
    "src/core/high_scores.cpp:high_score_leaders",
-   "src/core/local_modes.cpp:versus_percentage"
+   "src/core/local_modes.cpp:versus_percentage",
+   "src/core/menu_overruns.cpp:count_percentage",
+   "src/core/menu_overruns.cpp:percentage_clocks",
+   "src/core/menu_overruns.cpp:statistics_clocks",
+   "src/core/menu_overruns.hpp:records_statistics_frames_late"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
    "tasks/MENU-INPUT.md",
    "tasks/PODIUM-RETURN-TIMING.md"
+  ]
+ },
+ {
+  "address": "$83:9D85",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839D85",
+  "native": [
+   "src/core/menu_overruns.cpp:halving_clocks",
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
   ]
  },
  {
@@ -24239,6 +24482,7 @@
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },

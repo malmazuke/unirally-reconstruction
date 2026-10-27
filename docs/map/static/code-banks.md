@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Instructions from observed | 35,735 |
 | Instructions from table | 65 |
 | Routines | 759 |
-| Routines cited by native code | 575 |
-| Routine bytes cited by native code | 73,550 |
+| Routines cited by native code | 580 |
+| Routine bytes cited by native code | 73,949 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-2213 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1502, mid 31, sub 467, unk 197 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 97, observed 1903, unknown 197.
+2226 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1512, mid 31, sub 469, unk 198 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 97, observed 1915, unknown 198.
 
 Cited addresses in `unknown` bytes:
 
@@ -82,7 +82,7 @@ Cited addresses in `unknown` bytes:
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9E0F | docs/research/R-0072-options.md, docs/research/R-0097-menu-input.md, tasks/MENU-INPUT.md |
 | $80:9F74 | docs/research/R-0097-menu-input.md, tasks/MENU-INPUT.md |
-| $80:A4C9 | docs/research/R-0097-menu-input.md, docs/research/R-0101-name-check.md, tasks/NAME-CHECK.md |
+| $80:A4C9 | docs/research/R-0097-menu-input.md, docs/research/R-0101-name-check.md, tasks/NAME-CHECK.md, tasks/NEXT_SESSION.md |
 | $80:A4DD | docs/research/R-0072-options.md |
 | $80:A4F1 | docs/research/R-0072-options.md |
 | $80:A501 | docs/research/R-0072-options.md |
@@ -190,6 +190,7 @@ Cited addresses in `unknown` bytes:
 | $81:C50A | docs/research/R-0011-motion.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0098-league-tours.md |
 | $81:CC17 | docs/research/R-0048-race-guards.md |
 | $82:8280 | docs/research/R-0098-league-tours.md |
+| $82:8286 | docs/research/R-0102-menu-frame-overruns.md |
 | $82:833B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
 | $82:834B | docs/research/R-0036-zoom-zoo-rider-objects.md |
 | $82:835B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
