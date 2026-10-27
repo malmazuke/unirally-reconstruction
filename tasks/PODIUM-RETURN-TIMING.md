@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **claimed** 27 October 2026 11:07 UTC on main `6155f3d2`, on the user's instruction
+- Status: **accepted** 27 October 2026 (tier 1, [#88](https://github.com/malmazuke/unirally-reconstruction/pull/88),
+  approved in review round 6 at `2405d91f`), integrated by merge commit. Claimed 11:07 UTC on main
+  `6155f3d2`, on the user's instruction
   (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
   subagent implements, a fresh subagent reviews). Queued 16 October 2026 by
   [LEAGUE-TOURS](LEAGUE-TOURS.md) (R-0098). Run under
@@ -70,7 +72,7 @@ What predicts each effect ([R-0102](../docs/research/R-0102-menu-frame-overruns.
    about 170,400: 5 of 12, delays 1, 2, 5, 8 and 9). Native has no state that gives the driver's reply; R-0095's phase rule
    stays (the first tour's frozen gate relies on it).
 
-Captures and results (`checks.list`, run once at `92d2c923`, `checks-92d2c923.out`; candidate and
+Captures and results (`checks.list`, run once at `92d2c923`, the tree `2237a40f` holds after its message was reworded, `checks-92d2c923.out`; candidate and
 main `6155f3d2`, both on pack v41; main's lag counted under the same recorded limits, as review
 round 1 corrected):
 
@@ -369,3 +371,63 @@ R-0102 now states these measurements. Its limit adds that where the cycle is off
 returned frames apart, or one frame off after each late podium), the step can land at the wrong
 frame end, moving a way out near the edge by about 12 units. This is a records-only change by the
 coordinator, made without a re-review, as the reviewer allowed.
+
+## Review (rounds 1-6, approved `2405d91f`)
+
+A fresh subagent in its own checkout at the PR head. It traced the original with edited league
+points (a band of 24 way outs over the rounds) to test the standings model at the edge.
+
+| Round | Head | Verdict | What it found |
+|---|---|---|---|
+| [1](https://github.com/malmazuke/unirally-reconstruction/pull/88#pullrequestreview-5667974616) | `2af37d34` | changes | The standings' NMI hidden in the fitted constant, so three members were late at ordinary scores. Also: the podium count 5 of 12, main's column without the limits, duplicated count rules. |
+| [2](https://github.com/malmazuke/unirally-reconstruction/pull/88#pullrequestreview-5669609984) | `15791894` | changes | Units 24-27 traced late where the refit said on time: the leading-zero pass was missing. |
+| [3](https://github.com/malmazuke/unirally-reconstruction/pull/88#pullrequestreview-5671106360) | `f9d99b39` | changes | The frame wait polls the sound queue (about 596 clocks) before its first `$4212` read, so the edge is units 15/16, not 22/23. |
+| [4](https://github.com/malmazuke/unirally-reconstruction/pull/88#pullrequestreview-5672342374) | `e5865232` | changes | The selection sort's stores depend on row order; reordered points at units 16 are on time. |
+| [5](https://github.com/malmazuke/unirally-reconstruction/pull/88#pullrequestreview-5672444925) | `3e443dc2` | changes | The NMI that steps the palette cycle costs about 1,100 clocks; it explains every large league error. |
+| [6](https://github.com/malmazuke/unirally-reconstruction/pull/88#pullrequestreview-5672566652) | `2405d91f` | approve | One records correction: native's `$00C8` matches the original's at 9/9, 4/4 and 2/14 way outs, not always (fixed in `379a664d`). |
+
+Each round's fixes are in the sections above. The model ends with all 51 traced way outs in their
+measured frames and the edge, its row-order and palette-step shifts recorded as limits in R-0102.
+
+## Gates (D-0012)
+
+`local/locks/heavy-run.sh python3 -m tools.unirally_lab.gates run --task-checks
+local/evidence/podium-return-timing/checks.list` at `379a664d` (main
+`local/evidence/podium-return-timing/gates-1*`, 2 h 32 min). No pack change, so no `--base-pack`.
+- Every selected step passed or matched main except 7 that changed, all as this task intends:
+  - Pictures equal to the original, candidate (main): `lt-odd-tours-w0` 5,678 of 6,459 (4,912),
+    `lt-odd-tours-w1` 6,010 of 7,003 (4,934), `lt-five-w0` 7,334 of 12,377 (5,465), `lt-five-w1`
+    3,022 of 9,600 (2,950). In `odd-tours-w0` and `five-w0` main's league fields also drift from
+    the original (`played_points`, and `pair_cursor` in `five`); the candidate's do not.
+  - `rs-review-wr-stats2`: 800 of 800 pictures, main 51 against the original.
+  - `pa-cues`: `pa-odd-tours` 2,406 frames differ, main 2,415 (the same as main elsewhere).
+  - `pa-pcm-pa-odd-tours`: 2,400,194 identical pairs, main 2,399,853; within 1 dB 39,533, main
+    39,139.
+- `gates-2*`: those 7 with `--expect-changed`, `status=passed` (14 min).
+- Hosted CI green on all three checks.
+- Not done here: the catalogue (`tools/unirally_lab/gates/catalogue.py`) holds neither this task's
+  checks nor NAME-CHECK's; they go in with the next catalogue change or `--full --record` run.
+
+## Handoff (closeout)
+
+- Commits on `task/podium-return-timing`: `540cd51e` (claim), `2237a40f`, `2af37d34` (worker),
+  `811cd4f7`, `15791894`, `3084f6be`, `f9d99b39`, `136fb4fd`, `e5865232`, `a359ad0c`, `3e443dc2`,
+  `2ee06f29`, `2405d91f` (review rounds 1-5's fixes), `379a664d` (round 6's records correction), then
+  this record.
+- Time, claim 11:07 UTC to merge about 21:50 UTC, about 10 h 45 min against D-0013's 6 hours:
+  - worker 2 h 10 min;
+  - five fix rounds 4 h 40 min, of which about 4 h were the `checks.list` reruns of rounds 1-3
+    (1 h 15-22 min each);
+  - six review rounds about 55 min;
+  - gates 2 h 32 min, the rerun 14 min;
+  - closeout about 15 min.
+- Lesson: between review rounds the full `checks.list` rerun bought nothing, since the gates run it
+  again and no measured frame moved in any round. Rounds 4 and 5 skipped it and took 5 minutes
+  each. A fix round should rerun only `model.py`, the tests and lints, and leave the captures to
+  the gates.
+- Disk: main `local/evidence/podium-return-timing/` 193 MB with gate output, under the 1 GB budget;
+  compacted at closeout.
+- Follow-up: R-0101's (NAME-CHECK's) keyboard model counts clocks to the frame wait's entry or its
+  first read; round 3 showed the difference is about 596 clocks. Check which, against its 24 calls.
+- The closing session removes `.worktrees/podium-return-timing` and
+  `.worktrees/podium-return-timing-review` and the local branch.

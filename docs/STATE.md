@@ -27,6 +27,23 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**27 October 2026: PODIUM-RETURN-TIMING is accepted (tier 1, #88) and integrated by merge commit.**
+Native now runs late where the original's league menus run past the frame's end:
+- **An event's pairs:** a cost model of the records, the pair's count and the standings' print
+  (`menu_overruns.cpp`) places all 51 traced way outs in their measured frame. It counts the
+  digit, leading-zero and sort loops, the NMIs the work crosses (the palette cycle's step costs
+  about 1,100 clocks more) and the frame wait's sound-queue poll before its first read.
+- **RECORDS with dense statistics:** `$83:97BD`'s percentages push RECORDS' entry a frame on when
+  they run past the frame (`wr-stats2` 800 of 800 pictures, main 517).
+- **Limits:** the podium's way back stays a frame early in 5 of 12 presses (it depends on the sound
+  driver's poll phase). A three-member league's standings sit on a knife edge around units 15-23,
+  moved by row order, ties, names and the palette step. Native's palette cycle drifts from the
+  original's after a race returns frames apart.
+- **Time:** about 10 h 45 min from claim to merge (D-0013's target 6 h). Six review rounds each
+  found a real timing term. About 4 h went on full check reruns between rounds, which the gates
+  repeat anyway; rounds now rerun only the model, tests and lints.
+[R-0102](research/R-0102-menu-frame-overruns.md) and [PODIUM-RETURN-TIMING](../tasks/PODIUM-RETURN-TIMING.md) hold the detail.
+
 **27 October 2026: NAME-CHECK is accepted (tier 1, #87) and integrated by merge commit.**
 The keyboard's OK runs the original's word check natively (`$83:84D9`):
 - **Refusal:** a name holding one of the 71 listed words is refused with `$80:A4C9`'s line and the
