@@ -297,3 +297,48 @@ after the review).
 - Time (harness clock): 18:30 UTC (the review's return) to 18:34 UTC by `date -u` in the session.
 - Evidence: the reviewer's `review-4/` as it is; `model.py` (the sort term and the 7 traces),
   `pairs_refit.py` (the band's row orders), `model-r4.txt`.
+
+## Review round 5 (returned on `3e443dc2`) - the fix
+
+Review: main `local/evidence/podium-return-timing/review-5/review.md` (changes requested for one
+term; the sort's store count confirmed exact, the single 55 clocks accepted, the edge by row
+order matching the band). The leagues' errors (-1,428 to +710) were not "other names and
+content": every large one lines up with the NMI that steps the palette cycle (`$00C8` run out),
+which costs about 1,100 clocks more than an ordinary NMI. The four prints off by -921 to -955 cross
+a stepping NMI; the ten off by -744 to -1,384 before the print cross one in the records or count,
+or start after one (`review-5/upstream.txt`, `nmi-phase.txt`). About 2 in 7 two-placing way outs
+meet a step, about 12 units at the edge.
+
+Modelled (option one), in `2ee06f29`:
+- `LeagueExitWork::palette_delay` is native's `$00C8` as the records' frame's NMI leaves it (none
+  while the cycle does not run); the way out adds 1,100 clocks at the records' start when that
+  NMI stepped (delay 6) and at each frame end its records, count and print cross whose NMI steps
+  (the k-th end from the frame's start when k = delay + 1, mod 7). The standings' print elsewhere
+  (`standings_print_frames_late`) takes the same term. The 1,100 is fitted on the 13 outliers, not
+  traced. The rule was checked against the 27 way outs' sampled `$00C8`: the step falls at the
+  frame end the reviewer's split puts each error at.
+- Refit (`pairs_refit.py`, the largest margin with the leagues' error within 600): 220,340 + 39,500
+  a row. All 51 traced way outs are in their measured frames (`model.py`, `model-r5.txt`); the
+  model's wait entry is within -12 to +75 clocks of the band's and -528 to +510 of the leagues'
+  (from -1,428 to +710); the nearest boundary of a modelled read is 92 clocks (6, 5, 3). The
+  edge for rows in points order stays at units 15/16 with no step in the way out.
+- R-0102's attribution of the leagues' error to "other names and content" is corrected: the step
+  is a finding of its own, and what remains (-528 to +510) is put to each league's names and other
+  content; Not covered names the step's fitted cost and its effect on the edge.
+- `menu_overrun_tests`: 5, 4, 3 (on time with the band's delay 3) comes a frame later with the
+  delay at 1, whose step falls during the count, and stays on time with the cycle not running; a
+  four-row print elsewhere about 1,000 clocks short of its frame's end runs over after an NMI that
+  stepped. A step inside a three-row two-placing print cannot move it a frame: such a print only
+  crosses a frame end when it is already late, so the test steps in the count instead.
+
+Checks: `model.py` 51 of 51 (rc 0); `ctest` app-debug and lab-debug 41/41; `clang-tidy` clean on
+`menu_overruns.cpp` and `league_menu.cpp`; `clang-format` applied; `coverage native-symbols
+--check` passed after `regen.sh`. `checks.list` not rerun, on the coordinator's instruction.
+
+## Handoff (worker, review round 5)
+
+- Commits: `2ee06f29` (the palette step, the refit, the tests), then the records commit (R-0102,
+  this record, `model.py`, `pairs_refit.py`, the maps).
+- Time (`date -u` in the session): 18:38 UTC (the review's return) to 18:43 UTC.
+- Evidence: the reviewer's `review-5/` as it is (`model.py` reads its `nmi-phase.txt`);
+  `model-r5.txt`.

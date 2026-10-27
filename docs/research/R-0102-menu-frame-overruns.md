@@ -103,16 +103,29 @@ side's work ran past a frame and the other's did not.
      clocks, the 58/48 split within about 119), so the model takes 55 a store, fitted. The three
      units-16 traces in other orders are on time (waits entered 960-1,308 clocks before the
      frame's end) where 6, 5, 3 in points order is late.
+   - The palette cycle's step (review round 5, `review-5/nmi-phase.txt`, `upstream.txt`): the NMI
+     after which `$00C8` (6 down to 0) was 0 steps the cycle and costs about 1,100 clocks more
+     than an ordinary one. Every large league error lined up with one: the four prints off by
+     -921 to -955 clocks are the way outs whose print crosses a stepping NMI, the ten off by
+     -744 to -1,384 before the print those whose records or count cross one (or whose records
+     start after one, `$80:C786` then called 978-1,460 clocks later). About 2 in 7 two-placing
+     way outs meet a step, which moves the standings' read by about 12 units. Native keeps
+     `$00C8` in the original's phase (no candidate capture shows a palette-cycle lag), so with
+     D the delay as the records' frame's NMI leaves it, that NMI stepped if D is 6 and the NMI
+     at the k-th frame end after the frame's start steps when k = D + 1 (mod 7). The step's
+     1,100 clocks are fitted on the 13 (not traced).
    - The model (`menu_overruns.cpp`, `model.py`): the count's frame is 1 + (25,200 + 227,224 +
-     224,765 per placing + 4,480 for a lap race) / 425,568. The standings' wait adds 226,738 for
-     the count, then the print: 220,040 + 39,600 a row + 100 a new rank + the digit loops', the
+     224,765 per placing + 4,480 for a lap race) / 425,568, with 1,100 for each palette step at
+     the records' start or in a frame end they cross. The standings' wait adds 226,738 for the
+     count, then the print: 220,340 + 39,500 a row + 100 a new rank + the digit loops', the
      leading zeros' and the sort's stores' clocks with the refresh, + 1,060 for each frame end
-     the print passes; then the poll, 596 clocks, to the first read, whose frame is the
-     standings' frame. The title and row constants give all 51 traced way outs (27 and 24 band)
-     their measured frames with the largest margin (`pairs_refit.py`'s search with the error
-     kept within 1,500); the loop costs are the trace's. The model's wait entry is within -12 to
-     +75 clocks of the band's and within -1,428 to +710 of the leagues' (other names and content;
-     before the sort term, -1,327 to +1,490); the nearest boundary of a modelled read is 92
+     the print passes, each with its palette step; then the poll, 596 clocks, to the first read,
+     whose frame is the standings' frame. The title and row constants give all 51 traced way
+     outs (27 and 24 band) their measured frames with the largest margin, the leagues' error
+     kept within 600 (`pairs_refit.py`'s search); the loop costs are the trace's. The model's
+     wait entry is within -12 to +75 clocks of the band's and -528 to +510 of the leagues' (the
+     names and other content of each league; without the palette step -1,428 to +710, without
+     the sort as well -1,327 to +1,490); the nearest boundary of a modelled read is 92
      clocks (6, 5, 3, late), with 5, 5, 3 and 5, 4, 3 101 and 94 clocks on the on-time side: the
      band's units are about 93 clocks apart, so the edge cannot be placed more finely than that.
    - What that gives: a three-member way out after two placings in a one-run race, with
@@ -230,14 +243,16 @@ passed.
   which only an exact sound side from boot could give.
 - **The model's reach.** Its constants come from three leagues of the default riders 0, 2, 4, 6
   and 8: other names change the print's cost by an unmeasured amount per letter, and a league's
-  name (the standings' title) too. The model's wait entry is -1,428 to +710 clocks off the
-  leagues' and -12 to +75 off the band's.
+  name (the standings' title) too. The model's wait entry is -528 to +510 clocks off the
+  leagues' and -12 to +75 off the band's; the palette step's 1,100 clocks are fitted, not
+  traced, and the delay's phase is native's own (a phase off by a frame would move a step).
 - **The three-member knife edge** (review rounds 2 and 3): a three-member league's way out after
   two placings in a one-run race has its frame wait's first read within a few hundred clocks of
   exit frame 3's end for units of about 14-17 with the rows in points order and up to about
   22-23 in other orders (one-digit points). The model puts each band trace in its measured
-  frame with about 100 clocks to spare at best near the edge; the ranks' and the sort stores'
-  costs (fitted, about 100 clocks a rank and 55 a store), other names, tens digits and the
+  frame with about 100 clocks to spare at best near the edge; the ranks', the sort stores' and
+  the palette step's costs (fitted, about 100 clocks a rank, 55 a store, 1,100 a step; a step
+  moves the edge by about 12 units, about 2 way outs in 7), other names, tens digits and the
   poll's own spread (576-616 clocks for the first poll here, 460-1,002 for later ones) can move
   a way out near the edge by a frame. The band (24 traces) is the evidence. The
   `$80:C786` start varies by 1,742 clocks with the NMI's work and is taken as 25,200. Six to eight

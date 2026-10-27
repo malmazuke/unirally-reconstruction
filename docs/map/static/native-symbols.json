@@ -15818,7 +15818,9 @@
    "native": [
     "src/core/front_end.cpp:demo_return_frame",
     "src/core/front_end.hpp:PaletteCycle::delay",
-    "src/core/front_end.hpp:PaletteCycle::pending_nmi"
+    "src/core/front_end.hpp:PaletteCycle::pending_nmi",
+    "src/core/menu_overruns.cpp:palette_step_clocks",
+    "src/core/menu_overruns.hpp:PaletteDelay"
    ],
    "region": "wram"
   },
@@ -19074,7 +19076,7 @@
    "native": [
     "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines",
     "src/core/menu_overruns.cpp:records_start_clocks",
-    "src/core/menu_overruns.cpp:standings_wait_clocks",
+    "src/core/menu_overruns.cpp:standings_read_clocks",
     "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
     "src/core/menu_overruns.hpp:LeagueExitFrames::standings",
     "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks",
@@ -23302,6 +23304,11 @@
     "$82:8035"
    ]
   },
+  "src/core/menu_overruns.cpp:palette_step_clocks": {
+   "wram": [
+    "$00C8"
+   ]
+  },
   "src/core/menu_overruns.cpp:percentage_clocks": {
    "rom": [
     "$83:9878"
@@ -23325,14 +23332,14 @@
     "$80:EFE9"
    ]
   },
+  "src/core/menu_overruns.cpp:standings_read_clocks": {
+   "io": [
+    "$00:4212"
+   ]
+  },
   "src/core/menu_overruns.cpp:standings_start_clocks": {
    "rom": [
     "$80:BE57"
-   ]
-  },
-  "src/core/menu_overruns.cpp:standings_wait_clocks": {
-   "io": [
-    "$00:4212"
    ]
   },
   "src/core/menu_overruns.cpp:statistics_clocks": {
@@ -23375,6 +23382,11 @@
    "rom": [
     "$80:C7C4",
     "$80:C868"
+   ]
+  },
+  "src/core/menu_overruns.hpp:PaletteDelay": {
+   "wram": [
+    "$00C8"
    ]
   },
   "src/core/menu_overruns.hpp:StandingsWork": {
@@ -29888,7 +29900,7 @@
  "totals": {
   "addresses": 2120,
   "io_addresses": 12,
-  "native_symbols": 1577,
+  "native_symbols": 1579,
   "rom_addresses": 1677,
   "sram_addresses": 65,
   "wram_addresses": 366
