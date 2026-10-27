@@ -181,16 +181,10 @@ Fix, option (a), in `3084f6be` (code; see the handoff for the commit list):
   way outs (`pairs_refit.py`): 222,000 + 39,650 a row. All 38 are in their measured frames; the
   error over the band is -125 to +58 clocks (-1,257 to +1,260 over the leagues, whose other
   content varies).
-- Units 23, which the band had not covered, traced twice (`band-r2/`): 8, 7, 6 is late (as the
-  model says) and 7, 7, 7 on time. Its print is 270 clocks quicker: a three-way tie prints three
-  firsts, and the ordinals' cost is not modelled. `model.py` places 39 of 40 and names that one
-  as a recorded limit; it exits 1 on any other.
-- The edge, for three members, two placings, a one-run race and one-digit numbers: units 22 on
-  time (the original 92 clocks before the frame's end, the model 78), 23 late (but a three-way
-  tie), 24 and up late. The nearest boundary is 78 clocks, set by the original's own 92 at 22: no
-  model can have a margin of a few hundred there, so R-0102's Not covered records the knife edge
-  (units about 20-26, ties, other names) with the band as evidence. `menu_overrun_tests` tests
-  22 (frame 3), 23 and 24 (frame 4).
+- Units 23, which the band had not covered, traced twice (`band-r2/`): 8, 7, 6 and 7, 7, 7.
+- This round's edge (units 22 on time, 23 late but a three-way tie, the nearest boundary 78 and
+  "no model can have more margin than the original's 92 at 22") was wrong: it took each trace's
+  frame from its wait's entry. Review round 3 corrects it, below.
 - R-0102's and this record's "27 with 89 to spare" and "nearest boundary 454" are corrected.
 
 Rerun (`run_checks.sh OUTDIR 'league-tours|model|frozen'`, the 40 league, model and frozen-gate
@@ -209,3 +203,56 @@ field and lag count the same as the earlier runs' (no measured way out changes f
   1 h 20 min under the lock, records alongside it.
 - Evidence added: `band-r2/` (the two units-23 traces and their scripts), `pairs_refit.py`,
   `digit_steps.py`'s zero loop, `checks-r2/`.
+
+## Review round 3 (returned on `f9d99b39`) - the fix
+
+Review: main `local/evidence/podium-return-timing/review-3/review.md` (changes requested, finding 1
+only; the leading zeros' 200 clocks a pass and their count confirmed from the listing). The
+model and the band's measured frames both took the frame the standings' wait is entered in, but
+the wait (`$80:FADF`) polls the sound queue (`JSL $82:8035`) before its first `$4212` read, 576-616
+clocks later here, and the read decides. Measured by the first `$80:FAF1` after the print (the
+reviewer's `wait_exit.py` over the 44 way outs, and four new band traces 5,4,3, 5,5,3, 6,5,3 and
+6,5,4 with read labels, `review-3/band/`): units 14 and 15 on time, 16, 17, 18, 22 and the tie
+7,7,7 late (entered 92-514 clocks before the frame's end).
+
+Fix in `136fb4fd` (code; see the handoff):
+- `standings_wait_clocks` adds the poll (596 clocks, the middle of the traced 576-616) and
+  returns the first read's clock, whose frame is the standings' frame. `model.py` takes each
+  trace's measured frame from its first `$80:FAF1` after the print, less one.
+- The band's prints split by ties as well (no tie about 125 clocks over one tie, a three-way tie
+  about 145 under): `StandingsWork::new_ranks` (distinct points less one) costs 100 clocks a
+  rank, fitted on the band, not traced.
+- Refit (`pairs_refit.py`: the largest margin with the entry error within 1,500): 221,930 + 39,650
+  a row. All 44 way outs (27 and the band's 17) are in their measured frames; the model's wait
+  entry is within -12 to +75 clocks of the band's, -1,327 to +1,490 of the leagues'; the nearest
+  boundary of a modelled read is 92 clocks (6, 5, 3, late; 5, 5, 3 and 5, 4, 3 101 and 93 on the
+  on-time side; the band's units are 93 clocks apart). The edge for three members, two
+  placings, a one-run race and one-digit points: units 15 on time and 16 late with no tie
+  (16/17 with one tie, 17/18 with a three-way tie).
+- `KNOWN = {'band p777'}` and the tie claims are gone: 7, 7, 7 is late, as the model says.
+  `menu_overrun_tests` pins 15 (5, 5, 3) and 14 (5, 4, 3) in frame 3, 16 (6, 5, 3) and 23
+  (7, 7, 7) in frame 4.
+- RECORDS' model already timed the first read (`cycles_records.py` measures `$80:FAE3`), so its
+  frames do not change; R-0102 says so. R-0102 notes that R-0101's keyboard check uses the same
+  method, the entry-or-read question there an open follow-up (no NAME-CHECK change).
+- R-0102's "22 on time, 92 clocks", "no model can have more margin than 92" and "23 late but a
+  three-way tie" are removed; Not covered records the knife edge (units about 14-17 for this way
+  out; ties, other names, tens digits and the poll's spread) with the band (17 traces).
+
+Rerun (`run_checks.sh OUTDIR 'league-tours|model|frozen'`, the 40 league, model and frozen-gate
+lines, `checks-r3.out` at `136fb4fd`): 40 of 40 lines rc 0, 1 h 22 min; every picture, race,
+field and lag count the same as the earlier runs' (no league way out's frame moves; the edge moved
+only where the band, not these captures, has standings). RECORDS' lines not rerun (that model's frames are
+unchanged). `ctest` app-debug and lab-debug 41/41; `clang-tidy` clean on `menu_overruns.cpp` and
+`league_menu.cpp`; `clang-format` applied; `coverage native-symbols --check` passed after
+`regen.sh`.
+
+## Handoff (worker, review round 3)
+
+- Commits: `136fb4fd` (the poll, the ranks, the refit, the tests), then the records commit
+  (R-0102, this record, `model.py`, the maps).
+- Time (harness clock): 16:56 UTC (the review's return) to 18:23 UTC, about 1 h 27 min: the model's read target, the
+  rank term and the refit about 20 min, code and tests 10 min, records 20 min; the league rerun
+  1 h 22 min under the lock, records alongside it.
+- Evidence: the reviewer's `review-3/` (band traces, `wait_exit.py`); `pairs_refit.py` updated;
+  `checks-r3/`.

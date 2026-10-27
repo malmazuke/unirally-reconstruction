@@ -5409,6 +5409,7 @@
     "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
     "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines",
+    "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
     "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks",
     "src/core/name_check.hpp:NameCheck::frames_late"
    ],
@@ -10078,7 +10079,8 @@
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/front_end.cpp:front_end_screens::begin_demo_return"
+    "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+    "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines"
    ],
    "observed_entries": {},
    "start": "$82:8035",

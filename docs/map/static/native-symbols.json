@@ -7048,6 +7048,7 @@
    "address": "$80:FAE3",
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank",
+    "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
     "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks"
    ],
    "region": "rom"
@@ -9439,7 +9440,8 @@
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/front_end.cpp:front_end_screens::begin_demo_return"
+    "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+    "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines"
    ],
    "region": "rom"
   },
@@ -19052,6 +19054,10 @@
    "address": "$00:4212",
    "native": [
     "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines",
+    "src/core/menu_overruns.cpp:records_start_clocks",
+    "src/core/menu_overruns.cpp:standings_wait_clocks",
+    "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
+    "src/core/menu_overruns.hpp:LeagueExitFrames::standings",
     "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks",
     "src/core/name_check.cpp:frame_wait_clocks"
    ],
@@ -23272,7 +23278,8 @@
     "$00:4212"
    ],
    "rom": [
-    "$80:FADF"
+    "$80:FADF",
+    "$82:8035"
    ]
   },
   "src/core/menu_overruns.cpp:percentage_clocks": {
@@ -23286,6 +23293,9 @@
    ]
   },
   "src/core/menu_overruns.cpp:records_start_clocks": {
+   "io": [
+    "$00:4212"
+   ],
    "rom": [
     "$80:C786"
    ]
@@ -23293,6 +23303,11 @@
   "src/core/menu_overruns.cpp:standings_start_clocks": {
    "rom": [
     "$80:BE57"
+   ]
+  },
+  "src/core/menu_overruns.cpp:standings_wait_clocks": {
+   "io": [
+    "$00:4212"
    ]
   },
   "src/core/menu_overruns.cpp:statistics_clocks": {
@@ -23304,8 +23319,12 @@
    ]
   },
   "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks": {
+   "io": [
+    "$00:4212"
+   ],
    "rom": [
-    "$80:D527"
+    "$80:D527",
+    "$80:FAE3"
    ]
   },
   "src/core/menu_overruns.cpp:unit_digit_unit_clocks": {
@@ -23320,6 +23339,11 @@
     "$80:C786",
     "$80:F4B8",
     "$83:90F4"
+   ]
+  },
+  "src/core/menu_overruns.hpp:LeagueExitFrames::standings": {
+   "io": [
+    "$00:4212"
    ]
   },
   "src/core/menu_overruns.hpp:LeagueExitWork::lap_race": {
@@ -29829,7 +29853,7 @@
  "totals": {
   "addresses": 2118,
   "io_addresses": 12,
-  "native_symbols": 1572,
+  "native_symbols": 1574,
   "rom_addresses": 1675,
   "sram_addresses": 65,
   "wram_addresses": 366

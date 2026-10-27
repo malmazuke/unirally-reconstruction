@@ -12169,7 +12169,8 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0096-demo-audio.md",
    "docs/research/R-0100-record-screens.md",
-   "docs/research/R-0102-menu-frame-overruns.md"
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
  {
@@ -12179,12 +12180,15 @@
   "label": "loc_80FAE3",
   "native": [
    "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank",
+   "src/core/menu_overruns.cpp:statistics_start_clocks, records_print_clocks",
    "src/core/name_check.cpp:accepted_tail_clocks, refused_tail_clocks"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0101-name-check.md",
-   "tasks/AUDIO-TITLE-MENU.md"
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "tasks/AUDIO-TITLE-MENU.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
  {
@@ -12195,7 +12199,8 @@
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0102-menu-frame-overruns.md",
-   "tasks/AUDIO-TITLE-MENU.md"
+   "tasks/AUDIO-TITLE-MENU.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
  {
@@ -17912,13 +17917,16 @@
   "native": [
    "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
    "src/core/audio_cue.hpp:AudioDispatchSite",
-   "src/core/front_end.cpp:front_end_screens::begin_demo_return"
+   "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+   "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines"
   ],
   "source_records": [
    "docs/research/R-0070-attract-demo.md",
    "docs/research/R-0074-audio-foundation.md",
    "docs/research/R-0076-first-race-audio.md",
-   "docs/research/R-0077-one-player-audio.md"
+   "docs/research/R-0077-one-player-audio.md",
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
  {
