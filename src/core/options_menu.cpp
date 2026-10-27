@@ -1,6 +1,7 @@
 // The two five-choice menus under OPTIONS (R-0072). Both print their text into the hidden
 // half of BG2 at the choice frame, then slide it into view over 39 more pictures.
 #include "front_end_screens.hpp"
+#include "menu_overruns.hpp"
 #include "name_check.hpp"
 
 #include <algorithm>
@@ -244,11 +245,21 @@ void league_warning_frame(FrontEndState& state, const FrontEndContent& content, 
 
 void enter_records_menu(FrontEndState& state, const FrontEndContent& content) {
     // $80:D525-D53C; R-0072 observation 5. `$0089`, the decorations' delay, goes on (R-0097).
-    print_choices(state, content, content.records_menu_text);
+    // `$83:97BD` (`$80:D527`) runs first; with dense statistics it and the print end after the
+    // choice's frame, and the print is taken as the last of those frames' work (R-0102).
+    auto& late = state.records_detail.statistics_frames;
+    late = records_statistics_frames_late(state.records);
+    if (late == 0) print_choices(state, content, content.records_menu_text);
     state.screen = FrontEndScreen::records_entry;
 }
 
 void records_entry_frame(FrontEndState& state, const FrontEndContent& content) {
+    auto& late = state.records_detail.statistics_frames;
+    if (late != 0) { // only the NMI: no frame wait, no slide
+        if (--late == 0) print_choices(state, content, content.records_menu_text);
+        state.script_frame = 0;
+        return;
+    }
     if (state.script_frame == 1) {
         start_slide(state, content, false); // `$80:EF4D`: no OAM copy before the first pass
         return;

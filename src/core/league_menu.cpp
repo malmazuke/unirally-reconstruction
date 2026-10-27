@@ -1,5 +1,6 @@
 // The saved league's standings and pairing entry. $80:BDD4-BEE4; R-0073.
 #include "front_end_screens.hpp"
+#include "menu_overruns.hpp"
 
 #include <algorithm>
 #include <array>
@@ -349,10 +350,61 @@ void count_league_pair(FrontEndState& state) {
         state.records.league_pair_cursor[slot] = static_cast<std::uint8_t>(cursor + 2);
 }
 
+namespace {
+// `$83:8BE7` subtracts each power of ten once per unit of its digit.
+unsigned digit_sum(unsigned value) {
+    unsigned sum = 0;
+    for (; value != 0; value /= 10) sum += value % 10;
+    return sum;
+}
+} // namespace
+
+namespace {
+// The standings' rows and the digits of their played and points words, `played` as given.
+LeagueExitWork standings_work(const FrontEndState& state,
+                              const std::array<std::uint16_t, league_rows>& played) {
+    const auto members = league_members(state);
+    LeagueExitWork work;
+    for (unsigned row = 0; row < league_rows; ++row) {
+        if (members[row] == someone) continue;
+        ++work.members;
+        work.standings_digits +=
+            digit_sum(played[row]) + digit_sum(state.records.league_scores[state.league.slot][row]);
+    }
+    return work;
+}
+} // namespace
+
+// The way out's cost (R-0102): the count's frame after the records and their checksum runs; with
+// another pair, the standings' print after the count, its numbers as the count leaves them. The
+// awards keep R-0095's frames (2, or 3 after two placings), which the same work measures give.
+void time_league_exit(FrontEndState& state) {
+    const auto slot = state.league.slot;
+    const auto cursor = state.records.league_pair_cursor[slot];
+    const auto& pairings = state.records.league_pairings[slot];
+    const auto members = league_members(state);
+    auto played = state.records.league_played[slot];
+    for (unsigned at = cursor; at < std::min<unsigned>(cursor + 2, league_rows); ++at) {
+        if (pairings[at] == someone) continue;
+        const auto row = std::find(members.begin(), members.end(), pairings[at]) - members.begin();
+        ++played.at(static_cast<std::size_t>(row));
+    }
+    auto work = standings_work(state, played);
+    work.records_placed = state.race_result.records_placed;
+    work.lap_race = state.race_result.times.lap_race;
+    const auto frames = league_exit_frames(work);
+    const bool more_pairs = cursor < 6 && pairings[cursor + 2] != someone;
+    auto& result = state.race_result;
+    result.league_count_frame = frames.count;
+    result.league_standings_frame =
+        more_pairs ? frames.standings : (result.records_placed >= 2 ? 3U : 2U);
+}
+
 // Then the standings for the next pair, or the awards ($80:8917).
 void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
     if (state.league.more_pairs) {
         enter_league_table(state, content);
+        state.league.table_frames_late = 0; // the way out's frames hold the print's (R-0102)
         return;
     }
     award_points(state, content);
@@ -465,6 +517,9 @@ void enter_league_table(FrontEndState& state, const FrontEndContent& content, bo
     // `$80:A547` leaves entries 104-111 as they were: the awards' way out and NOW PLAYING's back
     // hide them themselves, PICK TOUR and the slots leave them shown off screen (R-0098).
     print_table(state, content);
+    const auto work = standings_work(state, state.records.league_played[state.league.slot]);
+    state.league.table_frames_late =
+        standings_print_frames_late(work.members, work.standings_digits);
     state.league.table_slides_back = slides_back;
     state.screen = FrontEndScreen::league_table_entry;
     state.latches = {};
@@ -472,6 +527,11 @@ void enter_league_table(FrontEndState& state, const FrontEndContent& content, bo
 }
 
 void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content) {
+    if (state.league.table_frames_late != 0) { // the print runs on: only the NMI
+        --state.league.table_frames_late;
+        state.script_frame = 0;
+        return;
+    }
     if (state.script_frame == 1) {
         copy_oam(state);
         start_slide(state, content, state.league.table_slides_back);
