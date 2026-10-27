@@ -25,11 +25,13 @@ struct LeagueExitFrames {
 
 // What the standings' print (`$80:A547`) costs by: its rows and the digits of every played and
 // points word it prints. `$83:8BE7` turns a word into decimal by subtracting each power of ten
-// once per unit of its digit (`$83:8BFE-8C36`) and counting the units down (`$83:8C3B-8C3E`).
+// once per unit of its digit (`$83:8BFE-8C36`), counts the units down (`$83:8C3B-8C3E`) and blanks
+// each leading zero of the five digits but the last (`$83:8C64-8C76`).
 struct StandingsWork {
     unsigned rows{};
     unsigned higher_digit_units{}; // the tens and above, summed
     unsigned unit_digit_units{};   // the units, summed
+    unsigned leading_zeros{};      // 4 for a one-digit word, 3 for two digits, ...
 };
 
 struct LeagueExitWork {

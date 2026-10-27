@@ -355,14 +355,18 @@ bool another_pair(const FrontEndState& state) {
 }
 
 // The standings' rows and the digits of their played and points words, `played` as given:
-// `$83:8BE7` counts the tens and above down in one kind of loop and the units in another.
+// `$83:8BE7` counts the tens and above down in one kind of loop and the units in another, then
+// blanks the leading zeros.
 StandingsWork standings_work(const FrontEndState& state,
                              const std::array<std::uint16_t, league_rows>& played) {
     const auto members = league_members(state);
     StandingsWork work;
+    constexpr unsigned digits_printed = 5;
     const auto add = [&](unsigned value) {
         work.unit_digit_units += value % 10;
-        for (value /= 10; value != 0; value /= 10) work.higher_digit_units += value % 10;
+        unsigned digits = 1;
+        for (value /= 10; value != 0; value /= 10, ++digits) work.higher_digit_units += value % 10;
+        work.leading_zeros += digits_printed - digits;
     };
     for (unsigned row = 0; row < league_rows; ++row) {
         if (members[row] == someone) continue;

@@ -91,27 +91,31 @@ StatisticsCounts count_statistics(const OnePlayerRecords& records) {
 
 // --- A league pair's way out ---
 
-// Measured over 27 way outs of three leagues and 7 of one with edited points (R-0102,
-// trace_pairs.sh, the review's band): `$80:C786` is called this long after vblank (24,918-26,660),
+// Measured over 27 way outs of three leagues and 13 of one with edited points (R-0102,
+// trace_pairs.sh, the reviews' band): `$80:C786` is called this long after vblank (24,918-26,660),
 // runs one checksum and one more for each time placed, and a lap race's best laps add to it; the
 // count with its checksum. The standings' print to its frame wait: the title and the rows (the
-// two constants fitted over the 34; they include the names of the measured leagues, the default
-// riders 0, 2, 4, 6 and 8, so other names move them a little), the digit loops at their CPU cost
-// per unit (from the instruction trace, `digit_steps.py`; the hundreds and above are taken as the
-// tens' loop, which they repeat) and the NMI when the print runs past a frame's end.
+// two constants fitted over 38 of them, the largest error 1,260 clocks; they include the names of
+// the measured leagues, the default riders 0, 2, 4, 6 and 8, so other names move them a little),
+// the digit loops and the leading zeros' pass at their CPU cost a pass (from the instruction
+// trace, `digit_steps.py`; the hundreds and above are taken as the tens' loop, which they repeat)
+// and the NMI when the print runs past a frame's end. The ranks' ordinals are not modelled: a
+// three-way tie prints about 270 clocks quicker than three ranks (R-0102).
 constexpr std::uint32_t records_start_clocks = 25200;
 constexpr std::uint32_t records_clocks = 227224, placing_clocks = 224765, lap_race_clocks = 4480;
 constexpr std::uint32_t count_clocks = 226738;
-constexpr std::uint32_t standings_title_clocks = 221460, standings_row_clocks = 41320;
+constexpr std::uint32_t standings_title_clocks = 222000, standings_row_clocks = 39650;
 constexpr std::uint32_t higher_digit_unit_clocks = 122; // $83:8C31-8C36, a pass
 constexpr std::uint32_t unit_digit_unit_clocks = 90;    // $83:8C3B-8C3E, a pass
+constexpr std::uint32_t leading_zero_clocks = 200;      // $83:8C64-8C76, a pass
 // Elsewhere the print's JSR (`$80:BE57`) comes 15,484-25,010 clocks into its frame (`five`'s).
 constexpr std::uint32_t standings_start_clocks = 25000;
 
 // The clocks from `start` (after vblank) to the print's frame wait.
 std::uint32_t standings_wait_clocks(std::uint32_t start, const StandingsWork& standings) {
     const auto digits = higher_digit_unit_clocks * standings.higher_digit_units
-                      + unit_digit_unit_clocks * standings.unit_digit_units;
+                      + unit_digit_unit_clocks * standings.unit_digit_units
+                      + leading_zero_clocks * standings.leading_zeros;
     const auto wait = start + standings_title_clocks + standings_row_clocks * standings.rows
                     + with_refresh(digits);
     return wait + nmi_clocks * (wait / frame_clocks - start / frame_clocks);
