@@ -109,8 +109,11 @@ side's work ran past a frame and the other's did not.
      -921 to -955 clocks are the way outs whose print crosses a stepping NMI, the ten off by
      -744 to -1,384 before the print those whose records or count cross one (or whose records
      start after one, `$80:C786` then called 978-1,460 clocks later). About 2 in 7 two-placing
-     way outs meet a step, which moves the standings' read by about 12 units. Native keeps
-     `$00C8` in the original's phase (no candidate capture shows a palette-cycle lag), so with
+     way outs meet a step, which moves the standings' read by about 12 units. The model takes
+     native's own `$00C8`. Native's delay is the original's at 9 of 9 way outs in `odd-tours`
+     and 4 of 4 in `four` but only 2 of 14 in `five`, two frames off after the race returned two
+     frames apart at 19,780 (`review-6/`); with native's delays the 51 traces stay in their
+     frames but the league error widens to -961 to +1,610. With
      D the delay as the records' frame's NMI leaves it, that NMI stepped if D is 6 and the NMI
      at the k-th frame end after the frame's start steps when k = D + 1 (mod 7). The step's
      1,100 clocks are fitted on the 13 (not traced).
@@ -245,7 +248,10 @@ passed.
   and 8: other names change the print's cost by an unmeasured amount per letter, and a league's
   name (the standings' title) too. The model's wait entry is -528 to +510 clocks off the
   leagues' and -12 to +75 off the band's; the palette step's 1,100 clocks are fitted, not
-  traced, and the delay's phase is native's own (a phase off by a frame would move a step).
+  traced, and the delay's phase is native's own. Where native's palette cycle is off the
+  original's (after a race returned two frames apart, as in `five`, or one frame off after each
+  late podium), the step can land at the wrong frame end, moving a way out near the edge by about
+  12 units.
 - **The three-member knife edge** (review rounds 2 and 3): a three-member league's way out after
   two placings in a one-run race has its frame wait's first read within a few hundred clocks of
   exit frame 3's end for units of about 14-17 with the rows in points order and up to about

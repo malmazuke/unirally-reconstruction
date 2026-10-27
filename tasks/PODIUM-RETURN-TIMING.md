@@ -342,3 +342,30 @@ Checks: `model.py` 51 of 51 (rc 0); `ctest` app-debug and lab-debug 41/41; `clan
 - Time (`date -u` in the session): 18:38 UTC (the review's return) to 18:43 UTC.
 - Evidence: the reviewer's `review-5/` as it is (`model.py` reads its `nmi-phase.txt`);
   `model-r5.txt`.
+
+## Review round 6 (returned on `2405d91f`) - approved
+
+Review: main `local/evidence/podium-return-timing/review-6/review.md`. The verdict is approve,
+with one records correction. The checks:
+- The step rule matches native's palette code: the NMI that finds 0 steps, the cycle is 7 frames
+  long, and 6 means the frame's own NMI just stepped.
+- The cycle-not-running case holds.
+- The fitted 1,100 clocks are stated as fitted.
+
+The correction: R-0102 said native keeps `$00C8` in the original's phase. It does not always. The
+reviewer ran native over the five windows:
+
+| Capture | Native's delay equals the original's |
+|---|---|
+| `odd-tours` | 9 of 9 |
+| `four` | 4 of 4 |
+| `five` | 2 of 14 |
+
+In `five`, native's delay is two frames off from the race that returned two frames apart at
+19,780 onward. With native's delays, all 51 traces stay in their frames, but the league error
+widens to -961 to +1,610 clocks.
+
+R-0102 now states these measurements. Its limit adds that where the cycle is off (after a race
+returned frames apart, or one frame off after each late podium), the step can land at the wrong
+frame end, moving a way out near the edge by about 12 units. This is a records-only change by the
+coordinator, made without a re-review, as the reviewer allowed.
