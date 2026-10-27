@@ -261,6 +261,9 @@ bool waits_for_frame(const FrontEndState& state) {
         return next != stunt_text_frame || !stunt_text_runs_over(state);
     if (state.screen == FrontEndScreen::vs_champions_entry)
         return champions_overrun_frames(state) == 0 || next != 1;
+    // OK's name check runs past its frame without a frame wait (R-0101).
+    if (state.screen == FrontEndScreen::rename_keyboard && state.keyboard.check_frames != 0)
+        return false;
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
@@ -872,6 +875,9 @@ void load_late_screens_content(FrontEndContent& content, const ClassicContentPac
     content.name_cheats = pack.optional_entry("front-end.name-cheats");
     for (const unsigned id : {0xbfU, 0xc0U, 0xc1U})
         content.assets[id] = pack.optional_entry(asset_name(id));
+    // NAME-CHECK (profile v41, R-0101): the keyboard's word list and its refusal.
+    content.name_check_words = pack.optional_entry("front-end.name-check-words");
+    content.name_refused_text = pack.optional_entry("front-end.name-refused-text");
 }
 
 } // namespace

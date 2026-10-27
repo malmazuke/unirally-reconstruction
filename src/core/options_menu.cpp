@@ -1,10 +1,12 @@
 // The two five-choice menus under OPTIONS (R-0072). Both print their text into the hidden
 // half of BG2 at the choice frame, then slide it into view over 39 more pictures.
 #include "front_end_screens.hpp"
+#include "name_check.hpp"
 
 #include <algorithm>
 #include <array>
 #include <numeric>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -582,9 +584,26 @@ void step_key_row(FrontEndState& state, bool up) {
             editor.offset_y == -72 ? 0 : static_cast<std::int16_t>(editor.offset_y - 24);
 }
 
-// $80:A491-A4AC: OK, from Start or the OK key. An empty name is refused ($80:A493 to $80:A41A);
-// otherwise the select sound, the name's end, and the keyboard's last frame.
-void press_keyboard_ok(FrontEndState& state) {
+// $80:A4B8-A4C6: a refused name's message, printed after the name, the printer put back where the
+// name ends; the keyboard stays open.
+void refuse_name(FrontEndState& state, const FrontEndContent& content) {
+    const auto position = state.printer.position;
+    print_text(state.text, state.printer, content.name_refused_text, content.character_table);
+    state.printer.position = position;
+}
+
+// The check's outcome, in the frame its frame wait follows.
+void finish_name_check(FrontEndState& state, const FrontEndContent& content) {
+    if (state.keyboard.check_refused)
+        refuse_name(state, content);
+    else
+        state.screen = FrontEndScreen::rename_commit;
+}
+
+// $80:A491-A4B6: OK, from Start or the OK key. An empty name is refused ($80:A493 to $80:A41A);
+// otherwise the select sound, the name's end, and the name check (`$83:84D9`), which may run
+// past OK's frame (R-0101).
+void press_keyboard_ok(FrontEndState& state, const FrontEndContent& content) {
     auto& editor = state.keyboard;
     if (editor.length == 0) {
         play_menu_sound(state, MenuSound::refused);
@@ -592,7 +611,11 @@ void press_keyboard_ok(FrontEndState& state) {
     }
     play_menu_sound(state, MenuSound::select); // $80:A495
     editor.scratch[editor.length] = editor.scratch[editor.length + 1] = 0xff;
-    state.screen = FrontEndScreen::rename_commit;
+    const auto check =
+        check_name(std::span(editor.scratch).first(editor.length), content.name_check_words);
+    editor.check_refused = check.refused;
+    editor.check_frames = check.frames_late;
+    if (editor.check_frames == 0) finish_name_check(state, content);
 }
 
 // $80:A3BF-A3C3: the choice's latch is stored from the accumulator that still holds the arrow's
@@ -610,7 +633,7 @@ void choose_key(FrontEndState& state, const FrontEndContent& content) {
     editor.latches = latches_after_choice(state.arrow.target_y);
     const auto key = keyboard_key(editor, content.keyboard_text);
     if (key == 0x40) { // OK at $80:A52A
-        press_keyboard_ok(state);
+        press_keyboard_ok(state, content);
         return;
     }
     if (key == 0x3c) { // backspace
@@ -645,7 +668,7 @@ void read_keyboard_pad(FrontEndState& state, const FrontEndContent& content, std
         if (first_press(editor, up ? latch_up : latch_down)) step_key_row(state, up);
         return;
     }
-    case KeyboardInput::ok: press_keyboard_ok(state); return; // no latch: every frame held
+    case KeyboardInput::ok: press_keyboard_ok(state, content); return; // no latch: every frame held
     case KeyboardInput::erase:
         if (!first_press(editor, latch_erase)) return;
         // $80:A36E-A37E: the arrow to the backspace key, then the deletion.
@@ -664,6 +687,11 @@ void read_keyboard_pad(FrontEndState& state, const FrontEndContent& content, std
 
 void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
                            FrontEndPads pads) {
+    // A name check that runs past OK's frame: the frame has only its NMI (R-0101).
+    if (state.keyboard.check_frames != 0) {
+        if (--state.keyboard.check_frames == 0) finish_name_check(state, content);
+        return;
+    }
     // $80:A207-A22E: the cursor's first place, then the OAM copy; the first poll is the next
     // frame's.
     if (state.script_frame == 1) {
