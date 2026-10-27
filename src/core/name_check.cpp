@@ -25,7 +25,7 @@ constexpr std::uint32_t match_saving = 116;     // $83:850F-851A against $83:852
 // OAM uploads and the pad tests); the NMI that interrupts a long check runs its handler.
 constexpr std::uint32_t line_clocks = 1364, refresh_clocks = 40, frame_lines = 312;
 constexpr std::uint32_t frame_clocks = line_clocks * frame_lines;
-constexpr std::uint32_t start_clocks = 31600; // 30,948-32,390 in the captures (R-0101)
+constexpr std::uint32_t start_clocks = 31600; // 30,020-33,096 over the 24 calls measured (R-0101)
 constexpr std::uint32_t nmi_clocks = 1082;    // $00:8587 while the keyboard shows
 // From the check's return to the frame wait's first read of `$4212` (`$80:FAE3`): the way to the
 // loop, or the refusal's print (`$80:A4B8-A4C6`) first.

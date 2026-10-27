@@ -52,9 +52,10 @@ Sound schedules (frame waits included, from 620): `nc-refuse` 2,236 lines, `nc-l
 5, 97, 5, 0, 0).
 
 Remaining differences (R-0101 Not covered): R-0097's one-frame text buffers (OK's OPTIONS print, one
-text frame per commit; GROUP TABLES' first print); the check's start is a constant (a read within
-about 2 lines of a boundary may be a frame off: no rider name, possibly a 15-letter league name); a
-refusal's print across a boundary is not split.
+text frame per commit; GROUP TABLES' first print); the check's start is a constant (over the measured
+start range only an accepted 15-letter league name with 118-134 matched characters may be a frame
+off, and OK pressed with A on the OK key may start later than the model's start); a refusal's print
+across a boundary is not split (league names only: a word starting at the 7th or 8th letter).
 
 ## Handoff (worker)
 

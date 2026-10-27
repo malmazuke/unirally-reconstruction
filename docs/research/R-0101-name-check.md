@@ -20,7 +20,7 @@ captured twice (`cue_captures.sh`, stripped to CPU rows):
 |---|---:|---|
 | `nc-refuse` | 2,496 | RENAME PLAYER (review `rv-kb`'s way in): a listed word at the start (6 letters), one in the middle (7), two overlapping words (7), a word ending a full-length name (8), each refused, erased; then an 8-letter near miss (a word's first four letters at the end), accepted |
 | `nc-lengths` | 4,692 | RENAME PLAYER eight times: names of 1 to 8 letters, accepted, with first letters many words share |
-| `nc-league` | 2,900 | the league keyboard (MENU-INPUT's `league-name` to frame 1999): 13 letters no word starts with and a word (17, refused), erased; 13 letters ten words start with and the same word (17, refused), erased; 15 of those letters, accepted |
+| `nc-league` | 2,900 | the league keyboard (MENU-INPUT's `league-name` to frame 1999): 13 letters no word starts with and a word (17, refused), erased; 13 letters 12 words start with and the same word (17, refused), erased; 15 of those letters, accepted |
 
 The words are named here by their place in the list, not spelled: the list is ROM content. With
 MENU-INPUT's keyboard captures (`league-name`, `kb-input`, `w5`, `warnings`, `league-pick`, review
@@ -65,9 +65,10 @@ frame 620, frame waits included.
    - OK's JSL comes 30,020-33,096 clocks after vblank's start (lines 247-249; the keyboard's pass
      after its frame wait). The frame wait's first `$4212` read (`$80:FAE3`) comes 1,060-1,100
      clocks after the check's return, or 26,886-26,926 after a refusal, whose print comes first.
-   - A PAL frame is 312 lines, 425,568 clocks, starting at vblank (line 225). A read past the
-     frame's end finds vblank over or not yet begun and waits for the next: each frame boundary
-     the read passes delays everything after by a frame.
+   - A PAL frame is 312 lines, 425,568 clocks, starting at vblank (line 225). The frame wait
+     (`$80:FAE3-FAEF`) loops while `$4212` bit 7 (vblank) is set, then until it is set again. A
+     first read after the frame's end finds the next vblank in progress, waits it out and then a
+     whole frame: each frame boundary the read passes delays everything after by a frame.
    - The model (start 31,600) puts each of the 24 reads in its measured frame; the nearest a read
      came to a boundary was 7.9 lines (`nc-league` 2560), the start's spread is 2.3 lines.
 3. **What that gives.** [C, and the model's search]
@@ -76,7 +77,7 @@ frame 620, frame waits included.
      finds (91 matched characters) still ends 3.8 lines before the boundary, the lightest 8-letter
      one 23.8 lines after it.
    - A league name (up to 17): 8-14 letters one frame late (`league-name`: 12), 15 one or two by
-     its letters (`nc-league`: fifteen of a letter ten words start with, two; fifteen of a letter
+     its letters (`nc-league`: fifteen of a letter 12 words start with, two; fifteen of a letter
      no word starts with would be one, by 16.5 lines), 16-17 two.
    - A refusal stops at its match: the 17-letter refusals in `nc-league` matched at position 13
      and were one frame late; a full-length rider name refused at position 4 was not late.
@@ -120,11 +121,19 @@ The text frames are R-0097's one-frame text buffers (Not covered there and here)
 
 - **The start's spread.** The model starts every check 31,600 clocks after vblank; the captures
   spread 30,020-33,096, from the keyboard pass's work and the frame wait's polling, which native
-  does not time. With the NMI's spread a read within about 2 lines (2,700 clocks) of a frame
-  boundary may be put a frame off. No rider name comes that close; a 15-letter league name can.
+  does not time. The calls mix two ways of pressing OK: Start, and A on the OK key. Only one call
+  used A on the OK key (`w5`), and it started latest of all 24 (33,096, 1,496 clocks after the
+  model's start), so that way may run later; one call does not settle it. Over the measured range
+  the review's exhaustive search (main `local/evidence/name-check/review-1/sweep.py`) finds one
+  ambiguous case: an accepted 15-letter league name with 118-134 matched characters (the model's
+  threshold is 126, of 0-195) may be one or two frames late. Every other length is decided with at
+  least 3.8 lines to spare. Such a name committed with A on OK may come out a frame off.
 - **A refusal's print across a boundary.** When the check ends just before a frame's end and the
   print runs past it, the original's text map holds part of the line at that frame's end; native
-  prints it whole in the later frame. Not captured.
+  prints it whole in the later frame. Not captured. Rider names never reach it: a word starts by
+  the 6th letter, and the heaviest such check returns by about 364,000 clocks, the print ending by
+  about 391,000 of the frame's 425,568. League names can, when a listed word starts at the 7th or
+  8th letter (the review's `cross.py`: 13 of 200,000 random names, lengths 10-17).
 - **One-frame text buffers** after OK (OPTIONS' print) and GROUP TABLES' first print, as R-0097.
 - The gate catalogue's front-end checks use pack v40, so they run without the check; this task's
   checks (`local/evidence/name-check/checks.list`) use v41.
@@ -146,3 +155,6 @@ python3 tools/project.py content pack --rules tests/manifests/content/classic-cr
 ```
 
 `timing.py MANIFEST FIRST LAST` lists the calls, returns, frame waits and NMIs frame by frame.
+`model.py` repeats the native constants; the review's `review-1/harness.cpp` links
+`src/core/name_check.cpp` itself and `cross.py` compares it with a plain reading of the routine on
+the 24 measured names and 200,000 random ones (0 differences).
