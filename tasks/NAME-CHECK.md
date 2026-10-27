@@ -2,7 +2,16 @@
 
 ## Assignment
 
-- Status: **queued** 14 October 2026 by [MENU-INPUT](MENU-INPUT.md) (R-0097). Unclaimed.
+- Status: **claimed** 27 October 2026 04:31 UTC on main `1cf871fa`, on the user's instruction
+  (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
+  subagent implements, a fresh subagent reviews). Queued 14 October 2026 by
+  [MENU-INPUT](MENU-INPUT.md) (R-0097). The first task under
+  [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): its claim-to-merge time is
+  measured against the 6-hour target.
+- Choice: the next queued player-visible gap (names with listed words are accepted natively).
+  PODIUM-RETURN-TIMING needs the same cycle model this task may build, so it follows.
+- Branch `task/name-check` in `.worktrees/name-check`; evidence in main `local/evidence/name-check/`.
+- Task provider: Anthropic.
 - Milestone: M4 (original game coverage).
 - Review tier: **1** (menu state and frame timing in `src/core`).
 - Dependencies: MENU-INPUT (R-0097), OPTIONS (R-0072).
