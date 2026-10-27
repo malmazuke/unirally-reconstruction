@@ -11368,6 +11368,17 @@
    "region": "rom"
   },
   {
+   "address": "$83:8C64",
+   "native": [
+    "src/core/menu_overruns.cpp:leading_zero_clocks",
+    "src/core/menu_overruns.hpp:StandingsWork"
+   ],
+   "range_ends": [
+    "$83:8C76"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:8C7B",
    "native": [
     "src/core/text_printer.hpp:race_time_text",
@@ -23246,6 +23257,11 @@
     "$83:8C31"
    ]
   },
+  "src/core/menu_overruns.cpp:leading_zero_clocks": {
+   "rom": [
+    "$83:8C64"
+   ]
+  },
   "src/core/menu_overruns.cpp:league_exit_frames": {
    "rom": [
     "$80:C786"
@@ -23317,7 +23333,8 @@
     "$80:A547",
     "$83:8BE7",
     "$83:8BFE",
-    "$83:8C3B"
+    "$83:8C3B",
+    "$83:8C64"
    ]
   },
   "src/core/menu_overruns.hpp:records_statistics_frames_late": {
@@ -29810,10 +29827,10 @@
   }
  },
  "totals": {
-  "addresses": 2117,
+  "addresses": 2118,
   "io_addresses": 12,
-  "native_symbols": 1571,
-  "rom_addresses": 1674,
+  "native_symbols": 1572,
+  "rom_addresses": 1675,
   "sram_addresses": 65,
   "wram_addresses": 366
  }

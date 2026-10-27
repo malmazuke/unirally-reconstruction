@@ -14119,6 +14119,7 @@
    "native": [
     "src/core/league_menu.cpp:standings_work",
     "src/core/menu_overruns.cpp:higher_digit_unit_clocks",
+    "src/core/menu_overruns.cpp:leading_zero_clocks",
     "src/core/menu_overruns.cpp:unit_digit_unit_clocks",
     "src/core/menu_overruns.hpp:StandingsWork",
     "src/core/now_playing.cpp:name_line",
@@ -19334,16 +19335,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2227,
+  "cited_addresses": 2228,
   "cited_by_class": {
    "data": 16,
    "inferred": 97,
-   "observed": 1916,
+   "observed": 1917,
    "unknown": 198
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1513,
+   "loc": 1514,
    "mid": 31,
    "sub": 469,
    "unk": 198

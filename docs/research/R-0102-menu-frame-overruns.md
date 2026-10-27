@@ -26,9 +26,10 @@ core with its instruction ring:
   outs with a standings print after them (`odd-tours` 9, `four` 4, `five` 14).
 - `cycles_records.py` costs `$83:97BD` step by step (each step at the least it took, as R-0101's
   `cycles.py`) at the seven RECORDS entries.
-- Review round 1's band (`review-1/band/`): odd-tours' first way out traced seven times with the
-  league's points words edited at frame 12,900 (`make_band.py`), to place the three-row
-  standings' boundary; `digit_steps.py` costs the decimal conversion's loops on one of them.
+- The reviews' band (`review-1/band/` 7, `review-2/band/` 4, this task's `band-r2/` 2): odd-tours'
+  first way out traced with the league's points words edited at frame 12,900 (`make_band.py`),
+  to place the three-row standings' boundary; `digit_steps.py` costs the decimal conversion's
+  loops on one of them.
 - `podium_upload.py` presses Start on 12 consecutive frames of one podium (organic-cycle-five,
   after LEAGUE-TOURS' review's `podium_sweep.py`) and times the title's sound upload.
 
@@ -44,8 +45,8 @@ side's work ran past a frame and the other's did not.
    that frame has only its NMI (the palette cycle's hook), no arrow step and no menu pass, and
    everything after is a frame later. R-0101's keyboard check is one case; these are three more.
 
-2. **A league pair's way out** (`$80:BF2C-BF35`, then `$80:BE55`). [L, C: 27 way outs, and the
-   review's 7 band traces]
+2. **A league pair's way out** (`$80:BF2C-BF35`, then `$80:BE55`). [L, C: 27 way outs, and 13
+   band traces]
    - After `$80:F4B8`'s wait, exit frame 1 runs `$80:C786` (the records), `$80:AF54` (the pair's
      count; with another pair to race it ends with a checksum run, `$80:AFEB`, while the awards'
      print follows the count 1,316 clocks later in `odd-tours` 19473) and, with another pair
@@ -61,28 +62,42 @@ side's work ran past a frame and the other's did not.
      units down (`$83:8C3B-8C3E`). The instruction trace (`digit_steps.py`, odd-tours 12909 with
      its points edited) gives each pass of the tens' loop 122 CPU clocks and each of the units' 90
      (the hundreds and above repeat the tens' loop and are taken at its cost; no measured way out
-     printed one). The review's count from the listing (108 and 80) misses some cycles; the trace
-     is what the model uses.
+     printed one). These are the listing's cycles at SlowROM speed (review round 2; round 1's
+     108 and 80 assumed FastROM).
+   - Then `$83:8C64-8C76` blanks each leading zero of the five digits but the last (`LDA $0000,X`,
+     `CMP #$30`, `CPX #6`, `LDA #$5F`, `STA`, `INX`, `BRA`): 200 CPU clocks a zero blanked
+     (traced), so a one-digit word costs one pass more than a two-digit one (review round 2's
+     diagnosis: one-digit band points ran 417-590 clocks under the model without it).
    - When the print runs past the frame's end the NMI runs inside it (1,060 clocks, as in RECORDS'
      entry). In 6 of `odd-tours`' 9 way outs and all of `four`'s and `five`'s it does; the first
      fit (89 a digit unit, one constant a league) absorbed it and over-estimated the prints that
      stay inside a frame by about 450 clocks.
-   - The band (review round 1, `review-1/band/`): odd-tours' first way out (three rows, two
-     placings, a one-run race) traced with its points words edited before it. Units summing 2, 12,
-     18 and 22 (and 22 as 19, 18, 10) end inside exit frame 3, 92-1,990 clocks before its end; 28
-     (twice) run into frame 4. The first model put 19-26 a frame late.
+   - The band (`review-1/band/`, `review-2/band/`, `band-r2/`): odd-tours' first way out (three
+     rows, two placings, a one-run race; played 1, 1, 0) traced with its points words edited
+     before it. With one-digit points, units summing 2, 12, 18 and 22 end inside exit frame 3
+     (92 clocks before its end at 22); 23 as 8, 7, 6, and 24, 25, 26, 27 and 28 run into frame 4
+     (1,060-1,520 clocks in, the NMI included). 23 as 7, 7, 7 (a three-way tie) ends inside
+     frame 3: its print is 270 clocks quicker than 8, 7, 6's, and 8, 7, 7 (one tie) only 30, so
+     the ranks' ordinals (three firsts against first, second and third) cost something the model
+     does not count. Two-digit points: 22 as 19, 18, 10 on time, 28 as 28, 27, 25 late. Round 1's
+     model put 19-26 late; round 1's refit put 24-27 on time.
    - The model (`menu_overruns.cpp`, `model.py`): the count's frame is 1 + (25,200 + 227,224 +
      224,765 per placing + 4,480 for a lap race) / 425,568. The standings' wait adds 226,738 for
-     the count, then the print: 221,460 + 41,320 a row + the digit loops' clocks with the
-     refresh, + 1,060 for each frame end the print passes. The title and row constants are fitted
-     over the 34 way outs (27 and the band's 7, the smallest largest error); the digit costs are
-     the trace's. All 34 counts and standings' waits are in their measured exit frames; the error
-     is -1,689 to +1,694 clocks, the nearest boundary 454 clocks away.
-   - What that gives: a three-member way out after two placings in a one-run race ends in exit
-     frame 3 while its standings' units sum to 27 or less (with no tens; 89 clocks to spare at
-     27), in frame 4 from 28 (`odd-tours`' first event: 2, on time; each later one with two
-     placings is a lap race or has tens in its numbers, and is late); in a lap race it is always late. With no placing three rows fit in frame
-     2. In four- and five-member leagues the standings are always a frame later than native's
+     the count, then the print: 222,000 + 39,650 a row + the digit loops' and the leading zeros'
+     clocks with the refresh, + 1,060 for each frame end the print passes. The title and row
+     constants minimise the largest error over the 38 way outs the review named (the 27 and 11
+     band traces, `pairs_refit.py`); the loop costs are the trace's. All 38 are in their
+     measured exit frames, and of the two units-23 traces added since, 8, 7, 6 is and 7, 7, 7 is
+     not (the ties, above). Over the 39 placed the error is -1,257 to +1,260 clocks (the band's
+     own -125 to +58: the leagues' other content, the ordinals among it, spreads the rest); the
+     nearest boundary is 78 clocks, at the band's 22, which the original itself ends 92 clocks
+     before the frame's end. No model of this print can have more margin there than the
+     original has.
+   - What that gives: a three-member way out after two placings in a one-run race, with
+     one-digit numbers, ends in exit frame 3 while its standings' units sum to 22 or less and in
+     frame 4 from 23 (from 24 with a three-way tie, which the model does not see); `odd-tours`'
+     first event (2) is on time and every later one with two placings is late. In a lap race it
+     is always late. With no placing three rows fit in frame 2. In four- and five-member leagues the standings are always a frame later than native's
      old rule (frame 4 after placings, 3 without). One placing counts the pair in frame 2, not 1
      (R-0098's `five` 15,619, 32,500, 60,423 and `odd-tours` 35,575).
    - The awards' way out (the last pair) keeps R-0095's frames (2, or 3 after two placings): the
@@ -158,7 +173,8 @@ side's work ran past a frame and the other's did not.
 ## Results
 
 The candidate against the original; main `6155f3d2`; both on pack v41 (`checks.list`, rerun at
-`811cd4f7` after review round 1; main's lag counted under the same recorded limits):
+`811cd4f7` after review round 1 and its league lines again at `3084f6be` after round 2; main's lag
+counted under the same recorded limits):
 
 | Capture | Pictures equal: candidate / main | Arrow's lag changes outside the limits: candidate / main | League races, league fields |
 |---|---|---|---|
@@ -173,8 +189,9 @@ The candidate against the original; main `6155f3d2`; both on pack v41 (`checks.l
 The remaining differences: the podium's way back (finding 5) in every two-member window and after
 each podium; a race's return two frames apart in `five` 19,780, as on main (after the race R-0098 lists as
 loading a frame off at 16,596; R-0077), which leaves `five` w0's later menus two frames apart; HUNTER's two-view pictures (SPLIT-HUNTER-PICTURES) and the odd league's
-computer result objects (R-0098); one text-map frame per late print. `model.py`: 34 of 34 way outs (27
-and the band's 7) and 7 of 7 RECORDS entries in their measured frames. LEAGUE's frozen gate (first tour, pack v40):
+computer result objects (R-0098); one text-map frame per late print. `model.py`: 39 of 40 way outs (27
+and 13 band traces; the three-way tie at units 23 the recorded exception) and 7 of 7 RECORDS
+entries in their measured frames. LEAGUE's frozen gate (first tour, pack v40):
 passed.
 
 ## Not covered
@@ -186,12 +203,15 @@ passed.
   which only an exact sound side from boot could give.
 - **The model's reach.** Its constants come from three leagues of the default riders 0, 2, 4, 6
   and 8: other names change the print's cost by an unmeasured amount per letter, and a league's
-  name (the standings' title) too. The model's error over the 34 way outs is up to 1,694 clocks.
-  The knife edge is a three-member league's way out after two placings in a one-run race: its
-  standings end in exit frame 3 up to units summing 27 (89 clocks to spare) and are late from 28,
-  so standings within about 1,700 clocks of that edge (units of about 10-27 with a tens digit or
-  two, or other names) may come out a frame off. The band's 22 (92 clocks inside, measured) is
-  the nearest case known; the model's own nearest margin is 454 clocks. The
+  name (the standings' title) too. The model's error over the 39 way outs it places is up to
+  1,260 clocks, -125 to +58 within the band.
+- **The three-member knife edge** (review round 2): a three-member league's way out after two
+  placings in a one-run race ends within a few hundred clocks of exit frame 3's end for units of
+  about 20-26 (the original itself 92 clocks before it at 22, 1,170 after it at 24, the NMI
+  included). The model takes units 23 as late, which a three-way tie is not (`band-r2` 7, 7, 7:
+  the ordinals' cost, not modelled); with other names, or tens digits and ties in other
+  combinations, standings near this edge may come out a frame off. The band (13 traces) is the
+  evidence. The
   `$80:C786` start varies by 1,742 clocks with the NMI's work and is taken as 25,200. Six to eight
   members, and stunt events that place a score, are extrapolated.
 - **One text-map frame** where the original's print starts in the frame before its late wait
@@ -211,8 +231,11 @@ zsh $E/trace_pairs.sh                      # trace-pairs-*.json: the 27 way outs
 python3 $E/pairs_summary.py $E/trace-pairs-*.json
 python3 $E/table_digits.py league-tours odd-tours-w0 $E/trace-pairs-odd-tours.json   # and each window
 python3 $E/pairs_fit.py                    # the first fit (one slope); pairs-data.json
-python3 $E/digit_steps.py $E/review-1/band/odd-tours-p28-27-25.json 12909 12910   # the digit loops
-zsh $E/review-1/band/run_band.sh           # the review's band (make_band.py's edited manifests)
+python3 $E/digit_steps.py $E/review-1/band/odd-tours-p28-27-25.json 12909 12910   # the digit and zero loops
+zsh $E/review-1/band/run_band.sh           # the reviews' band (make_band.py's edited manifests),
+zsh $E/review-2/band/run_band.sh           #   and review-2/band, band-r2 likewise
+zsh $E/band-r2/run_band.sh
+python3 $E/pairs_refit.py                  # the title and row constants
 python3 $E/cycles_records.py local/evidence/record-screens-review/wr-stats2.json 900 OUT.json
 python3 $E/podium_upload.py local/evidence/league/organic-cycle-five.json 12100 12200 12 OUT.json
 python3 $E/model.py                        # both models against every measurement

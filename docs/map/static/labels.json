@@ -23007,6 +23007,20 @@
   ]
  },
  {
+  "address": "$83:8C64",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838C64",
+  "native": [
+   "src/core/menu_overruns.cpp:leading_zero_clocks",
+   "src/core/menu_overruns.hpp:StandingsWork"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "tasks/PODIUM-RETURN-TIMING.md"
+  ]
+ },
+ {
   "address": "$83:8C7B",
   "class": "observed",
   "comment": "routine start",

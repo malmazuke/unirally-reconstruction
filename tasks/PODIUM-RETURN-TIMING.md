@@ -131,10 +131,10 @@ reviewer's refit in `review-1/fit/`, its band traces in `review-1/band/`). Fixes
    frame end the print passes, costs the decimal conversion's loops at their traced CPU clocks a
    unit (`digit_steps.py`: 122 for the tens and above, 90 for the units, against the review's
    listing count of 108 and 80) and refits the title and row constants over the 34 way outs
-   (221,460 + 41,320 a row). All 34 counts and standings' waits are in their measured frames,
-   error -1,689 to +1,694 clocks, nearest boundary 454 clocks; the edge is now units summing 27
-   (on time, 89 clocks to spare) against 28 (late), and a lap race after two placings is always
-   late. `model.py` checks the band's 7 traces too; `menu_overrun_tests` tests 22 (frame 3) and
+   (221,460 + 41,320 a row). All 34 counts and standings' waits were in their measured frames,
+   error -1,689 to +1,694 clocks. Its claimed edge (units 27 on time with 89 clocks to spare, 28
+   late) and nearest boundary (454 clocks) were wrong: review round 2 measured 24-27 late, see
+   below. `model.py` checks the band's 7 traces too; `menu_overrun_tests` tests 22 (frame 3) and
    28 (frame 4).
 2. **Podium count:** corrected to 5 of 12 (delays 1, 2, 5, 8, 9) in R-0102 and the Checkpoint;
    the reviewer's sawtooth (the driver answering at a poll about every 75,000 clocks) is in
@@ -163,3 +163,49 @@ applied, `coverage native-symbols --check` passed after `regen.sh`.
 - Time: from 13:42 UTC (the review's return) to 15:12 UTC (about 1 h 30 min): the band's digit loops and the refit
   about 20 min, code and tests 15 min, records 15 min, the rerun 1 h 15 min under the lock, alongside.
 - Evidence: main `local/evidence/podium-return-timing/`  53M (adds `digit_steps.py`, `checks-r1/`).
+
+## Review round 2 (returned on `15791894`) - the fix
+
+Review: main `local/evidence/podium-return-timing/review-2/review.md` (changes requested, finding 1
+only; findings 2-4 confirmed fixed, the 122 and 90 clocks a unit confirmed as the listing's
+cycles at SlowROM speed). The reviewer traced units 24, 25, 26 and 27 (`review-2/band/`): all late
+in the original, all on time in round 1's refit, whose edge (27/28) lay in the band's gap between
+22 and 28. The missing term: one-digit words ran 417-590 clocks under the model, two-digit ones
+21-24 over.
+
+Fix, option (a), in `3084f6be` (code; see the handoff for the commit list):
+- `$83:8C64-8C76` blanks each leading zero of a word's five digits but the last; the instruction
+  trace (`digit_steps.py`) gives it 200 CPU clocks a pass. `StandingsWork::leading_zeros` counts
+  them (4 for a one-digit word, 3 for two digits).
+- The title and row constants are refitted for the smallest largest error over the review's 38
+  way outs (`pairs_refit.py`): 222,000 + 39,650 a row. All 38 are in their measured frames; the
+  error over the band is -125 to +58 clocks (-1,257 to +1,260 over the leagues, whose other
+  content varies).
+- Units 23, which the band had not covered, traced twice (`band-r2/`): 8, 7, 6 is late (as the
+  model says) and 7, 7, 7 on time. Its print is 270 clocks quicker: a three-way tie prints three
+  firsts, and the ordinals' cost is not modelled. `model.py` places 39 of 40 and names that one
+  as a recorded limit; it exits 1 on any other.
+- The edge, for three members, two placings, a one-run race and one-digit numbers: units 22 on
+  time (the original 92 clocks before the frame's end, the model 78), 23 late (but a three-way
+  tie), 24 and up late. The nearest boundary is 78 clocks, set by the original's own 92 at 22: no
+  model can have a margin of a few hundred there, so R-0102's Not covered records the knife edge
+  (units about 20-26, ties, other names) with the band as evidence. `menu_overrun_tests` tests
+  22 (frame 3), 23 and 24 (frame 4).
+- R-0102's and this record's "27 with 89 to spare" and "nearest boundary 454" are corrected.
+
+Rerun (`run_checks.sh OUTDIR 'league-tours|model|frozen'`, the 40 league, model and frozen-gate
+lines, `checks-r2.out` at `3084f6be`): 40 of 40 lines rc 0, 1 h 20 min; every picture, race,
+field and lag count the same as the earlier runs' (no measured way out changes frame). RECORDS' lines not rerun (that path is unchanged).
+`ctest` app-debug and lab-debug 41/41; `clang-tidy` clean on `menu_overruns.cpp` and
+`league_menu.cpp`; `clang-format` applied; `coverage native-symbols --check` passed after
+`regen.sh`.
+
+## Handoff (worker, review round 2)
+
+- Commits: `3084f6be` (the leading zeros, the refit, the tests), then the records commit
+  (R-0102, this record, the maps).
+- Time (harness clock): 15:20 UTC (the review's return) to 16:48 UTC, about 1 h 30 min: the zero loop's trace, the refit and
+  the units-23 traces about 25 min, code and tests 10 min, records 15 min; the league rerun
+  1 h 20 min under the lock, records alongside it.
+- Evidence added: `band-r2/` (the two units-23 traces and their scripts), `pairs_refit.py`,
+  `digit_steps.py`'s zero loop, `checks-r2/`.
