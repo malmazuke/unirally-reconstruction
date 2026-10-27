@@ -8,8 +8,9 @@ namespace unirally::front_end_screens {
 namespace {
 
 // A PAL frame is 312 lines of 1,364 master clocks from vblank's start, 40 of each line the work
-// RAM's refresh, which the CPU waits through. A frame wait (`$80:FADF`) whose first `$4212` read
-// comes after the frame's end waits out the next frame too.
+// RAM's refresh, which the CPU waits through. A frame wait (`$80:FADF`) polls the sound queue
+// (`JSL $82:8035`) before its first `$4212` read; a read after the frame's end, in the next
+// vblank, waits out the next frame too. The models below time that first read.
 constexpr std::uint32_t line_clocks = 1364, refresh_clocks = 40, frame_lines = 312;
 constexpr std::uint32_t frame_clocks = line_clocks * frame_lines;
 constexpr std::uint32_t nmi_clocks = 1060; // the menus' NMI handler, when the work runs into vblank
@@ -31,8 +32,8 @@ constexpr std::uint32_t percentage_clocks = 7704;  // $83:9878-9DB2 and back, wi
 constexpr std::uint32_t halving_clocks = 330;      // $83:9D85-9DA0
 constexpr std::uint32_t quotient_bit_clocks = 112; // $80:973B-973F
 // The JSL at `$80:D527` comes this long after vblank's start in OPTIONS' choice frame (8,994 to
-// 9,596 over the seven entries measured); RECORDS' print and the way to the frame wait take the
-// rest.
+// 9,596 over the seven entries measured); RECORDS' print and the way to the frame wait's first
+// `$4212` read (`$80:FAE3`, the poll included) take the rest.
 constexpr std::uint32_t statistics_start_clocks = 9300, records_print_clocks = 229474;
 
 struct StatisticsCounts {
@@ -94,31 +95,36 @@ StatisticsCounts count_statistics(const OnePlayerRecords& records) {
 // Measured over 27 way outs of three leagues and 13 of one with edited points (R-0102,
 // trace_pairs.sh, the reviews' band): `$80:C786` is called this long after vblank (24,918-26,660),
 // runs one checksum and one more for each time placed, and a lap race's best laps add to it; the
-// count with its checksum. The standings' print to its frame wait: the title and the rows (the
-// two constants fitted over 38 of them, the largest error 1,260 clocks; they include the names of
-// the measured leagues, the default riders 0, 2, 4, 6 and 8, so other names move them a little),
-// the digit loops and the leading zeros' pass at their CPU cost a pass (from the instruction
-// trace, `digit_steps.py`; the hundreds and above are taken as the tens' loop, which they repeat)
-// and the NMI when the print runs past a frame's end. The ranks' ordinals are not modelled: a
-// three-way tie prints about 270 clocks quicker than three ranks (R-0102).
+// count with its checksum. The standings' print to its frame wait: the title, the rows and each
+// new rank (a row whose points differ from the row above's; its ordinal), fitted over 44 way outs
+// (the band's 17 decide the edge, the leagues' largest error 1,490 clocks; they include the names
+// of the measured leagues, the default riders 0, 2, 4, 6 and 8, so other names move them a
+// little), the digit loops and the leading zeros' pass at their CPU cost a pass (from the
+// instruction trace, `digit_steps.py`; the hundreds and above are taken as the tens' loop, which
+// they repeat), the NMI when the print runs past a frame's end, and the wait's poll of the sound
+// queue before its first `$4212` read (576-616 clocks traced after the print, review round 3).
 constexpr std::uint32_t records_start_clocks = 25200;
 constexpr std::uint32_t records_clocks = 227224, placing_clocks = 224765, lap_race_clocks = 4480;
 constexpr std::uint32_t count_clocks = 226738;
-constexpr std::uint32_t standings_title_clocks = 222000, standings_row_clocks = 39650;
+constexpr std::uint32_t standings_title_clocks = 221930, standings_row_clocks = 39650;
+constexpr std::uint32_t new_rank_clocks = 100;
 constexpr std::uint32_t higher_digit_unit_clocks = 122; // $83:8C31-8C36, a pass
 constexpr std::uint32_t unit_digit_unit_clocks = 90;    // $83:8C3B-8C3E, a pass
 constexpr std::uint32_t leading_zero_clocks = 200;      // $83:8C64-8C76, a pass
+constexpr std::uint32_t frame_wait_poll_clocks = 596;
 // Elsewhere the print's JSR (`$80:BE57`) comes 15,484-25,010 clocks into its frame (`five`'s).
 constexpr std::uint32_t standings_start_clocks = 25000;
 
-// The clocks from `start` (after vblank) to the print's frame wait.
+// The clocks from vblank's start in the frame of `start` to the print's frame wait's first
+// `$4212` read.
 std::uint32_t standings_wait_clocks(std::uint32_t start, const StandingsWork& standings) {
     const auto digits = higher_digit_unit_clocks * standings.higher_digit_units
                       + unit_digit_unit_clocks * standings.unit_digit_units
                       + leading_zero_clocks * standings.leading_zeros;
     const auto wait = start + standings_title_clocks + standings_row_clocks * standings.rows
-                    + with_refresh(digits);
-    return wait + nmi_clocks * (wait / frame_clocks - start / frame_clocks);
+                    + new_rank_clocks * standings.new_ranks + with_refresh(digits);
+    return wait + nmi_clocks * (wait / frame_clocks - start / frame_clocks)
+         + frame_wait_poll_clocks;
 }
 
 } // namespace

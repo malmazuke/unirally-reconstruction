@@ -356,7 +356,7 @@ bool another_pair(const FrontEndState& state) {
 
 // The standings' rows and the digits of their played and points words, `played` as given:
 // `$83:8BE7` counts the tens and above down in one kind of loop and the units in another, then
-// blanks the leading zeros.
+// blanks the leading zeros; and the ranks, a new one wherever the points change.
 StandingsWork standings_work(const FrontEndState& state,
                              const std::array<std::uint16_t, league_rows>& played) {
     const auto members = league_members(state);
@@ -368,12 +368,18 @@ StandingsWork standings_work(const FrontEndState& state,
         for (value /= 10; value != 0; value /= 10, ++digits) work.higher_digit_units += value % 10;
         work.leading_zeros += digits_printed - digits;
     };
+    std::vector<std::uint16_t> points;
     for (unsigned row = 0; row < league_rows; ++row) {
         if (members[row] == someone) continue;
         ++work.rows;
         add(played[row]);
-        add(state.records.league_scores[state.league.slot][row]);
+        const auto row_points = state.records.league_scores[state.league.slot][row];
+        add(row_points);
+        if (std::find(points.begin(), points.end(), row_points) == points.end())
+            points.push_back(row_points);
     }
+    // The standings run in points order, so each distinct value after the highest starts a rank.
+    work.new_ranks = points.empty() ? 0U : static_cast<unsigned>(points.size() - 1);
     return work;
 }
 

@@ -20,7 +20,7 @@ std::uint8_t records_statistics_frames_late(const OnePlayerRecords& records);
 // standings' print (`$80:A547`), all without a frame wait.
 struct LeagueExitFrames {
     std::uint32_t count{};     // the exit frame the count (the played words) is made in
-    std::uint32_t standings{}; // the exit frame the standings' print ends with its frame wait
+    std::uint32_t standings{}; // the exit frame of the standings' frame wait's first `$4212` read
 };
 
 // What the standings' print (`$80:A547`) costs by: its rows and the digits of every played and
@@ -32,6 +32,7 @@ struct StandingsWork {
     unsigned higher_digit_units{}; // the tens and above, summed
     unsigned unit_digit_units{};   // the units, summed
     unsigned leading_zeros{};      // 4 for a one-digit word, 3 for two digits, ...
+    unsigned new_ranks{};          // rows whose points differ from the row above's
 };
 
 struct LeagueExitWork {
