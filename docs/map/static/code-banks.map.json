@@ -1680,10 +1680,11 @@
    ],
    "native": [
     "src/core/front_end.hpp:LeagueSetup::table_slides_back",
-    "src/core/league_menu.cpp:enter_league_table",
     "src/core/league_menu.cpp:leave_league_awards",
     "src/core/league_menu.cpp:print_standings",
+    "src/core/league_menu.cpp:show_league_table",
     "src/core/menu_overruns.hpp:LeagueExitFrames",
+    "src/core/menu_overruns.hpp:StandingsWork",
     "src/core/menu_overruns.hpp:standings_print_frames_late"
    ],
    "observed_entries": {},
@@ -1988,9 +1989,11 @@
    "native": [
     "src/core/front_end.hpp:LeagueSetup::more_pairs",
     "src/core/league_menu.cpp:AwardsFrames",
+    "src/core/league_menu.cpp:another_pair",
     "src/core/league_menu.cpp:count_league_pair",
     "src/core/league_menu.cpp:end_award_passes",
     "src/core/league_menu.cpp:leave_league_awards",
+    "src/core/league_menu.cpp:played_after_count",
     "src/core/menu_overruns.hpp:LeagueExitFrames",
     "src/core/race_result.cpp:race_result_exit_frame"
    ],
@@ -3310,7 +3313,7 @@
    "native": [
     "src/core/front_end.hpp:RaceResult::records_placed",
     "src/core/front_end_screens.hpp:champions_overrun_frames",
-    "src/core/front_end_screens.hpp:result_scoring_frame",
+    "src/core/front_end_screens.hpp:league_awards_scoring_frame",
     "src/core/menu_overruns.cpp:league_exit_frames",
     "src/core/menu_overruns.cpp:records_start_clocks",
     "src/core/menu_overruns.hpp:LeagueExitFrames",
@@ -13825,7 +13828,7 @@
     "src/core/award.cpp:(file)",
     "src/core/front_end.cpp:ends_with_queue_wait",
     "src/core/front_end.cpp:waits_for_frame",
-    "src/core/front_end_screens.hpp:result_scoring_frame",
+    "src/core/front_end_screens.hpp:league_awards_scoring_frame",
     "src/core/race_result.cpp:(file)",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/race_result.cpp:score_race"
@@ -14114,8 +14117,10 @@
     "NMX"
    ],
    "native": [
-    "src/core/league_menu.cpp:digit_sum",
-    "src/core/menu_overruns.hpp:LeagueExitWork::standings_digits",
+    "src/core/league_menu.cpp:standings_work",
+    "src/core/menu_overruns.cpp:higher_digit_unit_clocks",
+    "src/core/menu_overruns.cpp:unit_digit_unit_clocks",
+    "src/core/menu_overruns.hpp:StandingsWork",
     "src/core/now_playing.cpp:name_line",
     "src/core/text_printer.hpp:five_digit_text"
    ],
@@ -15117,7 +15122,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.hpp:RecordsDetail::statistics_frames",
+    "src/core/front_end.hpp:RecordsDetail::statistics_frames_late",
     "src/core/high_scores.cpp:find_largest",
     "src/core/menu_overruns.cpp:count_statistics",
     "src/core/menu_overruns.cpp:statistics_clocks",
@@ -16530,7 +16535,7 @@
     "src/core/award.cpp:award_frame_waits",
     "src/core/front_end.cpp:ends_with_queue_wait",
     "src/core/front_end.cpp:waits_for_frame",
-    "src/core/front_end_screens.hpp:result_scoring_frame",
+    "src/core/front_end_screens.hpp:league_awards_scoring_frame",
     "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
     "src/core/hunter_ending.cpp:timed_wait_pass",
@@ -19329,16 +19334,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2226,
+  "cited_addresses": 2227,
   "cited_by_class": {
    "data": 16,
    "inferred": 97,
-   "observed": 1915,
+   "observed": 1916,
    "unknown": 198
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1512,
+   "loc": 1513,
    "mid": 31,
    "sub": 469,
    "unk": 198

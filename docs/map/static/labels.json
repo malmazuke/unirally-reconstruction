@@ -3474,9 +3474,10 @@
   "comment": "routine start",
   "label": "sub_80A547",
   "native": [
-   "src/core/league_menu.cpp:enter_league_table",
    "src/core/league_menu.cpp:leave_league_awards",
+   "src/core/league_menu.cpp:show_league_table",
    "src/core/menu_overruns.hpp:LeagueExitFrames",
+   "src/core/menu_overruns.hpp:StandingsWork",
    "src/core/menu_overruns.hpp:standings_print_frames_late"
   ],
   "source_records": [
@@ -4428,6 +4429,7 @@
   "label": "sub_80AF54",
   "native": [
    "src/core/league_menu.cpp:count_league_pair",
+   "src/core/league_menu.cpp:played_after_count",
    "src/core/menu_overruns.hpp:LeagueExitFrames",
    "src/core/race_result.cpp:race_result_exit_frame"
   ],
@@ -4444,7 +4446,9 @@
   "label": "loc_80AFC3",
   "native": [
    "src/core/front_end.hpp:LeagueSetup::more_pairs",
+   "src/core/league_menu.cpp:another_pair",
    "src/core/league_menu.cpp:count_league_pair",
+   "src/core/league_menu.cpp:played_after_count",
    "src/core/menu_overruns.hpp:LeagueExitFrames",
    "src/core/race_result.cpp:race_result_exit_frame"
   ],
@@ -4459,6 +4463,7 @@
   "label": "loc_80AFEB",
   "native": [
    "src/core/league_menu.cpp:count_league_pair",
+   "src/core/league_menu.cpp:played_after_count",
    "src/core/menu_overruns.hpp:LeagueExitFrames",
    "src/core/race_result.cpp:race_result_exit_frame"
   ],
@@ -7554,7 +7559,7 @@
   "native": [
    "src/core/front_end.hpp:RaceResult::records_placed",
    "src/core/front_end_screens.hpp:champions_overrun_frames",
-   "src/core/front_end_screens.hpp:result_scoring_frame",
+   "src/core/front_end_screens.hpp:league_awards_scoring_frame",
    "src/core/menu_overruns.cpp:league_exit_frames",
    "src/core/menu_overruns.cpp:records_start_clocks",
    "src/core/menu_overruns.hpp:LeagueExitFrames",
@@ -22415,7 +22420,7 @@
    "src/core/award.cpp:(file)",
    "src/core/front_end.cpp:ends_with_queue_wait",
    "src/core/front_end.cpp:waits_for_frame",
-   "src/core/front_end_screens.hpp:result_scoring_frame",
+   "src/core/front_end_screens.hpp:league_awards_scoring_frame",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:score_race"
@@ -22965,8 +22970,8 @@
   "comment": "routine start",
   "label": "sub_838BE7",
   "native": [
-   "src/core/league_menu.cpp:digit_sum",
-   "src/core/menu_overruns.hpp:LeagueExitWork::standings_digits",
+   "src/core/league_menu.cpp:standings_work",
+   "src/core/menu_overruns.hpp:StandingsWork",
    "src/core/now_playing.cpp:name_line",
    "src/core/text_printer.hpp:five_digit_text"
   ],
@@ -22981,6 +22986,22 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_838BFE",
+  "native": [
+   "src/core/menu_overruns.hpp:StandingsWork"
+  ],
+  "source_records": [
+   "docs/research/R-0102-menu-frame-overruns.md"
+  ]
+ },
+ {
+  "address": "$83:8C3B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838C3B",
+  "native": [
+   "src/core/menu_overruns.cpp:unit_digit_unit_clocks",
+   "src/core/menu_overruns.hpp:StandingsWork"
+  ],
   "source_records": [
    "docs/research/R-0102-menu-frame-overruns.md"
   ]
@@ -23649,7 +23670,7 @@
   "comment": "routine start",
   "label": "sub_8397BD",
   "native": [
-   "src/core/front_end.hpp:RecordsDetail::statistics_frames",
+   "src/core/front_end.hpp:RecordsDetail::statistics_frames_late",
    "src/core/high_scores.cpp:find_largest",
    "src/core/menu_overruns.cpp:count_statistics",
    "src/core/menu_overruns.cpp:statistics_clocks",
@@ -23672,7 +23693,7 @@
   "comment": "instruction start",
   "label": "loc_83984F",
   "native": [
-   "src/core/front_end.hpp:RecordsDetail::statistics_frames",
+   "src/core/front_end.hpp:RecordsDetail::statistics_frames_late",
    "src/core/high_scores.cpp:find_largest",
    "src/core/menu_overruns.cpp:count_statistics",
    "src/core/menu_overruns.cpp:statistics_clocks",
@@ -24467,7 +24488,7 @@
    "src/core/award.cpp:award_frame_waits",
    "src/core/front_end.cpp:ends_with_queue_wait",
    "src/core/front_end.cpp:waits_for_frame",
-   "src/core/front_end_screens.hpp:result_scoring_frame",
+   "src/core/front_end_screens.hpp:league_awards_scoring_frame",
    "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
    "src/core/hunter_ending.cpp:hunter_ending_waits",
    "src/core/hunter_ending.cpp:timed_wait_pass",

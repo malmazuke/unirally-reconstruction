@@ -26,6 +26,9 @@ core with its instruction ring:
   outs with a standings print after them (`odd-tours` 9, `four` 4, `five` 14).
 - `cycles_records.py` costs `$83:97BD` step by step (each step at the least it took, as R-0101's
   `cycles.py`) at the seven RECORDS entries.
+- Review round 1's band (`review-1/band/`): odd-tours' first way out traced seven times with the
+  league's points words edited at frame 12,900 (`make_band.py`), to place the three-row
+  standings' boundary; `digit_steps.py` costs the decimal conversion's loops on one of them.
 - `podium_upload.py` presses Start on 12 consecutive frames of one podium (organic-cycle-five,
   after LEAGUE-TOURS' review's `podium_sweep.py`) and times the title's sound upload.
 
@@ -41,7 +44,8 @@ side's work ran past a frame and the other's did not.
    that frame has only its NMI (the palette cycle's hook), no arrow step and no menu pass, and
    everything after is a frame later. R-0101's keyboard check is one case; these are three more.
 
-2. **A league pair's way out** (`$80:BF2C-BF35`, then `$80:BE55`). [L, C: 27 way outs]
+2. **A league pair's way out** (`$80:BF2C-BF35`, then `$80:BE55`). [L, C: 27 way outs, and the
+   review's 7 band traces]
    - After `$80:F4B8`'s wait, exit frame 1 runs `$80:C786` (the records), `$80:AF54` (the pair's
      count; with another pair to race it ends with a checksum run, `$80:AFEB`, while the awards'
      print follows the count 1,316 clocks later in `odd-tours` 19473) and, with another pair
@@ -53,20 +57,34 @@ side's work ran past a frame and the other's did not.
      225,654-227,898. The standings' print to the frame wait takes 345,904-351,868 with three
      rows, 388,258-391,474 with four and 429,610-436,246 with five.
    - The print's spread follows its numbers: `$83:8BE7` turns each played and points word into
-     five digits by subtracting each power of ten once per unit (`$83:8BFE-8C3E`), so each unit
-     of a digit costs about 89 clocks (`pairs_fit.py`: one slope and a constant per league, the
-     residuals within 1,706 clocks).
+     five digits by subtracting each power of ten once per unit (`$83:8BFE-8C36`) and counting the
+     units down (`$83:8C3B-8C3E`). The instruction trace (`digit_steps.py`, odd-tours 12909 with
+     its points edited) gives each pass of the tens' loop 122 CPU clocks and each of the units' 90
+     (the hundreds and above repeat the tens' loop and are taken at its cost; no measured way out
+     printed one). The review's count from the listing (108 and 80) misses some cycles; the trace
+     is what the model uses.
+   - When the print runs past the frame's end the NMI runs inside it (1,060 clocks, as in RECORDS'
+     entry). In 6 of `odd-tours`' 9 way outs and all of `four`'s and `five`'s it does; the first
+     fit (89 a digit unit, one constant a league) absorbed it and over-estimated the prints that
+     stay inside a frame by about 450 clocks.
+   - The band (review round 1, `review-1/band/`): odd-tours' first way out (three rows, two
+     placings, a one-run race) traced with its points words edited before it. Units summing 2, 12,
+     18 and 22 (and 22 as 19, 18, 10) end inside exit frame 3, 92-1,990 clocks before its end; 28
+     (twice) run into frame 4. The first model put 19-26 a frame late.
    - The model (`menu_overruns.cpp`, `model.py`): the count's frame is 1 + (25,200 + 227,224 +
-     224,765 per placing + 4,480 for a lap race) / 425,568 and the standings' wait frame adds
-     226,738 + 346,381 + 41,214 per row over three + 89 per digit unit. It puts all 27 counts and
-     all 27 standings' waits in their measured exit frames; its error is -2,007 to +1,732 clocks
-     and the nearest boundary 1,453 clocks away.
-   - What that gives: in three-member leagues a way out with two placings is late when the
-     standings' digits are many (`odd-tours`: the first event's standings, all points 0, end
-     1,990 clocks inside exit frame 3; every later one runs into frame 4); with no placing they fit
-     in frame 2. In four- and five-member leagues the standings are always a frame later than
-     native's old rule (frame 4 after placings, 3 without). One placing counts the pair in frame
-     2, not 1 (R-0098's `five` 15,619, 32,500, 60,423 and `odd-tours` 35,575).
+     224,765 per placing + 4,480 for a lap race) / 425,568. The standings' wait adds 226,738 for
+     the count, then the print: 221,460 + 41,320 a row + the digit loops' clocks with the
+     refresh, + 1,060 for each frame end the print passes. The title and row constants are fitted
+     over the 34 way outs (27 and the band's 7, the smallest largest error); the digit costs are
+     the trace's. All 34 counts and standings' waits are in their measured exit frames; the error
+     is -1,689 to +1,694 clocks, the nearest boundary 454 clocks away.
+   - What that gives: a three-member way out after two placings in a one-run race ends in exit
+     frame 3 while its standings' units sum to 27 or less (with no tens; 89 clocks to spare at
+     27), in frame 4 from 28 (`odd-tours`' first event: 2, on time; each later one with two
+     placings is a lap race or has tens in its numbers, and is late); in a lap race it is always late. With no placing three rows fit in frame
+     2. In four- and five-member leagues the standings are always a frame later than native's
+     old rule (frame 4 after placings, 3 without). One placing counts the pair in frame 2, not 1
+     (R-0098's `five` 15,619, 32,500, 60,423 and `odd-tours` 35,575).
    - The awards' way out (the last pair) keeps R-0095's frames (2, or 3 after two placings): the
      awards' print (`$80:8917`) took 243,266 clocks in `odd-tours` 19473, which gives the same
      frames with at least 70,000 clocks to spare.
@@ -103,14 +121,20 @@ side's work ran past a frame and the other's did not.
 
 5. **The podium's way back is the sound processor's.** [C: `podium-upload-cf5.json`, 12 presses]
    - The way back calls the title's upload (`$82:82A5`, from `$80:A115`) 21 frames after the
-     press (the exit's frames are counted from the press, as native's are). The upload itself takes 23,235,246-23,236,014 clocks (54.6 frames) in every press;
-     what moves is its start: 123,796-194,290 clocks into that frame, after the handshake with
+     press (the exit's frames are counted from the press, as native's are). The upload itself
+     takes 23,235,246-23,236,014 clocks (54.6 frames) in every press; what moves is its start: 123,796-194,290 clocks into that frame, after the handshake with
      the running driver (`$82:8286-8292`: write port 0, wait until the sound processor echoes
      it).
    - When it starts after about 170,400 clocks the upload ends past frame 75's end and
-     `$83:987D` restores the menus on exit frame 104 instead of 103: 4 of the 12 presses (starts
-     170,398-194,290 late; 123,796-158,358 on time), in the same clumps as the review's 40-press
-     sweep (15 late).
+     `$83:987D` restores the menus on exit frame 104 instead of 103: 5 of the 12 presses (delays 1, 2, 5, 8
+     and 9; starts 170,398-194,290 late, 123,796-158,358 on time), in the same clumps as the
+     review's 40-press sweep (15 late).
+   - The starts form a sawtooth over the presses: up 17,000-24,000 clocks a press frame, then down
+     51,000-57,000 every 3 or 4 frames (148,526, 172,474, 194,290, 140,786, 158,358, 180,460,
+     123,796, ...). That fits a driver that answers at a poll about every 75,000 clocks (review
+     round 1). The next experiment: count that poll's phase from the podium music's start (or the
+     podium's own upload's end) across the 11 podiums and the 40-press sweep; if it predicts the
+     late ones, the phase native's sound side would need is that one number.
    - The start is the driver's reply to the request, which depends on where the driver is in its
      loop when the request comes: the podium's music, its tick, and everything the driver did
      since the podium's own upload. The front end has none of that, and native's driver is not
@@ -127,18 +151,21 @@ side's work ran past a frame and the other's did not.
 - RECORDS' entry (`options_menu.cpp`) waits the late frame with no frame wait and prints in it.
 - The way out (`race_result.cpp`, `league_menu.cpp` `time_league_exit`): on exit frame 1, after
   the records, the count's frame and the standings' frame come from the model; the awards keep
-  R-0095's frames. `enter_league_table` gives a five-row print its late frame.
+  R-0095's frames (`league_awards_scoring_frame`, one source for both). `played_after_count` and
+  `another_pair` are shared by the count and its timing. `enter_league_table` gives a five-row
+  print its late frame.
 
 ## Results
 
-The candidate against the original; main `6155f3d2`; both on pack v41 (`checks.list`, run once):
+The candidate against the original; main `6155f3d2`; both on pack v41 (`checks.list`, rerun at
+`811cd4f7` after review round 1; main's lag counted under the same recorded limits):
 
 | Capture | Pictures equal: candidate / main | Arrow's lag changes outside the limits: candidate / main | League races, league fields |
 |---|---|---|---|
-| `odd-tours` w0, w1 (3 members) | 5,678 / 4,912 of 6,459; 6,010 / 4,934 of 7,003 | 0 / 4; 0 / 4 | all equal; fields 0 differing (main 1 in w0) |
+| `odd-tours` w0, w1 (3 members) | 5,678 / 4,912 of 6,459; 6,010 / 4,934 of 7,003 | 0 / 2; 0 / 4 | all equal; fields 0 differing (main 1 in w0) |
 | `four` w0 (4) | 5,153 / 4,352 of 5,160 | 0 / 4 | all equal; 0 |
-| `five` w0, w1 (5) | 7,334 / 5,465 of 12,377; 3,022 / 2,950 of 9,600 | 0 / 24; 0 / 883 (w1 to 127,125) | all equal; w0 0 (main 2), w1 7,200 both (another race result from 127,125, R-0098) |
-| `tours-a` w0-w8, `tours-b` w0-w1 (2 members) | equal to main in every window (e.g. w0 3,096 of 3,206) | 0 / 2 per podium (all at the podium's way back) | all equal; 0 |
+| `five` w0, w1 (5) | 7,334 / 5,465 of 12,377; 3,022 / 2,950 of 9,600 | 0 / 19; 0 / 5 (w1 to 127,125) | all equal; w0 0 (main 2), w1 7,200 both (another race result from 127,125, R-0098) |
+| `tours-a` w0-w8, `tours-b` w0-w1 (2 members) | equal to main in every window (e.g. w0 3,096 of 3,206) | 0 / 0 (the only changes are at the podium's way back, a limit) | all equal; 0 |
 | `t-crawler`, `podium-back`, `backs`, `picks-l0/1/2` | (lag only) | 0 / 0 | - |
 | `wr-stats2` (RECORDS, dense) | 800 / 517 of 800 | 0 / 1 (799 frames off) | - |
 | `wr-stats` (RECORDS, none) | 800 / 800 of 800 | 0 / 0 | - |
@@ -146,8 +173,8 @@ The candidate against the original; main `6155f3d2`; both on pack v41 (`checks.l
 The remaining differences: the podium's way back (finding 5) in every two-member window and after
 each podium; a race's return two frames apart in `five` 19,780, as on main (after the race R-0098 lists as
 loading a frame off at 16,596; R-0077), which leaves `five` w0's later menus two frames apart; HUNTER's two-view pictures (SPLIT-HUNTER-PICTURES) and the odd league's
-computer result objects (R-0098); one text-map frame per late print. `model.py`: 27 of 27 way outs
-and 7 of 7 RECORDS entries in their measured frames. LEAGUE's frozen gate (first tour, pack v40):
+computer result objects (R-0098); one text-map frame per late print. `model.py`: 34 of 34 way outs (27
+and the band's 7) and 7 of 7 RECORDS entries in their measured frames. LEAGUE's frozen gate (first tour, pack v40):
 passed.
 
 ## Not covered
@@ -159,9 +186,12 @@ passed.
   which only an exact sound side from boot could give.
 - **The model's reach.** Its constants come from three leagues of the default riders 0, 2, 4, 6
   and 8: other names change the print's cost by an unmeasured amount per letter, and a league's
-  name (the standings' title) too. The model's error over the 27 way outs is up to 2,007 clocks,
-  so a three-member way out whose standings' wait falls within about 2,000 clocks of exit frame
-  3's end may come out a frame off; `odd-tours`' first event is 1,990 clocks inside it. The
+  name (the standings' title) too. The model's error over the 34 way outs is up to 1,694 clocks.
+  The knife edge is a three-member league's way out after two placings in a one-run race: its
+  standings end in exit frame 3 up to units summing 27 (89 clocks to spare) and are late from 28,
+  so standings within about 1,700 clocks of that edge (units of about 10-27 with a tens digit or
+  two, or other names) may come out a frame off. The band's 22 (92 clocks inside, measured) is
+  the nearest case known; the model's own nearest margin is 454 clocks. The
   `$80:C786` start varies by 1,742 clocks with the NMI's work and is taken as 25,200. Six to eight
   members, and stunt events that place a score, are extrapolated.
 - **One text-map frame** where the original's print starts in the frame before its late wait
@@ -180,7 +210,9 @@ E=local/evidence/podium-return-timing
 zsh $E/trace_pairs.sh                      # trace-pairs-*.json: the 27 way outs
 python3 $E/pairs_summary.py $E/trace-pairs-*.json
 python3 $E/table_digits.py league-tours odd-tours-w0 $E/trace-pairs-odd-tours.json   # and each window
-python3 $E/pairs_fit.py                    # the print's slope; pairs-data.json
+python3 $E/pairs_fit.py                    # the first fit (one slope); pairs-data.json
+python3 $E/digit_steps.py $E/review-1/band/odd-tours-p28-27-25.json 12909 12910   # the digit loops
+zsh $E/review-1/band/run_band.sh           # the review's band (make_band.py's edited manifests)
 python3 $E/cycles_records.py local/evidence/record-screens-review/wr-stats2.json 900 OUT.json
 python3 $E/podium_upload.py local/evidence/league/organic-cycle-five.json 12100 12200 12 OUT.json
 python3 $E/model.py                        # both models against every measurement

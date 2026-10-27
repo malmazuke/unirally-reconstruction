@@ -67,18 +67,19 @@ What predicts each effect ([R-0102](../docs/research/R-0102-menu-frame-overruns.
 3. **The podium's way back: the sound processor, a limit.** The title's upload takes a constant
    23,235,246-23,236,014 clocks over 12 presses of one podium; its start, after the driver's reply
    to the request, varies 123,796-194,290 clocks into its frame and decides the frame (late from
-   about 170,400: 4 of 12). Native has no state that gives the driver's reply; R-0095's phase rule
+   about 170,400: 5 of 12, delays 1, 2, 5, 8 and 9). Native has no state that gives the driver's reply; R-0095's phase rule
    stays (the first tour's frozen gate relies on it).
 
 Captures and results (`checks.list`, run once at `92d2c923`, `checks-92d2c923.out`; candidate and
-main `6155f3d2`, both on pack v41):
+main `6155f3d2`, both on pack v41; main's lag counted under the same recorded limits, as review
+round 1 corrected):
 
 | Capture | Pictures equal: candidate / main | Arrow's lag changes outside the limits: candidate / main | League races, league fields |
 |---|---|---|---|
-| `odd-tours` w0, w1 (3 members) | 5,678 / 4,912 of 6,459; 6,010 / 4,934 of 7,003 | 0 / 4; 0 / 4 | all equal; fields 0 differing (main 1 in w0) |
+| `odd-tours` w0, w1 (3 members) | 5,678 / 4,912 of 6,459; 6,010 / 4,934 of 7,003 | 0 / 2; 0 / 4 | all equal; fields 0 differing (main 1 in w0) |
 | `four` w0 (4) | 5,153 / 4,352 of 5,160 | 0 / 4 | all equal; 0 |
-| `five` w0, w1 (5) | 7,334 / 5,465 of 12,377; 3,022 / 2,950 of 9,600 | 0 / 24; 0 / 883 (w1 to 127,125) | all equal; w0 0 (main 2), w1 7,200 both (another race result from 127,125, R-0098) |
-| `tours-a` w0-w8, `tours-b` w0-w1 (2 members) | equal to main in every window (e.g. w0 3,096 of 3,206) | 0 / 2 per podium (all at the podium's way back) | all equal; 0 |
+| `five` w0, w1 (5) | 7,334 / 5,465 of 12,377; 3,022 / 2,950 of 9,600 | 0 / 19; 0 / 5 (w1 to 127,125) | all equal; w0 0 (main 2), w1 7,200 both (another race result from 127,125, R-0098) |
+| `tours-a` w0-w8, `tours-b` w0-w1 (2 members) | equal to main in every window (e.g. w0 3,096 of 3,206) | 0 / 0 (the only changes are at the podium's way back, a limit) | all equal; 0 |
 | `t-crawler`, `podium-back`, `backs`, `picks-l0/1/2` | (lag only) | 0 / 0 | - |
 | `wr-stats2` (RECORDS, dense) | 800 / 517 of 800 | 0 / 1 (799 frames off) | - |
 | `wr-stats` (RECORDS, none) | 800 / 800 of 800 | 0 / 0 | - |
@@ -92,7 +93,7 @@ passed.
 
 ## Handoff (worker)
 
-- Branch `task/podium-return-timing`, base claim `540cd51e` on main `6155f3d2`. Commits: `92d2c923` (the cost models, the late frames: `menu_overruns.cpp`, RECORDS' entry, the
+- Branch `task/podium-return-timing`, base claim `540cd51e` on main `6155f3d2`. Commits: `2237a40f` (the cost models, the late frames: `menu_overruns.cpp`, RECORDS' entry, the
   way out and the five-row print), then the records commit (native tests, R-0102, the maps, this
   record).
 - Files: `src/core/menu_overruns.{hpp,cpp}` (new), `league_menu.cpp` (`time_league_exit`, the
@@ -105,7 +106,7 @@ passed.
   `race_result.cpp`, `options_menu.cpp`, `front_end.cpp`, `front_end_tests.cpp`; `clang-format` 19
   applied to the `src/core` files; `coverage native-symbols --check` passed, 0 cited addresses
   without a record (`regen.sh`, the five raw coverage inputs); tooling tests 618 OK (no Python under
-  `tools/` changed); `checks.list` 44 of 44 lines rc 0 (`checks-92d2c923.out`, 1 h 20 min, under
+  `tools/` changed); `checks.list` 44 of 44 lines rc 0 (`checks-92d2c923.out` at the same tree, 1 h 20 min, under
   the heavy-run lock). Synthetic suite and gates not run by the worker.
 - Evidence: main `local/evidence/podium-return-timing/` 3.7 MB (scripts, traces, `pairs-data.json`,
   `cycles-records-*.json`, `podium-upload-cf5.json`, `base-6155f3d2/` main's runner); no new
@@ -115,3 +116,50 @@ passed.
   45 min; native code and tests 15 min; `checks.list` written and run 1 h 20 min, records and
   maps alongside it.
 - Next: the tier-1 review, then the gates. The gate catalogue does not hold `checks.list` yet.
+
+## Review round 1 (returned on `2af37d34`) - the fixes
+
+Review: main `local/evidence/podium-return-timing/review-1/review.md` (changes requested; the
+reviewer's refit in `review-1/fit/`, its band traces in `review-1/band/`). Fixes in `811cd4f7`
+(code) and the records commit after it.
+
+1. **Blocking, the three-member boundary:** fixed. The first model put a three-member way out
+   after two placings in a one-run race a frame late from standings' digits of 19; the
+   reviewer's band (odd-tours' first way out with its points edited) measured 12, 18 and 22
+   (twice) on time and 28 (twice) late. The cause was the NMI inside a print that crosses a
+   frame's end (1,060 clocks), absorbed by the fitted constant. The model now adds the NMI per
+   frame end the print passes, costs the decimal conversion's loops at their traced CPU clocks a
+   unit (`digit_steps.py`: 122 for the tens and above, 90 for the units, against the review's
+   listing count of 108 and 80) and refits the title and row constants over the 34 way outs
+   (221,460 + 41,320 a row). All 34 counts and standings' waits are in their measured frames,
+   error -1,689 to +1,694 clocks, nearest boundary 454 clocks; the edge is now units summing 27
+   (on time, 89 clocks to spare) against 28 (late), and a lap race after two placings is always
+   late. `model.py` checks the band's 7 traces too; `menu_overrun_tests` tests 22 (frame 3) and
+   28 (frame 4).
+2. **Podium count:** corrected to 5 of 12 (delays 1, 2, 5, 8, 9) in R-0102 and the Checkpoint;
+   the reviewer's sawtooth (the driver answering at a poll about every 75,000 clocks) is in
+   R-0102 finding 5 as the next experiment for the limit.
+3. **Results table:** `prt_one.sh steps` now gives main the same recorded limits. Main's lag
+   changes outside them: `odd-tours` 2 and 4, `four` 4, `five` 19 and 5, `tours-a` and `tours-b`
+   0, `wr-stats2` 1 (the candidate 0 everywhere); R-0102's table and the Checkpoint's restate it.
+4. **Shared rules:** `played_after_count` and `another_pair` serve both `count_league_pair` and
+   `time_league_exit`; `league_awards_scoring_frame` is the awards' frames' one source; `[]`
+   throughout.
+5. **Notes:** `show_league_table` takes the late frames, so `finish_league_pair` no longer sets
+   and clears them; one anonymous namespace; an explicit 0 for a rider without races; no row
+   clamp (the print is title + rows, so two rows cost less, as they do); `statistics_frames_late`
+   alongside `table_frames_late`; `model.py`'s docstring names `menu_overruns.cpp`.
+
+Rerun (`checks.list`, all 44 lines, `checks-r1.out` at `811cd4f7`): 44 of 44 lines rc 0, 1 h 15 min. Every picture count, race and field count
+is the same as the first run's (no measured way out changes frame; the edge moved only where
+the band, not these captures, has standings).
+Also `ctest` app-debug and lab-debug 41/41, `clang-tidy` clean on the changed files, `clang-format`
+applied, `coverage native-symbols --check` passed after `regen.sh`.
+
+## Handoff (worker, review round 1)
+
+- Commits: `811cd4f7` (the refit, the shared helpers), then the records commit (R-0102, this
+  record, the maps).
+- Time: from 13:42 UTC (the review's return) to 15:12 UTC (about 1 h 30 min): the band's digit loops and the refit
+  about 20 min, code and tests 15 min, records 15 min, the rerun 1 h 15 min under the lock, alongside.
+- Evidence: main `local/evidence/podium-return-timing/`  53M (adds `digit_steps.py`, `checks-r1/`).
