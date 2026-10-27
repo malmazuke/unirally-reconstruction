@@ -2,7 +2,17 @@
 
 ## Assignment
 
-- Status: **queued** 16 October 2026 by [LEAGUE-TOURS](LEAGUE-TOURS.md) (R-0098). Unclaimed.
+- Status: **claimed** 27 October 2026 11:07 UTC on main `6155f3d2`, on the user's instruction
+  (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
+  subagent implements, a fresh subagent reviews). Queued 16 October 2026 by
+  [LEAGUE-TOURS](LEAGUE-TOURS.md) (R-0098). Run under
+  [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge against the
+  6-hour target, new evidence under 1 GB.
+- Choice: the next queued player-visible gap; NAME-CHECK (R-0101) built the frame-cost method
+  (a routine's master clocks against the frame's end) this task can reuse.
+- Branch `task/podium-return-timing` in `.worktrees/podium-return-timing`; evidence in main
+  `local/evidence/podium-return-timing/`.
+- Task provider: Anthropic.
 - Milestone: M4 (original game coverage).
 - Review tier: **1** (menu timing in `src/core`).
 - Dependencies: LEAGUE (R-0073), LEAGUE-TOURS (R-0098), D-0010 (upload timing).
