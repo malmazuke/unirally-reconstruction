@@ -2331,30 +2331,34 @@ void menu_overrun_tests() {
   // A league pair's way out: a three-member league's standings after two
   // placings in a one-run race, one-digit numbers (24 leading zeros), have
   // their frame wait's first read in exit frame 3 up to units summing 15 and
-  // in frame 4 from 16 (odd-tours' first way out with its points edited, the
-  // reviews' band: 5, 5, 3 on time, 6, 5, 3 late); five members in 4.
-  LeagueExitWork work{2, false, {3, 0, 2, 24, 0}};
+  // in frame 4 from 16 while the rows stand in points order (36 sort stores);
+  // in another order the sort stores fewer and the edge moves up
+  // (odd-tours' first way out with its points edited, the reviews' band:
+  // 5, 5, 3 on time, 6, 5, 3 late, 3, 5, 6 on time); five members in 4.
+  LeagueExitWork work{2, false, {3, 0, 2, 24, 0, 36}};
   require(league_exit_frames(work).count == 2 &&
           league_exit_frames(work).standings == 3);
-  work.standings = {3, 0, 15, 24, 1}; // points 5, 5, 3
+  work.standings = {3, 0, 15, 24, 1, 36}; // points 5, 5, 3
   require(league_exit_frames(work).standings == 3);
-  work.standings = {3, 0, 14, 24, 2}; // points 5, 4, 3
+  work.standings = {3, 0, 14, 24, 2, 36}; // points 5, 4, 3
   require(league_exit_frames(work).standings == 3);
-  work.standings = {3, 0, 16, 24, 2}; // points 6, 5, 3
+  work.standings = {3, 0, 16, 24, 2, 36}; // points 6, 5, 3
   require(league_exit_frames(work).standings == 4);
-  work.standings = {3, 0, 23, 24, 0}; // points 7, 7, 7
+  work.standings = {3, 0, 16, 24, 2, 24}; // points 3, 5, 6
+  require(league_exit_frames(work).standings == 3);
+  work.standings = {3, 0, 23, 24, 0, 36}; // points 7, 7, 7
   require(league_exit_frames(work).standings == 4);
-  require(league_exit_frames({2, false, {5, 0, 2, 40, 0}}).standings == 4);
+  require(league_exit_frames({2, false, {5, 0, 2, 40, 0, 36}}).standings == 4);
   // One placing counts a frame later than none; with no placing three rows
   // print in frame 2, five in frame 3.
-  require(league_exit_frames({0, false, {3, 3, 30, 21, 2}}).count == 1 &&
-          league_exit_frames({1, false, {5, 0, 4, 40, 0}}).count == 2);
-  require(league_exit_frames({0, false, {3, 3, 30, 21, 2}}).standings == 2 &&
-          league_exit_frames({0, false, {5, 5, 36, 35, 4}}).standings == 3);
+  require(league_exit_frames({0, false, {3, 3, 30, 21, 2, 36}}).count == 1 &&
+          league_exit_frames({1, false, {5, 0, 4, 40, 0, 36}}).count == 2);
+  require(league_exit_frames({0, false, {3, 3, 30, 21, 2, 36}}).standings == 2 &&
+          league_exit_frames({0, false, {5, 5, 36, 35, 4, 36}}).standings == 3);
   // The print alone runs past its frame with five rows only.
-  require(standings_print_frames_late({5, 0, 0, 40, 0}) == 1 &&
-          standings_print_frames_late({4, 20, 40, 24, 3}) == 0 &&
-          standings_print_frames_late({3, 20, 40, 18, 2}) == 0);
+  require(standings_print_frames_late({5, 0, 0, 40, 0, 36}) == 1 &&
+          standings_print_frames_late({4, 20, 40, 24, 3, 36}) == 0 &&
+          standings_print_frames_late({3, 20, 40, 18, 2, 36}) == 0);
 }
 
 int main() try {

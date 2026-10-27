@@ -32,7 +32,12 @@ struct StandingsWork {
     unsigned higher_digit_units{}; // the tens and above, summed
     unsigned unit_digit_units{};   // the units, summed
     unsigned leading_zeros{};      // 4 for a one-digit word, 3 for two digits, ...
-    unsigned new_ranks{};          // rows whose points differ from the row above's
+    // The distinct points less one: as the rows print in points order, the rows whose points
+    // differ from the row above's, each a new rank (`$80:A627`).
+    unsigned new_ranks{};
+    // The selection sort's stores of the lowest so far (`$80:EFE9-EFF4`), over all eight rows: 36
+    // when the rows already stand in points order, fewer in another order.
+    unsigned sort_stores{};
 };
 
 struct LeagueExitWork {

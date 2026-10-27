@@ -31,7 +31,9 @@ std::array<std::uint8_t, league_rows> league_members(const FrontEndState& state)
 
 // Lowest score moves to the end; a later equal value wins that comparison.
 // $80:EFD4-F02A; R-0073.
-RowOrder standings_order(const FrontEndState& state) {
+// `stores`, when given, counts `$80:EFE9-EFF4`'s stores of the lowest so far (R-0102: the print's
+// time depends on them).
+RowOrder standings_order(const FrontEndState& state, unsigned* stores = nullptr) {
     RowOrder rows{0, 1, 2, 3, 4, 5, 6, 7};
     const auto& points = state.records.league_scores[state.league.slot];
     for (std::size_t last = rows.size(); last-- > 0;) {
@@ -41,6 +43,7 @@ RowOrder standings_order(const FrontEndState& state) {
             if (points[rows[index]] <= lowest) {
                 lowest = points[rows[index]];
                 chosen = index;
+                if (stores != nullptr) ++*stores;
             }
         }
         std::swap(rows[chosen], rows[last]);
@@ -356,7 +359,8 @@ bool another_pair(const FrontEndState& state) {
 
 // The standings' rows and the digits of their played and points words, `played` as given:
 // `$83:8BE7` counts the tens and above down in one kind of loop and the units in another, then
-// blanks the leading zeros; and the ranks, a new one wherever the points change.
+// blanks the leading zeros; the ranks, a new one wherever the points change; and the sort's
+// stores, which depend on the rows' order.
 StandingsWork standings_work(const FrontEndState& state,
                              const std::array<std::uint16_t, league_rows>& played) {
     const auto members = league_members(state);
@@ -380,6 +384,7 @@ StandingsWork standings_work(const FrontEndState& state,
     }
     // The standings run in points order, so each distinct value after the highest starts a rank.
     work.new_ranks = points.empty() ? 0U : static_cast<unsigned>(points.size() - 1);
+    standings_order(state, &work.sort_stores);
     return work;
 }
 

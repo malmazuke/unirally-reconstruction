@@ -96,18 +96,21 @@ StatisticsCounts count_statistics(const OnePlayerRecords& records) {
 // trace_pairs.sh, the reviews' band): `$80:C786` is called this long after vblank (24,918-26,660),
 // runs one checksum and one more for each time placed, and a lap race's best laps add to it; the
 // count with its checksum. The standings' print to its frame wait: the title, the rows and each
-// new rank (a row whose points differ from the row above's; its ordinal), fitted over 44 way outs
-// (the band's 17 decide the edge, the leagues' largest error 1,490 clocks; they include the names
-// of the measured leagues, the default riders 0, 2, 4, 6 and 8, so other names move them a
-// little), the digit loops and the leading zeros' pass at their CPU cost a pass (from the
-// instruction trace, `digit_steps.py`; the hundreds and above are taken as the tens' loop, which
-// they repeat), the NMI when the print runs past a frame's end, and the wait's poll of the sound
-// queue before its first `$4212` read (576-616 clocks traced after the print, review round 3).
+// new rank (its ordinal, about 100 clocks fitted on the band), fitted over 51 way outs (the band's
+// 24 decide the edge, the leagues' largest error 1,428 clocks; they include the names of the
+// measured leagues, the default riders 0, 2, 4, 6 and 8, so other names move them a little); the
+// sort's stores (55 clocks each, fitted on the band: the listing gives 58 for a lower word and 48
+// for an equal one, which the band does not separate); the digit loops and the leading zeros' pass
+// at their CPU cost a pass (from the instruction trace, `digit_steps.py`; the hundreds and above
+// are taken as the tens' loop, which they repeat); the NMI when the print runs past a frame's end;
+// and the wait's poll of the sound queue before its first `$4212` read (576-616 clocks traced after
+// the print, review round 3).
 constexpr std::uint32_t records_start_clocks = 25200;
 constexpr std::uint32_t records_clocks = 227224, placing_clocks = 224765, lap_race_clocks = 4480;
 constexpr std::uint32_t count_clocks = 226738;
-constexpr std::uint32_t standings_title_clocks = 221930, standings_row_clocks = 39650;
+constexpr std::uint32_t standings_title_clocks = 220040, standings_row_clocks = 39600;
 constexpr std::uint32_t new_rank_clocks = 100;
+constexpr std::uint32_t sort_store_clocks = 55;         // $80:EFE9-EFF4, a store
 constexpr std::uint32_t higher_digit_unit_clocks = 122; // $83:8C31-8C36, a pass
 constexpr std::uint32_t unit_digit_unit_clocks = 90;    // $83:8C3B-8C3E, a pass
 constexpr std::uint32_t leading_zero_clocks = 200;      // $83:8C64-8C76, a pass
@@ -120,7 +123,8 @@ constexpr std::uint32_t standings_start_clocks = 25000;
 std::uint32_t standings_wait_clocks(std::uint32_t start, const StandingsWork& standings) {
     const auto digits = higher_digit_unit_clocks * standings.higher_digit_units
                       + unit_digit_unit_clocks * standings.unit_digit_units
-                      + leading_zero_clocks * standings.leading_zeros;
+                      + leading_zero_clocks * standings.leading_zeros
+                      + sort_store_clocks * standings.sort_stores;
     const auto wait = start + standings_title_clocks + standings_row_clocks * standings.rows
                     + new_rank_clocks * standings.new_ranks + with_refresh(digits);
     return wait + nmi_clocks * (wait / frame_clocks - start / frame_clocks)
