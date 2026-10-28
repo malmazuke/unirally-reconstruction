@@ -2,9 +2,9 @@
 
 ## Assignment
 
-- Status: **claimed** 28 October 2026 14:10 UTC on main `a6a1b385`, on the user's instruction
+- Status: **claimed** 28 October 2026 21:59 UTC on main `a6a1b385`, on the user's instruction
   (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
-  subagent implements, a fresh subagent reviews). Queued 4 October 2026 by
+  subagent implements, a fresh subagent reviews). Queued 9 October 2026 by
   [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 7); the record is written at the claim.
   Run under [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge against
   the 6-hour target, new evidence under 1 GB.
