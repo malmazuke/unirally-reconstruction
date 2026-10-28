@@ -78,8 +78,12 @@ race initialized where the original's was, and compares every captured picture.
   agree (`race_check.py`) on `demo-pic` (2,201 of 2,201) and `vs-4` (5,973 of 5,973). In `twop-104`
   and `vs-124` they agree up to power bounce: from frame 5548 (update 3521) and 4981 (update 2954),
   under effect 2, rider 1's velocity differs. Native gives the landing matrix 0 to rider 0 only
-  (`race_update.cpp`, `index == 0`, after `$81:94B9`); in a race with two humans the original seems
-  to give it to rider 1 as well. Not changed here (race state, tier 1).
+  (`race_update.cpp`, `index == 0`, after `$81:94B9`). The original gives it to rider 1 as well in
+  a two-view race: at `$81:94A8-94B2` a two-view race skips the test that excludes rider 1, so
+  both riders land with matrix `$0572` under `$132B`, and at both divergence frames the
+  original's RAM shows a two-view race with power bounce on (review round 1). Native's own comment
+  at `vertical_contact.cpp` already says so. Not changed here (race state, tier 1); queued as
+  TWO-VIEW-POWER-BOUNCE.
 
 ## Native
 
@@ -119,14 +123,22 @@ unequal, all but one are on track 42 (NEON with two views), whose split picture 
 its first tag too (thin lines along the track's edges, 200-1,200 pixels; main the same); the other
 (`tours-a-w2` 70040, track 40) is 8 pixels at the lower view's left edge, the same on main.
 
+The review's replay of the gate corpus (`review-1/replay.json`) found the change alters only
+pictures, in 24 runs, and none is worse than main against the original: the idle demo goes from
+963 to 991 of 1,006, and non-HUNTER two-view league windows gain too (9 pictures each in
+`tours-a-w8`, `tours-b-w1` and `odd-tours-w1`), most likely from the idle and caption-row changes;
+the cause there is not traced.
+
 ## Not covered
 
 - **Line 113 under a six-line mosaic block.** With the mosaic size 6 the block of picture rows
   108-113 starts in the upper view, so the lower view's first row samples BG1 four lines above
   its camera, at bottom scroll. The original shows track there that native's world-drawn BG1 does
-  not: that tile-map row lies outside the rows the race streams for the lower camera, and holds
-  older map data. Native does not model BG1's map streaming. 9 pictures of `demo-pic`, 5 of `vs-4`,
-  one row each. Sampling the upper camera's scroll there instead was tried and is wrong (159 more
+  not. Hypothesis, not measured (no capture here reads VRAM): that tile-map row lies outside the
+  rows the race streams for the lower camera and holds older map data, which native, not modelling
+  BG1's map streaming, cannot draw. All 9 `demo-pic` cases have mosaic size 6, but most size-6
+  pictures match. The next experiment is a VRAM capture of BG1's map at one of these frames.
+  9 pictures of `demo-pic`, 5 of `vs-4`, one row each. Sampling the upper camera's scroll there instead was tried and is wrong (159 more
   unequal pictures on `demo-pic`).
 - **Power bounce in a race with two humans** changes rider 1's state (Race state above); the
   pictures of `twop-104` and `vs-124` after the divergence are not compared.

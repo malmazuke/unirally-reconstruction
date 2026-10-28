@@ -65,8 +65,9 @@ candidate and main `9980a38a`, pack v41):
 | LEAGUE-TOURS `tours-a` w2 (every tenth frame) | 2,557 of 3,889; 459 of 664 while an effect runs | 2,235; 139 |
 | LEAGUE-TOURS `tours-a` w6 | 2,032 of 3,890; 460 of 664 | 1,706; 137 |
 
-The 14 unequal candidate pictures of this task's captures differ on line 113 only (a six-line
-mosaic block reaching into the upper view samples a BG1 map row native does not model). In the
+The 14 unequal candidate pictures of this task's captures differ on line 113 only, at a six-line
+mosaic block reaching into the upper view. The cause is a hypothesis: a BG1 map row native does
+not model (R-0103's Not covered names the VRAM capture that would test it). In the
 league windows no picture is worse than main; the effect pictures still unequal are on track 42
 (NEON's split picture, unequal before its first tag as on main) but one (8 pixels, as on main).
 
