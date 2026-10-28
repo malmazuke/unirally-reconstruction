@@ -427,7 +427,8 @@ local/evidence/podium-return-timing/checks.list` at `379a664d` (main
   the gates.
 - Disk: main `local/evidence/podium-return-timing/` 193 MB with gate output, under the 1 GB budget;
   compacted at closeout.
-- Follow-up: R-0101's (NAME-CHECK's) keyboard model counts clocks to the frame wait's entry or its
-  first read; round 3 showed the difference is about 596 clocks. Check which, against its 24 calls.
+- Follow-up, closed 28 October 2026: R-0101's (NAME-CHECK's) keyboard model already counts clocks
+  to the frame wait's first `$4212` read (`$80:FAE3`), so the poll is in its tail constants;
+  `model.py` still places all 24 calls in their measured frames. Nothing to change.
 - The closing session removes `.worktrees/podium-return-timing` and
   `.worktrees/podium-return-timing-review` and the local branch.
