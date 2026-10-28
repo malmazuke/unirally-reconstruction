@@ -2,8 +2,14 @@
 
 ## Assignment
 
-- Status: **queued** 28 October 2026 by [SPLIT-HUNTER-PICTURES](SPLIT-HUNTER-PICTURES.md)
-  (R-0103, review round 1). Unclaimed.
+- Status: **claimed** 28 October 2026 09:28 UTC on main `5f161c9c`, on the user's instruction
+  (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
+  subagent implements, a fresh subagent reviews). Queued 28 October 2026 by
+  [SPLIT-HUNTER-PICTURES](SPLIT-HUNTER-PICTURES.md) (R-0103, review round 1). Run under
+  [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge against the
+  6-hour target, new evidence under 1 GB.
+- Branch `task/two-view-power-bounce` in `.worktrees/two-view-power-bounce`; evidence in main
+  `local/evidence/two-view-power-bounce/`.
 - Milestone: M4 (original game coverage).
 - Review tier: **1** (race state).
 - Dependencies: HUNTER-EFFECTS (R-0052), CREDITS-NAME (R-0094), SPLIT-HUNTER-PICTURES (R-0103).
