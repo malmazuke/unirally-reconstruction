@@ -1068,11 +1068,14 @@ void lap_result_tests() {
   require(at(0) == std::pair<std::uint8_t, std::uint8_t>{0x3a, 0x51});
   require(at(3) == std::pair<std::uint8_t, std::uint8_t>{0x6b, 0xf0});
   require(at(11) == std::pair<std::uint8_t, std::uint8_t>{0x4a, 0x40});
-  // Pad 2 does not leave (`$77:0742` bit 10); one frame of pad 1 does.
+  // Pad 2 does not leave (`$77:0742` bit 10); one frame of pad 1 does. The
+  // graph cleared bit 8 and `$80:9805` sets it again (R-0105).
+  require(!state.records.result_objects_parked);
   run(state, content, 1, {0, 0x1000});
   require(state.screen == FrontEndScreen::race_result);
   run(state, content, 1, {0x1000, 0});
   require(state.screen == FrontEndScreen::race_result_exit);
+  require(state.records.result_objects_parked);
   // The records take the best lap; the win marks ZOOM ZOO done.
   require(run_to(state, content, FrontEndScreen::track_menu_entry, {}, 5));
   require(state.records.record_times[0][1] == 0x0cb2 &&
@@ -1944,6 +1947,46 @@ void save_file_tests() {
   require(unirally::cartridge_image(wiped) == unirally::cartridge_image(cold));
 }
 
+// R-0105: `$77:0742` bits 2, 3 and 8 are records in the image; bits 9 and 10,
+// the menus' pad gate, go in and out with it and survive a soft reset, and the
+// main menu opens both pads before any gated test reads them.
+void option_bits_image_tests() {
+  std::vector<std::vector<std::uint8_t>> storage;
+  auto content = synthetic_content(storage);
+  storage.emplace_back(1158, 0);
+  const std::string signature = "TESTsignatur";
+  std::copy(signature.begin(), signature.end(), storage.back().begin());
+  content.cartridge_defaults = storage.back();
+  storage.emplace_back(50, 0);
+  content.track_types = storage.back();
+  auto cold = unirally::start_front_end();
+  run(cold, content, 420);
+  auto image = unirally::cartridge_image(cold);
+  require(image[0x0742] == 0 && image[0x0743] == 0);
+  image[0x0742] = 0x0c; // bits 2 and 3: VS chosen, a second human
+  image[0x0743] = 0x07; // bit 8, the result parked; bits 9 and 10, the gate
+  auto warm = unirally::start_front_end();
+  unirally::insert_cartridge(warm, image);
+  require(warm.records.versus_chosen && warm.records.second_human &&
+          warm.records.result_objects_parked);
+  require(warm.pad_one_ignored && warm.pad_two_ignored);
+  require(unirally::cartridge_image(warm) == image);
+  auto reset = warm;
+  unirally::front_end_screens::soft_reset(reset);
+  require(reset.pad_one_ignored && reset.pad_two_ignored);
+  run(warm, content, 420); // the main menu
+  require(!warm.pad_one_ignored && !warm.pad_two_ignored);
+  const auto saved = unirally::cartridge_image(warm);
+  require(saved[0x0742] == 0x0c && saved[0x0743] == 0x01);
+  // An image without the signature is wiped, the gate with it.
+  image[0] ^= 0xff;
+  auto wiped = unirally::start_front_end();
+  unirally::insert_cartridge(wiped, image);
+  run(wiped, content, 410);
+  require(!wiped.records_kept && !wiped.pad_one_ignored &&
+          !wiped.pad_two_ignored && !wiped.records.second_human);
+}
+
 // WIPE-RAM (R-0092): Left+A+L+R on the main menu opens WIPE RAM and MAIN
 // MENU; WIPE RAM's warning cancels on B and wipes on exactly Select+Y+A; each
 // answer waits for a press and slides the menu back in.
@@ -2396,6 +2439,7 @@ int main() try {
   title_code_tests();
   code_route_tests();
   save_file_tests();
+  option_bits_image_tests();
   race_cartridge_increment_tests();
   wipe_ram_tests();
   credits_picture_tests();

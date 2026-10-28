@@ -50,7 +50,10 @@ void transfer_records(Codec& at, OnePlayerRecords& records) {
         }
     for (std::size_t k = 0; k < records.medals.size(); ++k) at.byte(0x069c + k, records.medals[k]);
     at.bit(0x0742, 0x0002, records.league_naming);
+    at.bit(0x0742, 0x0004, records.versus_chosen);
+    at.bit(0x0742, 0x0008, records.second_human);
     at.bit(0x0742, 0x0020, records.group_table_shown);
+    at.bit(0x0742, 0x0100, records.result_objects_parked);
     at.bit(0x0742, 0x1000, records.race_lost);
     at.bit(0x0742, 0x2000, records.league_cycle_complete);
     for (std::size_t k = 0; k < records.best.size(); ++k) at.word(0x0829 + 2 * k, records.best[k]);
@@ -156,6 +159,13 @@ CartridgeImage cartridge_image(const FrontEndState& state) {
     // `$0E69`) are not read and keep what the boot left (R-0090).
     store.word(0x016c, checksum(image, 0x000c, 176));
     store.word(0x022e, checksum(image, 0x016e, 96));
+    // `$77:0742` bit 1 is the logo held up as well as the league keyboard's (`$80:F51B`,
+    // `$80:F53F`, `$80:F52B`); every boot clears it (`$80:A0A5`) before the logo hook reads it.
+    store.bit(0x0742, 0x0002, records.league_naming || state.logo.raised);
+    // `$77:0742` bits 9 and 10, the menus' pad gate, live in cartridge RAM too. A later boot does
+    // not read them: the main menu opens both pads (`$80:ABC8`) before any gated test (R-0105).
+    store.bit(0x0742, 0x0200, state.pad_one_ignored);
+    store.bit(0x0742, 0x0400, state.pad_two_ignored);
     // `$10AD` is the mode (1 for one-player, `$80:BBEE`); native keeps only whether it is 1.
     if (state.one_player)
         image[one_player_mode] = 1;
@@ -181,6 +191,9 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
     // keeps these fields or wipes them (front_end.cpp's check_records).
     state.records = records_from_cartridge(state.cartridge);
     state.records.league_naming = false; // `$80:A0A5` clears `$0742` bit 1 on every boot
+    const Load load_gate{state.cartridge};
+    load_gate.bit(0x0742, 0x0200, state.pad_one_ignored); // the pad gate, as saved
+    load_gate.bit(0x0742, 0x0400, state.pad_two_ignored);
     state.one_player = state.cartridge[one_player_mode] == 1;
     // `$77:10A7`, the done-track markers' step, goes on from the saved value (R-0100); only a cold
     // start's wipe resets it. A value past the 14 steps, which the menus do not write, is not

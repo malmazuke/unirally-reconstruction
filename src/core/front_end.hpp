@@ -318,6 +318,14 @@ struct OnePlayerRecords {
     bool league_cycle_complete{}; // $77:0742 bit 13: podium before the next tour
     bool league_naming{};         // $77:0742 bit 1 while the league keyboard is active
     bool group_table_shown{};     // $77:0742 bit 5 while GROUP TABLES shows (`$80:DEA9`, R-0097)
+    // $77:0742 bits 2, 3 and 8 (R-0105). A race copies bits 2 and 3 into `$77:0750` (`$80:9A05`);
+    // native takes those from the race's mode, so here they only go into the saved image.
+    // Bit 2: VS chosen (`$80:BF96`), cleared on the way to NOW PLAYING in the other modes
+    // (`$80:BC38`, `$80:BD6D`, `$80:BEEC`). Bit 3: the second rider is a human, set by 2P's and
+    // VS's second pick (`$80:BD10`, `$80:BF94`) and NOW PLAYING (`$80:B297-B2FD`), cleared by 1P's
+    // pick (`$80:BBCC`). Bit 8: `$80:9805` has parked the result's objects; a lap graph clears it
+    // (`$80:98CF`), an award or a tour's ending sets it (`$83:A569`, `$83:A676`).
+    bool versus_chosen{}, second_human{}, result_objects_parked{};
     std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
     std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
     std::array<std::uint8_t, 50> tracks_done{}; // $77:1075 + track: won in the current run

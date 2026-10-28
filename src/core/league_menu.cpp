@@ -609,6 +609,9 @@ void choose_league_pair(FrontEndState& state) {
     state.tour_menu.track = state.records.league_tracks[slot];
     state.tour_menu.tour = state.tour_menu.track / tracks_per_tour;
     state.now_playing.opponent = state.second_rider;
+    // `$83:958F-9592` stores 0 to `$77:10CF-10D0`, so the pair's choice also clears the title
+    // code's flag, before NOW PLAYING (`$80:BEF9`; R-0105).
+    state.records.cheat = false;
     enter_now_playing(state);
 }
 } // namespace unirally::front_end_screens

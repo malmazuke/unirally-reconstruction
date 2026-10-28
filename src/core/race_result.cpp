@@ -269,8 +269,9 @@ void hide_result_objects(FrontEndState& state) {
     // `$80:C236`: entries 30 and 31 hidden and small. `$80:9805` then parks 0-29 and hides 0-31,
     // but only while `$77:0742` bit 8 is clear, and sets it: the first result after a cold start
     // parks, later one-run results skip it until a lap result's graph (`$80:98CB`) clears the
-    // bit. Native keeps no bit 8 and always parks: `$80:A09A` has already parked and hidden
-    // those entries, so the OAM buffer is the same either way.
+    // bit. Native always parks: `$80:A09A` has already parked and hidden those entries, so the
+    // OAM buffer is the same either way; the bit only goes into the saved image (R-0105).
+    state.records.result_objects_parked = true;
     high_bits(state, 28) = static_cast<std::uint8_t>((high_bits(state, 28) & 0x0fU) | 0x50U);
     for (unsigned entry = 0; entry < 30; ++entry)
         oam_byte(state, entry, 0) = oam_byte(state, entry, 1) = 1;
@@ -478,6 +479,7 @@ void score_race(FrontEndState& state, const FrontEndContent& content, FrontEndPa
 
 // $80:98B3 on the lap result's last fade frame: `$0089` = 3, then the graph's first pass.
 void start_lap_graph(FrontEndState& state, const FrontEndContent& content) {
+    state.records.result_objects_parked = false; // $80:98CB-98D2 clears `$77:0742` bit 8
     state.decorations.delay = 3;
     step_decorations(state, content);
     step_lap_graph(state);
