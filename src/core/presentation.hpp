@@ -336,6 +336,7 @@ public:
         caption_buffer_ = opponent_caption_buffer_ = 0;
         consumed_since_blank_ = opponent_consumed_since_blank_ = menu_lower_view_ = false;
         score_buffer_ = opponent_score_buffer_ = 0;
+        arrow_markers_ = {};
     }
     void observe_update(const ZoomZooState& previous, const ZoomZooState& updated);
     // The cells as the picture drawn from the earlier of the two states last
@@ -370,6 +371,9 @@ private:
     bool opponent_consumed_since_blank_{};
     // `$130F`: the pause menu last opened in the lower view.
     bool menu_lower_view_{};
+    // Each rider's track marker word as the last update that ran read it for its arrow word
+    // (`$82:9822`); a HUNTER skipped update keeps it (R-0103).
+    std::array<std::uint16_t, 2> arrow_markers_{};
     // `$12B9`: the score the update last split into `$12BD/$12C1/$12C5` for the NMI.
     std::uint16_t score_buffer_{};
     // `$12BB`: rider 1's score (`$77:0825`) as the update last split it (R-0095).

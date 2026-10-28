@@ -559,6 +559,15 @@
   ]
  },
  {
+  "address": "$80:8715",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808715",
+  "source_records": [
+   "docs/research/R-0103-split-hunter-pictures.md"
+  ]
+ },
+ {
   "address": "$80:876C",
   "class": "observed",
   "comment": "instruction start",
@@ -1559,7 +1568,8 @@
    "src/core/presentation.cpp:render_classic_race"
   ],
   "source_records": [
-   "docs/research/R-0082-split-captions.md"
+   "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0103-split-hunter-pictures.md"
   ]
  },
  {
@@ -14518,6 +14528,7 @@
    "docs/research/R-0011-contact.md",
    "docs/research/R-0032-player-landing-recovery.md",
    "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -15619,7 +15630,20 @@
   ],
   "source_records": [
    "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/SPLIT-CAPTIONS.md"
+  ]
+ },
+ {
+  "address": "$81:BF0A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BF0A",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
+  ],
+  "source_records": [
+   "docs/research/R-0103-split-hunter-pictures.md"
   ]
  },
  {
@@ -15636,11 +15660,26 @@
   ]
  },
  {
+  "address": "$81:BF43",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BF43",
+  "native": [
+   "src/core/race_hud.cpp:hud_message_at_consumers",
+   "src/core/reward_queue.cpp:show_hunter_message",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
+  ],
+  "source_records": [
+   "docs/research/R-0103-split-hunter-pictures.md"
+  ]
+ },
+ {
   "address": "$81:BF46",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81BF46",
   "native": [
+   "src/core/race_hud.cpp:hud_message_at_consumers",
    "src/core/reward_queue.cpp:show_hunter_message",
    "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
   ],
@@ -15657,7 +15696,9 @@
    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
   ],
   "source_records": [
-   "docs/research/R-0082-split-captions.md"
+   "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
  },
  {
@@ -16146,10 +16187,12 @@
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
    "src/core/reward_queue.cpp:push_front_player_announcement"
   ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/CREDITS-NAME.md"
   ]
  },
@@ -16344,6 +16387,8 @@
   "source_records": [
    "docs/research/R-0081-split-race-end.md",
    "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md",
    "tasks/SPLIT-RACE-END.md"
   ]
  },
@@ -19064,15 +19109,19 @@
   "comment": "routine start",
   "label": "sub_829822",
   "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock::arrow_markers_",
    "src/core/presentation.hpp:classic_race_arrow",
    "src/core/presentation.hpp:classic_race_lower_arrow",
    "src/core/race_hud.cpp:(file)",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
    "src/core/race_hud.cpp:trailing_rider_arrow"
   ],
   "source_records": [
    "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
    "docs/research/R-0080-split-hud.md",
-   "tasks/SPLIT-HUD-GAPS.md"
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/SPLIT-HUD-GAPS.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
  },
  {
@@ -20724,8 +20773,13 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_82B154",
+  "native": [
+   "src/core/presentation.cpp:invisible_riders"
+  ],
   "source_records": [
-   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
  },
  {
@@ -20733,6 +20787,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_82B15E",
+  "native": [
+   "src/core/presentation.cpp:invisible_riders"
+  ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
   ]
@@ -26143,11 +26200,13 @@
   "comment": "instruction start",
   "label": "loc_83CC9A",
   "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
    "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
    "docs/research/R-0078-pause-menu-picture.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/CLASSIC-PAUSE-MENU.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
@@ -26158,6 +26217,7 @@
   "comment": "instruction start",
   "label": "loc_83CCA2",
   "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
    "src/core/race_update.cpp:run_skipped_update",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update"
   ],
@@ -26436,11 +26496,14 @@
   "label": "sub_83CDAA",
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
+   "src/core/race_hud.cpp:hud_message_at_consumers",
    "src/core/race_update.cpp:finish_update",
    "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
-   "docs/research/R-0052-hunter-effects.md"
+   "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0103-split-hunter-pictures.md"
   ]
  },
  {
@@ -26742,12 +26805,14 @@
    "src/core/hunter_effects.cpp:finish",
    "src/core/hunter_effects.cpp:update_hunter_effects",
    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/race_hud.cpp:hud_message_at_consumers",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
    "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -26795,13 +26860,16 @@
    "src/core/hunter_effects.cpp:run_screen_flip",
    "src/core/hunter_effects.cpp:update_hunter_effects",
    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/presentation.cpp:race_scroll",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
    "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md",
-   "tasks/CREDITS-NAME.md"
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/CREDITS-NAME.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
  },
  {

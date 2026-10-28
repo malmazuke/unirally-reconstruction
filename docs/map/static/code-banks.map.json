@@ -7757,6 +7757,7 @@
    ],
    "native": [
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+    "src/core/race_hud.cpp:hud_message_at_consumers",
     "src/core/reward_queue.cpp:show_hunter_message",
     "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
    ],
@@ -8073,6 +8074,7 @@
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
     "src/core/reward_queue.cpp:push_front_player_announcement"
    ],
    "observed_entries": {},
@@ -11188,9 +11190,11 @@
     "Nmx"
    ],
    "native": [
+    "src/core/presentation.hpp:ClassicRaceHudClock::arrow_markers_",
     "src/core/presentation.hpp:classic_race_arrow",
     "src/core/presentation.hpp:classic_race_lower_arrow",
     "src/core/race_hud.cpp:(file)",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
     "src/core/race_hud.cpp:trailing_rider_arrow"
    ],
    "observed_entries": {},
@@ -12227,6 +12231,9 @@
    "mode_at_entry": [
     "NMX",
     "NmX"
+   ],
+   "native": [
+    "src/core/presentation.cpp:invisible_riders"
    ],
    "observed_entries": {},
    "start": "$82:B154",
@@ -17268,6 +17275,7 @@
    ],
    "native": [
     "src/core/presentation.cpp:race_picture_brightness",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
     "src/core/race_progress.cpp:finish_rider",
     "src/core/race_update.cpp:run_pause_menu",
     "src/core/race_update.cpp:run_skipped_update",
@@ -17325,6 +17333,8 @@
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
+    "src/core/race_hud.cpp:hud_message_at_consumers",
     "src/core/race_update.cpp:finish_update",
     "src/core/race_update.cpp:run_skipped_update"
    ],
@@ -17651,6 +17661,7 @@
     "src/core/hunter_effects.cpp:finish",
     "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+    "src/core/race_hud.cpp:hud_message_at_consumers",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -17702,6 +17713,7 @@
     "src/core/hunter_effects.cpp:run_screen_flip",
     "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+    "src/core/presentation.cpp:race_scroll",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -19340,16 +19352,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2230,
+  "cited_addresses": 2233,
   "cited_by_class": {
    "data": 16,
    "inferred": 97,
-   "observed": 1919,
+   "observed": 1922,
    "unknown": 198
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1516,
+   "loc": 1519,
    "mid": 31,
    "sub": 469,
    "unk": 198
@@ -19371,9 +19383,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 86837,
-  "routine_bytes_cited_by_native_code": 73949,
+  "routine_bytes_cited_by_native_code": 73996,
   "routines": 759,
-  "routines_cited_by_native_code": 580,
+  "routines_cited_by_native_code": 581,
   "unknown": 31424,
   "unknown_share": 0.2397
  }

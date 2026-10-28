@@ -214,10 +214,12 @@ unsigned classic_arrow_chevrons(std::uint16_t lead, unsigned race_nmis) {
 // this update's when the player crossed the line (`$81:823B` runs first); the 10:00 time-out
 // sets it after the word is written, so there the arrow stays one update longer.
 namespace {
-// One rider's arrow (`rider` 0 the player above, 1 the lower view's), as $82:9822 computes it.
+// One rider's arrow (`rider` 0 the player above, 1 the lower view's), as $82:9822 computes it
+// from the track marker word `marker`.
 std::optional<ClassicRaceArrow> trailing_rider_arrow(const ZoomZooState& previous,
                                                      const ZoomZooState& updated,
-                                                     unsigned race_nmis, std::size_t rider) {
+                                                     unsigned race_nmis, std::size_t rider,
+                                                     std::uint16_t marker) {
     if (classic_race_scenario(updated.track).stunt_event) return std::nullopt;
     const auto& progress = updated.movement.riders[rider].progress;
     const auto own = progress.transition_count;
@@ -229,7 +231,6 @@ std::optional<ClassicRaceArrow> trailing_rider_arrow(const ZoomZooState& previou
     if (crossed || previous.race.riders[rider].finished) return std::nullopt;
     // $81:E9DE: nothing is drawn after a rejected transition.
     if (progress.transition_rejected) return std::nullopt;
-    const auto marker = previous.movement.riders[rider].progress.marker_word;
     return ClassicRaceArrow{
         static_cast<ClassicRaceArrow::Direction>(marker >> 14U),
         classic_arrow_chevrons(static_cast<std::uint16_t>(other - own), race_nmis)};
@@ -238,13 +239,15 @@ std::optional<ClassicRaceArrow> trailing_rider_arrow(const ZoomZooState& previou
 
 std::optional<ClassicRaceArrow>
 classic_race_arrow(const ZoomZooState& previous, const ZoomZooState& updated, unsigned race_nmis) {
-    return trailing_rider_arrow(previous, updated, race_nmis, 0);
+    return trailing_rider_arrow(previous, updated, race_nmis, 0,
+                                previous.movement.riders[0].progress.marker_word);
 }
 
 std::optional<ClassicRaceArrow> classic_race_lower_arrow(const ZoomZooState& previous,
                                                          const ZoomZooState& updated,
                                                          unsigned race_nmis) {
-    return trailing_rider_arrow(previous, updated, race_nmis, 1);
+    return trailing_rider_arrow(previous, updated, race_nmis, 1,
+                                previous.movement.riders[1].progress.marker_word);
 }
 
 // One update of the HUD's text layer: the NMI's counter and arrow, then what the update asks
@@ -295,14 +298,34 @@ void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
     }
 }
 
+namespace {
+// The HUD message buffer `$128D` as the update's queue consumers left it, as an event (0 blank;
+// R-0052's `hud_event`). The HUNTER routine runs after them ($83:CDAA), and an effect's end
+// blanks the buffer there ($83:D275): on that update rider 1's consumer read the buffer before,
+// which the player's dry look may have just filled from the pending message ($81:BF43-BFA2).
+unsigned hud_message_at_consumers(const ZoomZooState& previous, const ZoomZooState& updated) {
+    if (!updated.hunter_tour) return 0;
+    const auto& before = previous.hunter;
+    const auto& after = updated.hunter;
+    const bool effect_ended = before.active && !after.active
+                           && after.message == announcement::effect_over && after.hud_event == 0;
+    if (!effect_ended) return after.hud_event;
+    const bool player_dry_look = before.shown && !after.shown;
+    if (player_dry_look && before.message)
+        return before.message == announcement::effect_over ? 0U : before.message;
+    return before.hud_event;
+}
+} // namespace
+
 // A split race's own requests (R-0082):
 // - `$034F`, rider 1's clock: `$81:C6D1-C6DC` asks for its digits on the update after the top
 //   clock's tick (`$0E29` = 1) while rider 1 is unfinished, so a VS race's forced finish leaves
 //   the last digits written; its last crossing asks for the blank (`$81:824E`). A stunt event's
 //   count-down clock asks for both clocks together on every tick ($81:C7EE-C7F1).
 // - `$0EE9`, rider 1's caption: its consumer (`$81:BEF1-BF31`) takes an event into `$0EC7`
-//   (`$81:C05C-C0A0`), or, on its first dry look after a take (`$11C3`), copies the blank
-//   message (`$81:BFB9-BFD0`).
+//   (`$81:C05C-C0A0`), or, on its first dry look after a take (`$11C3`), copies the HUD message
+//   buffer `$128D` (`$81:BFB9-BFD0`): blank, or on the HUNTER tour the running effect's name, as
+//   the player's row shows it (R-0103).
 void ClassicRaceHudClock::request_split_fields(const ZoomZooState& previous,
                                                const ZoomZooState& updated) {
     const auto& before = previous.race.riders[1];
@@ -314,16 +337,31 @@ void ClassicRaceHudClock::request_split_fields(const ZoomZooState& previous,
     // stopping tick too, on which both riders finish (R-0095).
     const bool stunt_tick = latest_.lower_clock != classic_hud_clock(classic_hud_timer(updated))
                          || (updated.stunt.clock_stopped && !previous.stunt.clock_stopped);
-    if (stunt_event ? stunt_tick : !after.finished && timer.subframe == 1U)
+    // HUNTER's skipped updates (`$128B`, R-0052) jump from $83:CC9A to $83:CDAA, past the clock,
+    // so one holding the tick's subframe asks again for nothing (R-0103).
+    const bool update_ran = !previous.hunter.skip_update;
+    if (stunt_event ? stunt_tick : update_ran && !after.finished && timer.subframe == 1U)
         pending_.lower_clock = true;
     const auto& queue_before = previous.movement.rewards;
     const auto& queue_after = updated.movement.rewards;
-    if (queue_after.read_cursor != queue_before.read_cursor) {
+    const auto slots = static_cast<unsigned>(queue_after.entries.size());
+    const auto next = (queue_before.read_cursor + 1U) % slots;
+    // A take steps the read cursor on. HUNTER's front-of-queue push in a race with two views
+    // ($81:C579-C594) steps it back, at the end of the update, and is taken on a later one. A
+    // take and a push in one update leave the cursor where it was, the take's display time in
+    // the cooldown and the push's event in the slot the take read.
+    const bool taken_then_pushed =
+        updated.hunter_tour && queue_after.read_cursor == queue_before.read_cursor
+        && next != queue_before.write_cursor && queue_after.cooldown > queue_before.cooldown;
+    if (queue_after.read_cursor == next) {
         opponent_caption_buffer_ = queue_after.entries[queue_after.read_cursor];
+        opponent_consumed_since_blank_ = true;
+    } else if (taken_then_pushed) {
+        opponent_caption_buffer_ = queue_before.entries[next];
         opponent_consumed_since_blank_ = true;
     } else if (queue_before.cooldown <= 2U && queue_after.cooldown == announcement::empty_queue_wait
                && opponent_consumed_since_blank_) {
-        opponent_caption_buffer_ = 0;
+        opponent_caption_buffer_ = hud_message_at_consumers(previous, updated);
         opponent_consumed_since_blank_ = false;
     } else {
         return;
@@ -350,16 +388,22 @@ bool ClassicRaceHudClock::service_split_clock(const ZoomZooState& updated) {
 // as it is; otherwise it takes down the arrow it drew last and draws the one the update asks
 // for. The up arrow's rows 5-6 are skipped while the player's centred cells show (`$0D19`).
 void ClassicRaceHudClock::redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated) {
+    // HUNTER's skipped updates (`$128B`, R-0052) do not run $82:9822: the NMI redraws from the
+    // word the last update that ran wrote, from the marker that update read (R-0103).
+    if (!previous.hunter.skip_update)
+        for (std::size_t rider = 0; rider < arrow_markers_.size(); ++rider)
+            arrow_markers_[rider] = previous.movement.riders[rider].progress.marker_word;
     // $81:DB10-DDA4: a split race's lower arrow is redrawn every NMI; its rows 16-17 are skipped
     // while rider 1's cells show (`$0D1B`, R-0080).
     if (updated.split_screen) {
-        latest_.lower_arrow = classic_race_lower_arrow(previous, updated, race_nmis_);
+        latest_.lower_arrow =
+            trailing_rider_arrow(previous, updated, race_nmis_, 1, arrow_markers_[1]);
         if (latest_.lower_arrow
             && latest_.lower_arrow->direction == ClassicRaceArrow::Direction::Up)
             latest_.lower_arrow->middle_rows_covered = latest_.opponent_cells.has_value();
     }
     if (updated.movement.progress_phase == 0) return;
-    latest_.arrow = classic_race_arrow(previous, updated, race_nmis_);
+    latest_.arrow = trailing_rider_arrow(previous, updated, race_nmis_, 0, arrow_markers_[0]);
     if (latest_.arrow && latest_.arrow->direction == ClassicRaceArrow::Direction::Up)
         latest_.arrow->middle_rows_covered = latest_.player_cells.has_value();
 }
