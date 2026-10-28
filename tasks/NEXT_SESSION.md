@@ -27,6 +27,19 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](./GATES-AGAINST-MAIN.md) holds the detail.
 
+**28 October 2026: SPLIT-HUNTER-PICTURES is accepted (tier 2, #89) and integrated by merge commit.**
+A two-view race in HUNTER mode ("faedine") now draws HUNTER's effects as the original does:
+- **Effects:** "invisible unis" (no flip, riders blanked), wobble mode's mosaic in the lower view,
+  the lower caption row's effect names, and hedgehog speed's skipped updates.
+- **Results:** pictures equal on the split demo 2,245 of 2,254 (main 1,194); new 2P and VS
+  captures 3,648 of 3,648 and 3,081 of 3,081; one-player races unchanged. The idle demo's caption
+  rows are fixed too (991 of 1,006, main 963).
+- **Limits:** 14 pictures differ on line 113 at mosaic size 6 (a BG1 map row, a hypothesis).
+  Power bounce's landing in a two-view race is a race-state difference, queued as
+  TWO-VIEW-POWER-BOUNCE (tier 1).
+- **Time:** about 5 h 55 min from claim to merge (D-0013's target 6 h).
+[R-0103](../docs/research/R-0103-split-hunter-pictures.md) and [SPLIT-HUNTER-PICTURES](SPLIT-HUNTER-PICTURES.md) hold the detail.
+
 **27 October 2026: PODIUM-RETURN-TIMING is accepted (tier 1, #88) and integrated by merge commit.**
 Native now runs late where the original's league menus run past the frame's end:
 - **An event's pairs:** a cost model of the records, the pair's count and the standings' print

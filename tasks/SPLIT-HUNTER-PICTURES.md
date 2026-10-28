@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **claimed** 28 October 2026 01:07 UTC on main `9980a38a`, on the user's instruction
+- Status: **accepted** 28 October 2026 (tier 2, [#89](https://github.com/malmazuke/unirally-reconstruction/pull/89),
+  approved in review round 1 at `87bd3254`), integrated by merge commit. Claimed 01:07 UTC on main
+  `9980a38a`, on the user's instruction
   (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
   subagent implements, a fresh subagent reviews). Queued 10 October 2026 by
   [CREDITS-NAME](CREDITS-NAME.md) (R-0094). Run under
@@ -103,3 +105,45 @@ rider 1's velocity, both under effect 2; native gives landing matrix 0 to rider 
   native code and its test about 45 min; checks (two full runs, about 25 min each), records and maps
   the rest.
 - Next: the tier-2 review, then the gates (`--task-checks local/evidence/split-hunter-pictures/checks.list`).
+
+## Review (round 1, approved `87bd3254`)
+
+A fresh subagent in its own checkout at the PR head
+([review](https://github.com/malmazuke/unirally-reconstruction/pull/89#pullrequestreview-5677756737)):
+approve, no blocking findings, no escalation (no race state touched).
+- It recaptured `demo-pic`, `vs-4` and `twop-104` from the manifests, byte for byte the worker's,
+  with the same picture counts.
+- It replayed the gate corpus (503 runs) through main and the candidate: only pictures differ, in
+  24 runs, and none is worse than main against the original (idle demo 963 to 991 of 1,006; four
+  league windows gain 9-480).
+- Should-fix, both fixed in `c2900f86` (records only): the line-113 cause is now labelled a
+  hypothesis with a VRAM capture as the next experiment; the power-bounce note now cites
+  `$81:94A8-94B2` and the original's RAM, and is queued as
+  [TWO-VIEW-POWER-BOUNCE](TWO-VIEW-POWER-BOUNCE.md).
+- Notes left for the next change to `race_hud.cpp`: `classic_race_lower_arrow` has only test
+  callers; the kept arrow marker and `invisible_riders` have capture checks but no unit test.
+
+## Gates (D-0012)
+
+`local/locks/heavy-run.sh python3 -m tools.unirally_lab.gates run --task-checks
+local/evidence/split-hunter-pictures/checks.list --expect-changed <the review's list>` at
+`c2900f86` (main `local/evidence/split-hunter-pictures/gates-1*`, 2 h 26 min): `status=passed`.
+- The task's 8 checks ran and passed.
+- 8 steps changed as expected: `idle-demo`, `lt-tours-a-w2`, `-w6`, `-w8`, `lt-tours-b-w1`,
+  `lt-odd-tours-w0`, `-w1`, `lt-five-w1`; `lt-t-crawler` same as main. Every other selected step
+  passed or matched main.
+- Hosted CI green on all three checks.
+- The gate catalogue does not hold this task's checks yet (as for NAME-CHECK and
+  PODIUM-RETURN-TIMING).
+
+## Handoff (closeout)
+
+- Commits on `task/split-hunter-pictures`: `6120ab48`, `7823a613` (claim), `ca0120af`, `c49a3e34`,
+  `70aa9390`, `87bd3254` (worker), `c2900f86` (review round 1's records fixes), then this record.
+- Time, claim 01:07 UTC to merge about 07:00 UTC, about 5 h 55 min against D-0013's 6 hours:
+  worker 2 h 07 min; PR and review setup 5 min; review 1 h 08 min; fixes 10 min; gates 2 h 26 min;
+  closeout about 10 min. The one review round and no fix-round reruns kept it inside the target.
+- Disk: main `local/evidence/split-hunter-pictures/` 262 MB with the review and gate output, under
+  the 1 GB budget; compacted at closeout.
+- The closing session removes `.worktrees/split-hunter-pictures` and
+  `.worktrees/split-hunter-pictures-review` and the local branch.
