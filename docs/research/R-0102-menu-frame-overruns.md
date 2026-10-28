@@ -47,8 +47,11 @@ side's work ran past a frame and the other's did not.
    start) is in the next vblank, so the wait runs on through the next frame. That frame has only
    its NMI (the palette cycle's hook), no arrow step and no menu pass, and everything after is a
    frame later. A wait entered up to about 600 clocks before the frame's end is therefore late.
-   R-0101's keyboard check uses the same method of clocks against the frame's end; whether its
-   frame test is on the wait's entry or its first read is an open follow-up (not changed here).
+   R-0101's keyboard check uses the same method of clocks against the frame's end and is not
+   affected: `cycles.py` traces each call to the frame wait's first `$4212` read (`$80:FAE3`, after
+   the poll), its tail constants (1,100 accepted, 26,926 refused) run to that read, and its
+   `model.py` places all 24 reads in their measured frames, the nearest 7.9 lines from a boundary
+   (checked 28 October 2026).
 
 2. **A league pair's way out** (`$80:BF2C-BF35`, then `$80:BE55`). [L, C: 27 way outs, and 13
    band traces]
