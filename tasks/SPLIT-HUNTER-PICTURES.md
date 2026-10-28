@@ -51,7 +51,7 @@ No race state, serialized format or pack change. Captures (main `local/evidence/
 `vs-124` and `vs-4` (2P and VS ZOOM ZOO, seeds from a native search, `search.py`), `one-67` (one
 player, slow motion and hedgehog speed), and the review's `demo-pic-mike`.
 
-Pictures equal to the original's (`checks.list`, run once at `c49a3e34`, `checks-c49a3e34.out`;
+Pictures equal to the original's (`checks.list`, run once at `70aa9390`, `checks-70aa9390.out`;
 candidate and main `9980a38a`, pack v41):
 
 | Capture | Candidate | Main |
@@ -85,19 +85,20 @@ rider 1's velocity, both under effect 2; native gives landing matrix 0 to rider 
   `presentation.cpp` and `race_hud.cpp`; `clang-format` 19 applied to the `src/core` files (the
   test file keeps its own style); `regen.sh` (five raw coverage inputs) and `coverage
   native-symbols --check` passed, 0 cited addresses without a record; `checks.list` 8 of 8 lines
-  rc 0 at `c49a3e34` (`checks-c49a3e34.out`, `checks-c49a3e34-league.out`). Synthetic suite and
-  gates not run by the worker.
+  rc 0 at `70aa9390` (`checks-70aa9390.out`, 24 min under the heavy-run lock; the code is
+  `c49a3e34`'s, which gave the same numbers). Synthetic suite and gates not run by the worker.
 - Commands: `zsh local/evidence/split-hunter-pictures/captures.sh NAME...`;
   `local/locks/heavy-run.sh SPLIT-HUNTER-PICTURES zsh local/evidence/split-hunter-pictures/run_checks.sh OUT`;
   `python3 local/evidence/split-hunter-pictures/race_check.py CAPTURE BINARY PACK --boundary`.
-- Evidence: main `local/evidence/split-hunter-pictures/` EVIDENCE_SIZE after the captures' work RAM
+- Evidence: main `local/evidence/split-hunter-pictures/` 168 MB after the captures' work RAM
   series were stored as `series.bin.zst` (verified byte for byte); `base-9980a38a/` is main's
   runner. Native picture folders deleted.
 - Not covered: line 113 (14 pictures); power bounce in two-human races (above); the league's
   two-view races on LEAGUE-TOURS' sampled pictures only, and track 42's split picture (NEON)
   unequal with or without effects; the NMI's channel 4 reading under the blink is not reconciled
   with the unflipped BG1 the pictures show.
-- Time (claim 01:07 UTC to handoff HANDOFF_TIME UTC, harness-measured `date -u`): reading and baseline
+- Time (claim 01:07 UTC to handoff 03:14 UTC, 2 h 07 min, `date -u`): reading and baseline
   25 min; captures (five, about 3 min each in process) and the native search 15 min; diagnosis and
-  native code about 45 min; checks, records and maps the rest.
+  native code and its test about 45 min; checks (two full runs, about 25 min each), records and maps
+  the rest.
 - Next: the tier-2 review, then the gates (`--task-checks local/evidence/split-hunter-pictures/checks.list`).
