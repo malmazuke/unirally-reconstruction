@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **claimed** 28 October 2026 09:28 UTC on main `5f161c9c`, on the user's instruction
+- Status: **accepted** 28 October 2026 (tier 1, [#90](https://github.com/malmazuke/unirally-reconstruction/pull/90),
+  approved in review round 1 at `60b06fdd`), integrated by merge commit. Claimed 09:28 UTC on main
+  `5f161c9c`, on the user's instruction
   (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
   subagent implements, a fresh subagent reviews). Queued 28 October 2026 by
   [SPLIT-HUNTER-PICTURES](SPLIT-HUNTER-PICTURES.md) (R-0103, review round 1). Run under
@@ -105,3 +107,43 @@ power bounce, rider 1 lands under it in all 26, the mutant differs in all 26 and
   native change and test 10 min; checks on the existing captures, searches and the two captures
   15 min; the full `checks.list` run 17 min (records and maps written meanwhile).
 - Next: the tier-1 independent review, then the gates.
+
+## Review (round 1, approved `60b06fdd`)
+
+A fresh subagent in its own checkout at the PR head
+([review](https://github.com/malmazuke/unirally-reconstruction/pull/90#pullrequestreview-5681336208)),
+10:20-10:42 UTC: approve.
+- It read `$81:94A8-94C3` and found the condition exact: the two-views branch skips only the `$0FF9`
+  load and test, and every later path reloads Y.
+- `$77:0750` in the captures: `$08` in 2P, `$0C` in VS, `$0A` in the split demo, `$08` in a
+  two-human league race, `$00` in one view. Bit 3 is set in every two-view race, so native's
+  `0xC20A` is right for all four.
+- It recaptured `twop-67` and `one-88` byte for byte and ran `checks.list` (14 of 14) on its own build.
+- It explained the three searched races where nothing changed: seed 25's landings are steep and
+  return before any matrix; in seeds 62 and 173 rider 1 drives against its velocity, so matrix 2
+  replaces matrix 0, as in the original.
+- Fixed in `4a0db1ae` (records only): that explanation in R-0104 and this record, and R-0052's
+  effect table qualified (steep and pair-8 landings take no matrix; driving against the velocity
+  takes matrix 2).
+- Notes left for the next edit of `race_update.cpp`: rename `split_demo_options`, which now stands
+  for every two-view race; a unit case at the call site.
+
+## Gates (D-0012)
+
+`local/locks/heavy-run.sh python3 -m tools.unirally_lab.gates run --task-checks
+local/evidence/two-view-power-bounce/checks.list` at `4a0db1ae` (main
+`local/evidence/two-view-power-bounce/gates-1*`, about 2 h 35 min): `status=passed`, the task's 14
+checks ran and passed, and no selected step changed from main (the league windows have no power
+bounce). Hosted CI green on all three checks.
+
+## Handoff (closeout)
+
+- Commits on `task/two-view-power-bounce`: `19763cc1` (claim), `6684eb10`, `f0311639`, `60b06fdd`
+  (worker), `4a0db1ae` (review round 1's records fixes), then this record.
+- Time, claim 09:28 UTC to merge about 13:25 UTC, about 4 h against D-0013's 6 hours: worker
+  52 min; PR and review setup 5 min; review 22 min; fixes 5 min; gates 2 h 35 min; closeout about
+  10 min.
+- Disk: main `local/evidence/two-view-power-bounce/` 132 MB with review and gate output, under the
+  1 GB budget; compacted at closeout.
+- The closing session removes `.worktrees/two-view-power-bounce` and
+  `.worktrees/two-view-power-bounce-review` and the local branch.
