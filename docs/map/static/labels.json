@@ -559,6 +559,15 @@
   ]
  },
  {
+  "address": "$80:8715",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808715",
+  "source_records": [
+   "docs/research/R-0103-split-hunter-pictures.md"
+  ]
+ },
+ {
   "address": "$80:876C",
   "class": "observed",
   "comment": "instruction start",
@@ -1559,7 +1568,8 @@
    "src/core/presentation.cpp:render_classic_race"
   ],
   "source_records": [
-   "docs/research/R-0082-split-captions.md"
+   "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0103-split-hunter-pictures.md"
   ]
  },
  {
@@ -14518,6 +14528,7 @@
    "docs/research/R-0011-contact.md",
    "docs/research/R-0032-player-landing-recovery.md",
    "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -15619,7 +15630,20 @@
   ],
   "source_records": [
    "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/SPLIT-CAPTIONS.md"
+  ]
+ },
+ {
+  "address": "$81:BF0A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BF0A",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
+  ],
+  "source_records": [
+   "docs/research/R-0103-split-hunter-pictures.md"
   ]
  },
  {
@@ -15633,6 +15657,20 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
+  "address": "$81:BF43",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BF43",
+  "native": [
+   "src/core/race_hud.cpp:hud_message_at_consumers",
+   "src/core/reward_queue.cpp:show_hunter_message",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
+  ],
+  "source_records": [
+   "docs/research/R-0103-split-hunter-pictures.md"
   ]
  },
  {
@@ -15658,7 +15696,9 @@
    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
   ],
   "source_records": [
-   "docs/research/R-0082-split-captions.md"
+   "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
  },
  {
@@ -16152,6 +16192,7 @@
   ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/CREDITS-NAME.md"
   ]
  },
@@ -16346,6 +16387,8 @@
   "source_records": [
    "docs/research/R-0081-split-race-end.md",
    "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md",
    "tasks/SPLIT-RACE-END.md"
   ]
  },
@@ -19076,7 +19119,9 @@
   "source_records": [
    "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
    "docs/research/R-0080-split-hud.md",
-   "tasks/SPLIT-HUD-GAPS.md"
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/SPLIT-HUD-GAPS.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
  },
  {
@@ -20732,7 +20777,9 @@
    "src/core/presentation.cpp:invisible_riders"
   ],
   "source_records": [
-   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
  },
  {
@@ -26159,6 +26206,7 @@
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
    "docs/research/R-0078-pause-menu-picture.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/CLASSIC-PAUSE-MENU.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
@@ -26454,7 +26502,8 @@
    "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
-   "docs/research/R-0052-hunter-effects.md"
+   "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0103-split-hunter-pictures.md"
   ]
  },
  {
@@ -26763,6 +26812,7 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -26817,7 +26867,9 @@
   ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md",
-   "tasks/CREDITS-NAME.md"
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "tasks/CREDITS-NAME.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
  },
  {

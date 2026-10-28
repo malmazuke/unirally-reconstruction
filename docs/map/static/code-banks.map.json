@@ -19352,16 +19352,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2230,
+  "cited_addresses": 2233,
   "cited_by_class": {
    "data": 16,
    "inferred": 97,
-   "observed": 1919,
+   "observed": 1922,
    "unknown": 198
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1516,
+   "loc": 1519,
    "mid": 31,
    "sub": 469,
    "unk": 198
