@@ -123,9 +123,27 @@ the end image byte for byte):
 original's. The remaining differing bytes in these runs are R-0090's known gaps (`$10A7`, `$10AD`,
 the never-read checksums and race words).
 
-The image sweep (SAVE-FILES' `image_sweep.py` corpus, the original's cartridge RAM against each
-runner's image at frame 406 and every 500th frame; `bits_sweep.py`) is in the task record's
-checkpoint.
+The image sweep (`bits_sweep.py`: SAVE-FILES' `image_sweep.py` corpus of 236 cold-start
+manifests, the original's cartridge RAM against each runner's image after frame 406 and every
+500th frame) counts the manifests in which a bit of `$77:0742-0743` differs at some compared frame:
+
+| Bit | 1 | 2 | 3 | 8 | 9 | 10 | 13 | others |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Main | 212 | 19 | 89 | 74 | 54 | 89 | 1 | 0 |
+| Candidate | 8 | 0 | 7 | 0 | 0 | 0 | 1 | 0 |
+
+No other byte differs in any manifest where it did not on main, and no runner fails
+(`sweep/sweep-1.json`). The residue:
+
+- Seven idle-demo manifests (bits 1 and 3): the split demo's `0x0A` (`$80:94C3`) holds through its
+  race. A trace of a warm idle boot (`cold-429`) shows `0x0A` from the race setup (native's demo
+  title frame 458) to the return's first frame, when `$80:A09A` clears bit 1, and bit 3 until
+  the return's frame 105 (`$80:94CB`). Native's image keeps the menus' value.
+- `league/organic-full-tour` (bit 13, main the same): the original clears the bit at `$80:BE84`
+  on frame 60757, five frames into the standings' table and with no press (access capture
+  `census/acc-organic-full-tour-60740`; `$80:99C2` follows at 60764), while native clears it at
+  the podium's entry after the press at 61415.
+- The eighth bit-1 manifest is the same league run (the logo's bit through the podium's setup).
 
 ## Not covered
 
@@ -140,3 +158,7 @@ checkpoint.
 - `$0750`'s and `$0744-0753`'s race words in a saved image: native does not write them, and no
   later boot reads them (R-0090).
 - `$77:10CF` (a league pair swapped by `$83:95C4`), read only after the race (`$83:95DB`).
+- The image's residue above: the demo race's `0x0A` and the league's bit 13 between the table and
+  the podium. Neither is read by a later boot before it is rewritten.
+- A later boot from an image whose bit 8 is set skips `$80:9805`'s parking at its first result;
+  R-0057's argument that the OAM buffer is the same either way was not re-captured here.
