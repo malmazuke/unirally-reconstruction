@@ -27,6 +27,17 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**28 October 2026: TWO-VIEW-POWER-BOUNCE is accepted (tier 1, #90) and integrated by merge commit.**
+Under HUNTER's power bounce, both riders of a two-view race (2P, VS, the split demo, a two-view
+league race) now land with landing matrix 0, as the original's `$81:94A8-94C3` gives it; in one
+view only the player does.
+- **Results:** race rows equal to the original past the old divergence on `twop-104`, `vs-124` and
+  a new `twop-67` (5,973 of 5,973 each); the one-view `one-88` and the earlier HUNTER races
+  unchanged. Full-length pictures 6,100, 6,099 and 6,089 of 6,100 (main 3,083-3,650), the rest
+  R-0103's line-113 limit.
+- **Time:** about 4 h from claim to merge (D-0013's target 6 h).
+[R-0104](research/R-0104-two-view-power-bounce.md) and [TWO-VIEW-POWER-BOUNCE](../tasks/TWO-VIEW-POWER-BOUNCE.md) hold the detail.
+
 **28 October 2026: SPLIT-HUNTER-PICTURES is accepted (tier 2, #89) and integrated by merge commit.**
 A two-view race in HUNTER mode ("faedine") now draws HUNTER's effects as the original does:
 - **Effects:** "invisible unis" (no flip, riders blanked), wobble mode's mosaic in the lower view,

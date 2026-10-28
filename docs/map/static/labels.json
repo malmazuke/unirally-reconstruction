@@ -13846,7 +13846,8 @@
    "src/core/race_update.cpp:update_rider_contact"
   ],
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0104-two-view-power-bounce.md"
   ]
  },
  {
@@ -13895,6 +13896,18 @@
   "source_records": [
    "docs/research/R-0021-zoom-zoo-content-contract.md",
    "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:8DB0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818DB0",
+  "native": [
+   "src/core/vertical_contact.cpp:lands_with_power_bounce"
+  ],
+  "source_records": [
+   "docs/research/R-0104-two-view-power-bounce.md"
   ]
  },
  {
@@ -13974,7 +13987,8 @@
    "src/core/race_update.cpp:update_rider_contact"
   ],
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0104-two-view-power-bounce.md"
   ]
  },
  {
@@ -14036,6 +14050,18 @@
   "source_records": [
    "docs/research/R-0021-zoom-zoo-content-contract.md",
    "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:8F04",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818F04",
+  "native": [
+   "src/core/vertical_contact.cpp:lands_with_power_bounce"
+  ],
+  "source_records": [
+   "docs/research/R-0104-two-view-power-bounce.md"
   ]
  },
  {
@@ -14475,17 +14501,31 @@
   ]
  },
  {
+  "address": "$81:9495",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_819495",
+  "source_records": [
+   "docs/research/R-0104-two-view-power-bounce.md"
+  ]
+ },
+ {
   "address": "$81:94A8",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8194A8",
   "native": [
    "src/core/vertical_contact.cpp:apply_landing_matrix",
-   "src/core/vertical_contact.cpp:land"
+   "src/core/vertical_contact.cpp:lands_with_power_bounce",
+   "src/core/vertical_contact.hpp:lands_with_power_bounce"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0103-split-hunter-pictures.md",
+   "docs/research/R-0104-two-view-power-bounce.md",
+   "tasks/SPLIT-HUNTER-PICTURES.md",
+   "tasks/TWO-VIEW-POWER-BOUNCE.md"
   ]
  },
  {
@@ -14495,7 +14535,8 @@
   "label": "loc_8194AF",
   "native": [
    "src/core/vertical_contact.cpp:apply_landing_matrix",
-   "src/core/vertical_contact.cpp:land"
+   "src/core/vertical_contact.cpp:lands_with_power_bounce",
+   "src/core/vertical_contact.hpp:lands_with_power_bounce"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md"
@@ -14508,10 +14549,12 @@
   "label": "loc_8194B4",
   "native": [
    "src/core/vertical_contact.cpp:apply_landing_matrix",
-   "src/core/vertical_contact.cpp:land"
+   "src/core/vertical_contact.cpp:lands_with_power_bounce",
+   "src/core/vertical_contact.hpp:lands_with_power_bounce"
   ],
   "source_records": [
-   "docs/research/R-0011-contact.md"
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0104-two-view-power-bounce.md"
   ]
  },
  {
@@ -14520,16 +14563,45 @@
   "comment": "instruction start",
   "label": "loc_8194B9",
   "native": [
-   "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero",
    "src/core/vertical_contact.cpp:apply_landing_matrix",
-   "src/core/vertical_contact.cpp:land"
+   "src/core/vertical_contact.cpp:lands_with_power_bounce",
+   "src/core/vertical_contact.hpp:lands_with_power_bounce"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md",
    "docs/research/R-0032-player-landing-recovery.md",
    "docs/research/R-0052-hunter-effects.md",
    "docs/research/R-0103-split-hunter-pictures.md",
+   "docs/research/R-0104-two-view-power-bounce.md",
    "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$81:94BE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8194BE",
+  "native": [
+   "src/core/vertical_contact.cpp:apply_landing_matrix",
+   "src/core/vertical_contact.cpp:lands_with_power_bounce",
+   "src/core/vertical_contact.hpp:lands_with_power_bounce"
+  ],
+  "source_records": [
+   "docs/research/R-0104-two-view-power-bounce.md"
+  ]
+ },
+ {
+  "address": "$81:94C3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8194C3",
+  "native": [
+   "src/core/vertical_contact.cpp:apply_landing_matrix",
+   "src/core/vertical_contact.cpp:lands_with_power_bounce",
+   "src/core/vertical_contact.hpp:lands_with_power_bounce"
+  ],
+  "source_records": [
+   "docs/research/R-0104-two-view-power-bounce.md"
   ]
  },
  {

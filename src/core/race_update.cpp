@@ -82,7 +82,7 @@ constexpr std::int16_t shallow_slope = 30;
 // override of 80.
 constexpr std::uint16_t drive_step = 24, lift_launch_override = 80;
 // The loop's top is step 9. Native passes the cartridge's options word ($77:0750) as
-// 0xC200; contact tests only its bit 3, which is clear.
+// 0xC200, or 0xC20A in a race with two views; contact tests only its bit 3, set with two views.
 constexpr std::uint16_t loop_top_step = 9, cartridge_options = 0xc200, split_demo_options = 0xc20a;
 // The wrong-direction warning after 180 active updates, then every 60 ($82:974B/977B).
 constexpr std::uint16_t wrong_way_warning = 180, wrong_way_repeat = 120;
@@ -804,7 +804,7 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
         {whole.contact_phase, index == 1, next.surface[index].mode,
          next.split_screen ? split_demo_options : cartridge_options,
          next.special_tiles[index].loop_step == loop_top_step,
-         index == 0 && next.hunter.effect[hunter_effect::power_bounce] != 0},
+         next.hunter.effect[hunter_effect::power_bounce] != 0},
         content.slope_coefficients.subspan(state.sustained && surface_mode ? 64 : 0,
                                            state.sustained ? 32 : 9),
         content.slope_coefficients.subspan(state.sustained ? (surface_mode ? 96 : 32) : 9),

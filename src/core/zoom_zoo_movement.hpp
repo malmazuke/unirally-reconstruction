@@ -291,7 +291,7 @@ bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track, u
 namespace hunter_effect {
 inline constexpr unsigned barf_mode = 0;        // BG2's axes swap
 inline constexpr unsigned hedgehog_speed = 1;   // growing, then shrinking, freezes
-inline constexpr unsigned power_bounce = 2;     // the player lands with matrix 0
+inline constexpr unsigned power_bounce = 2;     // landings take matrix 0 (R-0104)
 inline constexpr unsigned screen_flip = 3;      // the picture upside down
 inline constexpr unsigned invisible_track = 4;  // BG1 off
 inline constexpr unsigned slow_motion = 5;      // three updates in four skipped

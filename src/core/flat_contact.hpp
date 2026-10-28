@@ -56,8 +56,8 @@ struct ContactContext {
     bool opponent{};
     std::uint16_t mode{};
     std::uint16_t cartridge_options{}; // $77:0750, only bit 3 is tested here
-    bool loop_top{}; // the rider's loop step `$0355,y` is 9 (vertical contact, flag pair 26)
-    bool landing_matrix_zero{}; // the player under HUNTER effect 2 (`$132B`, $81:94B9, R-0052)
+    bool loop_top{};     // the rider's loop step `$0355,y` is 9 (vertical contact, flag pair 26)
+    bool power_bounce{}; // HUNTER effect 2 is on (`$132B`, R-0052): lands_with_power_bounce
 };
 
 FlatContactSummary summarize_flat_contact(const FlatContactContent& content,
