@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-2238 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1523, mid 31, sub 470, unk 198 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 98, observed 1926, unknown 198.
+2322 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1601, mid 31, sub 471, unk 203 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 105, observed 1998, unknown 203.
 
 Cited addresses in `unknown` bytes:
 
@@ -119,6 +119,9 @@ Cited addresses in `unknown` bytes:
 | $80:B567 | docs/research/R-0098-league-tours.md |
 | $80:B66E | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:B6C2 | docs/research/R-0072-options.md |
+| $80:B855 | docs/research/R-0105-cartridge-option-words.md |
+| $80:B87A | docs/research/R-0105-cartridge-option-words.md |
+| $80:B89F | docs/research/R-0105-cartridge-option-words.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
 | $80:C120 | docs/research/R-0095-two-human-stunts.md |
@@ -172,6 +175,7 @@ Cited addresses in `unknown` bytes:
 | $80:F4B4 | docs/research/R-0067-stunt-result.md |
 | $80:F4B5 | docs/research/R-0067-stunt-result.md, docs/research/R-0095-two-human-stunts.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:F648 | docs/research/R-0105-cartridge-option-words.md |
 | $80:F7E7 | docs/research/R-0067-stunt-result.md |
 | $80:F9EE | docs/research/R-0071-two-player-versus.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
@@ -202,6 +206,7 @@ Cited addresses in `unknown` bytes:
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
 | $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md, docs/research/R-0090-save-files.md, tasks/NEXT_SESSION.md, tasks/SAVE-FILES.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |
+| $83:8472 | docs/research/R-0105-cartridge-option-words.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:8537 | docs/research/R-0097-menu-input.md, docs/research/R-0101-name-check.md, tasks/NAME-CHECK.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |

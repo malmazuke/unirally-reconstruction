@@ -632,6 +632,7 @@
   "label": "loc_8087A2",
   "source_records": [
    "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0105-cartridge-option-words.md",
    "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
   ]
  },
@@ -741,7 +742,8 @@
    "src/core/presentation.cpp:apply_neon_colours"
   ],
   "source_records": [
-   "docs/research/R-0068-stunt-hud.md"
+   "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -832,7 +834,17 @@
   "comment": "instruction start",
   "label": "loc_808889",
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:8891",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_808891",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -1456,6 +1468,15 @@
   ]
  },
  {
+  "address": "$80:930B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80930B",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:9314",
   "class": "observed",
   "comment": "routine start",
@@ -1693,6 +1714,15 @@
   ],
   "source_records": [
    "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$80:94BC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8094BC",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -1958,6 +1988,7 @@
   "comment": "routine start",
   "label": "sub_809805",
   "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame"
   ],
@@ -1965,6 +1996,24 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0067-stunt-result.md"
+  ]
+ },
+ {
+  "address": "$80:9809",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809809",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:9814",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809814",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -2062,6 +2111,20 @@
   ]
  },
  {
+  "address": "$80:98CB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8098CB",
+  "native": [
+   "src/core/race_result.cpp:hide_result_objects",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/race_result.cpp:start_lap_graph"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:9980",
   "class": "observed",
   "comment": "routine start",
@@ -2126,6 +2189,15 @@
   ]
  },
  {
+  "address": "$80:99C2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8099C2",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:99E8",
   "class": "observed",
   "comment": "instruction start",
@@ -2164,8 +2236,21 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_809A05",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+  ],
   "source_records": [
-   "docs/research/R-0081-split-race-end.md"
+   "docs/research/R-0081-split-race-end.md",
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:9A0B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809A0B",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -2243,6 +2328,15 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:9AA8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809AA8",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -2680,12 +2774,39 @@
   ]
  },
  {
+  "address": "$80:9F18",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809F18",
+  "native": [
+   "src/core/options_menu.cpp:enter_league_slots",
+   "src/core/options_menu.cpp:league_slots_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:9F1E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809F1E",
+  "native": [
+   "src/core/options_menu.cpp:enter_league_slots",
+   "src/core/options_menu.cpp:league_slots_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:9F21",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_809F21",
   "native": [
-   "src/core/options_menu.cpp:enter_league_slots"
+   "src/core/options_menu.cpp:enter_league_slots",
+   "src/core/options_menu.cpp:league_slots_frame"
   ],
   "source_records": [
    "docs/research/R-0090-save-files.md"
@@ -2860,7 +2981,8 @@
    "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index"
   ],
   "source_records": [
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -2870,10 +2992,12 @@
   "label": "loc_80A0A5",
   "native": [
    "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index",
+   "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/cartridge_ram.cpp:insert_cartridge"
   ],
   "source_records": [
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -3984,6 +4108,7 @@
   "label": "sub_80ABC8",
   "native": [
    "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input",
+   "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/front_end.cpp:first_idle, idle_after_move",
    "src/core/front_end.cpp:start_main_menu",
    "src/core/front_end.hpp:FrontEndScreen",
@@ -3994,6 +4119,7 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0105-cartridge-option-words.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
@@ -4543,6 +4669,15 @@
   ]
  },
  {
+  "address": "$80:B021",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B021",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:B051",
   "class": "observed",
   "comment": "instruction start",
@@ -4825,11 +4960,41 @@
   "comment": "instruction start",
   "label": "loc_80B297",
   "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/now_playing.cpp:note_option_bits",
    "src/core/now_playing.cpp:print_now_playing"
   ],
   "source_records": [
    "docs/research/R-0084-two-human-restart.md",
    "tasks/TWO-HUMAN-RESTART.md"
+  ]
+ },
+ {
+  "address": "$80:B2BC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B2BC",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/now_playing.cpp:note_option_bits",
+   "src/core/now_playing.cpp:print_now_playing"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:B2F7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B2F7",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/now_playing.cpp:note_option_bits",
+   "src/core/now_playing.cpp:print_now_playing"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -5259,6 +5424,31 @@
   ]
  },
  {
+  "address": "$80:B6D6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B6D6",
+  "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
+   "src/core/front_end_screens.hpp:gated_pads",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:B6F8",
   "class": "observed",
   "comment": "routine start",
@@ -5498,6 +5688,33 @@
   "source_records": [
    "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:B855",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B855",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:B87A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B87A",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:B89F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B89F",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -5904,11 +6121,38 @@
   "comment": "instruction start",
   "label": "loc_80BBC3",
   "native": [
+   "src/core/now_playing.cpp:note_option_bits",
    "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:BBC8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BBC8",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select",
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:BBD2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BBD2",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select",
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -6106,6 +6350,20 @@
    "docs/research/R-0079-two-pad-pause.md",
    "docs/research/R-0084-two-human-restart.md",
    "tasks/TWO-HUMAN-RESTART.md"
+  ]
+ },
+ {
+  "address": "$80:BC38",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BC38",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/now_playing.cpp:note_option_bits",
+   "src/core/race_result.cpp:race_restart_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -6310,10 +6568,31 @@
   "label": "loc_80BD08",
   "native": [
    "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:take_second_human"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:BD0C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD0C",
+  "native": [
+   "src/core/rider_menu.cpp:take_second_human"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:BD16",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD16",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -6351,6 +6630,19 @@
   "source_records": [
    "docs/research/R-0084-two-human-restart.md",
    "tasks/TWO-HUMAN-RESTART.md"
+  ]
+ },
+ {
+  "address": "$80:BD6D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD6D",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/now_playing.cpp:note_option_bits"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -6543,6 +6835,32 @@
   ]
  },
  {
+  "address": "$80:BE7C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE7C",
+  "native": [
+   "src/core/league_completion.cpp:(file)",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:BE81",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE81",
+  "native": [
+   "src/core/league_completion.cpp:(file)",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:BEC6",
   "class": "observed",
   "comment": "instruction start",
@@ -6586,6 +6904,31 @@
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:BEEC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BEEC",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/now_playing.cpp:note_option_bits"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:BEF9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BEF9",
+  "native": [
+   "src/core/league_menu.cpp:choose_league_pair"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -6718,12 +7061,37 @@
   ]
  },
  {
+  "address": "$80:BF90",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF90",
+  "native": [
+   "src/core/rider_menu.cpp:take_second_human"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:BF94",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BF94",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/rider_menu.cpp:take_second_human"
+  ],
   "source_records": [
    "docs/research/R-0071-two-player-versus.md"
+  ]
+ },
+ {
+  "address": "$80:BF9C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF9C",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -6742,7 +7110,7 @@
   "label": "loc_80BFB7",
   "native": [
    "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:take_second_human"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -6812,6 +7180,18 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:BFF9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BFF9",
+  "native": [
+   "src/core/now_playing.cpp:now_playing_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -6973,6 +7353,15 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:C0C9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C0C9",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -8857,7 +9246,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -9545,6 +9935,18 @@
   ]
  },
  {
+  "address": "$80:DE9E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DE9E",
+  "native": [
+   "src/core/records_scores.cpp:scores_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:DEA9",
   "class": "observed",
   "comment": "instruction start",
@@ -9555,6 +9957,19 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DEAF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DEAF",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::group_table_shown",
+   "src/core/records_scores.cpp:scores_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -9663,6 +10078,18 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:DF9F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DF9F",
+  "native": [
+   "src/core/records_scores.cpp:group_tables_input"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -10571,6 +10998,30 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:EA1A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EA1A",
+  "native": [
+   "src/core/track_menu.cpp:track_menu_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:EA1F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EA1F",
+  "native": [
+   "src/core/track_menu.cpp:track_menu_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -11505,6 +11956,7 @@
   "comment": "routine start",
   "label": "sub_80F51B",
   "native": [
+   "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/hunter_ending.cpp:enter_hunter_code",
    "src/core/rider_menu.cpp:enter_rider_menu",
    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
@@ -11516,12 +11968,22 @@
   ]
  },
  {
+  "address": "$80:F51E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F51E",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:F52B",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80F52B",
   "native": [
    "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads",
+   "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/options_menu.cpp:rename_commit_frame",
    "src/core/records_scores.cpp:close_scores",
    "src/core/rider_menu.cpp:main_menu_return_frame",
@@ -11533,6 +11995,15 @@
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:F52E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F52E",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -11553,6 +12024,7 @@
   "comment": "routine start",
   "label": "sub_80F53F",
   "native": [
+   "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/front_end_screens.hpp:raise_logo",
    "src/core/race_result.cpp:raise_logo",
    "src/core/race_result.cpp:restore_menus_after_race",
@@ -11563,6 +12035,15 @@
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0084-two-human-restart.md",
    "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:F542",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F542",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -11600,7 +12081,8 @@
    "src/core/front_end.hpp:OnePlayerRecords::cheat"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -11632,6 +12114,21 @@
   ]
  },
  {
+  "address": "$80:F5D3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F5D3",
+  "native": [
+   "src/core/audio_cpu_title_hold.cpp:native_audio_begin_title_hold",
+   "src/core/front_end.cpp:check_title_code",
+   "src/core/front_end.hpp:FrontEndState::title_code_step",
+   "src/core/front_end.hpp:OnePlayerRecords::cheat"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:F5E3",
   "class": "observed",
   "comment": "instruction start",
@@ -11646,6 +12143,21 @@
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:F609",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F609",
+  "native": [
+   "src/core/audio_cpu_title_hold.cpp:native_audio_begin_title_hold",
+   "src/core/front_end.cpp:check_title_code",
+   "src/core/front_end.hpp:FrontEndState::title_code_step",
+   "src/core/front_end.hpp:OnePlayerRecords::cheat"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -11695,6 +12207,15 @@
   ]
  },
  {
+  "address": "$80:F624",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F624",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:F63E",
   "class": "observed",
   "comment": "instruction start",
@@ -11710,6 +12231,15 @@
   "label": "loc_80F644",
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:F648",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80F648",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -13335,7 +13865,8 @@
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::player_contact_palette"
   ],
   "source_records": [
-   "docs/research/R-0068-stunt-hud.md"
+   "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -13907,7 +14438,8 @@
    "src/core/vertical_contact.cpp:lands_with_power_bounce"
   ],
   "source_records": [
-   "docs/research/R-0104-two-view-power-bounce.md"
+   "docs/research/R-0104-two-view-power-bounce.md",
+   "tasks/TWO-VIEW-POWER-BOUNCE.md"
   ]
  },
  {
@@ -14061,7 +14593,8 @@
    "src/core/vertical_contact.cpp:lands_with_power_bounce"
   ],
   "source_records": [
-   "docs/research/R-0104-two-view-power-bounce.md"
+   "docs/research/R-0104-two-view-power-bounce.md",
+   "tasks/TWO-VIEW-POWER-BOUNCE.md"
   ]
  },
  {
@@ -14412,6 +14945,7 @@
    "src/core/vertical_contact.cpp:convert_steep_contact"
   ],
   "source_records": [
+   "docs/research/R-0104-two-view-power-bounce.md",
    "tasks/M4-14-review.md"
   ]
  },
@@ -14524,6 +15058,7 @@
    "docs/research/R-0098-league-tours.md",
    "docs/research/R-0103-split-hunter-pictures.md",
    "docs/research/R-0104-two-view-power-bounce.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SPLIT-HUNTER-PICTURES.md",
    "tasks/TWO-VIEW-POWER-BOUNCE.md"
   ]
@@ -14539,7 +15074,8 @@
    "src/core/vertical_contact.hpp:lands_with_power_bounce"
   ],
   "source_records": [
-   "docs/research/R-0011-contact.md"
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -14626,6 +15162,15 @@
   ],
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:94D0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8194D0",
+  "source_records": [
+   "docs/research/R-0104-two-view-power-bounce.md"
   ]
  },
  {
@@ -16269,6 +16814,21 @@
   ]
  },
  {
+  "address": "$81:C57D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C57D",
+  "native": [
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
+   "src/core/reward_queue.cpp:push_front_player_announcement"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$81:C598",
   "class": "observed",
   "comment": "routine start",
@@ -17039,6 +17599,15 @@
   ]
  },
  {
+  "address": "$81:CD45",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81CD45",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$81:CDB8",
   "class": "observed",
   "comment": "instruction start",
@@ -17050,6 +17619,15 @@
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
+  "address": "$81:CE70",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81CE70",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -20855,6 +21433,18 @@
   ]
  },
  {
+  "address": "$82:B15A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B15A",
+  "native": [
+   "src/core/presentation.cpp:invisible_riders"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$82:B15E",
   "class": "observed",
   "comment": "instruction start",
@@ -20880,6 +21470,7 @@
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0105-cartridge-option-words.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
@@ -20928,6 +21519,7 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0105-cartridge-option-words.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
@@ -21415,6 +22007,21 @@
   ]
  },
  {
+  "address": "$82:D5C2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D5C2",
+  "native": [
+   "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
+   "src/core/presentation.cpp:split_view_line",
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
+   "src/core/presentation.hpp:classic_race_ink"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$82:D6E7",
   "class": "observed",
   "comment": "routine start",
@@ -21458,6 +22065,15 @@
   ],
   "source_records": [
    "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
+  "address": "$82:D785",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D785",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -21683,6 +22299,36 @@
   ]
  },
  {
+  "address": "$82:D99B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82D99B",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:neon_lighting_on",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$82:D99F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82D99F",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:neon_lighting_on",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$82:DA75",
   "class": "observed",
   "comment": "instruction start",
@@ -21826,7 +22472,23 @@
   ],
   "source_records": [
    "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md",
    "tasks/DATA-COVERAGE.md"
+  ]
+ },
+ {
+  "address": "$82:DC32",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82DC32",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content",
+   "src/core/race_setup.cpp:neon_lighting_on"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -21853,6 +22515,19 @@
   ],
   "source_records": [
    "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
+  "address": "$82:DC77",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DC77",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -22070,6 +22745,18 @@
   "source_records": [
    "docs/research/R-0073-league.md",
    "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$82:E05A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E05A",
+  "native": [
+   "src/core/league_completion.cpp:setup_podium"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -22374,6 +23061,15 @@
   ]
  },
  {
+  "address": "$83:8472",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838472",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$83:8484",
   "class": "observed",
   "comment": "routine start",
@@ -22661,6 +23357,15 @@
   "label": "loc_8387C0",
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:87DC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8387DC",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -23623,7 +24328,8 @@
    "src/core/audio_cpu_menu_defaults.cpp:initialize_settings"
   ],
   "source_records": [
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -23687,6 +24393,24 @@
   ]
  },
  {
+  "address": "$83:9536",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839536",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:9539",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839539",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$83:9543",
   "class": "observed",
   "comment": "routine start",
@@ -23704,6 +24428,24 @@
   ]
  },
  {
+  "address": "$83:954B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83954B",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:954E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83954E",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$83:9558",
   "class": "observed",
   "comment": "routine start",
@@ -23717,6 +24459,24 @@
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$83:9560",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839560",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:9563",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839563",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -23739,11 +24499,34 @@
   "label": "sub_83958C",
   "native": [
    "src/core/league_menu.cpp:choose_league_pair",
-   "src/core/league_menu.cpp:restore_league_pair"
+   "src/core/league_menu.cpp:restore_league_pair",
+   "src/core/now_playing.cpp:now_playing_frame"
   ],
   "source_records": [
    "docs/research/R-0073-league.md",
-   "docs/research/R-0090-save-files.md"
+   "docs/research/R-0090-save-files.md",
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:958F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83958F",
+  "native": [
+   "src/core/league_menu.cpp:choose_league_pair"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:95C4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8395C4",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -23757,6 +24540,15 @@
   ],
   "source_records": [
    "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$83:95DB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8395DB",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -23988,6 +24780,30 @@
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$83:98F7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8398F7",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:9916",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839916",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -24522,6 +25338,18 @@
   ]
  },
  {
+  "address": "$83:A562",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83A562",
+  "native": [
+   "src/core/tour_ending.cpp:tour_ending_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$83:A575",
   "class": "observed",
   "comment": "instruction start",
@@ -24583,6 +25411,18 @@
   ],
   "source_records": [
    "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:A66F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83A66F",
+  "native": [
+   "src/core/award.cpp:tour_award_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -25882,6 +26722,15 @@
   ]
  },
  {
+  "address": "$83:C90B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C90B",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$83:C912",
   "class": "observed",
   "comment": "instruction start",
@@ -25919,6 +26768,18 @@
   ],
   "source_records": [
    "docs/research/R-0087-idle-demo-rotation.md"
+  ]
+ },
+ {
+  "address": "$83:C93D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C93D",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -25966,6 +26827,15 @@
   ]
  },
  {
+  "address": "$83:C9E1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C9E1",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$83:C9E4",
   "class": "observed",
   "comment": "instruction start",
@@ -25992,6 +26862,20 @@
    "docs/research/R-0087-idle-demo-rotation.md",
    "docs/research/R-0096-demo-audio.md",
    "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:C9FA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C9FA",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:idle_demo_loading_frames",
+   "src/core/front_end_runner.cpp:start_race"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -26137,6 +27021,15 @@
   "label": "sub_83CBF2",
   "source_records": [
    "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:CBF8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CBF8",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -26683,7 +27576,8 @@
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
-   "docs/research/R-0068-stunt-hud.md"
+   "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -26720,6 +27614,24 @@
   "source_records": [
    "docs/research/R-0094-name-cheats.md",
    "tasks/CREDITS-NAME.md"
+  ]
+ },
+ {
+  "address": "$83:CEEE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CEEE",
+  "native": [
+   "src/core/announcements.hpp:invisible_unis",
+   "src/core/hunter_effects.cpp:priority",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -26814,6 +27726,22 @@
    "docs/research/R-0068-stunt-hud.md",
    "docs/research/R-0089-coverage-gaps.md",
    "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D1D0",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83D1D0",
+  "native": [
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -26942,6 +27870,24 @@
    "docs/research/R-0103-split-hunter-pictures.md",
    "tasks/CREDITS-NAME.md",
    "tasks/SPLIT-HUNTER-PICTURES.md"
+  ]
+ },
+ {
+  "address": "$83:D33E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83D33E",
+  "native": [
+   "src/core/hunter_effects.cpp:run_screen_flip",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/presentation.cpp:race_scroll",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -28624,6 +29570,23 @@
   ]
  },
  {
+  "address": "$83:E944",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E944",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:stunt_finish_announcement",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$83:E958",
   "class": "observed",
   "comment": "instruction start",
@@ -28780,6 +29743,24 @@
    "docs/research/R-0081-split-race-end.md",
    "tasks/NEXT_SESSION.md",
    "tasks/SPLIT-RACE-END.md"
+  ]
+ },
+ {
+  "address": "$83:EA61",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA61",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:drive_banner",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:update_stunt_finish",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -28946,6 +29927,23 @@
   ]
  },
  {
+  "address": "$83:EAD6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EAD6",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:stunt_finish_announcement",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$83:EAEA",
   "class": "observed",
   "comment": "instruction start",
@@ -29035,6 +30033,24 @@
    "docs/research/R-0081-split-race-end.md",
    "tasks/NEXT_SESSION.md",
    "tasks/SPLIT-RACE-END.md"
+  ]
+ },
+ {
+  "address": "$83:EBCF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EBCF",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:drive_banner",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:update_stunt_finish",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -30111,6 +31127,15 @@
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0090-save-files.md",
    "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$83:FB45",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83FB45",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
