@@ -2,9 +2,18 @@
 
 ## Assignment
 
-- Status: **queued** 10 October 2026 by [CREDITS-NAME](CREDITS-NAME.md) (R-0094). Unclaimed.
+- Status: **claimed** 27 October 2026 21:58 UTC on main `9980a38a`, on the user's instruction
+  (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
+  subagent implements, a fresh subagent reviews). Queued 10 October 2026 by
+  [CREDITS-NAME](CREDITS-NAME.md) (R-0094). Run under
+  [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge against the
+  6-hour target, new evidence under 1 GB.
+- Choice: the next queued player-visible gap after PODIUM-RETURN-TIMING.
+- Branch `task/split-hunter-pictures` in `.worktrees/split-hunter-pictures`; evidence in main
+  `local/evidence/split-hunter-pictures/`.
 - Milestone: M4 (original game coverage).
-- Review tier: **2** (presentation only; the race state already matches).
+- Review tier: **2** (presentation only: the race state already matches, R-0094; one independent
+  round, escalated to tier 1 if the fix touches race state).
 - Dependencies: CREDITS-NAME (R-0094), HUNTER-EFFECTS (R-0052), SPLIT-SCREEN-RACE (R-0069).
 
 ## Why

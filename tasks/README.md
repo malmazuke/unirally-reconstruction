@@ -100,7 +100,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | PODIUM-AUDIO | accepted (tier 1, #82, R-0099): the league podium's sound session, its music and its exit test | [The league podium's music](PODIUM-AUDIO.md) |
 | WIPE-RAM | accepted (tier 1, #69): the main menu's hidden WIPE RAM menu, its warning and the factory reset (R-0092); pack v36 | [The hidden WIPE RAM menu](WIPE-RAM.md) |
 | CREDITS-NAME | accepted (tier 1, #70): the rider-name cheats "credits" and "faedine" (R-0094); pack v37 | [The rider-name cheats](CREDITS-NAME.md) |
-| SPLIT-HUNTER-PICTURES | queued (tier 2) by CREDITS-NAME (R-0094): HUNTER's effects in a two-view race's picture | [HUNTER's effects in a split picture](SPLIT-HUNTER-PICTURES.md) |
+| SPLIT-HUNTER-PICTURES | claimed 27 October 2026 (tier 2); queued by CREDITS-NAME (R-0094): HUNTER's effects in a two-view race's picture | [HUNTER's effects in a split picture](SPLIT-HUNTER-PICTURES.md) |
 | TWO-HUMAN-STUNTS | accepted (tier 1, #72): stunt events with two humans in 2P and VS, the menus around them, VS mode 2's counters and the two-human restart's records (R-0095); pack v38 | [Stunt events with two humans](TWO-HUMAN-STUNTS.md) |
 | DATA-COVERAGE | accepted (tier 2, #71): which ROM data the original reads over R-0089's corpus, the two asset directories, what native does not extract, and the static map regenerated from the corpus (R-0093) | [Which data the original reads](DATA-COVERAGE.md) |
 | ACCESS-ROUND-READS | accepted (tier 2, #74): the access record keeps only the kept resolution round's reads; no corpus frame needed a second round, R-0093 unchanged | [A discarded resolution round's ROM reads](ACCESS-ROUND-READS.md) |
