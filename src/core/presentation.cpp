@@ -434,7 +434,8 @@ struct RaceScroll {
 // ($81:AE90) scrolls BG2 by the camera's full y horizontally and its full x vertically;
 // effect 4 ($80:8638) takes BG1 off the main screen; effect 6 ($80:8821) turns on the BG1 and
 // BG2 mosaic, its size the NMI counter's low three bits; effect 3 ($83:D581-E081) shows the
-// playfield upside down through a per-line BG1 scroll table.
+// playfield upside down through a per-line BG1 scroll table. A race with two views builds no
+// table and turns no sprite over ($83:D337-D343 return before `JSR $D581`, R-0094).
 RaceScroll race_scroll(const ZoomZooState& state, const ClassicRacePresentationContent& content,
                        const ZoomZooState* previous_update, const ClassicRaceHistory* history,
                        bool second_camera = false) {
@@ -470,7 +471,7 @@ RaceScroll race_scroll(const ZoomZooState& state, const ClassicRacePresentationC
         scroll.bg_y = static_cast<std::uint16_t>(scroll.background_x - origin_x);
     }
     scroll.hide_track = effects && effects->hide_track;
-    scroll.flip = effects && effects->blink;
+    scroll.flip = effects && effects->blink && !state.split_screen;
     scroll.mosaic =
         effects && effects->mosaic ? static_cast<int>(state.hunter.mosaic_counter & 7U) + 1 : 1;
     return scroll;
@@ -503,15 +504,18 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
     const bool bg2_on_main = !content.scenario.neon_lighting;
     for (int y = 0; y < 224; ++y)
         for (int x = 0; x < 256; ++x) {
-            const auto& scroll = bottom_scroll && y >= 112 ? *bottom_scroll : top_scroll;
-            const int viewport_y = bottom_scroll && y >= 112 ? y - 112 : y;
-            // A mosaic block repeats its top-left pixel.
-            const int mx = x - x % scroll.mosaic, my = viewport_y - viewport_y % scroll.mosaic;
+            const bool lower_view = bottom_scroll && y >= 112;
+            const auto& scroll = lower_view ? *bottom_scroll : top_scroll;
+            // A mosaic block repeats its top-left pixel. Its rows count from the picture's first
+            // line, not the view's (bsnes ppu-fast `PPU::main`: the counter reloads on line 1
+            // only), so in the lower view a block can start above line 112, where the split
+            // HDMA has already changed the scroll.
+            const int mx = x - x % scroll.mosaic, picture_y = y - y % scroll.mosaic;
+            const int my = lower_view ? picture_y - 112 : picture_y;
             // The split HDMA changes BG2 scroll at scanline 112, but PPU tile fetches
             // still count scanlines from the top of the full picture.
             const auto background =
-                bg2_on_main ? race_bg2_pixel(vram, scroll, mx, bottom_scroll && y >= 112 ? y : my)
-                            : 0U;
+                bg2_on_main ? race_bg2_pixel(vram, scroll, mx, lower_view ? picture_y : my) : 0U;
             pixel(frame, x, y, colour(cgram, static_cast<std::uint8_t>(background)));
             if (scroll.hide_track) continue;
             // Screen row 0 is scanline 1, as in background_pixel's vertical +1. The BG1 map
@@ -672,6 +676,18 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
                 pixel(frame, x, y, rider_pixel(colours, math, index, x, y));
             });
         }
+}
+
+// HUNTER's screen flip in a race with two views, "invisible unis" (R-0094): the update's
+// visibility routine ($82:B154-B17F, `$77:0750` bit 3) points both riders' objects in both views
+// at the other half of their tiles (player 0x08 for 0x00, opponent 0x80 for 0x88) while the
+// blink (`$7E:2054`) the update before left is on. Those tiles are blank, so neither rider shows
+// (R-0103). A single state without history takes the drawn update's own blink.
+bool invisible_riders(const ZoomZooState& rider_source, const ZoomZooState* previous_update,
+                      const ClassicRaceHistory* history) {
+    if (!rider_source.split_screen) return false;
+    if (history) return history->hunter_flip_prior;
+    return previous_update && previous_update->hunter.blink;
 }
 
 // NEON's green level for the picture of `drawn` (R-0068): the history's, from the setup's 0;
@@ -891,15 +907,16 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                               ? classic_pause_message_cells(state.pause.lower_view)
                               : classic_pause_menu_cells(state.pause.lower_view);
     const auto lower_ink = race_ink_rgb(content, brightness, true);
-    draw_classic_caption(frame, rider_source, content, hud, bg3_ink, caption_ink);
     const auto draw_hud = [&] {
+        draw_classic_caption(frame, rider_source, content, hud, bg3_ink, caption_ink);
         draw_classic_hud(frame, rider_source, content,
                          history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
                          lower_ink, history ? history->opponent_caption_event : 0U, caption_ink);
     };
     // $80:D241 makes the objects the sub screen ($212D = 0x10) for a race from the menus, so a
     // rider under the HUD's ink shows through its colour math, as under the caption; the idle
-    // demo leaves $212D = 0 (`$80:942D`), so its split HUD is flat ink over the riders (R-0082).
+    // demo leaves $212D = 0 (`$80:942D`), so its split HUD and both caption rows are flat ink over
+    // the riders (R-0082, R-0103).
     const bool hud_over_riders = state.split_screen && state.demo_ai;
     if (!hud_over_riders) draw_hud();
     // The menu's words go in the HUD's layer, under the riders and the window members: on the
@@ -911,8 +928,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     }
     const auto math = race_object_math(caption_ink, neon_green ? &vram : nullptr, scroll, content,
                                        state.split_screen);
-    draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
-                     math);
+    if (!invisible_riders(rider_source, previous_update, history))
+        draw_race_riders(frame, rider_source, content, history, colours, scroll.flip,
+                         bg1_above_objects, math);
     // The split demo's HUD tile priority covers both riders at the lap-banner overlap; the
     // menu's cells keep the menu.
     if (hud_over_riders) {

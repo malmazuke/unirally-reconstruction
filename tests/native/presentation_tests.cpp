@@ -1,3 +1,4 @@
+#include "announcements.hpp"
 #include "movement.hpp"
 #include "presentation.hpp"
 #include "race_hud.hpp"
@@ -361,6 +362,80 @@ void split_forced_clock() {
   for (int update = 0; update < 3; ++update)
     blank.observe_update(crossed, crossed);
   require(blank.published().lower_clock_blanked);
+}
+
+// R-0103: HUNTER in a race with two views. Rider 1's caption takes a front-of-queue push only
+// when its consumer steps the read cursor on, and its dry look copies the HUD message buffer
+// (`$81:BFB9-BFD0`), the running effect's name; a skipped update asks for no lower clock.
+void split_hunter_captions() {
+  unirally::ZoomZooState quiet{};
+  quiet.split_screen = quiet.hunter_tour = true;
+  quiet.movement.timer.subframe = 2;
+  auto &queue = quiet.movement.rewards;
+  queue.read_cursor = 3;
+  queue.write_cursor = 4;
+  queue.entries[2] = 1; // ROLL, shown earlier
+  queue.entries[3] = 35;
+  queue.cooldown = 10;
+  unirally::ClassicRaceHudClock hud;
+  const auto run = [&hud](const unirally::ZoomZooState &before,
+                          const unirally::ZoomZooState &after) {
+    hud.observe_update(before, after);
+    for (int update = 0; update < 3; ++update)
+      hud.observe_update(after, after); // the fields ahead of it, then the caption
+    return hud.published().opponent_caption_event;
+  };
+  run(quiet, quiet);
+  // The push writes WOBBLE MODE ON at the read cursor and steps it back: nothing is taken.
+  auto pushed = quiet;
+  pushed.movement.rewards.entries[3] = 33;
+  pushed.movement.rewards.read_cursor = 2;
+  require(run(quiet, pushed) == 0);
+  // The consumer takes it on a later update.
+  auto taken = pushed;
+  taken.movement.rewards.read_cursor = 3;
+  taken.movement.rewards.cooldown = 40;
+  require(run(pushed, taken) == 33);
+  // The queue runs dry: the row shows the HUD buffer, the effect's name.
+  auto waiting = taken;
+  waiting.movement.rewards.cooldown = 2;
+  waiting.hunter.hud_event = 33;
+  auto dry = waiting;
+  dry.movement.rewards.cooldown = unirally::announcement::empty_queue_wait;
+  require(run(waiting, dry) == 33);
+  // A take and an effect's end in one update: the end's push overwrites the slot the take read
+  // and steps the cursor back, so only the take's display time shows; the row is the event taken.
+  auto queued = dry;
+  queued.movement.rewards.write_cursor = 5;
+  queued.movement.rewards.entries[4] = 43;
+  queued.movement.rewards.cooldown = 2;
+  run(dry, queued);
+  auto taken_then_pushed = queued;
+  taken_then_pushed.movement.rewards.entries[4] = 35;
+  taken_then_pushed.movement.rewards.cooldown = 120;
+  require(run(queued, taken_then_pushed) == 43);
+  // Off the HUNTER tour the dry look is blank, as before.
+  auto plain = waiting, plain_dry = dry;
+  plain.hunter_tour = plain_dry.hunter_tour = false;
+  run(dry, taken);
+  run(taken, plain);
+  require(run(plain, plain_dry) == 0);
+
+  // A skipped update holds the tick's subframe; only an update that ran asks for rider 1's
+  // clock.
+  unirally::ZoomZooState ticked{};
+  ticked.split_screen = true;
+  ticked.movement.timer.subframe = 1;
+  ticked.hunter.skip_update = 1;
+  unirally::ClassicRaceHudClock skipped, ran;
+  auto running = ticked;
+  running.hunter.skip_update = 0;
+  for (int update = 0; update < 3; ++update) {
+    skipped.observe_update(ticked, ticked);
+    ran.observe_update(running, running);
+  }
+  require(!skipped.published().lower_clock.has_value());
+  require(ran.published().lower_clock.has_value());
 }
 
 // R-0080: a split race's arrows. Rider 1's shows in the lower view when it trails; each view's
@@ -1970,6 +2045,7 @@ int main() {
   caption_queue();
   split_arrows();
   split_forced_clock();
+  split_hunter_captions();
   pause_menu();
   pause_clears_player_cells();
 
