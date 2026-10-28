@@ -15641,6 +15641,7 @@
   "comment": "instruction start",
   "label": "loc_81BF46",
   "native": [
+   "src/core/race_hud.cpp:hud_message_at_consumers",
    "src/core/reward_queue.cpp:show_hunter_message",
    "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
   ],
@@ -16146,6 +16147,7 @@
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
    "src/core/reward_queue.cpp:push_front_player_announcement"
   ],
   "source_records": [
@@ -19064,9 +19066,11 @@
   "comment": "routine start",
   "label": "sub_829822",
   "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock::arrow_markers_",
    "src/core/presentation.hpp:classic_race_arrow",
    "src/core/presentation.hpp:classic_race_lower_arrow",
    "src/core/race_hud.cpp:(file)",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
    "src/core/race_hud.cpp:trailing_rider_arrow"
   ],
   "source_records": [
@@ -20724,6 +20728,9 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_82B154",
+  "native": [
+   "src/core/presentation.cpp:invisible_riders"
+  ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
   ]
@@ -20733,6 +20740,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_82B15E",
+  "native": [
+   "src/core/presentation.cpp:invisible_riders"
+  ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
   ]
@@ -26143,6 +26153,7 @@
   "comment": "instruction start",
   "label": "loc_83CC9A",
   "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
    "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
@@ -26158,6 +26169,7 @@
   "comment": "instruction start",
   "label": "loc_83CCA2",
   "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
    "src/core/race_update.cpp:run_skipped_update",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update"
   ],
@@ -26436,6 +26448,8 @@
   "label": "sub_83CDAA",
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
+   "src/core/race_hud.cpp:hud_message_at_consumers",
    "src/core/race_update.cpp:finish_update",
    "src/core/race_update.cpp:run_skipped_update"
   ],
@@ -26742,6 +26756,7 @@
    "src/core/hunter_effects.cpp:finish",
    "src/core/hunter_effects.cpp:update_hunter_effects",
    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/race_hud.cpp:hud_message_at_consumers",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
    "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -26795,6 +26810,7 @@
    "src/core/hunter_effects.cpp:run_screen_flip",
    "src/core/hunter_effects.cpp:update_hunter_effects",
    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/presentation.cpp:race_scroll",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
    "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"

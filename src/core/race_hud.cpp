@@ -350,10 +350,9 @@ void ClassicRaceHudClock::request_split_fields(const ZoomZooState& previous,
     // ($81:C579-C594) steps it back, at the end of the update, and is taken on a later one. A
     // take and a push in one update leave the cursor where it was, the take's display time in
     // the cooldown and the push's event in the slot the take read.
-    const bool taken_then_pushed = updated.hunter_tour
-                                && queue_after.read_cursor == queue_before.read_cursor
-                                && next != queue_before.write_cursor
-                                && queue_after.cooldown > queue_before.cooldown;
+    const bool taken_then_pushed =
+        updated.hunter_tour && queue_after.read_cursor == queue_before.read_cursor
+        && next != queue_before.write_cursor && queue_after.cooldown > queue_before.cooldown;
     if (queue_after.read_cursor == next) {
         opponent_caption_buffer_ = queue_after.entries[queue_after.read_cursor];
         opponent_consumed_since_blank_ = true;

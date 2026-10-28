@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Instructions from observed | 35,735 |
 | Instructions from table | 65 |
 | Routines | 759 |
-| Routines cited by native code | 580 |
-| Routine bytes cited by native code | 73,949 |
+| Routines cited by native code | 581 |
+| Routine bytes cited by native code | 73,996 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
