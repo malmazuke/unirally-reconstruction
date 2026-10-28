@@ -6179,7 +6179,8 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_rider_contact"
+    "src/core/race_update.cpp:update_rider_contact",
+    "src/core/vertical_contact.cpp:lands_with_power_bounce"
    ],
    "observed_entries": {},
    "start": "$81:8CF8",
@@ -6203,7 +6204,8 @@
     "src/core/race_update.cpp:update_rider_contact",
     "src/core/rider_look.cpp:advance_rider_look",
     "src/core/rider_look.hpp:advance_rider_look",
-    "src/core/stunt_event.hpp:rider_passes"
+    "src/core/stunt_event.hpp:rider_passes",
+    "src/core/vertical_contact.cpp:lands_with_power_bounce"
    ],
    "observed_entries": {},
    "start": "$81:8E43",
@@ -6350,9 +6352,9 @@
    ],
    "native": [
     "src/core/flat_contact.cpp:resolve_recontact",
-    "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero",
     "src/core/vertical_contact.cpp:apply_landing_matrix",
-    "src/core/vertical_contact.cpp:land"
+    "src/core/vertical_contact.cpp:lands_with_power_bounce",
+    "src/core/vertical_contact.hpp:lands_with_power_bounce"
    ],
    "observed_entries": {},
    "start": "$81:9495",
@@ -19352,18 +19354,18 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2233,
+  "cited_addresses": 2238,
   "cited_by_class": {
    "data": 16,
-   "inferred": 97,
-   "observed": 1922,
+   "inferred": 98,
+   "observed": 1926,
    "unknown": 198
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1519,
+   "loc": 1523,
    "mid": 31,
-   "sub": 469,
+   "sub": 470,
    "unk": 198
   },
   "conflicts": 0,

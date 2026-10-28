@@ -7702,6 +7702,13 @@
    "region": "rom"
   },
   {
+   "address": "$81:8DB0",
+   "native": [
+    "src/core/vertical_contact.cpp:lands_with_power_bounce"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$81:8E43",
    "native": [
     "src/core/race_update.cpp:update_rider_contact"
@@ -7723,6 +7730,13 @@
    "address": "$81:8E58",
    "native": [
     "src/core/rider_look.hpp:advance_rider_look"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:8F04",
+   "native": [
+    "src/core/vertical_contact.cpp:lands_with_power_bounce"
    ],
    "region": "rom"
   },
@@ -7898,17 +7912,11 @@
    "address": "$81:94A8",
    "native": [
     "src/core/vertical_contact.cpp:apply_landing_matrix",
-    "src/core/vertical_contact.cpp:land"
+    "src/core/vertical_contact.cpp:lands_with_power_bounce",
+    "src/core/vertical_contact.hpp:lands_with_power_bounce"
    ],
    "range_ends": [
     "$81:94C3"
-   ],
-   "region": "rom"
-  },
-  {
-   "address": "$81:94B9",
-   "native": [
-    "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero"
    ],
    "region": "rom"
   },
@@ -16521,7 +16529,8 @@
   {
    "address": "$0572",
    "native": [
-    "src/core/vertical_contact.cpp:apply_landing_matrix"
+    "src/core/vertical_contact.cpp:apply_landing_matrix",
+    "src/core/vertical_contact.cpp:lands_with_power_bounce"
    ],
    "region": "wram"
   },
@@ -17599,7 +17608,7 @@
    "native": [
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_fields",
     "src/core/rider_pose.cpp:update_idle_velocity",
-    "src/core/vertical_contact.cpp:land"
+    "src/core/vertical_contact.cpp:lands_with_power_bounce"
    ],
    "region": "wram"
   },
@@ -18189,8 +18198,8 @@
   {
    "address": "$132B",
    "native": [
-    "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero",
-    "src/core/vertical_contact.cpp:land"
+    "src/core/flat_contact.hpp:ContactContext::power_bounce",
+    "src/core/vertical_contact.cpp:lands_with_power_bounce"
    ],
    "region": "wram"
   },
@@ -18669,6 +18678,7 @@
     "src/core/race_setup.cpp:neon_lighting_on",
     "src/core/race_update.cpp:loop_top_step, cartridge_options, split_demo_options",
     "src/core/reward_queue.cpp:push_front_player_announcement",
+    "src/core/vertical_contact.cpp:lands_with_power_bounce",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::versus",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::versus"
    ],
@@ -20333,14 +20343,6 @@
     "$77:0750"
    ]
   },
-  "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero": {
-   "rom": [
-    "$81:94B9"
-   ],
-   "wram": [
-    "$132B"
-   ]
-  },
   "src/core/flat_contact.hpp:ContactContext::loop_top": {
    "wram": [
     "$0355"
@@ -20350,6 +20352,11 @@
    "wram": [
     "$0300",
     "$0302"
+   ]
+  },
+  "src/core/flat_contact.hpp:ContactContext::power_bounce": {
+   "wram": [
+    "$132B"
    ]
   },
   "src/core/front_end.cpp:FrameWaits": {
@@ -29085,12 +29092,7 @@
   },
   "src/core/vertical_contact.cpp:land": {
    "rom": [
-    "$81:92D9",
-    "$81:94A8"
-   ],
-   "wram": [
-    "$0FF9",
-    "$132B"
+    "$81:92D9"
    ]
   },
   "src/core/vertical_contact.cpp:landing_rotation": {
@@ -29098,6 +29100,21 @@
     "$81:931C",
     "$81:942B",
     "$81:945B"
+   ]
+  },
+  "src/core/vertical_contact.cpp:lands_with_power_bounce": {
+   "rom": [
+    "$81:8DB0",
+    "$81:8F04",
+    "$81:94A8"
+   ],
+   "sram": [
+    "$77:0750"
+   ],
+   "wram": [
+    "$0572",
+    "$0FF9",
+    "$132B"
    ]
   },
   "src/core/vertical_contact.cpp:summarize_vertical_contact": {
@@ -29121,6 +29138,11 @@
   "src/core/vertical_contact.hpp:VerticalContactSummary::leading_support": {
    "wram": [
     "$0F5D"
+   ]
+  },
+  "src/core/vertical_contact.hpp:lands_with_power_bounce": {
+   "rom": [
+    "$81:94A8"
    ]
   },
   "src/core/vertical_contact.hpp:resolve_vertical_contact": {
@@ -29966,10 +29988,10 @@
   }
  },
  "totals": {
-  "addresses": 2122,
+  "addresses": 2123,
   "io_addresses": 12,
-  "native_symbols": 1582,
-  "rom_addresses": 1679,
+  "native_symbols": 1584,
+  "rom_addresses": 1680,
   "sram_addresses": 65,
   "wram_addresses": 366
  }
