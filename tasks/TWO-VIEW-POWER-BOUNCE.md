@@ -69,3 +69,40 @@ Native searches (`landings.py`): two-view schedules 1-200 (VS replays the 2P rac
 bounce in 70 races, rider 1 lands under it in 67 (631 landings), the candidate differs from main
 in 64, each first at such a landing. One-view schedules 1-150 against the mutant: 26 races with
 power bounce, rider 1 lands under it in all 26, the mutant differs in all 26 and main does not.
+
+## Handoff (worker)
+
+- Branch `task/two-view-power-bounce` on claim `19763cc1` (main `5f161c9c`). Commits: `6684eb10`
+  (native: `vertical_contact.cpp`/`.hpp`, `race_update.cpp`, `flat_contact.hpp`,
+  `zoom_zoo_movement.hpp`, the test in `zoom_zoo_trial_tests.cpp`), `f0311639` (R-0104, R-0052's
+  pointer, this record's checkpoint, `docs/map/static/` regenerated), then this handoff.
+- Checks run: `ctest` lab-debug 41/41 and app-debug 41/41 (`project.py build` `status=passed`
+  for app-debug, lab-debug and lab-release); the new test fails with the old player-only
+  condition (negative control, restored); `clang-tidy` 19 clean on `vertical_contact.cpp` and
+  `race_update.cpp`; `clang-format` 19 applied to the changed `src/core` files (the test file
+  keeps its own style); `regen.sh` (five raw coverage inputs) and `coverage native-symbols
+  --check` passed, 0 cited addresses without a record; `checks.list` 14 of 14 lines rc 0 at
+  `f0311639` (`checks-f0311639.out`, 16 min 41 s under the heavy-run lock; this handoff commit
+  changes only this record). Synthetic suite and gates not run by the worker.
+- Commands: `zsh local/evidence/two-view-power-bounce/captures.sh twop-67 one-88`;
+  `python3 local/evidence/two-view-power-bounce/landings.py MODE SEED N [--frames F] --main BIN`;
+  `local/locks/heavy-run.sh TWO-VIEW-POWER-BOUNCE zsh local/evidence/two-view-power-bounce/run_checks.sh OUT`.
+- Evidence: main `local/evidence/two-view-power-bounce/`, 48 MB: `cap/` (manifests `twop-67`,
+  `one-88`; probes with `series.bin.zst`, verified byte for byte, and `series.bin.sha256`;
+  `twop-67`'s 6,100 pictures), `base-5f161c9c/` (main's runner), `mutant-either-rider/` (the
+  runner without the `$0FF9` test), `search/` (the native searches), `race-*.json` (first runs),
+  `pre/` (an early picture run at the same code), `checks-f0311639/`. Copies of
+  SPLIT-HUNTER-PICTURES' `race_check.py` (`CAPTURE_DIR`) and CREDITS-NAME's `race_compare.py`
+  (`--dir`; a probe dumped from inside a race compares from its first dumped frame). The private
+  `TMPDIR` is cleared.
+- For the gates: the task's checks are `--task-checks local/evidence/two-view-power-bounce/checks.list`.
+  Expect race-state changes only where rider 1 lands under power bounce in a two-view race;
+  the gate corpus's HUNTER two-view league windows (LEAGUE-TOURS `tours-a`) may change if one has
+  power bounce.
+- Not covered: a two-view league race and the split idle demo under power bounce are not
+  captured (both take the same `split_screen` path); why rider 1's power-bounce landings leave the
+  state unchanged in 3 of 67 searched two-view races is not traced; line 113 (R-0103) unchanged.
+- Time (claim 09:28 UTC to handoff 10:20 UTC, 52 min, `date -u`): reading and baseline 10 min;
+  native change and test 10 min; checks on the existing captures, searches and the two captures
+  15 min; the full `checks.list` run 17 min (records and maps written meanwhile).
+- Next: the tier-1 independent review, then the gates.
