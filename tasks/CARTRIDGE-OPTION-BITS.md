@@ -76,3 +76,48 @@ Image sweep (`bits_sweep.py`, 236 manifests, every 500th frame): manifests with 
 bit differing fall from 212 (bit 1), 19 (2), 89 (3), 74 (8), 54 (9), 89 (10) and 1 (13) on main
 to 8, 0, 7, 0, 0, 0 and 1; no other byte differs anywhere it did not on main. The residue (the
 demo race's `0x0A`, the league's bit 13 between table and podium) is in R-0105.
+
+## Handoff (worker)
+
+- Branch `task/cartridge-option-bits` on claim `7c19d681` (main `a6a1b385`). Commits: `c8b43f41`
+  (native and tests), `3d808861` (R-0105, `docs/map/static/` regenerated), `d23449fe` (the
+  checkpoint, R-0105's sweep and residue), `d491dcc6` (static map for the new citations), then
+  this handoff (this record only).
+- Checks run: `ctest` lab-debug 41/41 and app-debug 41/41 (`project.py build` `status=passed` for
+  app-debug, lab-debug and lab-release); `clang-tidy` 19 clean on the nine changed `src/core`
+  files (two helpers keep `print_now_playing` and `rider_menu_frame` under 80 lines);
+  `clang-format` 19 on the changed lines (`award.cpp` and `tour_ending.cpp` keep one warning each
+  from main; the test files keep their own style); `regen.sh` (five raw coverage inputs) and
+  `coverage native-symbols --check` passed, 0 cited addresses without a record; mutants
+  (`mutants.txt`): each change removed fails a test; `checks.list` 4 of 4 lines rc 0 at
+  `d491dcc6` (`checks-d491dcc6.out`, about 13 min under the heavy-run lock). Synthetic suite and
+  gates not run by the worker.
+- Commands: `local/locks/heavy-run.sh CARTRIDGE-OPTION-BITS zsh
+  local/evidence/cartridge-option-bits/run_checks.sh OUT`; a single route:
+  `zsh local/evidence/cartridge-option-bits/warm_pair.sh NAME IMAGE SCRIPT STRIDE OUT` (main and
+  candidate); inputs from `make_inputs.py MANIFEST|- FRAMES OUT 'P:FROM-TO:buttons'...`; the
+  listing from `coverage disassemble` with the five raw coverage inputs; the dynamic census
+  `python3 local/evidence/cartridge-option-bits/census/dynamic_census.py local/evidence`.
+- Evidence: main `local/evidence/cartridge-option-bits/`, 14 MB: `listing/` (bank listings, ROM
+  bytes), `census/` (dynamic census and the `organic-full-tour` access capture at 60740-60770),
+  `scripts/` (warm inputs and the original's per-frame cartridge writes), `images/`
+  (`league-podium-owed.bin`: the league image with bit 13 set), `checks/` (first warm pairs),
+  `sweep/` (main against `cand-1`), `checks-d491dcc6/`, `base-7c19d681/` (main's runner),
+  `cand-1/` (the swept candidate, behaviour-equal to the final one), copies of SAVE-FILES'
+  `warm_boot.py` (skips `#` lines) and `warm_compare.py` (every differing byte). The private
+  `TMPDIR` is cleared.
+- For the gates: `--task-checks local/evidence/cartridge-option-bits/checks.list`. Expected
+  changes against main: a league or VS race after the title code (`$10D0`), a league re-entered
+  with a podium owed, and the saved image's `$0742-0743`. Nothing else moves the front end's
+  pictures or the race.
+- Not covered (R-0105): bit 4's `$80:D503` branch and the dead hook and pad tests (unreachable);
+  the demo race's `0x0A` and the league's bit 13 between the table and the podium in the image;
+  the image bits' exact frames within a screen's entry; bit 8's later-boot branch not
+  re-captured.
+- Follow-up proposed: none needed for the option words. The `organic-full-tour` trace suggests the
+  league's podium path starts its setup five frames into the table, before the press
+  (`$80:BE78-BEB8`, `$80:99C2` at 60764); worth a look by whoever next touches the podium.
+- Time (claim 21:59 UTC to handoff 23:20 UTC, about 1 h 20 min, `date -u`): reading and listing
+  15 min; census and dynamic census 20 min; native, tests and warm checks 25 min; sweeps, lints,
+  records and the `checks.list` run 20 min (about 20 min of it waiting on the final run).
+- Next: the tier-1 independent review, then the gates.
