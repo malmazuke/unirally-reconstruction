@@ -835,7 +835,8 @@
   "label": "loc_808889",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -1726,6 +1727,24 @@
   ]
  },
  {
+  "address": "$80:94C3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8094C3",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:94CB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8094CB",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:94D4",
   "class": "inferred",
   "comment": "instruction start",
@@ -1995,7 +2014,8 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -2241,7 +2261,8 @@
   ],
   "source_records": [
    "docs/research/R-0081-split-race-end.md",
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -2783,7 +2804,8 @@
    "src/core/options_menu.cpp:league_slots_frame"
   ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -2969,7 +2991,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -5696,7 +5719,8 @@
   "comment": "unknown",
   "label": "unk_80B855",
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -5705,7 +5729,8 @@
   "comment": "unknown",
   "label": "unk_80B87A",
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -5714,7 +5739,8 @@
   "comment": "unknown",
   "label": "unk_80B89F",
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -6852,6 +6878,19 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BE81",
+  "native": [
+   "src/core/league_completion.cpp:(file)",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:BE84",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE84",
   "native": [
    "src/core/league_completion.cpp:(file)",
    "src/core/league_menu.cpp:(file)"
@@ -12239,7 +12278,8 @@
   "comment": "unknown",
   "label": "unk_80F648",
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -24505,7 +24545,8 @@
   "source_records": [
    "docs/research/R-0073-league.md",
    "docs/research/R-0090-save-files.md",
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
