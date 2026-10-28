@@ -20,6 +20,10 @@ VerticalContactSummary summarize_vertical_contact(const FlatContactContent& cont
                                                   const TrackSamples& samples, std::uint16_t x,
                                                   std::uint16_t y, bool neon = false);
 
+// Whether a landing takes power bounce's matrix: the player, or either rider in a race with two
+// views (`$81:94A8-94C3`, R-0104).
+bool lands_with_power_bounce(const ContactContext& context);
+
 // Original signed slope response, using byte shift/multiplier tables at
 // PAL $00:822B/$00:824B. Velocities are 16-bit patterns in 1/32 position units.
 // This component rejects unrecovered landing transforms transactionally. Returns whether a

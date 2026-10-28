@@ -284,15 +284,15 @@ bool landing_rotation(ContactStep& s, int coarse, unsigned pose_index, bool refl
 
 // The landing matrices (1,512 bytes: three matrices of 63 angle rows) turn the arrival
 // velocity into the landing's. A landing well off the surface's angle, on the leading support,
-// after a long flight or under HUNTER effect 2 takes one: by the angle's error, matrix 1 or 2;
-// matrix 0 for the HUNTER effect ($81:94A8-94C3, $0572, R-0052); matrix 2, with the angle
+// after a long flight or with power bounce takes one: by the angle's error, matrix 1 or 2;
+// matrix 0 for power bounce ($81:94A8-94C3, $0572, R-0052, R-0104); matrix 2, with the angle
 // pushed by 5, when the rider drives against its velocity.
 void apply_landing_matrix(ContactStep& s, int coarse, bool long_airtime_matrix, unsigned horizontal,
                           std::span<const std::uint8_t> landing_matrices) {
     const auto& summary = s.summary;
     const auto angle_difference = std::abs(coarse - static_cast<int>(summary.angle));
-    if (!(angle_difference > 5 || summary.leading_support || long_airtime_matrix
-          || s.context.landing_matrix_zero))
+    const bool power_bounce = lands_with_power_bounce(s.context);
+    if (!(angle_difference > 5 || summary.leading_support || long_airtime_matrix || power_bounce))
         return;
     require(landing_matrices.size() == landing_matrix_table_size,
             "landing coefficient matrices are missing");
@@ -300,7 +300,7 @@ void apply_landing_matrix(ContactStep& s, int coarse, bool long_airtime_matrix, 
         angle_difference ? static_cast<unsigned>(std::min(3, (angle_difference - 1) / 5)) : 0U;
     if (summary.leading_support) bucket = bucket > 1 ? bucket - 1 : 1;
     unsigned matrix = (bucket <= 1 && !long_airtime_matrix) ? 1U : 2U;
-    if (s.context.landing_matrix_zero) matrix = 0;
+    if (power_bounce) matrix = 0;
     int angle = (summary.selected_high & high_tile) ? -summary.angle : summary.angle;
     const auto velocity = signed_word(s.moved.velocity_x);
     if ((velocity > 0 && horizontal == 0) || (velocity < 0 && horizontal == 2)) {
@@ -335,9 +335,6 @@ void land(ContactStep& s, unsigned horizontal, unsigned pose_index, bool reflect
     s.next.recontact = true;
     if (s.magnitude >= steep_angle || s.flag_pair == slow_pair) return;
     const int coarse = coarse_landing_angle(s);
-    // $81:94A8-94C3: option bit 3 skips the $0FF9 check, then only HUNTER
-    // effect 2 ($132B) can replace the matrix. The split demo has bit 3 set
-    // and that effect clear, so it takes this ordinary matrix path (R-0069).
     const bool long_airtime_matrix = landing_rotation(s, coarse, pose_index, reflected);
     apply_landing_matrix(s, coarse, long_airtime_matrix, horizontal, landing_matrices);
 }
@@ -445,6 +442,16 @@ void correct_position(ContactStep& s) {
 }
 
 } // namespace
+
+// $81:94A8-94C3: power bounce ($132B, HUNTER effect 2) replaces the landing's matrix with
+// matrix 0 ($0572) for the player only ($0FF9 zero: `$81:8DB0` sets 0 for rider 0, `$81:8F04`
+// 2 for rider 1). A race with two views (`$77:0750` bit 3: 2P, VS, the split demo, a league
+// race with two views) branches past that test, so there either rider takes it (R-0104).
+bool lands_with_power_bounce(const ContactContext& context) {
+    constexpr std::uint16_t two_views = 0x0008;
+    const bool either_rider = (context.cartridge_options & two_views) != 0;
+    return context.power_bounce && (either_rider || !context.opponent);
+}
 
 // One update of a rider's contact with vertical columns: the counters, then support (a wall,
 // a landing or a slope), then the position correction. Returns whether a landing sounded.

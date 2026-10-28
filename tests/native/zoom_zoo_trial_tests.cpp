@@ -336,6 +336,35 @@ int main() {
     require(landing(0,18,0)==0); // zero dx clamps vertical endpoint to 31
     require(landing(0,0,0)==5); // equal zero displacements use horizontal path
 
+    // TWO-VIEW-POWER-BOUNCE: power bounce ($132B) lands the player ($0FF9 zero) with matrix 0,
+    // and rider 1 too only in a race with two views, which skips the $0FF9 test (option bit 3,
+    // $81:94A8-94C3, R-0104).
+    constexpr std::uint16_t one_view=0xc200,two_views=0xc20a;
+    for(bool opponent:{false,true})for(std::uint16_t options:{one_view,two_views}) {
+        require(lands_with_power_bounce({0,opponent,0,options,false,true})==(!opponent||options==two_views));
+        require(!lands_with_power_bounce({0,opponent,0,options,false,false}));
+    }
+    // Through a landing aligned with its surface (coarse angle 8 on angle 8), which takes no
+    // matrix of its own: matrix 0's coefficients (high byte 1) sum the velocities.
+    for(unsigned i=0;i<504;i+=2)matrices[i+1]=1;
+    auto bounced=[&](bool opponent,std::uint16_t options,bool power_bounce) {
+        RiderContactState contact{};contact.unsupported_count=9;
+        contact.unsupported_duration=60;contact.previous_uncorrected_x=500;
+        contact.previous_uncorrected_y=500;
+        ContactMotion moved{};moved.x=518;moved.y=518;moved.previous_x_displacement=19;
+        moved.velocity_x=0x40;moved.velocity_y=0x20;
+        VerticalContactSummary surface{};surface.supported=true;
+        surface.any_nonnegative_probe=true;surface.angle=8;
+        resolve_vertical_contact(contact,moved,surface,{1,opponent,0,options,false,power_bounce},
+                                 shifts,multipliers,matrices);
+        require(contact.recontact);
+        return moved.velocity_x;
+    };
+    require(bounced(false,one_view,false)==0x40 && bounced(false,one_view,true)==0x60);
+    require(bounced(true,one_view,true)==0x40); // one view: rider 1 lands as without the effect
+    require(bounced(true,two_views,false)==0x40 && bounced(true,two_views,true)==0x60);
+    require(bounced(false,two_views,true)==0x60);
+
     // M4-14: full continuation fields must survive an independent restore.
     ZoomZooState extended{};extended.sustained=true;extended.movement.frame=2500;
     extended.surface[0].mode=1;extended.surface[0].angle=0xffe4;
