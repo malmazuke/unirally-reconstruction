@@ -42,7 +42,11 @@ through `resolve_vertical_contact` in each; with native's old condition (the pla
   faedine-split0 image; VS seeds replay the same races as 2P). Power bounce runs in 70 of 200
   races; rider 1 lands under it (unsupported count 9 to 0) in 67, 631 landings. The candidate's
   race differs from main's in 64, each first at one of those landings; none differs elsewhere. In
-  3 races (seeds 25, 62, 173) rider 1's landings under power bounce leave the state as main's.
+  3 races (seeds 25, 62, 173) rider 1's landings under power bounce leave the state as main's, as
+  the original's would (review round 1, `review-1/trace_seeds.out`): in seed 25 every landing is
+  onto a surface of angle magnitude 28-30, which returns before any matrix (`$81:92FE` CMP #$1C,
+  then `$97E4`); in seeds 62 and 173 rider 1 drives against its velocity on every landing, so
+  matrix 2 replaces matrix 0 (`$81:94D0-950A`).
 - **The original** [C], race rows (`race_check.py`, bytes 12-564 and the HUNTER effects per
   update), candidate against main:
 
@@ -87,8 +91,6 @@ the same on main) differ on line 113 only, R-0103's six-line mosaic limit.
   it takes the same `split_screen` path.
 - The split idle demo under power bounce: `demo-pic` has no power bounce, and the demo's effects
   come from its AI's riding, not searched here.
-- Why rider 1's landings under power bounce leave the state unchanged in 3 searched two-view races
-  is not traced (the matrix may give the same velocities there).
 - Line 113 under a six-line mosaic block (R-0103's limit) is unchanged.
 
 ## Reproduction

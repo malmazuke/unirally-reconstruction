@@ -40,7 +40,7 @@ The captions (`$17:CA04`) are:
 | ---: | --- | --- | --- | --- |
 | 0 | `$1327` | `$1F` | barf mode on | BG2 scrolls by the camera's full y horizontally and full x vertically (`$81:AE90`) |
 | 1 | `$1329` | `$1C` | hedgehog speed | freezes: 1, 2 ... 20 skipped race updates, then 18 ... 2; ends unannounced (`$83:D530`) |
-| 2 | `$132B` | `$1E` | power bounce on | the player's landings (both riders' with two views, R-0104) use landing matrix 0 (`$0572`), even where none would apply (`$81:94B9`) |
+| 2 | `$132B` | `$1E` | power bounce on | the player's landings (both riders' with two views, R-0104) use landing matrix 0 (`$0572`), even where no other would apply; steep and pair-8 landings still take none, and a rider driving against its velocity takes matrix 2 (`$81:94B9-950A`) |
 | 3 | `$132D` | `$1B` | screen flip on | BG1 upside down through a per-line scroll table, and the riders' objects turned over (`$83:D2C9`, `$83:D581-E081`) |
 | 4 | `$132F` | `$20` | invisible track | BG1 off the main screen (`$055D`, `$80:8638`) |
 | 5 | `$1331` | `$1D` | slow motion | three race updates in four skipped (`$83:D4E8`) |
