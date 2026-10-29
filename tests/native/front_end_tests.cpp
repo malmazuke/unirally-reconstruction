@@ -596,13 +596,15 @@ void rider_menu_tests() {
   require(state.screen == FrontEndScreen::main_menu &&
           state.menu.selection == 0 && state.menu.idle == 480 &&
           state.slide.scroll == 0 && !state.mode_chosen);
-  // Choosing again starts on MIKE; B chooses the rider under the arrow.
+  // Choosing again starts on MIKE; B chooses the rider under the arrow. 1P's
+  // pick clears `$77:0742` bit 3 ($80:BBC8-BBCE).
   run(state, content, 1, {0x1000, 0});
   run(state, content, 43);
+  state.records.second_human = true;
   run(state, content, 1, {0x0100, 0});
   run(state, content, 1, {0x8000, 0});
   require(state.screen == FrontEndScreen::rider_menu_exit &&
-          !state.mode_chosen);
+          !state.mode_chosen && !state.records.second_human);
   run(state, content, 3);
   require(state.screen == FrontEndScreen::tour_menu_entry &&
           !state.mode_chosen && state.rider_menu.rider == 1);
@@ -626,6 +628,10 @@ void rider_menu_tests() {
     run(pick, content, 1, {0, 0x8000});
     require(pick.screen == FrontEndScreen::rider_menu_exit &&
             pick.second_rider == 1);
+    // `$77:0742` bit 3, and VS's bit 2 ($80:BD0C-BD12, $80:BF90-BF98).
+    require(pick.records.second_human &&
+            pick.records.versus_chosen ==
+                (mode == unirally::FrontEndMode::versus));
     const bool zeroed = mode == unirally::FrontEndMode::two_player;
     require((pick.records.player_wins == 0 &&
              pick.records.opponent_wins == 0) == zeroed);
@@ -1043,6 +1049,7 @@ void lap_result_tests() {
     return state.oam_buffer[512 + entry / 4];
   };
   auto state = to_lap_race();
+  state.records.result_objects_parked = true; // an earlier result's
   unirally::return_from_race(state, content, 6725, times);
   require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
   // The build: 8 x 8 objects, the dots' targets (the capture's), no record.
@@ -1165,10 +1172,15 @@ void award_tests() {
   require(state.screen == FrontEndScreen::tour_award &&
           state.records.medals[0] == 1 && !state.records.race_lost &&
           state.award.medal == 1);
-  // The fade out (14 to 0), forced blank, the loads at q + 100 (mode 2).
+  // The fade out (14 to 0), forced blank, the loads at q + 100 (mode 2). After
+  // the sound upload (frame 16) `$83:A66F-A679` sets `$77:0742` bit 8.
+  state.records.result_objects_parked = false;
   run(state, content, 1);
   require(state.registers.brightness == 14);
-  run(state, content, 15);
+  run(state, content, 14);
+  require(!state.records.result_objects_parked);
+  run(state, content, 1);
+  require(state.records.result_objects_parked);
   require(state.registers.force_blank && state.registers.mode == 3);
   run(state, content, 81);
   require(state.registers.mode == 2 && !state.cycle.running);
@@ -1327,8 +1339,15 @@ void ending_tests() {
     run(state, content, 5, {select_x_r, 0});
     require(state.screen == FrontEndScreen::tour_ending &&
             state.script_frame == 0 && state.records.medals[tour * 16] == 3);
+    // $83:A562-A56C after the ending's sound upload (frame 16) sets
+    // `$77:0742` bit 8 (R-0105).
+    state.records.result_objects_parked = false;
+    run(state, content, 15);
+    require(!state.records.result_objects_parked);
+    run(state, content, 1);
+    require(state.records.result_objects_parked);
     const auto last = last_frames[tour];
-    run(state, content, last + hook_frame - 1);
+    run(state, content, last + hook_frame - 17);
     const auto cycle = [&] {
       return std::pair{state.cycle.delay, state.cycle.phase};
     };
@@ -1971,6 +1990,10 @@ void option_bits_image_tests() {
           warm.records.result_objects_parked);
   require(warm.pad_one_ignored && warm.pad_two_ignored);
   require(unirally::cartridge_image(warm) == image);
+  // Bit 1 is the logo held up as well as the league keyboard's.
+  auto raised = warm;
+  raised.logo.raised = true;
+  require((unirally::cartridge_image(raised)[0x0742] & 0x02) != 0);
   auto reset = warm;
   unirally::front_end_screens::soft_reset(reset);
   require(reset.pad_one_ignored && reset.pad_two_ignored);
@@ -1985,6 +2008,34 @@ void option_bits_image_tests() {
   run(wiped, content, 410);
   require(!wiped.records_kept && !wiped.pad_one_ignored &&
           !wiped.pad_two_ignored && !wiped.records.second_human);
+}
+
+// R-0105: NOW PLAYING's print sets `$77:0742` bit 3 when `$017F` is a rider
+// (`$80:B297-B2FD`) and, in 1P, clears VS's bit 2 (`$80:BC38`); 2P clears bit 2
+// only when its race is chosen (`$80:BD6B-BD74`), VS keeps it.
+void now_playing_option_bit_tests() {
+  using unirally::FrontEndMode;
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  for (const auto mode : {FrontEndMode::one_player, FrontEndMode::two_player,
+                          FrontEndMode::versus}) {
+    auto state = unirally::start_front_end();
+    run(state, content, 430);
+    require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+    require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+    state.mode = mode;
+    if (mode != FrontEndMode::one_player)
+      state.second_rider = 3;
+    state.records.versus_chosen = true;
+    state.records.second_human = mode == FrontEndMode::one_player;
+    require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+    require(state.records.second_human == (mode != FrontEndMode::one_player));
+    require(state.records.versus_chosen == (mode != FrontEndMode::one_player));
+    require(run_to(state, content, FrontEndScreen::race_fade, {0x1000, 0}));
+    require(state.records.versus_chosen == (mode == FrontEndMode::versus));
+  }
 }
 
 // WIPE-RAM (R-0092): Left+A+L+R on the main menu opens WIPE RAM and MAIN
@@ -2440,6 +2491,7 @@ int main() try {
   code_route_tests();
   save_file_tests();
   option_bits_image_tests();
+  now_playing_option_bit_tests();
   race_cartridge_increment_tests();
   wipe_ram_tests();
   credits_picture_tests();
