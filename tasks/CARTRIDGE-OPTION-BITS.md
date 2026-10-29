@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **claimed** 28 October 2026 21:59 UTC on main `a6a1b385`, on the user's instruction
+- Status: **accepted** 29 October 2026 (tier 1, [#92](https://github.com/malmazuke/unirally-reconstruction/pull/92),
+  approved in review round 2 at `4358c01f`), integrated by merge commit. Claimed 28 October 2026
+  21:59 UTC on main `a6a1b385`, on the user's instruction
   (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and integrator; a worker
   subagent implements, a fresh subagent reviews). Queued 9 October 2026 by
   [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 7); the record is written at the claim.
@@ -208,3 +210,44 @@ cue log differed from `front_end_runner`'s from frame 3180 (`gates-1/`, rerun `g
   last event raced in the app, and so the app's league-race difference from the runner fixed first
   (PODIUM-AUDIO's note; the pause cues at 3180 here).
 - Time: 02:49-03:00 UTC on 29 October 2026 (`date -u`).
+
+## Review (rounds 1 and 2, approved `4358c01f`)
+
+A fresh subagent in its own checkout at the PR head.
+- [Round 1](https://github.com/malmazuke/unirally-reconstruction/pull/92#pullrequestreview-5691246303)
+  at `e2be787e`: approve, three should-fix findings (2P's bit 2 cleared at NOW PLAYING's print, not
+  its race choice; the sampled sweep; the mutant claim wider than the tests), fixed in `6289e2a1`
+  and `4358c01f` as the section above says. It recaptured `cheat-vs`, `cheat-league` and
+  `league-slot`, scanned the listing for writers the census missed (none), and checked old save
+  images on main and the candidate.
+- [Round 2](https://github.com/malmazuke/unirally-reconstruction/pull/92#pullrequestreview-5691344630)
+  at `4358c01f`: approve. The 2P clear is right on every path to a 2P race; 13 of 14 mutants fail a
+  test. Notes left: the league's clear at NOW PLAYING's print has no unit test, and the new test
+  sets 2P's and VS's mode by hand rather than through their menus.
+
+## Gates (D-0012)
+
+- `gates-1` at `4358c01f` (about 2 h 30 min): `status=failed (app-podium-audio, rs-records)`;
+  every other selected step passed or matched main, and the task's 4 checks passed.
+- `rs-records` changed for the better (`wr-1p-ca` 223 bytes unequal, main 224); `gates-2` with
+  `--expect-changed rs-records`: passed.
+- `app-podium-audio`: Gates round 1 above. Its route reached a podium only through native's old
+  bit-13 behaviour; the comparison now ends before the league race where the app and the runner
+  already differed on main. `gates-3`: `status=passed`.
+- After this task the app has no podium audio check; queued as
+  [APP-LEAGUE-RACE](APP-LEAGUE-RACE.md), which fixes the app's league race first.
+- Hosted CI green on all three checks.
+
+## Handoff (closeout)
+
+- Commits on `task/cartridge-option-bits`: `68b7573a`, `7c19d681` (claim), `c8b43f41`, `3d808861`,
+  `d23449fe`, `d491dcc6`, `e2be787e` (worker), `6289e2a1`, `4358c01f` (review round 1's fixes),
+  `9f594aef` (gates round 1), then this record.
+- Time, claim 21:59 UTC to merge about 03:20 UTC, about 5 h 20 min against D-0013's 6 hours:
+  worker 1 h 21 min; review round 1 40 min; fixes 9 min; round 2 5 min; gates 2 h 30 min, the
+  two reruns and the gate fix about 15 min; closeout about 15 min.
+- Disk: main `local/evidence/cartridge-option-bits/` about 100 MB, under the 1 GB budget;
+  compacted at closeout. `local/evidence/podium-audio/app_run.sh` was changed (the previous copy
+  kept beside it).
+- The closing session removes `.worktrees/cartridge-option-bits` and
+  `.worktrees/cartridge-option-bits-review` and the local branch.
