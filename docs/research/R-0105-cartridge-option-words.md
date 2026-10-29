@@ -102,6 +102,9 @@ its newspaper pages instead of the CHEAT! page. Native kept the flag (R-0090's "
   (`league_menu.cpp`, `now_playing.cpp`).
 - `$80:9F18-9F21`: leaving the league slots, by a choice or the way back, clears the podium owed
   (`options_menu.cpp`). Before, native showed the podium on the league's next table.
+  So no warm boot reaches a pending podium: every way into the league passes the slots.
+  PODIUM-AUDIO's app check (`podium-audio/app_run.sh`) relied on that route and now ends at the
+  league race it leads to (CARTRIDGE-OPTION-BITS' gates round 1).
 - The saved image now carries `$0742` bits 1 (the logo, or the league keyboard's), 2, 3, 8, 9
   and 10 at the original's sites (`cartridge_ram.cpp`, `rider_menu.cpp`, `now_playing.cpp`,
   `race_result.cpp`, `award.cpp`, `tour_ending.cpp`). An image's gate goes in at power-on,

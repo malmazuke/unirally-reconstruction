@@ -169,3 +169,42 @@ not rerun (the gates run it next).
 Handoff after review round 1: commits `6289e2a1` (2P's bit 2 at its race; the tests) and the
 records commit after it (R-0105, this record, `docs/map/static/` regenerated for `$80:BD6B`). Time:
 00:01-00:12 UTC on 29 October 2026 (`date -u`), about 11 min. Next: the gates.
+
+## Gates round 1 (`4358c01f`)
+
+The gates (D-0012) failed one step, `app-podium-audio` (PODIUM-AUDIO's `app_run.sh`): the app's
+cue log differed from `front_end_runner`'s from frame 3180 (`gates-1/`, rerun `gates-2/`).
+`rs-records` changed for the better (`wr-1p-ca` 223 bytes differing, main 224).
+
+- **Cause: the step's route needed the old native behaviour.** It warm-boots
+  `podium-audio/app/podium-pending.bin` (bit 13 set), enters LEAGUE, chooses the slot (900), the
+  table (1300) and continues (1700), expecting the podium at 1720. The original clears bit 13
+  when the slots are left (`$80:9F18-9F21`; its cartridge RAM's `$0743` changes at frame 900),
+  so it shows NOW PLAYING at 1720 and goes into a league race at 2700. Native now does the same.
+  Warm boots on that route against the original (`gates-round-1/`, every 20th picture): the
+  candidate 180/180, main 93/180 (main shows a podium from 1720 the original does not).
+- **The app and the runner differ in that race, on main too.** Main's app (built at `a6a1b385`
+  in a temporary worktree, since removed) against main's runner on the same route with bit 13
+  cleared in the image: the same divergence at 3180 (`gates-round-1/main-no-podium`: the app logs
+  pause cues). With the image unchanged main's two still agree, because main never reaches the
+  race inside 3,600 frames (`gates-round-1/main-podium-pending`). Neither is this change's bug.
+  The runner matches the original here, and the app's league-race difference is the one
+  PODIUM-AUDIO already recorded for `organic-full-tour-turnaround`.
+- **Fix:** `local/evidence/podium-audio/app_run.sh` now compares through frame 3179 (`N=3180`),
+  with the reason in its header; the previous script is kept as
+  `app_run.sh.before-cartridge-option-bits`. On main's tree the route still reaches the podium
+  (1720-2704) inside those frames. After this task merges, the app check covers NOW PLAYING and the
+  race's load, not a podium: no warm route reaches a podium in the original, since every way into
+  the league passes the slots. No native code changed, and `league_tests`' `option_bits`
+  already checks the slots' clear, so no new unit test.
+- **Rerun:** `local/locks/heavy-run.sh cob-app python3 -m tools.unirally_lab.gates run
+  --task-checks local/evidence/cartridge-option-bits/checks.list --only app-podium-audio --out
+  local/evidence/cartridge-option-bits/gates-3`: `status=passed`, the step passed in 65 s ("the
+  app's cue log equals front_end_runner's through frame 3179 (3558 lines, 0 podium lines)").
+- Checks: `ctest` lab-debug and app-debug 41/41, `clang-tidy` 19 clean on the nine `src/core`
+  files, `clang-format` clean on the changed `src` lines (`league_tests.cpp` keeps the file's own
+  4-space style), `coverage native-symbols --check` passed.
+- Follow-up proposed: an app check of the podium's audio needs an in-session route, a league's
+  last event raced in the app, and so the app's league-race difference from the runner fixed first
+  (PODIUM-AUDIO's note; the pause cues at 3180 here).
+- Time: 02:49-03:00 UTC on 29 October 2026 (`date -u`).
