@@ -23,6 +23,12 @@ capture made for this task.
 - Whole-image writers: the cold start's wipe (`$83:FB45`, every byte 0) and its defaults
   (`$83:9486`: ten words from `$83:8472` to `$77:073E-0751`, so `$0742` = 0 and `$0750` =
   `0xC28B`) [L, D].
+- Block moves: the work-RAM routine at `$00:0199` (`JSL $000199`, an `MVN` whose banks are
+  stored at `$019A-019B`) has its destination bank set to `$77` at two sites, and neither reaches
+  `$0740-0751`: `$80:9E8A` copies 19 bytes to `$77:016E + 32 * $CC` (a league slot, 0-2,
+  `$80:9F13`), `$80:D499` 8 bytes to `$77:000C + 16 * $CA` (a rider's name). The other
+  `$019B` = `$77` sites (`$80:9B41`, `$80:9B8C`, `$80:A56D`, `$80:AD65`, `$80:EFA3`) make it the
+  source bank [L].
 - [D] finds no writer and no reader the listing does not name, and none it names writes a value
   the listing does not explain.
 
@@ -32,7 +38,7 @@ capture made for this task.
 | ---: | --- | --- | --- | --- | --- |
 | 0 | none | - | the 8-bit stores below | - | - |
 | 1 | the logo held up | `$80:F51E-F525`, `$80:F542-F549` | `$80:F52E-F535`; every boot `$80:A09F-A0A5` | the NMI hook `$80:F624` (BG1 scroll) | `logo.raised`; now in the image |
-| 2 | VS chosen | `$80:BF90-BF98` (`ORA #$04`) | `$80:BC38-BC3F`, `$80:BD6D-BD74`, `$80:BEEC-BEF3` (1P, 2P, league on the way to NOW PLAYING) | `$80:9A05` (into `$0750`) | the race's mode; now in the image |
+| 2 | VS chosen | `$80:BF90-BF98` (`ORA #$04`) | `$80:BC38-BC3F` and `$80:BEEC-BEF3` (1P and the league, on the way to NOW PLAYING); `$80:BD6D-BD74` (2P, after NOW PLAYING, when its race is chosen: `$80:BD63` and the continuation's `$80:BD9D` branch to `$80:BD6B`) | `$80:9A05` (into `$0750`) | the race's mode; now in the image |
 | 3 | the second rider is a human | `$80:B2BC-B2C2` (NOW PLAYING, `$017F` < 16), `$80:BD0C-BD12`, `$80:BF90-BF98` | `$80:B2F7-B2FD`, `$80:BBC8-BBCE` | `$80:9A05` (into `$0750`) | the race's views; now in the image |
 | 4 | the main menu's entry routine | **nothing** | `$80:8891` | `$80:8889` (then `$80:D503`) | read by the audio model (`audio_cpu_menu_reveal.cpp`) |
 | 5 | GROUP TABLES shown | `$80:DEAF` | `$80:DF9F` | `$80:DE9E` | `group_table_shown` (R-0097) |
@@ -125,7 +131,8 @@ the never-read checksums and race words).
 
 The image sweep (`bits_sweep.py`: SAVE-FILES' `image_sweep.py` corpus of 236 cold-start
 manifests, the original's cartridge RAM against each runner's image after frame 406 and every
-500th frame) counts the manifests in which a bit of `$77:0742-0743` differs at some compared frame:
+500th frame) counts the manifests in which a bit of `$77:0742-0743` differs at some compared frame.
+It is sampled: a difference shorter than 500 frames is seen only when a sample falls in it.
 
 | Bit | 1 | 2 | 3 | 8 | 9 | 10 | 13 | others |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -145,6 +152,30 @@ No other byte differs in any manifest where it did not on main, and no runner fa
   the podium's entry after the press at 61415.
 - The eighth bit-1 manifest is the same league run (the logo's bit through the podium's setup).
 
+Review round 1 sampled the same corpus every 5th frame against `e2be787e`
+(`review-1/dense_sweep.py`, `review-1/dense.json`). It finds more short spans, all timing, all
+bounded, none read by a later boot:
+
+| Bit | 1 | 2 | 3 | 8 | 9 | 10 | 13 | others |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Candidate, every 5th frame | 14 | 0 | 7 | 0 | 19 | 2 | 1 | 0 |
+
+- Bit 9, one sample about frame 1201 in every VS manifest: the original gates pad 1 at VS's
+  first pick a few frames before native does.
+- Bit 10, 35 frames in `front-end-1p-setup/back` (546-581, 796-831) and `league/organic-slot-two`
+  (4206-4241): native gates pad 2 for 1P before the original.
+- Bit 1, 20 frames at the HUNTER code, RENAME's and DEFINE LEAGUE's resets and `all-gold`'s
+  ending; 85-115 frames in each idle-demo cycle (the `0x0A`); 100 frames twice in
+  `organic-full-tour`'s podium (61416-61516, 61816-61916).
+- Bit 3, the demo cycles, including about 100 frames after each return; bit 13, the recorded
+  60761-61411.
+- `$10D0` differs on one sample (2546) of `hunter-ending/cheat-route`, on main too: the title
+  code's own timing.
+
+The fix for review round 1's 2P finding cannot move these: no corpus manifest has bit 2 set
+before a 2P race, since the dense sweep found bit 2 equal everywhere while native still cleared
+it at the print.
+
 ## Not covered
 
 - Bit 4's `$80:D503` branch: no code sets the bit, so only an image written outside the game
@@ -152,9 +183,10 @@ No other byte differs in any manifest where it did not on main, and no runner fa
   menu.
 - `$80:F648-F668` (a second logo hook, 1 line a frame to 0x50) and the pad tests `$80:B855`,
   `$80:B87A` and `$80:B89F`: no instruction or byte pair in banks `$80-$83` points at them.
-- The timing of the image's bits within a frame: bit 2's clear is at NOW PLAYING's print rather
-  than the frame of `$80:BC38`, and bit 8's set at the award's and the ending's sound upload frame.
-  Each differs from the original's only within the frames of one screen's entry.
+- The timing of the image's bits: bit 2's clear in 1P and the league is at NOW PLAYING's print
+  rather than the frame of `$80:BC38` or `$80:BEEC`, bit 8's set at the award's and the ending's
+  sound upload frame, and the gate and logo bits a few frames off in the dense sweep's spans
+  above. Each difference is bounded and no later boot reads the bit before it is rewritten.
 - `$0750`'s and `$0744-0753`'s race words in a saved image: native does not write them, and no
   later boot reads them (R-0090).
 - `$77:10CF` (a league pair swapped by `$83:95C4`), read only after the race (`$83:95DB`).

@@ -951,7 +951,7 @@
   {
    "address": "$80:9805",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked",
     "src/core/race_result.cpp:hide_result_objects",
     "src/core/race_result.cpp:lap_graph_frame"
    ],
@@ -1023,7 +1023,7 @@
   {
    "address": "$80:98CF",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked"
    ],
    "region": "rom"
   },
@@ -1097,7 +1097,7 @@
   {
    "address": "$80:9A05",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen"
    ],
    "region": "rom"
   },
@@ -2731,7 +2731,7 @@
   {
    "address": "$80:B297",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::second_human",
     "src/core/now_playing.cpp:note_option_bits",
     "src/core/now_playing.cpp:print_now_playing"
    ],
@@ -3280,7 +3280,7 @@
   {
    "address": "$80:BBCC",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::second_human"
    ],
    "region": "rom"
   },
@@ -3385,7 +3385,7 @@
   {
    "address": "$80:BC38",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
     "src/core/now_playing.cpp:note_option_bits"
    ],
    "region": "rom"
@@ -3492,7 +3492,7 @@
   {
    "address": "$80:BD10",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::second_human"
    ],
    "region": "rom"
   },
@@ -3514,9 +3514,19 @@
    "region": "rom"
   },
   {
+   "address": "$80:BD6B",
+   "native": [
+    "src/core/now_playing.cpp:now_playing_frame"
+   ],
+   "range_ends": [
+    "$80:BD74"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:BD6D",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
     "src/core/now_playing.cpp:note_option_bits"
    ],
    "region": "rom"
@@ -3622,7 +3632,7 @@
   {
    "address": "$80:BEEC",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
     "src/core/now_playing.cpp:note_option_bits"
    ],
    "region": "rom"
@@ -3699,14 +3709,14 @@
   {
    "address": "$80:BF94",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::second_human"
    ],
    "region": "rom"
   },
   {
    "address": "$80:BF96",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen"
    ],
    "region": "rom"
   },
@@ -12337,7 +12347,7 @@
   {
    "address": "$83:A569",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked"
    ],
    "region": "rom"
   },
@@ -12388,7 +12398,7 @@
   {
    "address": "$83:A676",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked"
    ],
    "region": "rom"
   },
@@ -18779,7 +18789,7 @@
     "src/core/front_end.hpp:OnePlayerRecords::league_cycle_complete",
     "src/core/front_end.hpp:OnePlayerRecords::league_naming",
     "src/core/front_end.hpp:OnePlayerRecords::race_lost",
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
     "src/core/front_end_screens.hpp:any_button_pressed",
     "src/core/front_end_screens.hpp:gated_pads",
     "src/core/hunter_ending.cpp:ending_press",
@@ -18860,7 +18870,7 @@
    "address": "$77:0750",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::cartridge_options",
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
     "src/core/hunter_effects.cpp:run_screen_flip",
     "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/presentation.cpp:invisible_riders",
@@ -21573,9 +21583,25 @@
     "$77:0550"
    ]
   },
+  "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked": {
+   "rom": [
+    "$80:9805",
+    "$80:98CF",
+    "$83:A569",
+    "$83:A676"
+   ]
+  },
   "src/core/front_end.hpp:OnePlayerRecords::rider_names": {
    "sram": [
     "$77:000C"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::second_human": {
+   "rom": [
+    "$80:B297",
+    "$80:BBCC",
+    "$80:BD10",
+    "$80:BF94"
    ]
   },
   "src/core/front_end.hpp:OnePlayerRecords::statistics": {
@@ -21611,21 +21637,13 @@
     "$77:1116"
    ]
   },
-  "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked": {
+  "src/core/front_end.hpp:OnePlayerRecords::versus_chosen": {
    "rom": [
-    "$80:9805",
-    "$80:98CF",
     "$80:9A05",
-    "$80:B297",
-    "$80:BBCC",
     "$80:BC38",
-    "$80:BD10",
     "$80:BD6D",
     "$80:BEEC",
-    "$80:BF94",
-    "$80:BF96",
-    "$83:A569",
-    "$83:A676"
+    "$80:BF96"
    ],
    "sram": [
     "$77:0742",
@@ -23913,6 +23931,7 @@
     "$80:B4A0",
     "$80:B4B1",
     "$80:BC4F",
+    "$80:BD6B",
     "$80:BF05",
     "$80:BFEA",
     "$80:BFF9",
@@ -30272,10 +30291,10 @@
   }
  },
  "totals": {
-  "addresses": 2144,
+  "addresses": 2145,
   "io_addresses": 12,
-  "native_symbols": 1587,
-  "rom_addresses": 1700,
+  "native_symbols": 1589,
+  "rom_addresses": 1701,
   "sram_addresses": 66,
   "wram_addresses": 366
  }

@@ -2007,7 +2007,7 @@
   "comment": "routine start",
   "label": "sub_809805",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame"
   ],
@@ -2214,7 +2214,8 @@
   "comment": "instruction start",
   "label": "loc_8099C2",
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -2257,7 +2258,7 @@
   "comment": "instruction start",
   "label": "loc_809A05",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen"
   ],
   "source_records": [
    "docs/research/R-0081-split-race-end.md",
@@ -2422,6 +2423,15 @@
   ]
  },
  {
+  "address": "$80:9B41",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809B41",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:9B55",
   "class": "observed",
   "comment": "routine start",
@@ -2447,6 +2457,15 @@
   "source_records": [
    "docs/research/R-0072-options.md",
    "tasks/LEAGUE.md"
+  ]
+ },
+ {
+  "address": "$80:9B8C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809B8C",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -2743,6 +2762,19 @@
   ]
  },
  {
+  "address": "$80:9E8A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809E8A",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:9E9D",
   "class": "observed",
   "comment": "instruction start",
@@ -2779,6 +2811,18 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:9F13",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809F13",
+  "native": [
+   "src/core/options_menu.cpp:enter_league_slots"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -3644,6 +3688,15 @@
   ]
  },
  {
+  "address": "$80:A56D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A56D",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:A5B2",
   "class": "observed",
   "comment": "instruction start",
@@ -4286,6 +4339,18 @@
   ],
   "source_records": [
    "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$80:AD65",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AD65",
+  "native": [
+   "src/core/league_menu.cpp:reorder_league"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -4983,7 +5048,7 @@
   "comment": "instruction start",
   "label": "loc_80B297",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/front_end.hpp:OnePlayerRecords::second_human",
    "src/core/now_playing.cpp:note_option_bits",
    "src/core/now_playing.cpp:print_now_playing"
   ],
@@ -4998,7 +5063,7 @@
   "comment": "instruction start",
   "label": "loc_80B2BC",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/front_end.hpp:OnePlayerRecords::second_human",
    "src/core/now_playing.cpp:note_option_bits",
    "src/core/now_playing.cpp:print_now_playing"
   ],
@@ -5012,7 +5077,7 @@
   "comment": "instruction start",
   "label": "loc_80B2F7",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/front_end.hpp:OnePlayerRecords::second_human",
    "src/core/now_playing.cpp:note_option_bits",
    "src/core/now_playing.cpp:print_now_playing"
   ],
@@ -6384,7 +6449,7 @@
   "comment": "instruction start",
   "label": "loc_80BC38",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
    "src/core/now_playing.cpp:note_option_bits",
    "src/core/race_result.cpp:race_restart_frame"
   ],
@@ -6659,13 +6724,35 @@
   ]
  },
  {
+  "address": "$80:BD63",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD63",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:BD6B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD6B",
+  "native": [
+   "src/core/now_playing.cpp:now_playing_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:BD6D",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BD6D",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
-   "src/core/now_playing.cpp:note_option_bits"
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
+   "src/core/now_playing.cpp:note_option_bits",
+   "src/core/now_playing.cpp:now_playing_frame"
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
@@ -6690,6 +6777,15 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:BD9D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD9D",
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {
@@ -6861,6 +6957,19 @@
   ]
  },
  {
+  "address": "$80:BE78",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE78",
+  "native": [
+   "src/core/league_completion.cpp:(file)",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "tasks/CARTRIDGE-OPTION-BITS.md"
+  ]
+ },
+ {
   "address": "$80:BE7C",
   "class": "observed",
   "comment": "instruction start",
@@ -6951,7 +7060,7 @@
   "comment": "instruction start",
   "label": "loc_80BEEC",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
    "src/core/now_playing.cpp:note_option_bits"
   ],
   "source_records": [
@@ -7117,7 +7226,7 @@
   "comment": "instruction start",
   "label": "loc_80BF94",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+   "src/core/front_end.hpp:OnePlayerRecords::second_human",
    "src/core/rider_menu.cpp:take_second_human"
   ],
   "source_records": [
@@ -9241,6 +9350,18 @@
   ]
  },
  {
+  "address": "$80:D499",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D499",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
   "address": "$80:D4A0",
   "class": "observed",
   "comment": "instruction start",
@@ -9286,7 +9407,8 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0097-menu-input.md",
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -11360,6 +11482,18 @@
   "source_records": [
    "docs/research/R-0072-options.md",
    "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:EFA3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EFA3",
+  "native": [
+   "src/core/records_scores.cpp:GroupStanding"
+  ],
+  "source_records": [
+   "docs/research/R-0105-cartridge-option-words.md"
   ]
  },
  {

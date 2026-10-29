@@ -1077,7 +1077,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked",
     "src/core/race_result.cpp:hide_result_objects",
     "src/core/race_result.cpp:lap_graph_frame"
    ],
@@ -1237,7 +1237,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked",
     "src/core/lap_result.cpp:(file)",
     "src/core/lap_result.cpp:steer",
     "src/core/race_result.cpp:hide_result_objects",
@@ -1308,7 +1308,7 @@
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
     "src/core/front_end.hpp:return_from_race",
     "src/core/league_completion.cpp:league_podium_entry_frame",
     "src/core/now_playing.cpp:race_fade_frame",
@@ -2951,7 +2951,8 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
     "src/core/front_end.hpp:FrontEndState::slide_word",
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::second_human",
+    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
     "src/core/front_end_screens.hpp:enter_rider_menu",
     "src/core/front_end_screens.hpp:enter_tour_menu",
     "src/core/front_end_screens.hpp:enter_track_menu",
@@ -16410,7 +16411,7 @@
     "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
     "src/core/audio_cue.hpp:AudioSessionLoad",
     "src/core/audio_cued_scenes.cpp:start_screen_music",
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked",
+    "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked",
     "src/core/front_end_screens.hpp:reset_award_screen",
     "src/core/tour_ending.cpp:(file)",
     "src/core/tour_ending.cpp:blank_frame, reset_frame, pattern_tiles_frame, bar_map_frame, fade_in_frames",
@@ -16442,7 +16443,7 @@
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
     "src/core/award.cpp:gold_medal_colours",
     "src/core/award.cpp:tour_award_frame",
-    "src/core/front_end.hpp:OnePlayerRecords::versus_chosen, OnePlayerRecords::second_human, OnePlayerRecords::result_objects_parked"
+    "src/core/front_end.hpp:OnePlayerRecords::result_objects_parked"
    ],
    "observed_entries": {},
    "start": "$83:A614",
@@ -19368,16 +19369,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2325,
+  "cited_addresses": 2337,
   "cited_by_class": {
    "data": 16,
    "inferred": 105,
-   "observed": 2001,
+   "observed": 2013,
    "unknown": 203
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1604,
+   "loc": 1616,
    "mid": 31,
    "sub": 471,
    "unk": 203

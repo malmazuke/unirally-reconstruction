@@ -61,8 +61,9 @@ Native (`c8b43f41`): the flag clear (`league_menu.cpp`, `now_playing.cpp`); the 
 `race_result.cpp`, `award.cpp`, `tour_ending.cpp`; the pad gate kept over a soft reset and
 cleared by the wipe in `front_end.cpp`). The save format and the pack profile are unchanged; a
 saved file's `$0742-0743` bytes change. Tests: `league_tests` (`option_bits`), `front_end_tests`
-(`option_bits_image_tests`, and bit 8 in `lap_result_tests`); each change removed in turn fails
-one of them (`mutants.txt`).
+(`option_bits_image_tests`, and bit 8 in `lap_result_tests`). Review round 1 found five of the
+image's bit sites untested; `6289e2a1` adds tests for them, and each of the 19 listed changes
+removed in turn now fails one test (`mutants.txt`).
 
 Warm boots against the original (`warm_pair.sh`; main's runner `base-7c19d681`):
 
@@ -72,10 +73,15 @@ Warm boots against the original (`warm_pair.sh`; main's runner `base-7c19d681`):
 | `cheat-league` (title code, LEAGUE, slot, table, pair; cleared at 1401) | 281/380: the podium from 1405; `$10D0` differs | 380/380; equal |
 | `league-slot` (bit 13 owed; the slot's choice clears it at 830) | 281/380: the podium | 380/380 |
 
-Image sweep (`bits_sweep.py`, 236 manifests, every 500th frame): manifests with a `$0742-0743`
-bit differing fall from 212 (bit 1), 19 (2), 89 (3), 74 (8), 54 (9), 89 (10) and 1 (13) on main
-to 8, 0, 7, 0, 0, 0 and 1; no other byte differs anywhere it did not on main. The residue (the
-demo race's `0x0A`, the league's bit 13 between table and podium) is in R-0105.
+Image sweep (`bits_sweep.py`, 236 manifests, sampled every 500th frame, so a shorter difference
+shows only when a sample falls in it): manifests with a `$0742-0743` bit differing fall from 212
+(bit 1), 19 (2), 89 (3), 74 (8), 54 (9), 89 (10) and 1 (13) on main to 8, 0, 7, 0, 0, 0 and 1; no
+other byte differs anywhere it did not on main. Sampled every 5th frame (review round 1,
+`review-1/dense.json`, at `e2be787e`) the candidate's counts are 14 (bit 1), 0 (2), 7 (3), 0 (8),
+19 (9), 2 (10) and 1 (13). Every difference is timing: bit 9 a few frames at VS's first pick, bit
+10 35 frames at 1P's gate, bit 1 20-115 frames around the logo's moves and the demo's `0x0A`, bit
+3 the demo's `0x0A`, bit 13 the league's table before the podium. Each is bounded and no later
+boot reads the bit before it is rewritten (R-0105).
 
 ## Handoff (worker)
 
@@ -89,7 +95,8 @@ demo race's `0x0A`, the league's bit 13 between table and podium) is in R-0105.
   `clang-format` 19 on the changed lines (`award.cpp` and `tour_ending.cpp` keep one warning each
   from main; the test files keep their own style); `regen.sh` (five raw coverage inputs) and
   `coverage native-symbols --check` passed, 0 cited addresses without a record; mutants
-  (`mutants.txt`): each change removed fails a test; `checks.list` 4 of 4 lines rc 0 at
+  (`mutants.txt`): five changes checked at the handoff (widened to 19 in review round 1);
+  `checks.list` 4 of 4 lines rc 0 at
   `d491dcc6` (`checks-d491dcc6.out`, about 13 min under the heavy-run lock). Synthetic suite and
   gates not run by the worker.
 - Commands: `local/locks/heavy-run.sh CARTRIDGE-OPTION-BITS zsh
@@ -101,7 +108,8 @@ demo race's `0x0A`, the league's bit 13 between table and podium) is in R-0105.
 - Evidence: main `local/evidence/cartridge-option-bits/`, 14 MB: `listing/` (bank listings, ROM
   bytes), `census/` (dynamic census and the `organic-full-tour` access capture at 60740-60770),
   `scripts/` (warm inputs and the original's per-frame cartridge writes), `images/`
-  (`league-podium-owed.bin`: the league image with bit 13 set), `checks/` (first warm pairs),
+  (`league-podium-owed.bin`: the league image with bit 13 set), `checks-first-pairs-superseded/`
+  (the first warm pairs, before the image bits; superseded by `checks-d491dcc6/`),
   `sweep/` (main against `cand-1`), `checks-d491dcc6/`, `base-7c19d681/` (main's runner),
   `cand-1/` (the swept candidate, behaviour-equal to the final one), copies of SAVE-FILES'
   `warm_boot.py` (skips `#` lines) and `warm_compare.py` (every differing byte). The private
@@ -120,4 +128,44 @@ demo race's `0x0A`, the league's bit 13 between table and podium) is in R-0105.
 - Time (claim 21:59 UTC to handoff 23:20 UTC, about 1 h 20 min, `date -u`): reading and listing
   15 min; census and dynamic census 20 min; native, tests and warm checks 25 min; sweeps, lints,
   records and the `checks.list` run 20 min (about 20 min of it waiting on the final run).
-- Next: the tier-1 independent review, then the gates.
+- Next: the tier-1 independent review, then the gates. (Done: review round 1 below; after its
+  fixes, the gates.)
+
+## Review round 1 (approved with three should-fix findings, `e2be787e`)
+
+A fresh subagent in its own checkout ([PR 92](https://github.com/malmazuke/unirally-reconstruction/pull/92),
+report also in `local/evidence/cartridge-option-bits/review-1/review.md`): approve. It recounted
+the census independently (129 accesses, no indexed store, DMA or bank-`$77` window reaching the
+words) and recaptured the three warm checks, which passed. A dense sweep, warm pairs over 8 images
+and 7 scripts, and native against native found no new byte moved. Findings and replies
+(fixes in `6289e2a1`, records in the commit after it):
+
+1. **2P clears bit 2 at the race, not at NOW PLAYING's print.** Fixed: `now_playing.cpp` now clears
+   it in NOW PLAYING's race choice for 2P (`$80:BD6B-BD74`; the continuation's race reaches the
+   same site through `$80:BD9D`); 1P and the league keep the print-time clear. R-0105's bit 2 row
+   corrected. The reviewer's case (`cold-429` with bit 2 set, `twop-restart`'s pads, every 5th
+   frame; `review-1/warm_bits.py`): before, bit 2 differed 1705-1845 with 1680/1680 pictures;
+   now 1680/1680 pictures and no `$0742-0743` bit differs (`review-1-fix/bit2-cand.out`). The
+   control with the unchanged `cold-429` image is also clean (`review-1-fix/cold-429-cand.out`).
+2. **The sweep is sampled.** The checkpoint and R-0105 now say so and give the dense counts
+   and spans as timing differences that no later boot reads. The fix for finding 1 cannot change
+   the dense counts: bit 2 was equal in every corpus manifest even with the print-time clear.
+3. **The mutant claim was wider than the tests.** Tests added for every site named:
+   `note_option_bits` (`now_playing_option_bit_tests`: 1P, 2P and VS, through NOW PLAYING and its
+   race), the second picks' bits 2 and 3, 1P's pick clearing bit 3, the award's and the tour
+   ending's bit 8 at their sound upload frame, and bit 1 from `logo.raised`. The lap graph's clear
+   is now tested from a set bit. `mutants.txt` lists 19 changes; each one, removed, fails a test.
+
+Notes: R-0105's census method now covers the `$00:0199` block moves (`$80:9E8A`, `$80:D499`
+write names in bank `$77`; neither reaches `$0740-0751`). The three image fields in
+`front_end.hpp` are on a line each. The first warm pairs moved to
+`checks-first-pairs-superseded/`.
+
+Checks after the fixes: `ctest` lab-debug and app-debug 41/41; `clang-tidy` 19 clean on the nine
+`src/core` files; `clang-format` 19 clean on the changed lines (`git-clang-format`); `regen.sh`
+and `coverage native-symbols --check` passed, 0 cited addresses without a record. `checks.list`
+not rerun (the gates run it next).
+
+Handoff after review round 1: commits `6289e2a1` (2P's bit 2 at its race; the tests) and the
+records commit after it (R-0105, this record, `docs/map/static/` regenerated for `$80:BD6B`). Time:
+00:01-00:12 UTC on 29 October 2026 (`date -u`), about 11 min. Next: the gates.
