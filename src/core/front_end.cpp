@@ -363,6 +363,8 @@ void wipe_cartridge(FrontEndState& state, const FrontEndContent& content) {
     state.tour_menu.tour = 0;         // $00D0: `$83:9987` sets it to the track over 5
     state.logo.raised = false;        // $77:0742 bit 1
     state.track_menu.marker_step = 0; // $77:10A7
+    // $77:0742 bits 9 and 10, the menus' pad gate (R-0105).
+    state.pad_one_ignored = state.pad_two_ignored = false;
 }
 
 namespace {
@@ -1190,6 +1192,8 @@ void soft_reset(FrontEndState& state) {
     reset.records = state.records;
     reset.cartridge = state.cartridge;
     reset.one_player = state.one_player;
+    reset.pad_one_ignored = state.pad_one_ignored; // `$77:0742` bits 9 and 10 (R-0105)
+    reset.pad_two_ignored = state.pad_two_ignored;
     reset.video.cgram = state.video.cgram;
     reset.video.oam = state.video.oam;
     state = std::move(reset);

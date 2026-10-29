@@ -27,6 +27,21 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](./GATES-AGAINST-MAIN.md) holds the detail.
 
+**29 October 2026: CARTRIDGE-OPTION-BITS is accepted (tier 1, #92) and integrated by merge commit.**
+R-0105 is a census of the cartridge's option words `$77:0742` and `$77:0750`: every bit, its
+writers and readers, and whether the shipped game reaches it.
+- **Fixed:** choosing a league pair or a VS race clears the title code's flag `$10D0`
+  (`$83:958C`), and leaving the league slots clears the owed podium (`$0742` bit 13); the saved
+  image carries bits 1, 2, 3, 8, 9 and 10 as the original writes them. Warm-boot captures
+  380/380 and 260/260 pictures (main 281/380).
+- **Unreachable or unused:** bit 4 is never set, bit 7 only cleared, bits 0, 6, 11, 14 and 15
+  unused. `$12D1` and `scenery.14` are reached through NEON with one view and were already native.
+- **Gates:** the app's podium check reached its podium only through the old bit-13 behaviour; it
+  now stops before a league race where the app and the runner already differed. Queued as
+  APP-LEAGUE-RACE.
+- **Time:** about 5 h 20 min from claim to merge (D-0013's target 6 h).
+[R-0105](../docs/research/R-0105-cartridge-option-words.md) and [CARTRIDGE-OPTION-BITS](CARTRIDGE-OPTION-BITS.md) hold the detail.
+
 **28 October 2026: TWO-VIEW-POWER-BOUNCE is accepted (tier 1, #90) and integrated by merge commit.**
 Under HUNTER's power bounce, both riders of a two-view race (2P, VS, the split demo, a two-view
 league race) now land with landing matrix 0, as the original's `$81:94A8-94C3` gives it; in one

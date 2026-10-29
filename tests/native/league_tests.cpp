@@ -21,9 +21,11 @@ struct Content {
     std::array<std::uint8_t, 206> awards{};
     std::array<std::uint8_t, 32> palette{};
     std::array<std::uint8_t, 256> decoration_frames{};
+    std::array<std::uint8_t, 1> main_menu{0xff};
     FrontEndContent view{};
     Content() {
         table.fill(0xff);
+        view.main_menu_text = main_menu;
         awards.fill(0xff);
         constexpr std::array<std::uint8_t, 8> points{2, 3, 4, 5, 6, 7, 8, 10};
         for (unsigned k = 0; k < points.size(); ++k) awards[198 + k] = points[k];
@@ -246,6 +248,35 @@ void podium_music(const Content& content) {
                 && audio_dispatch_site_name(AudioDispatchSite::podium_third_pass) == "podium-3",
             "the cue logs' names");
 }
+// R-0105: `$83:958C` clears the title code's flag `$77:10D0` with the pair's word, at a league
+// pair's choice and a VS race's; leaving the league slots clears `$77:0742` bit 13, so a podium
+// still owed is not shown.
+void option_bits(const Content& content) {
+    auto pair = league(0, 0x0500);
+    pair.records.cheat = true;
+    choose_league_pair(pair);
+    require(!pair.records.cheat && pair.screen == FrontEndScreen::now_playing_entry,
+            "a league pair's choice clears the title code's flag");
+    for (const auto mode : {FrontEndMode::versus, FrontEndMode::two_player}) {
+        auto race = start_front_end();
+        race.mode = mode;
+        race.records.cheat = true;
+        race.screen = FrontEndScreen::now_playing;
+        race.arrow.target_x = 0x0300; // Race
+        now_playing_frame(race, content.view, {choose_buttons, 0});
+        require(race.screen == FrontEndScreen::race_fade, "NOW PLAYING's race");
+        require(race.records.cheat == (mode != FrontEndMode::versus),
+                "VS's race clears the flag, 2P's keeps it");
+    }
+    for (const auto pad : {choose_buttons, back_buttons}) {
+        auto slots = league(0, 0x0500);
+        slots.records.league_cycle_complete = true;
+        slots.screen = FrontEndScreen::league_slots;
+        league_slots_frame(slots, content.view, {pad, 0});
+        require(!slots.records.league_cycle_complete,
+                "leaving the slots either way clears the podium owed");
+    }
+}
 } // namespace
 int main() try {
     const Content content;
@@ -254,6 +285,7 @@ int main() try {
     bonus_comparisons();
     stunt_totals_after_the_tallies();
     podium_music(content);
+    option_bits(content);
     return 0;
 } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';

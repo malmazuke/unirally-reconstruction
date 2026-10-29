@@ -462,6 +462,16 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
     }
 }
 
+namespace {
+// 2P's and VS's second pick: both pads again ($80:BD08, $80:BFB7), and `$77:0742` bit 3, a second
+// human, with VS's bit 2 ($80:BD0C-BD12, $80:BF90-BF98; R-0105).
+void take_second_human(FrontEndState& state) {
+    gate_pads(state, true, true);
+    state.records.second_human = true;
+    if (state.mode == FrontEndMode::versus) state.records.versus_chosen = true;
+}
+} // namespace
+
 void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     high_bits(state, shadow_group) = four_hidden;
     copy_oam(state); // $80:D1EC, which also reads the pads
@@ -521,7 +531,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
             // $80:BD1C-BD23: 2P's second choice starts the session's wins at 0 (R-0084).
             if (state.mode == FrontEndMode::two_player && state.rider_menu.second)
                 state.records.player_wins = state.records.opponent_wins = 0;
-            if (state.rider_menu.second) gate_pads(state, true, true); // $80:BD08, $80:BFB7
+            if (state.rider_menu.second) take_second_human(state);
         } else if (state.rider_menu.challenger) {
             state.rider_menu.rider = state.menu.selection; // $80:C0C0-C0C2 into `$017D`
         } else if (state.rider_menu.purpose != RiderMenuPurpose::normal) {
@@ -531,6 +541,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
             state.now_playing.opponent = someone; // $80:BBC3
             if (state.mode == FrontEndMode::one_player) {
                 state.options_rider = state.menu.selection; // $80:BBBE-BBC1, R-0097
+                state.records.second_human = false;         // $80:BBC8-BBCE
                 // $80:BBD6-BBE5: a new run, no track done, three tries (R-0057).
                 state.records.tracks_done.fill(0);
                 state.records.tries = 3;

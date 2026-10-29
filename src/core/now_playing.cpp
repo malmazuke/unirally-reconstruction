@@ -146,6 +146,16 @@ void place_now_playing_marks(FrontEndState& state) {
     }
 }
 
+// `$77:0742` as NOW PLAYING prints (R-0105): bit 3 is whether `$017F` is a rider
+// (`$80:B297-B2FD`; 0x10 in 1P, `$80:BBC3`), and 1P's and the league's ways here clear VS's bit 2
+// (`$80:BC38`, `$80:BEEC`). 2P clears it only when its race is chosen (`$80:BD6D`).
+void note_option_bits(FrontEndState& state) {
+    state.records.second_human =
+        state.mode != FrontEndMode::one_player && state.second_rider < someone;
+    if (state.mode == FrontEndMode::one_player || state.mode == FrontEndMode::league)
+        state.records.versus_chosen = false;
+}
+
 // $80:B19A-B3DA: the marks' places, then the text map, all in one frame.
 void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
     auto& now = state.now_playing;
@@ -188,6 +198,7 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
                     || (state.mode == FrontEndMode::league && state.second_rider >= someone))
                      ? opponent_for(state)
                      : state.second_rider;
+    note_option_bits(state);
     if (race_kind(state) == stunt_event && now.opponent >= someone
         && state.mode == FrontEndMode::league) {
         // $80:B359-B35F, $80:B390: a league's computer opponent in a stunt event: the "VS" row
@@ -343,6 +354,11 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
         }
         return;
     case NowPlayingChoice::race:
+        // A VS race clears the title code's flag with the pair's word (`$80:BFF9`, `$83:958C`
+        // storing 0 to `$77:10CF-10D0`; R-0105): the next title keeps every level at 3.
+        if (state.mode == FrontEndMode::versus) state.records.cheat = false;
+        // $80:BD6B-BD74: 2P's race, also from its continuation, clears VS's bit 2 (R-0105).
+        if (state.mode == FrontEndMode::two_player) state.records.versus_chosen = false;
         // A race from the two-human continuation ends it: both pads again ($80:C0E0; R-0095).
         if (state.continuation_back != FrontEndScreen::boot) gate_pads(state, true, true);
         state.continuation_back = FrontEndScreen::boot;

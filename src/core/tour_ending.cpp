@@ -282,8 +282,11 @@ void tour_ending_frame(FrontEndState& state, const FrontEndContent& content) {
                        !layout.late_nmi_hook);
         return;
     }
-    if (frame == sound_upload_frame) // $83:88FD's tour routine calls `$83:A507` first
+    if (frame == sound_upload_frame) { // $83:88FD's tour routine calls `$83:A507` first
         state.sound_cues.push_back(audio_load(AudioSessionLoad::ending));
+        // $83:A562-A56C, after the upload: `$77:0742` bit 8 set, bit 7 cleared (R-0105).
+        state.records.result_objects_parked = true;
+    }
     if (frame <= blank_frame) {
         fade_down(state, frame);
         return;

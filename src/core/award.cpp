@@ -279,8 +279,11 @@ void tour_award_frame(FrontEndState& state, const FrontEndContent& content, Fron
     auto& award = state.award;
     const auto frame = state.script_frame;
     if (award.exit_frame == 0) {
-        if (frame == sound_upload_frame) // $83:AEFB
+        if (frame == sound_upload_frame) { // $83:AEFB
             state.sound_cues.push_back(audio_load(AudioSessionLoad::award));
+            // $83:A66F-A679, after the upload: `$77:0742` bit 8 set, bit 7 cleared (R-0105).
+            state.records.result_objects_parked = true;
+        }
         if (frame <= blank_frame) {
             fade_down(state, frame);
             return;

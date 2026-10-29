@@ -186,6 +186,9 @@ void league_slots_frame(FrontEndState& state, const FrontEndContent& content, Fr
     copy_oam(state);
     move_choice(state, league_slot_columns, pads, league_slot_count);
     const auto pad = static_cast<std::uint16_t>(pads.one | pads.two);
+    // $80:9F18-9F21: leaving the slots either way clears `$77:0742` bit 13, so a podium still
+    // owed when the league was left is never shown (R-0105).
+    if (pad & (back_buttons | choose_buttons)) state.records.league_cycle_complete = false;
     if (pad & back_buttons) {
         if (state.mode == FrontEndMode::league)
             return_to_main(state, content);
