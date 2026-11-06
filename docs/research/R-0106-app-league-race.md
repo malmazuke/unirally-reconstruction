@@ -125,7 +125,9 @@ kept unchanged for trees without this change.
 From the worktree (local/ linked; app-debug and lab-release built), each through
 `local/locks/heavy-run.sh`:
 
-1. Before: main's app (`artifacts/unirally-before`, built at the claim) on both routes:
+1. Before: main's app (`base-6797457b/unirally`, built at the claim; the exploration scripts ran
+   the same file as `artifacts/unirally-before`, and it loads its SDL and DSP libraries from the
+   worktree's build) on both routes:
    `cartridge-option-bits/gates-round-1/app_pair.sh` for the warm route; the app with
    `--updates 13000 --front-end-inputs local/evidence/league/full-app.inputs` for the turnaround.
    The shifted-input runs of `front_end_runner` as in Observations.
