@@ -109,14 +109,16 @@ The candidate's app (`app-debug`, `--native-title-menu-audio`, real time) agains
 ## `app-podium-audio`
 
 Since R-0105 no warm boot reaches a podium (the league slots clear the podium owed), so the app's
-podium check must race a league's last event. `podium-audio/app_run.sh` now plays the turnaround
+podium check must race a league's last event. The catalogue step now runs
+`app-league-race/app_podium_run.sh`, which plays the turnaround
 schedule from a cold boot (`cues/full-tour.frontend-inputs.txt`, the same rows as LEAGUE's
 `full-app.inputs`) for 38,400 updates: five league events, the podium (its session at 37234) and
 the way back (the title session at 38068). It reports the producer's frames and drops, requires
 the app's cue log to equal `front_end_runner`'s with a podium in it, and ties the runner to the
 original: `front_end_runner`'s cues in the podium's window (37233-38069) against the original's
 derived list for PODIUM-AUDIO's `full-tour` capture (`cues/full-tour.cues.txt`). Any mismatch
-prints DIFFERS. The previous script is `app_run.sh.before-app-league-race`.
+prints DIFFERS. PODIUM-AUDIO's `app_run.sh` (the warm route through frame 3179, no podium) is
+kept unchanged for trees without this change.
 
 ## Reproduction
 
@@ -130,7 +132,7 @@ From the worktree (local/ linked; app-debug and lab-release built), each through
 2. After: `explore/after_runs.sh OUTDIR` (both routes, the turnaround's whole 40,264 frames),
    `explore/one_player_runs.sh OUTDIR` (the one-player path, main's app and the candidate's).
 3. The task's checks: `local/evidence/app-league-race/checks.list` (`runner_same.sh`,
-   `warm_route.sh`) and the catalogue step `app-podium-audio` (`podium-audio/app_run.sh`).
+   `warm_route.sh`) and the catalogue step `app-podium-audio` (`app-league-race/app_podium_run.sh`).
 
 ## Limits
 
