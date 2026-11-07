@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **in progress**. Claimed 6 November 2026 22:21 UTC on main `6797457b`, on the user's
+- Status: **accepted** 7 November 2026 (tier 1, [#93](https://github.com/malmazuke/unirally-reconstruction/pull/93),
+  approved in review round 2 at `28d39fa8`), integrated by merge commit. Claimed 6 November 2026
+  22:21 UTC on main `6797457b`, on the user's
   instruction ("Next task"; Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`;
   coordinator and integrator; a worker subagent implements, a fresh subagent reviews). Queued
   29 October 2026 by [CARTRIDGE-OPTION-BITS](CARTRIDGE-OPTION-BITS.md) (R-0105, gates round 1).
@@ -166,3 +168,44 @@ the race returns at 4713); `runner_same.sh` byte-identical on all four routes;
 `app_podium_run.sh` app rc 0, equal through 38399 (59,456 lines, 25 podium lines), five returns on
 the runner's frames and totals, the producer 37,780 cued frames and never stopped, the runner's
 podium window 0 frames differing from the original's (8 outside it, as on main).
+
+## Review (rounds 1 and 2, approved `28d39fa8`)
+
+A fresh subagent in its own checkout at the candidate.
+- [Round 1](https://github.com/malmazuke/unirally-reconstruction/pull/93#pullrequestreview-5809650987)
+  at `c04980b4`: approve, one should-fix and six notes, handled as "Review round 1" above.
+- [Round 2](https://github.com/malmazuke/unirally-reconstruction/pull/93#pullrequestreview-5809651098)
+  at `28d39fa8` (00:09-00:11 UTC): approve. The rename is complete and changes no behaviour; the
+  `start` mutant still fails; `twop_bowl.sh` and `app_podium_run.sh` fail on a changed cue, a
+  missing log and an app error (negative tests on fake files). Its note: `fix-1/run.out` ran on
+  the tree just before `28d39fa8` was committed (a rename and comments); the gates ran on the
+  commit itself.
+
+## Gates (D-0012)
+
+- `gates-1` at `28d39fa8` (00:10-02:59 UTC, 10,177 s): `status=passed`. Every step was selected
+  (`tools/unirally_lab/gates/catalogue.py` changed). 105 checks against the original
+  `same-as-main`, 32 steps passed, 3 skipped (`race-sweep-classify` and its twin: the race sweep
+  found nothing to classify; `pa-anchors` reads only the original's captures), and the task's 3
+  checks rc 0. `fe-replay`: 751 recorded runner invocations, 17,922,816 frames, 0 differing.
+  `app-podium-audio` passed in 770 s. Peak temp 3.9 GB; free disk 93.9 GB at the lowest.
+- Hosted CI: on the pull request.
+
+## Handoff (closeout)
+
+- Commits on `task/app-league-race`: `91ce4a40` (claim), `0dd9aaf6`, `2cf022ee`, `c04980b4`
+  (worker), `28d39fa8` (review round 1's fixes), then this record.
+- Time, claim 22:21 UTC to merge about 03:15 UTC, about 4 h 55 min against D-0013's 6 hours:
+  worker 49 min; review round 1 37 min; fixes and their check run 20 min; round 2 2 min (beside
+  the gates); gates 2 h 50 min; closeout about 15 min.
+- Disk: main `local/evidence/app-league-race/` 130 MB after `compact_evidence.py` (13 files
+  compressed, 10 cloned), under the 1 GB budget; the reviews' 42 MB in
+  `.worktrees/app-league-race-review/local/evidence/app-league-race/` are the same tree (`local/`
+  is linked). `base-6797457b/`'s app copy loads SDL and the DSP library from this worktree's
+  build, so it stops running once `.worktrees/app-league-race` is removed; rebuild main at
+  `6797457b` to rerun it.
+- The catalogue step `app-podium-audio` runs `local/evidence/app-league-race/app_podium_run.sh`;
+  `podium-audio/app_run.sh` is unchanged, so branches cut before this merge keep their own step.
+  The task's three checks (`checks.list`) are not in the catalogue.
+- The closing session removes `.worktrees/app-league-race` and `.worktrees/app-league-race-review`
+  and the local branch, then bootstraps and rebuilds app-debug in the main checkout.
