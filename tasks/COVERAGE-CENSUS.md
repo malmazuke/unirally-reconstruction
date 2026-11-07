@@ -148,6 +148,6 @@ refreshed from R-0090 to R-0108 by a read-only subagent).
   (42,656), the headline (8,237 = 6 + 2,361 + 1,907 + 868 + 3,095; 6.3% of 131,072, 7.0% of
   117,425), the four bank-tail fill blocks against the ROM (all `$FF`) and the diff's scope (no
   `src/`, `tools/` or `tests/` file).
-- Gates (D-0012): GATES-RESULT
+- Gates (D-0012) on `a2a0d22f`: `only records changed: no local gates (CI's docs-only fast path covers them)`.
 - Evidence: `python3 tools/compact_evidence.py --skip-recent 0 local/evidence/coverage-census`
   compressed 7 files (0.05 GB); 128 MB remain. Worktree and branch removed after the merge.
