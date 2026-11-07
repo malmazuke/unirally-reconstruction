@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 7 November 2026 21:30 UTC on main `dffbcf44`, on the user's instruction
+- Status: **accepted** 8 November 2026 (tier 3, [#96](https://github.com/malmazuke/unirally-reconstruction/pull/96)),
+  integrated by merge commit. Claimed 7 November 2026 21:30 UTC on main `dffbcf44`, on the user's instruction
   ("Start", answering whether to start a fresh coverage inventory). Claude Code desktop app,
   Claude Opus 5.5 (`claude-opus-5-5`): coordinator and integrator; a worker subagent runs the
   inventory. Run under [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to
@@ -104,7 +105,7 @@ task measures it and queues what is left.
 
 ## Evidence
 
-Main `local/evidence/coverage-census/` (177 MB): `scan_manifests.py` and `scan.json` (the manifest
+Main `local/evidence/coverage-census/` (128 MB after `compact_evidence.py`; 177 MB at the handoff): `scan_manifests.py` and `scan.json` (the manifest
 scan), `make_corpus.py`, `plan.json` and `manifests.tar.zst` (the 651 manifests; `make_corpus.py`
 writes them again byte for byte), `captures.sh`, `captures.out`, `captures-2.out`, `runs/*/`
 (logs and capture scripts) and `runs-coverage.tar.zst` (the 651 raw coverage files),
@@ -139,4 +140,14 @@ refreshed from R-0090 to R-0108 by a read-only subagent).
   10:40 AEDT (23:40 UTC), about 2 h 13 min; machine time: captures about 1 h 05 min and
   access captures 40 min,
   during which the scripts and records were written.
-- Next: the coordinator's closeout (tier 3, no review), then APP-PARITY.
+- Next: [APP-PARITY](APP-PARITY.md), tier 2. The rest of the queue is in R-0109.
+
+## Closeout (coordinator)
+
+- Review: tier 3, no independent review (D-0008). The coordinator checked the class table's sum
+  (42,656), the headline (8,237 = 6 + 2,361 + 1,907 + 868 + 3,095; 6.3% of 131,072, 7.0% of
+  117,425), the four bank-tail fill blocks against the ROM (all `$FF`) and the diff's scope (no
+  `src/`, `tools/` or `tests/` file).
+- Gates (D-0012): GATES-RESULT
+- Evidence: `python3 tools/compact_evidence.py --skip-recent 0 local/evidence/coverage-census`
+  compressed 7 files (0.05 GB); 128 MB remain. Worktree and branch removed after the merge.
