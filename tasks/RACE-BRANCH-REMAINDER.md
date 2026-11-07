@@ -142,3 +142,14 @@ with the same counts as before (`check_race.sh` changed; the manifests' changed 
 and `replay validate` passes on all eight); `regen.sh` rerun last (native-symbols and the static map
 `status=passed`, the tooling tests `OK`) and `coverage native-symbols --check` passed, 0 cited addresses
 without a record.
+
+## Review round 2 (approve with one should-fix, records only; `1664c6b6`)
+
+The same reviewer (`review-2/review.md`, 12:31-12:37 UTC) found the ten round-1 fixes accurate and
+asked for the `$81:83A6` argument's base case. R-0108 now cites the race-start clear: the race's
+setup (`$83:C901`, or `$83:C9CF`) calls `$82:D7C2`, whose loop at `$82:D7E5-D7F8` (`$82:D7F5 STA
+$0200,Y`) zeroes `$0200-$1796`, the pose words, steps and cooldowns among them (traced on the frames
+that clear them, twop-restart 7707 and league-three 11507), and the reviewer's figures: all 0 at the
+six race initializations of three probes, a finish pose cleared by 11507 and 7707. The writer list is
+qualified as the direct-addressed writers plus that clear. `regen.sh` rerun last and `coverage
+native-symbols --check` passed.

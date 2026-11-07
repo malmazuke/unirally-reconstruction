@@ -1544,6 +1544,15 @@
   ]
  },
  {
+  "address": "$80:934F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80934F",
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
   "address": "$80:937B",
   "class": "observed",
   "comment": "routine start",
@@ -23297,7 +23306,38 @@
   ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md",
-   "docs/research/R-0099-podium-audio.md"
+   "docs/research/R-0099-podium-audio.md",
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
+  ]
+ },
+ {
+  "address": "$82:D7C6",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D7C6",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
+  "address": "$82:D7E5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D7E5",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -23312,7 +23352,9 @@
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
-   "docs/research/R-0037-dragster-race-palette-cycle.md"
+   "docs/research/R-0037-dragster-race-palette-cycle.md",
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -27922,6 +27964,16 @@
   ]
  },
  {
+  "address": "$83:C901",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C901",
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
+  ]
+ },
+ {
   "address": "$83:C90B",
   "class": "observed",
   "comment": "instruction start",
@@ -28024,6 +28076,16 @@
   "label": "loc_83C9C1",
   "source_records": [
    "docs/research/R-0099-podium-audio.md"
+  ]
+ },
+ {
+  "address": "$83:C9CF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C9CF",
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {

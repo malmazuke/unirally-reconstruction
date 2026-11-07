@@ -94,16 +94,29 @@ is compared row by row as well.
 unless the pose override `$0F59` is 0 or inside `$0610-$061F` (`$81:8397-83A6`). `$0F59` is the
 current rider's working copy; each rider's pose lives in `$0DEF` (rider 0) and `$0DF1` (rider 1),
 loaded into `$0F59` before the rider's update (`$82:8AA0-8AA3`, `$82:8FA8-8FAB`) and stored back after
-it (`$82:8DA9`, `$82:9297`). The writers of `$0F59` are the loop's own (`$81:83D0`, `$81:83F8`:
+it (`$82:8DA9`, `$82:9297`). The direct-addressed writers of `$0F59` the listing shows are the loop's own (`$81:83D0`, `$81:83F8`:
 `$0610`; `$81:841E`: `$0610` plus the step), the corkscrew's (`$81:8911`: `$0600-$060F`), the turn's
 (`$82:A461`: `$0620` plus the reflection pose table word, 0 to `$01F0`, plus a step of 1-15, so `$0621`
 and up), the spin's (`$82:9630`: `$09A0` and up) and the clears (`$81:85CD`, `$81:86CA`, `$81:8888`,
-`$82:9556`, `$82:96E7`, `$82:A49B`). The saved copy has one other writer, the finish pose
+`$82:9556`, `$82:96E7`, `$82:A49B`). The saved copy's one other direct-addressed writer is the finish pose
 `$82:89BE` (`STA $0DEF,Y`, native's `update_opponent_finish_pose`), whose values come from the lists
 at `$17:C7C8`: all six kinds lie in `$0A45-$0AEB` (its callers `$83:EA0D` and `$83:EB9F` select kinds
 1, 3 and 5, `$0A45-$0A9C` and `$0ADC-$0AEB`), never a loop pose. The bank `$80` object tables at
 `$0DE0,X` (`$80:8DF0`, `$80:9834`, `$80:9912`), whose index could reach `$0DEF`, never run in a race:
-none of them runs in any of the five routes, menus included (review round 1). So a loop pose comes
+none of them runs in any of the five routes, menus included (review round 1); they belong to the
+result screens (native's `race_result.cpp` and `lap_result.cpp` cite `$80:8DF0`). Pointer stores (such as
+`$80:934F STA $0000,Y`) are not ruled out statically; the race-start clear below makes them harmless
+for the base case. **The base case:** the race's setup clears the pose words, steps and cooldowns
+before every race. `$83:C901` (and `$83:C9CF` on its other path) calls `$82:D7C2`, whose `$82:D7C6`
+zeroes `$0082-$00B2` and then `$0200-$1796` byte by byte (`$82:D7E5-D7F8`, the store `$82:D7F5
+STA $0200,Y`), so `$0355-$035C`, `$0DEF-$0DF2` and `$0F59` are 0 when a race begins. A trace of the
+frame that clears them shows that store writing `$0DEC-$0DF2` (7 bytes) after `$83:C901`'s call, in
+TWO-HUMAN-STUNTS' twop-restart (frame 7707) and league-three (11507). In three of its probes
+(review round 2) the pose words, the steps `$0355`/`$0357` and the cooldowns `$0359`/`$035B` are 0 at
+all six race initializations: league-three 7128 and 11627, twop-restart 1978, 2577 and 7875,
+vs-challenger 1985, including races after a result screen and after a restart. A finish pose
+survives the result screen (`$0A5D` from 9080 in league-three, `$0A83` from 4529 in twop-restart) and
+is cleared before the next race, by 11507 and 7707. So a loop pose comes
 only from a loop step, and every loop step stores the cooldown `$0359,Y` = 3 (`$81:849D`). The step
 returns to 0 in three ways: on step 16 (`$81:8414` to `$81:84A5`, which leaves the cooldown), when the
 cooldown has run out (`$81:861C`), and by the reset's count up from a refusal (`$81:85B3-85B4`:
