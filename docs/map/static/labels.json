@@ -24,7 +24,8 @@
   "comment": "unknown",
   "label": "unk_808008",
   "source_records": [
-   "docs/research/R-0011-motion.md"
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -249,6 +250,7 @@
   "source_records": [
    "docs/research/R-0035-zoom-zoo-playable-recovery.md",
    "docs/research/R-0037-dragster-race-palette-cycle.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/DRAGSTER-PALETTE-CYCLE-review.md",
    "tasks/M4-16-review.md"
   ]
@@ -332,7 +334,8 @@
   "comment": "routine start",
   "label": "sub_80857F",
   "source_records": [
-   "docs/research/R-0006-observed-code-map.md"
+   "docs/research/R-0006-observed-code-map.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -639,7 +642,7 @@
  },
  {
   "address": "$80:87A7",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8087A7",
   "native": [
@@ -651,7 +654,7 @@
  },
  {
   "address": "$80:87A9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8087A9",
   "source_records": [
@@ -1331,6 +1334,22 @@
   ]
  },
  {
+  "address": "$80:9075",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_809075",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$80:90AF",
   "class": "observed",
   "comment": "instruction start",
@@ -1771,7 +1790,7 @@
  },
  {
   "address": "$80:94D4",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8094D4",
   "source_records": [
@@ -2431,7 +2450,7 @@
  },
  {
   "address": "$80:9AE2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_809AE2",
   "native": [
@@ -3350,7 +3369,7 @@
  },
  {
   "address": "$80:A2A0",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A2A0",
   "native": [
@@ -3363,7 +3382,7 @@
  },
  {
   "address": "$80:A2BA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A2BA",
   "native": [
@@ -3621,7 +3640,7 @@
  },
  {
   "address": "$80:A4B8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A4B8",
   "native": [
@@ -3922,7 +3941,7 @@
  },
  {
   "address": "$80:A9B4",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A9B4",
   "native": [
@@ -3935,6 +3954,7 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0092-wipe-ram.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/COVERAGE-GAPS.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md",
@@ -3943,7 +3963,7 @@
  },
  {
   "address": "$80:A9B8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A9B8",
   "native": [
@@ -3955,7 +3975,7 @@
  },
  {
   "address": "$80:A9CA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A9CA",
   "source_records": [
@@ -3964,7 +3984,7 @@
  },
  {
   "address": "$80:A9CD",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A9CD",
   "native": [
@@ -3976,9 +3996,9 @@
  },
  {
   "address": "$80:A9E7",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A9E7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A9E7",
   "native": [
    "src/core/wipe_ram.cpp:wipe_ram_answer_frame",
    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -3990,7 +4010,7 @@
  },
  {
   "address": "$80:A9EB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80A9EB",
   "native": [
@@ -4038,22 +4058,23 @@
  },
  {
   "address": "$80:AA1B",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AA1B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AA1B",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0092-wipe-ram.md"
+   "docs/research/R-0092-wipe-ram.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
   "address": "$80:AA35",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AA35",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AA35",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/wipe_ram.cpp:wipe_ram_menu_frame",
@@ -4065,9 +4086,9 @@
  },
  {
   "address": "$80:AA38",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AA38",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AA38",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
@@ -4078,9 +4099,9 @@
  },
  {
   "address": "$80:AA42",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AA42",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AA42",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/wipe_ram.cpp:cancel_buttons, reset_buttons",
@@ -4092,9 +4113,9 @@
  },
  {
   "address": "$80:AA64",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AA64",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AA64",
   "native": [
    "src/core/front_end.cpp:wipe_cartridge",
    "src/core/front_end_screens.hpp:wipe_cartridge",
@@ -4106,9 +4127,9 @@
  },
  {
   "address": "$80:AA96",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AA96",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AA96",
   "native": [
    "src/core/front_end.cpp:wipe_cartridge",
    "src/core/front_end_screens.hpp:wipe_cartridge",
@@ -4120,9 +4141,9 @@
  },
  {
   "address": "$80:AA97",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AA97",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AA97",
   "native": [
    "src/core/front_end.cpp:wipe_cartridge",
    "src/core/front_end_screens.hpp:wipe_cartridge",
@@ -4134,9 +4155,9 @@
  },
  {
   "address": "$80:AAA3",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AAA3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AAA3",
   "native": [
    "src/core/front_end.cpp:wipe_cartridge",
    "src/core/front_end_screens.hpp:wipe_cartridge",
@@ -4148,9 +4169,9 @@
  },
  {
   "address": "$80:AAA4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AAA4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AAA4",
   "native": [
    "src/core/front_end.cpp:wipe_cartridge",
    "src/core/front_end_screens.hpp:wipe_cartridge",
@@ -4162,9 +4183,9 @@
  },
  {
   "address": "$80:AAD7",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AAD7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80AAD7",
   "native": [
    "src/core/wipe_ram.cpp:cancel_reset"
   ],
@@ -4182,7 +4203,8 @@
    "src/core/front_end.hpp:FrontEndContent::wipe_ram_menu_text, FrontEndContent::wipe_ram_arrow_columns, FrontEndContent::wipe_ram_messages"
   ],
   "source_records": [
-   "docs/research/R-0092-wipe-ram.md"
+   "docs/research/R-0092-wipe-ram.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -4604,7 +4626,7 @@
  },
  {
   "address": "$80:AEFC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80AEFC",
   "native": [
@@ -4656,7 +4678,7 @@
  },
  {
   "address": "$80:AF24",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80AF24",
   "native": [
@@ -4669,7 +4691,7 @@
  },
  {
   "address": "$80:AF2E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80AF2E",
   "native": [
@@ -5832,6 +5854,7 @@
   "label": "unk_80B855",
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
@@ -6043,7 +6066,7 @@
  },
  {
   "address": "$80:B9A9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B9A9",
   "native": [
@@ -6057,7 +6080,7 @@
  },
  {
   "address": "$80:B9B1",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B9B1",
   "native": [
@@ -6073,7 +6096,7 @@
  },
  {
   "address": "$80:B9D9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B9D9",
   "native": [
@@ -6105,7 +6128,7 @@
  },
  {
   "address": "$80:BA1F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BA1F",
   "native": [
@@ -7368,7 +7391,7 @@
  },
  {
   "address": "$80:BFEA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BFEA",
   "native": [
@@ -7414,7 +7437,7 @@
  },
  {
   "address": "$80:C02C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C02C",
   "native": [
@@ -7429,7 +7452,7 @@
  },
  {
   "address": "$80:C048",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C048",
   "native": [
@@ -7478,7 +7501,7 @@
  },
  {
   "address": "$80:C087",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C087",
   "native": [
@@ -7576,7 +7599,7 @@
  },
  {
   "address": "$80:C0E0",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C0E0",
   "native": [
@@ -7680,7 +7703,7 @@
  },
  {
   "address": "$80:C1A8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C1A8",
   "native": [
@@ -7842,7 +7865,7 @@
  },
  {
   "address": "$80:C269",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80C269",
   "native": [
@@ -7850,6 +7873,7 @@
   ],
   "source_records": [
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -10107,6 +10131,21 @@
   ]
  },
  {
+  "address": "$80:DE1C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DE1C",
+  "native": [
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/records_scores.cpp:(file)",
+   "src/core/records_scores.cpp:place_bar_objects",
+   "src/core/records_scores.cpp:print_group_screen"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$80:DE2E",
   "class": "observed",
   "comment": "instruction start",
@@ -10253,7 +10292,7 @@
  },
  {
   "address": "$80:DF46",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80DF46",
   "native": [
@@ -10267,7 +10306,7 @@
  },
  {
   "address": "$80:DF6C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80DF6C",
   "native": [
@@ -10361,7 +10400,8 @@
    "src/core/records_scores.cpp:BarLayout::first_x, BarLayout::first_y, BarLayout::tile, BarLayout::attributes"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -10398,6 +10438,15 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md"
+  ]
+ },
+ {
+  "address": "$80:E1BA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E1BA",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -10611,7 +10660,7 @@
  },
  {
   "address": "$80:E492",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E492",
   "native": [
@@ -10908,6 +10957,15 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:E6DD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80E6DD",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -11988,7 +12046,8 @@
    "src/core/stunt_result.cpp:StuntText"
   ],
   "source_records": [
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -13157,6 +13216,15 @@
   ]
  },
  {
+  "address": "$80:FC6E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80FC6E",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$80:FFC0",
   "class": "unknown",
   "comment": "unknown",
@@ -13590,6 +13658,7 @@
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0107-race-listing-branches.md",
    "docs/research/R-0108-race-branch-remainder.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/NEXT_SESSION.md",
    "tasks/RACE-BRANCH-REMAINDER.md",
    "tasks/RACE-LISTING-BRANCHES.md"
@@ -13621,6 +13690,7 @@
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0107-race-listing-branches.md",
    "docs/research/R-0108-race-branch-remainder.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/NEXT_SESSION.md",
    "tasks/RACE-BRANCH-REMAINDER.md",
    "tasks/RACE-LISTING-BRANCHES.md"
@@ -13667,6 +13737,7 @@
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0107-race-listing-branches.md",
    "docs/research/R-0108-race-branch-remainder.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/NEXT_SESSION.md",
    "tasks/RACE-BRANCH-REMAINDER.md",
    "tasks/RACE-LISTING-BRANCHES.md"
@@ -13815,7 +13886,7 @@
  },
  {
   "address": "$81:84CB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8184CB",
   "native": [
@@ -13874,6 +13945,7 @@
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
@@ -14214,6 +14286,7 @@
    "docs/research/R-0051-loop-and-tile-pairs.md",
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
@@ -15439,12 +15512,22 @@
   ]
  },
  {
+  "address": "$81:912B",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81912B",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$81:9140",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_819140",
   "source_records": [
    "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
@@ -15715,6 +15798,15 @@
   ]
  },
  {
+  "address": "$81:9479",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_819479",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$81:9495",
   "class": "observed",
   "comment": "routine start",
@@ -15794,7 +15886,7 @@
  },
  {
   "address": "$81:94BE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8194BE",
   "native": [
@@ -15888,8 +15980,18 @@
   "source_records": [
    "docs/research/R-0011-contact.md",
    "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/ROLLING-CONTACT.md",
    "tasks/SPECIAL-TILE-RESPONSE.md"
+  ]
+ },
+ {
+  "address": "$81:962C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81962C",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -16471,6 +16573,7 @@
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS.md",
@@ -16494,9 +16597,9 @@
  },
  {
   "address": "$81:A343",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_81A343",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81A343",
   "native": [
    "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
@@ -16510,9 +16613,9 @@
  },
  {
   "address": "$81:A388",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_81A388",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81A388",
   "native": [
    "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
@@ -16520,7 +16623,8 @@
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
   ],
   "source_records": [
-   "docs/research/R-0046-track-breadth-matrix.md"
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -16604,6 +16708,15 @@
    "docs/research/R-0046-track-breadth-matrix.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION.md"
+  ]
+ },
+ {
+  "address": "$81:A7A7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81A7A7",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -16784,6 +16897,15 @@
   ]
  },
  {
+  "address": "$81:B3F0",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81B3F0",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$81:B67C",
   "class": "observed",
   "comment": "routine start",
@@ -16791,7 +16913,17 @@
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0098-league-tours.md",
+   "tasks/CPU-CYCLE-TIMING.md",
    "tasks/LEAGUE-TOURS.md"
+  ]
+ },
+ {
+  "address": "$81:B704",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81B704",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -16804,12 +16936,30 @@
   ]
  },
  {
+  "address": "$81:B795",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81B795",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$81:B7BE",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_81B7BE",
   "source_records": [
    "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:B7ED",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81B7ED",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -16891,8 +17041,27 @@
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/DATA-COVERAGE.md",
    "tasks/NEXT_SESSION.md"
+  ]
+ },
+ {
+  "address": "$81:BD90",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81BD90",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$81:BDF2",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81BDF2",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -18229,7 +18398,8 @@
    "src/core/race_hud.cpp:classic_hud_split_text"
   ],
   "source_records": [
-   "docs/research/R-0044-classic-split-time.md"
+   "docs/research/R-0044-classic-split-time.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -18302,6 +18472,15 @@
   "source_records": [
    "docs/research/R-0044-classic-split-time.md",
    "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$81:CB24",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81CB24",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -18390,6 +18569,18 @@
   ]
  },
  {
+  "address": "$81:D255",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D255",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_hud"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$81:D30C",
   "class": "observed",
   "comment": "instruction start",
@@ -18446,6 +18637,18 @@
   ]
  },
  {
+  "address": "$81:D6C0",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D6C0",
+  "native": [
+   "src/core/race_hud.cpp:classic_hud_left_field"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$81:D6E5",
   "class": "inferred",
   "comment": "instruction start",
@@ -18486,6 +18689,15 @@
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
+  "address": "$81:D845",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81D845",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -18779,6 +18991,24 @@
   ]
  },
  {
+  "address": "$81:DEBB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DEBB",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$81:DFEC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DFEC",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$81:E11C",
   "class": "observed",
   "comment": "instruction start",
@@ -18858,6 +19088,19 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$81:E721",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81E721",
+  "native": [
+   "src/core/presentation.hpp:split_stunt_score_cells",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -19199,6 +19442,18 @@
   ],
   "source_records": [
    "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EC9A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81EC9A",
+  "native": [
+   "src/core/race_hud.cpp:classic_hud_left_field"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -19607,6 +19862,15 @@
   ]
  },
  {
+  "address": "$81:F358",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81F358",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$82:8000",
   "class": "observed",
   "comment": "routine start",
@@ -19737,6 +20001,7 @@
   "label": "sub_828082",
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
   ]
@@ -19907,6 +20172,15 @@
   "label": "loc_828160",
   "source_records": [
    "tasks/AUDIO-TITLE-MENU.md"
+  ]
+ },
+ {
+  "address": "$82:816C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82816C",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -20081,6 +20355,19 @@
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
+  "address": "$82:854F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82854F",
+  "native": [
+   "src/core/rider_look.cpp:head_point",
+   "src/core/rider_look.hpp:advance_rider_look"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -20391,6 +20678,15 @@
   "label": "loc_828C4E",
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:8C78",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828C78",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -20817,6 +21113,24 @@
   ]
  },
  {
+  "address": "$82:96A9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8296A9",
+  "native": [
+   "src/core/race_state_io.cpp:read_rolls",
+   "src/core/trick_roll.cpp:(file)",
+   "src/core/trick_roll.cpp:bounce_charge, highest_bounce",
+   "src/core/trick_roll.cpp:release_bounce",
+   "src/core/trick_roll.cpp:update_z_flip",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md",
+   "tasks/COVERAGE-CENSUS.md"
+  ]
+ },
+ {
   "address": "$82:96E7",
   "class": "observed",
   "comment": "instruction start",
@@ -20870,7 +21184,7 @@
  },
  {
   "address": "$82:9751",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829751",
   "native": [
@@ -21302,6 +21616,60 @@
   ]
  },
  {
+  "address": "$82:9E47",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_829E47",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$82:9E4A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_829E4A",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$82:9EB0",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_829EB0",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$82:9EB3",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_829EB3",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$82:9F2D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_829F2D",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$82:9F2F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_829F2F",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$82:A027",
   "class": "observed",
   "comment": "routine start",
@@ -21446,7 +21814,8 @@
   "label": "sub_82A288",
   "source_records": [
    "docs/research/R-0011-motion.md",
-   "docs/research/R-0033-sustained-traversal.md"
+   "docs/research/R-0033-sustained-traversal.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -22629,6 +22998,15 @@
   ]
  },
  {
+  "address": "$82:B0F8",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82B0F8",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$82:B154",
   "class": "observed",
   "comment": "routine start",
@@ -22762,12 +23140,30 @@
   ]
  },
  {
+  "address": "$82:B20B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82B20B",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$82:B219",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_82B219",
   "source_records": [
    "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
+  "address": "$82:B225",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82B225",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -22818,8 +23214,18 @@
    "docs/research/R-0020-zoom-zoo-reference.md",
    "docs/research/R-0046-track-breadth-matrix.md",
    "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/DATA-COVERAGE.md",
    "tasks/FRONT-END-MAIN-MENU.md"
+  ]
+ },
+ {
+  "address": "$82:B2FD",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82B2FD",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -22851,6 +23257,15 @@
    "tasks/DATA-COVERAGE.md",
    "tasks/M1-03.md",
    "tasks/TRACK-BREADTH.md"
+  ]
+ },
+ {
+  "address": "$82:B549",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82B549",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -22930,7 +23345,9 @@
   "comment": "instruction start",
   "label": "loc_82BFC9",
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0109-coverage-census.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -22948,7 +23365,9 @@
   "comment": "instruction start",
   "label": "loc_82CFF3",
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0109-coverage-census.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -23543,7 +23962,7 @@
  },
  {
   "address": "$82:D99B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82D99B",
   "native": [
@@ -23558,7 +23977,7 @@
  },
  {
   "address": "$82:D99F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82D99F",
   "native": [
@@ -23705,7 +24124,7 @@
  },
  {
   "address": "$82:DC2E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82DC2E",
   "native": [
@@ -23722,7 +24141,7 @@
  },
  {
   "address": "$82:DC32",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82DC32",
   "native": [
@@ -23775,7 +24194,7 @@
  },
  {
   "address": "$82:DC7C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82DC7C",
   "native": [
@@ -24190,6 +24609,18 @@
   ]
  },
  {
+  "address": "$82:E152",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E152",
+  "native": [
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceTrack"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$82:E17A",
   "class": "observed",
   "comment": "instruction start",
@@ -24205,7 +24636,8 @@
   "comment": "routine start",
   "label": "sub_82E19F",
   "source_records": [
-   "docs/research/R-0093-data-coverage.md"
+   "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -24236,6 +24668,15 @@
   "label": "loc_82E1AD",
   "source_records": [
    "docs/research/R-0021-zoom-zoo-content-contract.md"
+  ]
+ },
+ {
+  "address": "$82:E1DC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82E1DC",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -24277,6 +24718,15 @@
   ]
  },
  {
+  "address": "$82:E35C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82E35C",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$83:8000",
   "class": "unknown",
   "comment": "unknown",
@@ -24290,6 +24740,7 @@
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "docs/research/R-0090-save-files.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/NEXT_SESSION.md",
    "tasks/SAVE-FILES.md"
   ]
@@ -24301,6 +24752,42 @@
   "label": "unk_83800C",
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
+  "address": "$83:822E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83822E",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$83:82D4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8382D4",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$83:8330",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838330",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$83:83F8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8383F8",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -24401,7 +24888,7 @@
  },
  {
   "address": "$83:850F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83850F",
   "native": [
@@ -24935,7 +25422,7 @@
  },
  {
   "address": "$83:8957",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_838957",
   "source_records": [
@@ -24965,6 +25452,15 @@
   ]
  },
  {
+  "address": "$83:8971",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838971",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$83:89BA",
   "class": "observed",
   "comment": "routine start",
@@ -24986,6 +25482,15 @@
   ],
   "source_records": [
    "docs/research/R-0090-save-files.md"
+  ]
+ },
+ {
+  "address": "$83:8A59",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838A59",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -25079,6 +25584,24 @@
   "label": "loc_838B90",
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:8B93",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_838B93",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$83:8B9D",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_838B9D",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -25240,7 +25763,7 @@
  },
  {
   "address": "$83:8F2F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_838F2F",
   "native": [
@@ -25513,6 +26036,15 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:938F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83938F",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -26052,6 +26584,18 @@
   ]
  },
  {
+  "address": "$83:9920",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_839920",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$83:9983",
   "class": "observed",
   "comment": "routine start",
@@ -26237,7 +26781,8 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -26250,6 +26795,31 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
+  "address": "$83:9B49",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839B49",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md",
+   "tasks/OPEN-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$83:9B70",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_839B70",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -26276,6 +26846,19 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$83:9C47",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_839C47",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -26450,6 +27033,7 @@
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
    "docs/research/R-0053-result-title-printer.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/LOCKED-TOURS.md",
    "tasks/TRACK-BREADTH.md"
   ]
@@ -26508,6 +27092,32 @@
   "source_records": [
    "docs/research/R-0077-one-player-audio.md",
    "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:A43F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A43F",
+  "native": [
+   "src/core/award.cpp:build_step",
+   "src/core/front_end_screens.hpp:play_screen_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$83:A4A8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A4A8",
+  "native": [
+   "src/core/award.cpp:build_step",
+   "src/core/front_end_screens.hpp:play_screen_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -26790,6 +27400,19 @@
   ]
  },
  {
+  "address": "$83:A9DD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A9DD",
+  "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$83:A9FB",
   "class": "observed",
   "comment": "instruction start",
@@ -26804,6 +27427,19 @@
   ]
  },
  {
+  "address": "$83:AA21",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83AA21",
+  "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$83:AAC5",
   "class": "observed",
   "comment": "instruction start",
@@ -26815,6 +27451,20 @@
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:AAF4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AAF4",
+  "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
+   "src/core/audio_cpu_credits_text.cpp:small_glyph",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -28061,7 +28711,7 @@
  },
  {
   "address": "$83:C9AC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83C9AC",
   "native": [
@@ -28443,7 +29093,7 @@
  },
  {
   "address": "$83:CCA2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CCA2",
   "native": [
@@ -28864,7 +29514,7 @@
  },
  {
   "address": "$83:CEE8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "inside the instruction at $83:CEE7",
   "label": "mid_83CEE8",
   "native": [
@@ -28883,7 +29533,7 @@
  },
  {
   "address": "$83:CEEE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CEEE",
   "native": [
@@ -28901,7 +29551,7 @@
  },
  {
   "address": "$83:CF1C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CF1C",
   "native": [
@@ -28973,7 +29623,7 @@
  },
  {
   "address": "$83:D1CA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D1CA",
   "native": [
@@ -28990,12 +29640,13 @@
    "docs/research/R-0052-hunter-effects.md",
    "docs/research/R-0068-stunt-hud.md",
    "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {
   "address": "$83:D1D0",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83D1D0",
   "native": [
@@ -29011,7 +29662,7 @@
  },
  {
   "address": "$83:D1DC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83D1DC",
   "native": [
@@ -29028,7 +29679,7 @@
  },
  {
   "address": "$83:D1EE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83D1EE",
   "native": [
@@ -29044,8 +29695,25 @@
   ]
  },
  {
+  "address": "$83:D220",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83D220",
+  "native": [
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/presentation.hpp:neon_green_step",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$83:D24A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83D24A",
   "native": [
@@ -29063,7 +29731,7 @@
  },
  {
   "address": "$83:D275",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D275",
   "native": [
@@ -29100,7 +29768,7 @@
  },
  {
   "address": "$83:D2C9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D2C9",
   "native": [
@@ -29113,12 +29781,13 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {
   "address": "$83:D337",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83D337",
   "native": [
@@ -29139,7 +29808,7 @@
  },
  {
   "address": "$83:D33E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83D33E",
   "native": [
@@ -29156,8 +29825,25 @@
   ]
  },
  {
+  "address": "$83:D345",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83D345",
+  "native": [
+   "src/core/hunter_effects.cpp:run_screen_flip",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$83:D349",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D349",
   "native": [
@@ -29174,9 +29860,9 @@
  },
  {
   "address": "$83:D3BC",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83D3BC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83D3BC",
   "native": [
    "src/core/content_pack.cpp:hunter_required",
    "src/core/hunter_effects.cpp:update_hunter_effects",
@@ -29193,7 +29879,7 @@
  },
  {
   "address": "$83:D3FC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D3FC",
   "native": [
@@ -29205,12 +29891,13 @@
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
+   "docs/research/R-0109-coverage-census.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {
   "address": "$83:D474",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D474",
   "native": [
@@ -29227,7 +29914,7 @@
  },
  {
   "address": "$83:D4AE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D4AE",
   "native": [
@@ -29244,7 +29931,7 @@
  },
  {
   "address": "$83:D4E8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D4E8",
   "native": [
@@ -29262,7 +29949,7 @@
  },
  {
   "address": "$83:D530",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D530",
   "native": [
@@ -29280,7 +29967,7 @@
  },
  {
   "address": "$83:D581",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D581",
   "native": [
@@ -29299,7 +29986,7 @@
  },
  {
   "address": "$83:E04F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83E04F",
   "native": [
@@ -31481,7 +32168,17 @@
   "label": "sub_83ED7B",
   "source_records": [
    "docs/research/R-0010-native-movement.md",
-   "docs/research/R-0011-motion.md"
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$83:EDF9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83EDF9",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -31578,6 +32275,15 @@
   ]
  },
  {
+  "address": "$83:F098",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83F098",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
   "address": "$83:F09E",
   "class": "observed",
   "comment": "routine start",
@@ -31650,7 +32356,8 @@
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
-   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -31939,6 +32646,7 @@
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md",
    "docs/research/R-0079-two-pad-pause.md",
+   "docs/research/R-0109-coverage-census.md",
    "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
@@ -32102,6 +32810,20 @@
    "docs/research/R-0079-two-pad-pause.md",
    "tasks/LEAGUE.md",
    "tasks/SPLIT-PAUSE-MENU.md"
+  ]
+ },
+ {
+  "address": "$83:F731",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F731",
+  "native": [
+   "src/core/race_hud.cpp:draw_classic_pause_message",
+   "src/core/race_hud.hpp:classic_pause_shows_message",
+   "src/core/race_update.cpp:run_pause_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
@@ -32355,7 +33077,7 @@
  },
  {
   "address": "$83:FADC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83FADC",
   "native": [
@@ -32364,12 +33086,13 @@
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0094-name-cheats.md",
-   "docs/research/R-0099-podium-audio.md"
+   "docs/research/R-0099-podium-audio.md",
+   "docs/research/R-0109-coverage-census.md"
   ]
  },
  {
   "address": "$83:FAE0",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83FAE0",
   "native": [
@@ -32385,7 +33108,7 @@
  },
  {
   "address": "$83:FB03",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FB03",
   "native": [
@@ -32402,7 +33125,7 @@
  },
  {
   "address": "$83:FB06",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FB06",
   "native": [
@@ -32419,7 +33142,7 @@
  },
  {
   "address": "$83:FB10",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FB10",
   "native": [
@@ -32436,7 +33159,7 @@
  },
  {
   "address": "$83:FB1D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FB1D",
   "native": [
@@ -32453,7 +33176,7 @@
  },
  {
   "address": "$83:FB31",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FB31",
   "native": [
@@ -32509,9 +33232,9 @@
  },
  {
   "address": "$83:FB66",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83FB66",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FB66",
   "native": [
    "src/core/content_pack.cpp:credits_name_required",
    "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written",
@@ -32537,9 +33260,9 @@
  },
  {
   "address": "$83:FB80",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83FB80",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FB80",
   "native": [
    "src/core/content_pack.cpp:credits_name_required",
    "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written",
@@ -32595,7 +33318,7 @@
  },
  {
   "address": "$83:FBAE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FBAE",
   "native": [
@@ -32607,7 +33330,7 @@
  },
  {
   "address": "$83:FBB5",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FBB5",
   "source_records": [
@@ -32616,7 +33339,7 @@
  },
  {
   "address": "$83:FBBA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FBBA",
   "native": [
@@ -32628,7 +33351,7 @@
  },
  {
   "address": "$83:FBD5",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FBD5",
   "native": [
@@ -32640,7 +33363,7 @@
  },
  {
   "address": "$83:FBDC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FBDC",
   "native": [
@@ -32652,7 +33375,7 @@
  },
  {
   "address": "$83:FBE2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FBE2",
   "native": [
@@ -32722,6 +33445,15 @@
   "source_records": [
    "docs/research/R-0077-one-player-audio.md",
    "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:FD75",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FD75",
+  "source_records": [
+   "docs/research/R-0109-coverage-census.md"
   ]
  }
 ]

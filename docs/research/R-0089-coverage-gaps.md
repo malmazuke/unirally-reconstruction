@@ -101,6 +101,9 @@ reason to run one beside another.
 The picture residuals and single-frame timing limits in `recorded-limits.md` stay with the
 records that state them; a later polish task can take them by system.
 
+This queue is done (SAVE-FILES through RACE-BRANCH-REMAINDER). [R-0109](R-0109-coverage-census.md)
+(COVERAGE-CENSUS) measures again with every later capture and queues what is left.
+
 ## Reproduction
 
 From a checkout of main (with `local/` linked to the main checkout's):

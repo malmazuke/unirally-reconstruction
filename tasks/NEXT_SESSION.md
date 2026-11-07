@@ -27,6 +27,24 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](./GATES-AGAINST-MAIN.md) holds the detail.
 
+**8 November 2026: COVERAGE-CENSUS is accepted (tier 3, #96) and integrated by merge commit.**
+R-0109 measures how far native is from the whole original, now that R-0089's queue is done.
+- **Corpus:** 651 new coverage captures (3.28 M frames): every replay manifest added since R-0089
+  and the 537 track_reference captures R-0089 could not express (123 with preloaded cartridge
+  RAM, written after frame 0; equal to the preloaded run on every recorded frame). They are the
+  static map's eighth input: observed 88,343 to 94,637, inferred 11,231 to 5,311, unknown 24.0%
+  to 23.7%.
+- **Every byte:** of the 42,656 bytes that were unknown or inferred, 6,294 run, 11,255 are read
+  as data, 12,610 are fill, 2,516 table, 707 cited by native and 1,037 shown unreachable.
+- **Headline:** 8,237 bytes (6.3% of the code banks) are neither run, read, named nor shown
+  unreachable; beside them stand the records' open limits (51 of R-0089's, 77 added since).
+- **Routines:** 762, 581 run and cited, 165 run and not cited (11 write state native names
+  nowhere), 16 never run (14 unreachable, 2 open).
+- **Queue:** APP-PARITY (tier 2), SAVE-IMAGE-EXACT (1), CENSUS-REMAINDER (3), OPEN-BRANCHES (1),
+  SOUND-PROCESSOR-TIMING (1), CPU-CYCLE-TIMING (1), PICTURE-RESIDUALS (2).
+- **Time:** about 2 h 13 min of worker time; records only, so no local gates.
+[R-0109](../docs/research/R-0109-coverage-census.md) and [COVERAGE-CENSUS](COVERAGE-CENSUS.md) hold the detail.
+
 **7 November 2026: RACE-BRANCH-REMAINDER is accepted (tier 1, #95) and integrated by merge commit.**
 R-0108 captures the race branches R-0107 found reachable but could not capture, on routes built on
 purpose: a native search first, then only the finished routes on the original (cold boots, pad
