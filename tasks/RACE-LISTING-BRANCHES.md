@@ -78,3 +78,44 @@ Each check fails on a broken native (`mutants.txt`): up and down swapped (t23 4 
 the warm demo 2), the plain push by 7 (t25 rows from 1199), the mirrored push by -7 (from 1848),
 the loop refusal not stored (from 1003). Static map with the six coverage inputs: observed bytes
 86,837 to 87,882, inferred 12,737 to 11,692, unknown 24.0%.
+
+## Handoff (worker)
+
+- Branch `task/race-listing-branches` on claim `0e7850cc` (main `2d516755`). Commits: `58cc66a8`
+  (R-0107; the coverage map `docs/map/race-listing-branches.map.json`; `docs/map/static/`
+  regenerated with six coverage inputs; R-0089 and R-0093 pointed at R-0107; the checkpoint),
+  then this handoff (this record only). No `src/core`, test, pack or state-format change.
+- Checks run: `checks.list` 8 of 8 lines rc 0 at `58cc66a8` (`checks-58cc66a8.out`, about 7 min
+  under the heavy-run lock); `mutants.txt`: 4 mutants of `src/core` (arrow up/down swapped, the
+  plain and the mirrored push moved by 7, the loop refusal not stored), each failing its checks,
+  `src/core` restored and rebuilt after; `regen.sh` (`coverage native-symbols` and `coverage
+  static-map` with six coverage inputs, the tooling tests `OK`) and `coverage native-symbols
+  --check` passed, 0 cited addresses without a record; `coverage_same.py`: the three cold-start
+  coverage runs equal their race captures on every frame's work RAM and video digest, track 25's
+  on every race picture (its unlock is written after frame 600, see R-0107). Not run: `ctest`,
+  `clang-tidy` and `clang-format` (no C++ changed), the synthetic suite and the gates.
+- Evidence: main `local/evidence/race-listing-branches/`, 150 MB. `captures/` (the four race
+  captures; work RAM as `memory.wram.zst`), `coverage/` (six coverage captures, `merged.json`, the
+  sixth static-map input; frame images of the arrow windows and of the demo race), `manifests/`
+  and `split/` (the manifests, the two-pad and demo searches, `demo-26.bin`), `listing/` and
+  `listing-after/` (five and six inputs), the scans (`tile_scan.json`, `marker_scan.json`,
+  `wram_census.json`, `tile_trace.json`, `search/`), `checks-main/` (the first comparisons),
+  `checks-58cc66a8/`, `mutants/`. The trace patch is `trace_patch.py` (never committed); the
+  trace runner built from it is in the worktree's ignored `artifacts/trace-bin/`.
+- For the gates: `--task-checks local/evidence/race-listing-branches/checks.list`. Expected
+  changes against main: none in any binary; the tracked static map gains about 1,045 observed bytes
+  from the sixth input. Future static-map regenerations need the sixth `--coverage`
+  (`local/evidence/race-listing-branches/coverage/merged.json`), as R-0093 now says;
+  `local/evidence/native-readability/regen.sh` still passes four inputs and would drop both the
+  data-coverage corpus and this input.
+- Not covered (R-0107): the two-view arrow's other forms (upper up, lower down, three chevrons,
+  the empty blink step), which native draws by R-0080's rule but no capture checks; the lift on
+  leading support, a loop descriptor facing away from the rider and a loop entry with an
+  override inside `$0610-$061F` (not reached; reachability open); a stunt score of 1000 or more;
+  track 13's read past its flag table.
+- Time: claim 03:39 UTC, worker start 03:40:20 UTC, handoff 04:49 UTC on 7 November 2026 (`date -u`),
+  about 1 h 9 min: reading and the listing 15 min; scans and the one-player arrow captures 10
+  min; two-view searches, the demo and league comparisons 20 min; the tile trace, track 25 and
+  the coverage captures 15 min; mutants, the static map, records and `checks.list` 10 min (part
+  of it waiting on runs).
+- Next: the tier-1 independent review, then the gates.
