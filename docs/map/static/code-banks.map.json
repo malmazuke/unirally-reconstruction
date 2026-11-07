@@ -10,22 +10,22 @@
   {
    "bank": "$81",
    "data": 33,
-   "inferred": 2374,
-   "observed": 23670,
+   "inferred": 1937,
+   "observed": 24107,
    "unknown": 6691
   },
   {
    "bank": "$82",
    "data": 0,
-   "inferred": 2714,
-   "observed": 19899,
+   "inferred": 2702,
+   "observed": 19911,
    "unknown": 10155
   },
   {
    "bank": "$83",
    "data": 16,
-   "inferred": 5219,
-   "observed": 21409,
+   "inferred": 5207,
+   "observed": 21421,
    "unknown": 6124
   }
  ],
@@ -48,6 +48,11 @@
     "coverage_sha256": "60d4d2626bdfc398d6962ea35ed90754d39c36b43636b5da0258cc628f8f5950",
     "path": "docs/map/data-coverage-corpus.map.json",
     "scenario_id": "data-coverage-corpus"
+   },
+   {
+    "coverage_sha256": "ff086454a6a1564939fa285bb9442edb97c8418c98d399a262c1c9f811abca7f",
+    "path": "docs/map/race-branch-remainder.map.json",
+    "scenario_id": "race-branch-remainder"
    },
    {
     "coverage_sha256": "7654ac204a7a130f66a0dfe8228cf367dd88a35ffc7b2eec5a16ac3f3839337e",
@@ -78,7 +83,8 @@
    "60d4d2626bdfc398d6962ea35ed90754d39c36b43636b5da0258cc628f8f5950",
    "7654ac204a7a130f66a0dfe8228cf367dd88a35ffc7b2eec5a16ac3f3839337e",
    "a075220e58ecd3550c7700b13ca42b7b8792e2101dfb65d61c1d90ad8bf813d1",
-   "a85a4715a13050cde73c5bba8c42a38e9f54ef6860dee3eed8c1e1f33787bad4"
+   "a85a4715a13050cde73c5bba8c42a38e9f54ef6860dee3eed8c1e1f33787bad4",
+   "ff086454a6a1564939fa285bb9442edb97c8418c98d399a262c1c9f811abca7f"
   ]
  },
  "jump_tables": [
@@ -175,6 +181,16 @@
     "scenario_id": "data-coverage-corpus",
     "several_tilings": 237,
     "shared_instructions_checked_against_sites": 27634
+   },
+   {
+    "disagreements": 0,
+    "instructions_not_fixed_by_tiling": 3076,
+    "no_tiling": 0,
+    "one_tiling": 400,
+    "ranges": 574,
+    "scenario_id": "race-branch-remainder",
+    "several_tilings": 174,
+    "shared_instructions_checked_against_sites": 16681
    },
    {
     "disagreements": 0,
@@ -19380,23 +19396,23 @@
  "schema_version": 1,
  "scope": "ROM offsets $00000-$1FFFF: banks $80-$83 (mirrored at $00-$03)",
  "totals": {
-  "absolute_operands_with_unknown_data_bank": 869,
+  "absolute_operands_with_unknown_data_bank": 790,
   "assumptions_used": {
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2376,
+  "cited_addresses": 2403,
   "cited_by_class": {
    "data": 15,
-   "inferred": 110,
-   "observed": 2046,
+   "inferred": 101,
+   "observed": 2082,
    "unknown": 205
   },
   "cited_by_position": {
    "dat": 15,
-   "loc": 1654,
+   "loc": 1680,
    "mid": 31,
-   "sub": 471,
+   "sub": 472,
    "unk": 205
   },
   "conflicts": 0,
@@ -19407,15 +19423,15 @@
   },
   "gap_sweep_candidate_bytes": 1341,
   "gap_sweep_candidate_instructions": 647,
-  "inferred": 11692,
+  "inferred": 11231,
   "instructions": {
-   "descent": 4968,
-   "observed": 36133,
+   "descent": 4798,
+   "observed": 36303,
    "table": 42
   },
   "jump_tables": 2,
   "mode_ambiguities": 6,
-  "observed": 87882,
+  "observed": 88343,
   "routine_bytes_cited_by_native_code": 73996,
   "routines": 759,
   "routines_cited_by_native_code": 581,

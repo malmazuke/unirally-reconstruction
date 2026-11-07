@@ -21,7 +21,9 @@ and native already modelled every reachable one: no native code changes. The cap
 show each reachable behaviour on the original, and native equals them on every row and every
 picture. Not every reachable form is captured: the two-view arrow's other forms, rider 1's stunt
 score of 100 or more and three tile arms (Not covered) are queued as
-[RACE-BRANCH-REMAINDER](../../tasks/RACE-BRANCH-REMAINDER.md).
+[RACE-BRANCH-REMAINDER](../../tasks/RACE-BRANCH-REMAINDER.md). [R-0108](R-0108-race-branch-remainder.md) has since
+captured all but one of them (native exact again) and shows a fourth arm unreachable; one tile arm
+remains not reached.
 
 - The "lap and split fields drawn for `$FFFF` or `$1253 < 1`" are the direction arrow's **up and
   down** forms (R-0063 recorded them as listing only). `$0FD9`/`$0FDB` hold the arrow to erase:
@@ -129,6 +131,12 @@ The static map regenerated with the six inputs (`regen.sh`; `docs/map/static/`):
 86,837 to 87,882, inferred 12,737 to 11,692, data 74 to 73, unknown 31,424 to 31,425 (24.0%).
 
 ## Not covered
+
+**Answered by [R-0108](R-0108-race-branch-remainder.md)** (RACE-BRANCH-REMAINDER): the two-view arrow's
+other forms, rider 1's stunt score of 100 or more and the lift on leading support are captured, and
+native equals the original on every picture and row; the loop entry with a pose override inside
+`$0610-$061F` (`$81:83A6`) is unreachable by construction; a loop descriptor facing away from the
+rider (`$81:83C4`, `$81:83EC`) was not reached and stays open. The list below is as this task left it.
 
 Queued as [RACE-BRANCH-REMAINDER](../../tasks/RACE-BRANCH-REMAINDER.md), but the stunt score of 1000,
 track 13 and the uncompared state:
