@@ -880,6 +880,11 @@ std::uint32_t race_loading_frames(const FrontEndState& state) {
     }
 }
 
+std::uint32_t race_initialization_frame(const FrontEndState& state) {
+    const auto loading = race_loading_frames(state);
+    return loading ? state.frame - 1U + loading : 0U;
+}
+
 RaceTimes race_times(const ZoomZooState& race) {
     const auto& times = race.race;
     RaceTimes result{times.total_times[0], times.total_times[1],

@@ -194,7 +194,7 @@ awk '$1 <= 12999' "$G/native-demo-long.cues.txt" > "$G/runner-13000.cues.txt"
 cmp -s "$G/app-demo.resolved.txt" "$G/runner-13000.cues.txt" && echo "  the app's cue log equals front_end_runner's through frame 12999" || { echo "  the app's cue log DIFFERS from front_end_runner's"; exit 1; }''',
              system='audio', lane='exclusive', timeout=1200, select=drives('app')))
     add(Step('app-podium-audio', "PODIUM-AUDIO: the app's producer through a podium (real time)", '''
-zsh "$L/podium-audio/app_run.sh" "$G/app" > "$G/app_run.txt" 2>&1; sed 's/^/  /' "$G/app_run.txt"
+zsh "$L/app-league-race/app_podium_run.sh" "$G/app" > "$G/app_run.txt" 2>&1; sed 's/^/  /' "$G/app_run.txt"
 ! grep -q DIFFERS "$G/app_run.txt"''', shell='bash', system='audio', lane='exclusive', timeout=1200, select=drives('app')))
 
     # -- the pool -------------------------------------------------------------------------------

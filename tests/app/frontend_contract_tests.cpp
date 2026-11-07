@@ -65,9 +65,31 @@ void track_option_rule() {
   require(!unirally::app::native_race_track(ClassicRaceTrack{45}), "no track 45");
 }
 
+// APP-LEAGUE-RACE (R-0106): a scripted race reads front_end_runner's frames.
+// With native audio the app waits the race's loading first, and those updates
+// read the frames before the initialization frame; the race's first update
+// reads the frame after it either way.
+void scripted_race_frames_rule() {
+  unirally::app::ScriptedRaceFrames frames;
+  // podium-audio's league race: chosen at front-end frame 2708, 120 loading
+  // frames.
+  frames.start(2827, 120);
+  require(frames.next() == 2708,
+          "the first loading frame follows NOW PLAYING's last");
+  for (unsigned loading = 1; loading < 120; ++loading)
+    (void)frames.next();
+  require(frames.next() == 2828,
+          "the race's first update reads the frame after its initialization");
+  require(frames.next() == 2829, "each update reads the next frame");
+  frames.start(2827, 0); // no loading waited (no native audio)
+  require(frames.next() == 2828,
+          "without the wait the race's first update comes at once");
+}
+
 int main() {
   one_player_race_rule();
   track_option_rule();
+  scripted_race_frames_rule();
   using namespace unirally::app;
   PalScheduler scheduler(1'000);
   require(scheduler.updates_due(20'000'999) == 0, "no early update");

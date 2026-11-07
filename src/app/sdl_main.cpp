@@ -517,13 +517,16 @@ int main(int argc, char **argv) try {
   // During a race the front end waits here for the race's result load.
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
   std::uint32_t demo_race_updates = 0;
-  std::uint32_t scripted_race_frame = 0;
+  unirally::app::ScriptedRaceFrames scripted_race;
   // Native audio past the main menu's exit (D-0010): with it, a race waits its
   // track's measured loading frames, as the original does, while the race's
   // sound program loads (R-0077: every track and song); production stops
   // where the sound domain is not recovered (a race with no measured loading).
   // The idle demo's race has no sound session and starts at once (R-0096).
-  std::uint32_t race_loading_remaining = 0, race_initialization_frame = 0;
+  // `race_start_update` is the app update the waiting race initializes on (0
+  // when no race waits its loading), counted in app updates, not front-end
+  // frames.
+  std::uint32_t race_loading_remaining = 0, race_start_update = 0;
   bool audio_stopped = false;
   std::ofstream audio_cue_log;
   if (!parsed->audio_cue_log.empty()) {
@@ -621,17 +624,12 @@ int main(int argc, char **argv) try {
         ++gamepad_only_updates;
       if (parsed->fixed_controller_mask.has_value())
         ports[0] = *parsed->fixed_controller_mask;
-      if (waiting_front_end && waiting_front_end->local_race() &&
-          !parsed->front_end_inputs.empty()) {
-        const auto row = parsed->front_end_inputs.find(++scripted_race_frame);
-        ports = row == parsed->front_end_inputs.end()
-                    ? std::array<std::uint16_t, 2>{}
-                    : logical_masks(row->second);
-      } else if (waiting_front_end && race_initialization_frame &&
-                 !parsed->front_end_inputs.empty()) {
-        // With native audio a 1P race waits its loading frames, so updates are
-        // frames.
-        const auto row = parsed->front_end_inputs.find(updates);
+      // A scripted two-human race, and with native audio a one-player race,
+      // read the script by front_end_runner's frames (R-0106).
+      const bool race_waits_loading = race_start_update != 0;
+      if (waiting_front_end && !parsed->front_end_inputs.empty() &&
+          (waiting_front_end->local_race() || race_waits_loading)) {
+        const auto row = parsed->front_end_inputs.find(scripted_race.next());
         ports = row == parsed->front_end_inputs.end()
                     ? std::array<std::uint16_t, 2>{}
                     : logical_masks(row->second);
@@ -681,7 +679,7 @@ int main(int argc, char **argv) try {
             audio_stopped = true;
           else {
             race_loading_remaining = loading;
-            race_initialization_frame = updates + loading;
+            race_start_update = updates + loading;
           }
         }
         if (race_chosen) {
@@ -713,9 +711,9 @@ int main(int argc, char **argv) try {
           // same track again.
           zoom_state = unirally::classic_race_start(zoom_content, scenario);
           zoom_state.league_statistics.enabled = front_end->league_race();
-          if (front_end->local_race())
-            scripted_race_frame = front_end->front_end_frame() - 1U +
-                                  front_end->race_loading_frames();
+          // With native audio the race's loading frames are waited first.
+          scripted_race.start(front_end->race_initialization_frame(),
+                              race_loading_remaining);
           if (front_end->local_race())
             unirally::initialize_split_cameras(zoom_state);
           if (front_end->demo_race()) {
@@ -745,7 +743,7 @@ int main(int argc, char **argv) try {
         const auto loading_track = waiting_front_end->race_track();
         const auto loading_song = waiting_front_end->race_song();
         audio_cues = unirally::race_sound::loading(
-            race_initialization_frame - updates,
+            race_start_update - updates,
             unirally::race_sound_load_timing(loading_track, loading_song),
             loading_track.index, loading_song);
       } else {
@@ -833,7 +831,7 @@ int main(int argc, char **argv) try {
                     << front_end->front_end_frame() << '\n';
         } else if (waiting_front_end && over) {
           waiting_front_end->return_from_race(zoom_state, *over);
-          race_initialization_frame = 0;
+          race_start_update = 0;
           front_end = std::move(waiting_front_end);
           waiting_front_end.reset();
           // The input is kept: a button held from the race holds a one-run

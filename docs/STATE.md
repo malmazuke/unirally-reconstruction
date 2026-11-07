@@ -27,6 +27,23 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**7 November 2026: APP-LEAGUE-RACE is accepted (tier 1, #93) and integrated by merge commit.**
+The app's scripted two-human races now read their inputs on `front_end_runner`'s frames, so its
+league races equal the runner's (and so the original's):
+- **Cause:** with native audio the app waits a race's loading frames, as the original does, but
+  its script counter ran through them, so every scripted 2P, VS or league race read its pads late
+  by the loading length (120-168 frames). `race_initialization_frame()` is now shared by the
+  runner and the app, and the app's `ScriptedRaceFrames` numbers the reads as the runner does.
+- **Results:** the app's cue log equals the runner's on podium-audio's warm route (main differs
+  from 3180), `organic-full-tour-turnaround` through all five events, the podium and its way back
+  (38,400 frames; on main the second race never ends), and 2P `twop-bowl` (main's race returns 48
+  frames late). The runner is byte-identical to main's; the gates' 751 replayed invocations
+  differ in none.
+- **Gates:** `app-podium-audio` races that league in the app again (770 s); the runner's podium
+  window equals PODIUM-AUDIO's `full-tour` capture of the original.
+- **Time:** about 4 h 55 min from claim to merge (D-0013's target 6 h), 2 h 50 min of it gates.
+[R-0106](research/R-0106-app-league-race.md) and [APP-LEAGUE-RACE](../tasks/APP-LEAGUE-RACE.md) hold the detail.
+
 **29 October 2026: CARTRIDGE-OPTION-BITS is accepted (tier 1, #92) and integrated by merge commit.**
 R-0105 is a census of the cartridge's option words `$77:0742` and `$77:0750`: every bit, its
 writers and readers, and whether the shipped game reaches it.

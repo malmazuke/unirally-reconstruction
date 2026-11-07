@@ -112,6 +112,27 @@ private:
   std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
 
+// The frames a scripted race (`--front-end-inputs`) reads its pads by, numbered
+// as `front_end_runner` numbers them (R-0106): the race initializes on its
+// `race_initialization_frame` and its n-th update reads that frame plus n. The
+// loading frames the app waits before the race (with native audio, as the
+// original does) read the frames up to and including the initialization frame
+// (`start(I, L)` reads I-L+1 through I, the runner's loading frames); without
+// the wait the race's first update comes at once.
+class ScriptedRaceFrames {
+public:
+  // A race chosen: it initializes on `initialization_frame`, after the app has
+  // waited `loading_waited` updates for its loading.
+  void start(std::uint32_t initialization_frame, std::uint32_t loading_waited) {
+    next_ = initialization_frame + 1U - loading_waited;
+  }
+  // The frame the next update (a loading frame or the race's) reads.
+  std::uint32_t next() { return next_++; }
+
+private:
+  std::uint32_t next_{};
+};
+
 // The app's front end: power-on, native 1P, 2P and VS menu-race paths, their
 // results and continuations (R-0054-R-0058, R-0071), the idle demo (R-0069)
 // and the WIPE RAM menu (R-0092). Unavailable scenarios, and the WIPE RAM code
@@ -159,6 +180,11 @@ public:
   }
   std::uint32_t race_loading_frames() const {
     return unirally::race_loading_frames(state_);
+  }
+  // The frame the race now loading initializes on (`race_initialization_frame`,
+  // R-0106).
+  std::uint32_t race_initialization_frame() const {
+    return unirally::race_initialization_frame(state_);
   }
   // The song counter value the race now loading plays (R-0077).
   std::uint8_t race_song() const { return state_.race_song; }

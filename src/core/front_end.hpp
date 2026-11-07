@@ -788,6 +788,10 @@ bool hunter_races_running(const FrontEndState& state);
 std::uint32_t race_loading_frames(ClassicRaceTrack track);
 std::uint32_t race_loading_frames(ClassicRaceTrack track, std::uint8_t song_counter);
 std::uint32_t race_loading_frames(const FrontEndState& state);
+// The frame a race from the menus initializes on, as the laboratory's menu path numbers frames:
+// NOW PLAYING's last front-end frame (the state's frame less one) plus the race's loading frames;
+// its n-th update is this frame plus n (R-0057, R-0106). 0 when the loading is not measured.
+std::uint32_t race_initialization_frame(const FrontEndState& state);
 std::uint32_t race_sound_load_offset(ClassicRaceTrack track);
 std::uint32_t race_sound_upload_frames(ClassicRaceTrack track, std::uint8_t song_counter);
 // The race's load cues' timing for the audio side (`race_sound::loading`).

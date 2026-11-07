@@ -497,7 +497,7 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     race.presentation = unirally::classic_race_presentation_content(pack, scenario);
     race.presentation->rider_names = front_end.records.rider_names;
     race.history = {};
-    race.loading_initialization = loading_frames ? front_end.frame - 1 + loading_frames : 0;
+    race.loading_initialization = unirally::race_initialization_frame(front_end);
     // The race keeps its scenario's frame label, which its own clocks count from; the runner
     // lines its first update up with the menus' frame after `initialization_frame`.
     race.initialization_frame = initialization != 0 ? initialization : race.loading_initialization;
