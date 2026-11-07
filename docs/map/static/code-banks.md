@@ -9,17 +9,17 @@ Each routine and label cited by native code names its native symbols (`native`),
 | Bank | Observed | Inferred | Data | Unknown |
 | --- | ---: | ---: | ---: | ---: |
 | $80 | 22,904 | 1,385 | 24 | 8,455 |
-| $81 | 23,670 | 2,374 | 33 | 6,691 |
-| $82 | 19,899 | 2,714 | 0 | 10,155 |
-| $83 | 21,409 | 5,219 | 16 | 6,124 |
-| All | 87,882 | 11,692 | 73 | 31,425 |
+| $81 | 24,107 | 1,937 | 33 | 6,691 |
+| $82 | 19,911 | 2,702 | 0 | 10,155 |
+| $83 | 21,421 | 5,207 | 16 | 6,124 |
+| All | 88,343 | 11,231 | 73 | 31,425 |
 
 The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 | Measure | Value |
 | --- | ---: |
-| Instructions from descent | 4,968 |
-| Instructions from observed | 36,133 |
+| Instructions from descent | 4,798 |
+| Instructions from observed | 36,303 |
 | Instructions from table | 42 |
 | Routines | 759 |
 | Routines cited by native code | 581 |
@@ -30,7 +30,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Mode ambiguities | 6 |
 | Conflicts | 0 |
 | Data references into code | 0 |
-| Absolute operands with unknown data bank | 869 |
+| Absolute operands with unknown data bank | 790 |
 | Descent stopped: implausible opcode | 3 |
 | Assumption used: call returns in the calling mode | 2,454 |
 
@@ -40,6 +40,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | boot-start-600 | 75 | 51 | 24 | 320 | 1765 | 0 |
 | data-coverage-corpus | 592 | 355 | 237 | 8108 | 27634 | 0 |
+| race-branch-remainder | 574 | 400 | 174 | 3076 | 16681 | 0 |
 | race-crawler-dragster-12000-continuous-right-fields | 679 | 525 | 154 | 2003 | 14113 | 0 |
 | race-crawler-dragster-3000 | 675 | 538 | 137 | 1739 | 12988 | 0 |
 | race-crawler-zoom-zoo-3300 | 591 | 444 | 147 | 2117 | 13834 | 0 |
@@ -47,7 +48,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-2376 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 15, loc 1654, mid 31, sub 471, unk 205 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 15, inferred 110, observed 2046, unknown 205.
+2423 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 15, loc 1699, mid 31, sub 473, unk 205 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 15, inferred 101, observed 2102, unknown 205.
 
 Cited addresses in `unknown` bytes:
 

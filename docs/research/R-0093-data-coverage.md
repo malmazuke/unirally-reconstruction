@@ -222,6 +222,9 @@ Since this task the static map has five tracked maps, so `coverage static-map` a
 Since RACE-LISTING-BRANCHES (R-0107) there is a sixth tracked map,
 `docs/map/race-listing-branches.map.json`, whose raw capture is
 `local/evidence/race-listing-branches/coverage/merged.json`; pass it as a sixth `--coverage`.
+Since RACE-BRANCH-REMAINDER (R-0108) there is a seventh, `docs/map/race-branch-remainder.map.json`,
+whose raw capture is `local/evidence/race-branch-remainder/coverage/merged.json`; pass it as a
+seventh `--coverage` (`local/evidence/race-branch-remainder/regen.sh` passes all seven).
 
 From the data-coverage checkout, with `local/` linked to the main checkout's, under
 `local/locks/heavy-run.sh`:

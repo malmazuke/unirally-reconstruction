@@ -2,8 +2,19 @@
 
 ## Assignment
 
-- Status: **queued** 7 November 2026 by [RACE-LISTING-BRANCHES](RACE-LISTING-BRANCHES.md)
-  (R-0107, review round 1). Unclaimed.
+- Status: **accepted** 7 November 2026 (tier 1, [#95](https://github.com/malmazuke/unirally-reconstruction/pull/95),
+  approved in review round 2 at `1664c6b6`, its should-fix in `47858df0`), integrated by merge
+  commit. The Outcome is met except for the loop descriptor facing away (`$81:83C4`, `$81:83EC`),
+  not reached and recorded as a limit. Claimed 7 November 2026 11:05 UTC on main `788efdaf`, on the user's
+  instruction ("Start it"; Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`;
+  coordinator and integrator; a worker subagent implements, a fresh subagent reviews). Queued
+  7 November 2026 by [RACE-LISTING-BRANCHES](RACE-LISTING-BRANCHES.md) (R-0107, review round 1).
+  Run under [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge
+  against the 6-hour target, new evidence under 1 GB. Usage at the claim: 5-hour 1% (the window
+  reset at 11:00 UTC), weekly 5%.
+- Branch `task/race-branch-remainder` in `.worktrees/race-branch-remainder`; evidence in main
+  `local/evidence/race-branch-remainder/`.
+- Task provider: Anthropic.
 - Milestone: M4 (original game coverage).
 - Review tier: **1** (the HUD's arrow forms and tile behaviours in race state).
 - Dependencies: R-0107 (the census, its searches and capture tools), R-0080 (the two-view HUD),
@@ -33,3 +44,157 @@ capture of the original runs them. Native models each from the listing; nothing 
   or a recorded reason it is unreachable.
 - Native changed only where it differs, with unit tests; `checks.list` lines for the gate runner;
   the coverage of the new routes added to the static map's inputs.
+
+## Checkpoint (worker)
+
+Recorded in [R-0108](../docs/research/R-0108-race-branch-remainder.md). Every branch is captured but
+the loop's two arms: one is unreachable by construction, the other was not reached. Native already
+drew and ran every captured form, so no native code changed; the pack profile and the race state's
+serialized layout are unchanged.
+
+| Branch | Result | Route and evidence | Original against native |
+| --- | --- | --- | --- |
+| Upper view's up arrow and its erase (`$81:D907-D933`, `$81:D9E8-DA4C`) | Captured | t11-upper (2P, track 11, rider 0 trailing by about 23 transitions, steered into the up markers) | 1,699/1,699 pictures; up on 79 frames, 0-3 chevrons, with and without the cells |
+| Lower view's up arrow without the cells, empty step, up erase beside the cells (`$81:DC8D-DCCA`, `$81:DBB5-DBCA`) | Captured | t11-lower (the pads swapped) | 1,699/1,699; up on 56 frames, 0-3 chevrons, 15 without the cells |
+| Upper view's down arrow, three chevrons and the empty step (`$81:DACE-DAE1`, `$81:DAC4`) | Captured | t34-upper (2P, track 34, rider 0 on rider 1's route 651 frames later) | 2,299/2,299; down 0-3 chevrons |
+| Lower view's down arrow and its erase (`$81:DD4D-DDA4`, `$81:DB75-DB9C`) | Captured | t34-lower (rider 1 514 frames later) | 2,169/2,169; down 0-3 chevrons |
+| Rider 1's stunt score of 100 or more (`$81:C3EA-C3F0`) | Captured | vs-hill-rider1 (VS HILL CLIMB, pad 1 idle, pad 2 a route searched for rider 1's score) | 2,949/2,949 pictures; 2,792/2,792 race rows, trailer and tallies; `$77:0825` 100 at frame 3870, 152 at the end |
+| Lift on leading support (`$81:84B7` taken) | Captured | t34-seed155 (1P, random schedule; updates 1915-1916) | 604/604 rows, 602/602 pictures; the original's coverage takes `$81:84B7 -> $81:84EB` twice (review round 1) |
+| Loop entry with a pose override inside `$0610-$061F` (`$81:83A6`) | Unreachable by construction | every loop pose comes with the cooldown 3; the reset clears the pose at cooldown 1 before the step can be 0 at a strip [L]; not seen in 10,881 player entries of the one-player native search | - |
+| Loop descriptor facing away (`$81:83C4`, `$81:83EC`) | Not reached; open | one-player native search only, never run on the original: 16,187 schedules (10,881 player loop entries, 3 refusals; the opponent's 45,586 are the same 12 entries in every run) and 2,000 perturbations before track 25's shaft: none | - |
+
+**The Outcome is not met for `$81:83C4`/`$81:83EC`**: it has neither a captured route nor a reason it is
+unreachable. It is recorded as an open limit in R-0089's gap list (queue item 8's tile behaviours) and
+in `local/evidence/coverage-gaps/recorded-limits.md` (Race engine), not queued as a task.
+
+How: routes built on native by a receding-horizon search over a temporary trace build (never
+committed): a leader rides a searched route, the trailer rides it hundreds of frames later or is
+steered into a marker region; rider 1's stunt route searched for its score. Only the finished routes
+ran on the original. Static map with the seven coverage inputs: observed bytes 87,882 to 88,343,
+inferred 11,692 to 11,231, unknown 24.0%; every named range but the loop's three addresses is now
+observed.
+
+## Handoff (worker)
+
+- Branch `task/race-branch-remainder` on claim `354064ae` (main `788efdaf`). Commits: `9ee2b11f`
+  (R-0108; the coverage map `docs/map/race-branch-remainder.map.json`; `docs/map/static/`
+  regenerated with seven coverage inputs; R-0089, R-0093 and R-0107 pointed at R-0108; the
+  checkpoint), then this handoff (this record only). No `src`, test, pack or state-format change.
+- Checks run: `checks.list` 7 of 7 lines rc 0 on the candidate's lab-release (no native change, so
+  main's binaries), under the heavy-run lock (`checks-worker.out`, about 8 min); `mutants.txt`: 8
+  mutants of `src/core` (the upper up arrow a row down, the lower down arrow a row up, no third
+  chevron, no empty step, the lower up arrow's rows 16-17 drawn beside the cells, rider 1's hundreds
+  cell dropped, rider 1's score counting one more from 100, the lift ignoring leading support), each
+  failing every line that covers it, `src/core` restored and rebuilt after (diff 0); `regen.sh`
+  (`coverage native-symbols` and `coverage static-map` with seven coverage inputs, the tooling tests
+  `OK`) rerun after the last record edit, and `coverage native-symbols --check` passed, 0 cited
+  addresses without a record; the five coverage captures `status=passed`. Not run: `ctest`,
+  `clang-tidy`, `clang-format` (no C++ changed), the synthetic suite and the gates.
+- Evidence: main `local/evidence/race-branch-remainder/`, 254 MB. `manifests/` and `routes/` (the
+  five two-pad routes and their menu paths), `captures/t34-seed155` (work RAM raw, 119 MB:
+  `compact_evidence.py` at closeout), `stunt/` (the vs-hill-rider1 probe, 72 MB, and the copied
+  `race_compare2p.py`), `coverage/` (five captures, `merged.json`: the seventh static-map input),
+  `listing-after/` (the listing with seven inputs), `search/` (the route search scripts and their
+  logs, the tile hunts' 16,187 results), `trace_patch.py` (never committed; the trace builds are in
+  the worktree's ignored `artifacts/rbr/`, 683 MB with the check outputs, deleted with the worktree).
+- For the gates: `--task-checks local/evidence/race-branch-remainder/checks.list`. Expected changes
+  against main: none in any binary; the tracked static map gains 461 observed bytes from the seventh
+  input. Future static-map regenerations need the seventh `--coverage`
+  (`local/evidence/race-branch-remainder/coverage/merged.json`), as R-0093 now says.
+- Not covered (R-0108): a loop descriptor facing away from the rider (`$81:83C4`, `$81:83EC`), not
+  reached in 16,187 schedules and 2,000 perturbations, reachability open (a shaft entered from below
+  or its far side, or a 16-update cycle boundary on one of the shafts' opposite-facing columns);
+  R-0107's stunt score of 1000, track 13's read past its flag table, whole-SRAM and audio. The two-pad
+  arrow races compare pictures only (no serialized layout for their state).
+- Time: worker start 11:04:46 UTC, handoff 12:01 UTC on 7 November 2026 (`date -u`), about
+  57 min: reading 10 min; trace build, corpus scan and route search 20 min; captures, checks and the
+  stunt route 10 min; coverage, mutants, static map and records 18 min (much of it waiting on runs).
+- Next: the tier-1 independent review, then the gates.
+
+## Review round 1 (approve with should-fixes, records only; `21712de3`)
+
+A fresh subagent in its own checkout (`local/evidence/race-branch-remainder/review-1/review.md`,
+12:03-12:21 UTC): `checks.list` 7 of 7 passed, the static map and the coverage map reproduce byte for
+byte, the raw coverage shows every claimed range executed by the route R-0108 names, and its three
+mutants failed the lines that cover them (`mutants.txt`). Findings and fixes:
+
+1. **The `$0F59` writers.** R-0108 now names each rider's saved pose `$0DEF`/`$0DF1` (loaded at
+   `$82:8AA3`/`$82:8FAB`, stored at `$82:8DA9`/`$82:9297`), the finish pose `$82:89BE` (`$0A45-$0AEB`,
+   never a loop pose), and that the bank `$80` object tables at `$0DE0,X` never run in a race.
+2. **The third way back to step 0**, the count up from a refusal (`$81:85B3-85B4`), is in the
+   argument, with why it is harmless; the clear is on the reset that takes the cooldown to exactly 1.
+3. **The entry counts.** The opponent's 45,586 entries are 12 repeated; the search's breadth is the
+   10,881 player entries, and R-0108 and the Checkpoint say the hunts were one-player and native only
+   (a new tag, [N, search]).
+4. **The lift on the original.** The raw coverage records branch outcomes: the reviewer's coverage
+   capture of t34-seed155 (`review-1/cov-t34-seed155`, kept) takes `$81:84B7 -> $81:84EB` twice; the lift
+   is tagged [C] and R-0108's sentence corrected.
+5. **R-0107's introduction** now says R-0108 captures three of its five items, shows one unreachable
+   and leaves one open.
+6. **R-0108's status line** says it answers R-0107's Not covered list with one tile arm open.
+7. **The Outcome.** The Checkpoint states it is not met for `$81:83C4`/`$81:83EC` and where the arm is
+   tracked (R-0089 and `recorded-limits.md`, whose stale pair 4 and clamp line is replaced).
+8. Nits: the manifests' `regeneration_command` names `route_manifest.py` and R-0108's Reproduction
+   (only that field changed; the hashes the coverage captures and the stunt probe recorded are kept
+   in `manifests/sha256-before-review-1.txt`);
+   `check_race.sh` uses worktree-relative paths. STATE.md and NEXT_SESSION.md are left to the
+   coordinator's closeout.
+
+Checks after the fixes (`checks-review-1.out`, under the heavy-run lock): `checks.list` 7 of 7 rc 0
+with the same counts as before (`check_race.sh` changed; the manifests' changed field is not an input,
+and `replay validate` passes on all eight); `regen.sh` rerun last (native-symbols and the static map
+`status=passed`, the tooling tests `OK`) and `coverage native-symbols --check` passed, 0 cited addresses
+without a record.
+
+## Review round 2 (approve with one should-fix, records only; `1664c6b6`)
+
+The same reviewer (`review-2/review.md`, 12:31-12:37 UTC) found the ten round-1 fixes accurate and
+asked for the `$81:83A6` argument's base case. R-0108 now cites the race-start clear: the race's
+setup (`$83:C901`, or `$83:C9CF`) calls `$82:D7C2`, whose loop at `$82:D7E5-D7F8` (`$82:D7F5 STA
+$0200,Y`) zeroes `$0200-$1796`, the pose words, steps and cooldowns among them (traced on the frames
+that clear them, twop-restart 7707 and league-three 11507), and the reviewer's figures: all 0 at the
+six race initializations of three probes, a finish pose cleared by 11507 and 7707. The writer list is
+qualified as the direct-addressed writers plus that clear. `regen.sh` rerun last and `coverage
+native-symbols --check` passed.
+
+## Review (rounds 1 and 2, approved `1664c6b6`)
+
+A fresh subagent in its own checkout at the candidate.
+- [Round 1](https://github.com/malmazuke/unirally-reconstruction/pull/95#pullrequestreview-5812261355)
+  at `21712de3` (12:04-12:22 UTC): approve with should-fixes, handled as "Review round 1" above.
+  It checked every route's manifest (cold starts, pad inputs only), the raw coverage of every listed
+  range (each executed in the route R-0108 names and in none of the six earlier inputs), made its own
+  coverage capture of `t34-seed155` (the original takes `$81:84B7` twice), ran `checks.list` 7 of 7,
+  and three mutants of its own that fail the lines covering them.
+- [Round 2](https://github.com/malmazuke/unirally-reconstruction/pull/95#pullrequestreview-5812261420)
+  at `1664c6b6` (12:31-12:37 UTC): approve, one should-fix (the base case), handled as "Review
+  round 2" above. The coordinator checked the fix (`47858df0`) against the bank `$82` listing:
+  `$82:D7E5-D7F8` stores 0 at `$0200,Y` for Y from `$1596` down to 0
+  ([note](https://github.com/malmazuke/unirally-reconstruction/pull/95#pullrequestreview-5812261469)).
+
+## Gates (D-0012)
+
+- `gates-1` at `47858df0` (12:42 UTC): `only records changed: no local gates (CI's docs-only fast
+  path covers them)`. No tracked file under `src/`, `tests/` or `tools/` changed. The task's checks
+  ran 7 of 7 in the worker's run, in review round 1 and after its fixes (`checks-review-1.out`); the
+  round-2 fix changed no script.
+- Hosted CI: on the pull request.
+
+## Handoff (closeout)
+
+- Commits on `task/race-branch-remainder`: `354064ae` (claim), `9ee2b11f`, `21712de3` (worker),
+  `1664c6b6` (review round 1's fixes), `47858df0` (round 2's), then this record.
+- Time, claim 11:05 UTC to merge about 13:05 UTC, about 2 hours against D-0013's 6 hours: worker
+  57 min; review round 1 19 min; fixes 8 min; round 2 6 min; its fix 4 min; gates none; closeout
+  about 25 min.
+- Disk: main `local/evidence/race-branch-remainder/` 27 MB after `compact_evidence.py`, under the
+  1 GB budget.
+- Static-map regenerations now take seven `--coverage` inputs; the seventh is
+  `local/evidence/race-branch-remainder/coverage/merged.json` (R-0093), and
+  `local/evidence/race-branch-remainder/regen.sh` passes all seven.
+- The open arm is listed in R-0089's gap list and in main
+  `local/evidence/coverage-gaps/recorded-limits.md` (Race engine); no task is queued for it.
+- The task's seven checks (`checks.list`) are not in the gate catalogue.
+- The closing session removes `.worktrees/race-branch-remainder` and
+  `.worktrees/race-branch-remainder-review` and the local branch, then bootstraps and rebuilds
+  app-debug in the main checkout.
