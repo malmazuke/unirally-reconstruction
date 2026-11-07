@@ -27,6 +27,24 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**7 November 2026: RACE-LISTING-BRANCHES is accepted (tier 1, #94) and integrated by merge commit.**
+R-0107 is a census of the race code the static map knew only from the listing: the HUD's lap and
+split arrows, rider 1's stunt score and the tile behaviours no capture had reached.
+- **Reachable:** new captures of the original cover the one-view up and down arrows, the
+  two-view arrow (idle demos and a league race), the lift, the unlocked push both ways, and loop
+  entries with a refusal and its count back. Native already matched each on every row and
+  picture, so no C++ changed.
+- **Unreachable:** tile pair 4 (no map cell in the 45 tracks uses the tiles track 44's flag table
+  gives it), pairs 30 and above (no flag table holds one) and pair 8's clamp (the count never
+  exceeds 1 after the boot's RAM clear). Native keeps refusing them.
+- **Not captured:** the two-view arrow's other forms, rider 1's score of 100 or more and three
+  tile arms, queued as RACE-BRANCH-REMAINDER.
+- **Static map:** a sixth coverage input (`race-listing-branches/coverage/merged.json`); about
+  1,045 more observed bytes, the unknown share still 24.0%.
+- **Time:** about 2 hours from claim to merge (D-0013's target 6 h); records only, so no local
+  gates.
+[R-0107](research/R-0107-race-listing-branches.md) and [RACE-LISTING-BRANCHES](../tasks/RACE-LISTING-BRANCHES.md) hold the detail.
+
 **7 November 2026: APP-LEAGUE-RACE is accepted (tier 1, #93) and integrated by merge commit.**
 The app's scripted two-human races now read their inputs on `front_end_runner`'s frames, so its
 league races equal the runner's (and so the original's):

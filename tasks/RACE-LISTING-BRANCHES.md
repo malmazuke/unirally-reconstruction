@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **in progress**. Claimed 7 November 2026 03:39 UTC on main `2d516755`, on the user's
+- Status: **accepted** 7 November 2026 (tier 1, [#94](https://github.com/malmazuke/unirally-reconstruction/pull/94),
+  approved in review round 2 at `6c5accd6`), integrated by merge commit. Claimed 7 November 2026
+  03:39 UTC on main `2d516755`, on the user's
   instruction ("Yes, start it"; Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`;
   coordinator and integrator; a worker subagent implements, a fresh subagent reviews). Queued
   9 October 2026 by [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 8); the record is written
@@ -160,3 +162,43 @@ Checks after the fixes (`checks-review-1/checks.out`): `demo_arrow.py` 61/61, `w
 `wram_census.py` over the 75 raw captures as above; `regen.sh` (six inputs, tooling tests `OK`)
 and `coverage native-symbols --check` passed, 0 cited addresses without a record. The other
 `checks.list` lines did not change.
+
+## Review (rounds 1 and 2, approved `6c5accd6`)
+
+A fresh subagent in its own checkout at the candidate.
+- [Round 1](https://github.com/malmazuke/unirally-reconstruction/pull/94#pullrequestreview-5810273632)
+  at `467c9c52` (04:50-05:02 UTC): request changes, records only, handled as "Review round 1"
+  above. It reran `checks.list` 8 of 8, reproduced `merged.json`, the tracked coverage map and
+  the static map, and two mutants of its own (the lower view's up arrow a row down fails
+  `league_arrow.py`; the one-view down arrow a row up fails t34-seed124), now in `mutants.txt`.
+- [Round 2](https://github.com/malmazuke/unirally-reconstruction/pull/94#pullrequestreview-5810273701)
+  at `6c5accd6` (05:08-05:11 UTC): approve. The static map's three files regenerate byte for
+  byte, `wram_census.py` reproduces the committed census, and the changed `checks.list` lines
+  pass. Its optional notes ("except" for "but" in R-0107's Not covered; listing its mutants) are
+  taken in `mutants.txt` only.
+
+## Gates (D-0012)
+
+- `gates-1` at `6c5accd6` (05:11 UTC): `only records changed: no local gates (CI's docs-only fast
+  path covers them)`. No tracked file under `src/`, `tests/` or `tools/` changed, so no step was
+  selected; the task's checks ran in the worker's run (8 of 8, `checks-58cc66a8.out`) and in
+  review round 1 (8 of 8), and the lines whose scripts changed ran again after the fixes.
+- Hosted CI: on the pull request.
+
+## Handoff (closeout)
+
+- Commits on `task/race-listing-branches`: `0e7850cc` (claim), `58cc66a8`, `467c9c52` (worker),
+  `6c5accd6` (review round 1's fixes), then this record.
+- Time, claim 03:39 UTC to merge about 05:40 UTC, about 2 hours against D-0013's 6 hours: worker
+  1 h 9 min; review round 1 12 min; fixes 4 min; round 2 3 min; gates none; closeout about 25 min.
+- Disk: main `local/evidence/race-listing-branches/` 47 MB after `compact_evidence.py` (14 files
+  compressed), under the 1 GB budget.
+- Static-map regenerations now take six `--coverage` inputs; the sixth is
+  `local/evidence/race-listing-branches/coverage/merged.json` (R-0093). The copy in
+  `local/evidence/race-listing-branches/regen.sh` passes all six;
+  `local/evidence/native-readability/regen.sh` still passes four and its static-map step refuses
+  to run.
+- The task's eight checks (`checks.list`) are not in the gate catalogue.
+- The closing session removes `.worktrees/race-listing-branches` and
+  `.worktrees/race-listing-branches-review` and the local branch, then bootstraps and rebuilds
+  app-debug in the main checkout.
