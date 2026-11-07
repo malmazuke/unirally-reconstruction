@@ -19385,16 +19385,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2375,
+  "cited_addresses": 2376,
   "cited_by_class": {
    "data": 15,
    "inferred": 110,
-   "observed": 2045,
+   "observed": 2046,
    "unknown": 205
   },
   "cited_by_position": {
    "dat": 15,
-   "loc": 1653,
+   "loc": 1654,
    "mid": 31,
    "sub": 471,
    "unk": 205

@@ -13503,7 +13503,9 @@
    "src/core/zoom_zoo_movement.hpp:update_loop_tile"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -13516,7 +13518,9 @@
    "src/core/zoom_zoo_movement.hpp:update_loop_tile"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -13544,7 +13548,9 @@
    "src/core/zoom_zoo_movement.hpp:update_loop_tile"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -13605,7 +13611,9 @@
    "src/core/race_update.cpp:run_lift_tile"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -13701,7 +13709,8 @@
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md",
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -14197,6 +14206,7 @@
    "docs/research/R-0012-complete-race-evidence.md",
    "docs/research/R-0021-zoom-zoo-content-contract.md",
    "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "docs/research/R-0107-race-listing-branches.md",
    "tasks/M4-03.md"
   ]
  },
@@ -15142,6 +15152,16 @@
   "source_records": [
    "tasks/M4-06-review.md",
    "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:9140",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819140",
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -17172,7 +17192,9 @@
    "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -18206,7 +18228,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0080-split-hud.md"
+   "docs/research/R-0080-split-hud.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18244,7 +18267,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18270,7 +18294,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18295,7 +18320,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -18307,7 +18333,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18319,7 +18346,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18363,7 +18391,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18377,7 +18406,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18405,7 +18435,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18419,7 +18450,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18448,7 +18480,8 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18652,7 +18685,8 @@
    "src/core/race_hud.cpp:draw_classic_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -18678,7 +18712,8 @@
    "src/core/race_hud.cpp:draw_classic_arrow"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
