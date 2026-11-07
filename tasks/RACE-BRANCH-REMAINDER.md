@@ -2,7 +2,10 @@
 
 ## Assignment
 
-- Status: **in progress**. Claimed 7 November 2026 11:05 UTC on main `788efdaf`, on the user's
+- Status: **accepted** 7 November 2026 (tier 1, [#95](https://github.com/malmazuke/unirally-reconstruction/pull/95),
+  approved in review round 2 at `1664c6b6`, its should-fix in `47858df0`), integrated by merge
+  commit. The Outcome is met except for the loop descriptor facing away (`$81:83C4`, `$81:83EC`),
+  not reached and recorded as a limit. Claimed 7 November 2026 11:05 UTC on main `788efdaf`, on the user's
   instruction ("Start it"; Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`;
   coordinator and integrator; a worker subagent implements, a fresh subagent reviews). Queued
   7 November 2026 by [RACE-LISTING-BRANCHES](RACE-LISTING-BRANCHES.md) (R-0107, review round 1).
@@ -153,3 +156,45 @@ that clear them, twop-restart 7707 and league-three 11507), and the reviewer's f
 six race initializations of three probes, a finish pose cleared by 11507 and 7707. The writer list is
 qualified as the direct-addressed writers plus that clear. `regen.sh` rerun last and `coverage
 native-symbols --check` passed.
+
+## Review (rounds 1 and 2, approved `1664c6b6`)
+
+A fresh subagent in its own checkout at the candidate.
+- [Round 1](https://github.com/malmazuke/unirally-reconstruction/pull/95#pullrequestreview-5812261355)
+  at `21712de3` (12:04-12:22 UTC): approve with should-fixes, handled as "Review round 1" above.
+  It checked every route's manifest (cold starts, pad inputs only), the raw coverage of every listed
+  range (each executed in the route R-0108 names and in none of the six earlier inputs), made its own
+  coverage capture of `t34-seed155` (the original takes `$81:84B7` twice), ran `checks.list` 7 of 7,
+  and three mutants of its own that fail the lines covering them.
+- [Round 2](https://github.com/malmazuke/unirally-reconstruction/pull/95#pullrequestreview-5812261420)
+  at `1664c6b6` (12:31-12:37 UTC): approve, one should-fix (the base case), handled as "Review
+  round 2" above. The coordinator checked the fix (`47858df0`) against the bank `$82` listing:
+  `$82:D7E5-D7F8` stores 0 at `$0200,Y` for Y from `$1596` down to 0
+  ([note](https://github.com/malmazuke/unirally-reconstruction/pull/95#pullrequestreview-5812261469)).
+
+## Gates (D-0012)
+
+- `gates-1` at `47858df0` (12:42 UTC): `only records changed: no local gates (CI's docs-only fast
+  path covers them)`. No tracked file under `src/`, `tests/` or `tools/` changed. The task's checks
+  ran 7 of 7 in the worker's run, in review round 1 and after its fixes (`checks-review-1.out`); the
+  round-2 fix changed no script.
+- Hosted CI: on the pull request.
+
+## Handoff (closeout)
+
+- Commits on `task/race-branch-remainder`: `354064ae` (claim), `9ee2b11f`, `21712de3` (worker),
+  `1664c6b6` (review round 1's fixes), `47858df0` (round 2's), then this record.
+- Time, claim 11:05 UTC to merge about 13:05 UTC, about 2 hours against D-0013's 6 hours: worker
+  57 min; review round 1 19 min; fixes 8 min; round 2 6 min; its fix 4 min; gates none; closeout
+  about 25 min.
+- Disk: main `local/evidence/race-branch-remainder/` 27 MB after `compact_evidence.py`, under the
+  1 GB budget.
+- Static-map regenerations now take seven `--coverage` inputs; the seventh is
+  `local/evidence/race-branch-remainder/coverage/merged.json` (R-0093), and
+  `local/evidence/race-branch-remainder/regen.sh` passes all seven.
+- The open arm is listed in R-0089's gap list and in main
+  `local/evidence/coverage-gaps/recorded-limits.md` (Race engine); no task is queued for it.
+- The task's seven checks (`checks.list`) are not in the gate catalogue.
+- The closing session removes `.worktrees/race-branch-remainder` and
+  `.worktrees/race-branch-remainder-review` and the local branch, then bootstraps and rebuilds
+  app-debug in the main checkout.

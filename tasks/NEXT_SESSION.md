@@ -27,6 +27,24 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](./GATES-AGAINST-MAIN.md) holds the detail.
 
+**7 November 2026: RACE-BRANCH-REMAINDER is accepted (tier 1, #95) and integrated by merge commit.**
+R-0108 captures the race branches R-0107 found reachable but could not capture, on routes built on
+purpose: a native search first, then only the finished routes on the original (cold boots, pad
+inputs only).
+- **Captured:** every form of the two-view arrow (both views, up and down, 0-3 chevrons, the
+  erases and the blink's empty step) on 2P routes on tracks 11 and 34 where one rider trails;
+  rider 1's stunt score of 100 or more (VS HILL CLIMB, to 152); the lift on leading support.
+  Native already matched each on every picture and race row, so no C++ changed.
+- **Unreachable:** a loop entry with a pose override (`$81:83A6`): only a loop step writes a loop
+  pose, the pose is cleared before the step returns to 0, and the race's setup zeroes
+  `$0200-$1796` before every race.
+- **Open:** the loop descriptor facing away (`$81:83C4`, `$81:83EC`), not reached in 10,881 native
+  loop entries; recorded as a limit, no task queued.
+- **Static map:** a seventh coverage input (`race-branch-remainder/coverage/merged.json`); observed
+  88,343 bytes, the unknown share still 24.0%. R-0089's queue is now done.
+- **Time:** about 2 hours from claim to merge; records only, so no local gates.
+[R-0108](../docs/research/R-0108-race-branch-remainder.md) and [RACE-BRANCH-REMAINDER](RACE-BRANCH-REMAINDER.md) hold the detail.
+
 **7 November 2026: RACE-LISTING-BRANCHES is accepted (tier 1, #94) and integrated by merge commit.**
 R-0107 is a census of the race code the static map knew only from the listing: the HUD's lap and
 split arrows, rider 1's stunt score and the tile behaviours no capture had reached.
