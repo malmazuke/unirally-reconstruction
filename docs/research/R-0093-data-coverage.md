@@ -219,6 +219,9 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
 Since this task the static map has five tracked maps, so `coverage static-map` and
 `coverage disassemble` need five raw captures: STATIC-CODE-MAP's four and
 `local/evidence/data-coverage/corpus-coverage.json`.
+Since RACE-LISTING-BRANCHES (R-0107) there is a sixth tracked map,
+`docs/map/race-listing-branches.map.json`, whose raw capture is
+`local/evidence/race-listing-branches/coverage/merged.json`; pass it as a sixth `--coverage`.
 
 From the data-coverage checkout, with `local/` linked to the main checkout's, under
 `local/locks/heavy-run.sh`:
