@@ -542,13 +542,13 @@ void new_local_run_loading_tests() {
   require(unirally::race_loading_frames(state) == 128);
   state.race_song = 3;
   require(unirally::race_loading_frames(state) == 127);
-  // R-0106: the race initializes its loading frames after NOW PLAYING's last frame, the frame
-  // before the state's next one; the app's scripted races and front_end_runner both count from it.
-  // organic-full-tour-turnaround's BOWL: NOW PLAYING chooses it at frame 18886, and it
-  // initializes on 19012, as league-primary.freeze.json froze the original.
+  // R-0106: a race initializes on NOW PLAYING's last frame (the state's frame less one) plus its
+  // loading frames; the app's scripted races and front_end_runner both count from that frame.
+  // organic-full-tour-turnaround's BOWL: NOW PLAYING chooses it at frame 18886 and, with 127
+  // loading frames, it initializes on 19012, as league-primary.freeze.json froze the original.
   state.frame = 18886;
   require(unirally::race_initialization_frame(state) == 19012);
-  state.mode = unirally::FrontEndMode::demo; // a demo's race has no measured loading
+  state.mode = unirally::FrontEndMode::demo; // a demo on track 5 or later has no measured loading
   state.tour_menu.track = 5;
   require(unirally::race_loading_frames(state) == 0);
   require(unirally::race_initialization_frame(state) == 0);

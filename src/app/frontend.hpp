@@ -116,8 +116,9 @@ private:
 // as `front_end_runner` numbers them (R-0106): the race initializes on its
 // `race_initialization_frame` and its n-th update reads that frame plus n. The
 // loading frames the app waits before the race (with native audio, as the
-// original does) are the frames just before the initialization frame, so they
-// read those; without the wait the race's first update comes at once.
+// original does) read the frames up to and including the initialization frame
+// (`start(I, L)` reads I-L+1 through I, the runner's loading frames); without
+// the wait the race's first update comes at once.
 class ScriptedRaceFrames {
 public:
   // A race chosen: it initializes on `initialization_frame`, after the app has

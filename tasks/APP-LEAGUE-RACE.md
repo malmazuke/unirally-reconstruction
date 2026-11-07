@@ -122,3 +122,47 @@ unchanged, so other branches' gates still pass it until this task merges.
   about 48 min: reading 10 min; reproduction, the shifted-input runs and the cause 10 min; the
   change, tests and lints 10 min; the after runs and the final check run (real-time app runs,
   about 35 min of app time under the heavy-run lock) with the records written alongside.
+
+## Review round 1 (approved with one should-fix finding, `c04980b4`)
+
+A fresh reviewer subagent (Claude Opus 5.5, no inherited conversation, its own checkout
+`.worktrees/app-league-race-review` at `c04980b4`) approved: report in
+`local/evidence/app-league-race/review-1/review.md`, 23:13-23:50 UTC on 6 November 2026 (about
+37 min). It rebuilt the candidate and reproduced every headline number (warm route 6,201 lines
+equal, main's app differs at `3180 D pause`; the turnaround through 38399, 59,456 lines, five
+returns on the runner's frames). It also ran routes the worker had not: 1P `cont-loss` (13,223
+lines), `six-quits` (14,272) and `w-demo-race` (8,768), all equal. VS `vs-bowl` without audio
+returned as the runner does on both apps. TWO-HUMAN-STUNTS-AUDIO's 2P `twop-bowl` with audio is
+equal on the candidate, while main's app differs from line 2372 and returns 48 frames late (4760,
+runner 4712), so the bug also hit plain 2P races with audio. It checked that the combined read
+condition selects the same races as the old two branches, and that the worker's scripts print
+DIFFERS on corrupted inputs. Each mutant fails a test except one (note 5).
+
+- **1 (should-fix):** `sdl_main.cpp`'s local `race_initialization_frame` counted app updates
+  and served as the loading-cue countdown and a flag, beside the new front-end-frame function
+  of the same name. **Fixed:** renamed `race_start_update`, and the read condition names its flag
+  `race_waits_loading`. No behaviour change.
+- **2 (note):** `ScriptedRaceFrames`' comment said the loading frames are "just before" the
+  initialization frame; `start(I, L)` reads I-L+1 through I. **Fixed** in the comment.
+- **3 (note):** two loose test comments in `front_end_tests.cpp`. **Fixed** (a demo has no
+  measured loading only on tracks 5 and up; the initialization frame's rule reworded).
+- **4 (note):** an initialization frame of 0 would make a two-human race read from frame 1;
+  unreachable (every track 0-44 has a loading offset, and the runner refuses races without one).
+  Left as is.
+- **5 (note):** the runner's call of the shared function has no unit test; a `+1U` mutant passes
+  ctest and is caught by `runner_same.sh`, `warm_route.sh` and the gates. Left to those checks:
+  the runner's frame numbering has no unit seam.
+- **6 (note):** `app_podium_run.sh` ties the runner to the original only in the podium window
+  (by design), ignored the app's exit status, keeps the v40 pack, and ran in 770 s of 1200 s.
+  **Fixed:** an app exit status other than 0 now prints DIFFERS. The rest stays as recorded.
+- **7 (note):** `twop-bowl` as a short non-league check. **Done:**
+  `local/evidence/app-league-race/twop_bowl.sh`, added to `checks.list`.
+
+Checks after the fixes: `project.py build` `status=passed` for app-debug, lab-debug and
+lab-release; `ctest` app-debug and lab-debug 41/41; `git-clang-format` clean on the changed
+`src` and `tests/app` lines. The task's checks (`fix-1/run.out`, 23:52-00:08 UTC):
+`warm_route.sh` equal through 3599 (6,201 lines); `twop_bowl.sh` equal through 6099 (9,019 lines,
+the race returns at 4713); `runner_same.sh` byte-identical on all four routes;
+`app_podium_run.sh` app rc 0, equal through 38399 (59,456 lines, 25 podium lines), five returns on
+the runner's frames and totals, the producer 37,780 cued frames and never stopped, the runner's
+podium window 0 frames differing from the original's (8 outside it, as on main).
