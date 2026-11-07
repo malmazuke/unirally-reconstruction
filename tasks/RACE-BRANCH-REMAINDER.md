@@ -2,8 +2,16 @@
 
 ## Assignment
 
-- Status: **queued** 7 November 2026 by [RACE-LISTING-BRANCHES](RACE-LISTING-BRANCHES.md)
-  (R-0107, review round 1). Unclaimed.
+- Status: **in progress**. Claimed 7 November 2026 11:05 UTC on main `788efdaf`, on the user's
+  instruction ("Start it"; Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`;
+  coordinator and integrator; a worker subagent implements, a fresh subagent reviews). Queued
+  7 November 2026 by [RACE-LISTING-BRANCHES](RACE-LISTING-BRANCHES.md) (R-0107, review round 1).
+  Run under [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge
+  against the 6-hour target, new evidence under 1 GB. Usage at the claim: 5-hour 1% (the window
+  reset at 11:00 UTC), weekly 5%.
+- Branch `task/race-branch-remainder` in `.worktrees/race-branch-remainder`; evidence in main
+  `local/evidence/race-branch-remainder/`.
+- Task provider: Anthropic.
 - Milestone: M4 (original game coverage).
 - Review tier: **1** (the HUD's arrow forms and tile behaviours in race state).
 - Dependencies: R-0107 (the census, its searches and capture tools), R-0080 (the two-view HUD),
