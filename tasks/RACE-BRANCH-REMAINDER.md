@@ -66,3 +66,40 @@ steered into a marker region; rider 1's stunt route searched for its score. Only
 ran on the original. Static map with the seven coverage inputs: observed bytes 87,882 to 88,343,
 inferred 11,692 to 11,231, unknown 24.0%; every named range but the loop's three addresses is now
 observed.
+
+## Handoff (worker)
+
+- Branch `task/race-branch-remainder` on claim `354064ae` (main `788efdaf`). Commits: `9ee2b11f`
+  (R-0108; the coverage map `docs/map/race-branch-remainder.map.json`; `docs/map/static/`
+  regenerated with seven coverage inputs; R-0089, R-0093 and R-0107 pointed at R-0108; the
+  checkpoint), then this handoff (this record only). No `src`, test, pack or state-format change.
+- Checks run: `checks.list` 7 of 7 lines rc 0 on the candidate's lab-release (no native change, so
+  main's binaries), under the heavy-run lock (`checks-worker.out`, about 8 min); `mutants.txt`: 8
+  mutants of `src/core` (the upper up arrow a row down, the lower down arrow a row up, no third
+  chevron, no empty step, the lower up arrow's rows 16-17 drawn beside the cells, rider 1's hundreds
+  cell dropped, rider 1's score counting one more from 100, the lift ignoring leading support), each
+  failing every line that covers it, `src/core` restored and rebuilt after (diff 0); `regen.sh`
+  (`coverage native-symbols` and `coverage static-map` with seven coverage inputs, the tooling tests
+  `OK`) rerun after the last record edit, and `coverage native-symbols --check` passed, 0 cited
+  addresses without a record; the five coverage captures `status=passed`. Not run: `ctest`,
+  `clang-tidy`, `clang-format` (no C++ changed), the synthetic suite and the gates.
+- Evidence: main `local/evidence/race-branch-remainder/`, 254 MB. `manifests/` and `routes/` (the
+  five two-pad routes and their menu paths), `captures/t34-seed155` (work RAM raw, 119 MB:
+  `compact_evidence.py` at closeout), `stunt/` (the vs-hill-rider1 probe, 72 MB, and the copied
+  `race_compare2p.py`), `coverage/` (five captures, `merged.json`: the seventh static-map input),
+  `listing-after/` (the listing with seven inputs), `search/` (the route search scripts and their
+  logs, the tile hunts' 16,187 results), `trace_patch.py` (never committed; the trace builds are in
+  the worktree's ignored `artifacts/rbr/`, 683 MB with the check outputs, deleted with the worktree).
+- For the gates: `--task-checks local/evidence/race-branch-remainder/checks.list`. Expected changes
+  against main: none in any binary; the tracked static map gains 461 observed bytes from the seventh
+  input. Future static-map regenerations need the seventh `--coverage`
+  (`local/evidence/race-branch-remainder/coverage/merged.json`), as R-0093 now says.
+- Not covered (R-0108): a loop descriptor facing away from the rider (`$81:83C4`, `$81:83EC`), not
+  reached in 16,187 schedules and 2,000 perturbations, reachability open (a shaft entered from below
+  or its far side, or a 16-update cycle boundary on one of the shafts' opposite-facing columns);
+  R-0107's stunt score of 1000, track 13's read past its flag table, whole-SRAM and audio. The two-pad
+  arrow races compare pictures only (no serialized layout for their state).
+- Time: worker start 11:04:46 UTC, handoff 12:01 UTC on 7 November 2026 (`date -u`), about
+  57 min: reading 10 min; trace build, corpus scan and route search 20 min; captures, checks and the
+  stunt route 10 min; coverage, mutants, static map and records 18 min (much of it waiting on runs).
+- Next: the tier-1 independent review, then the gates.
