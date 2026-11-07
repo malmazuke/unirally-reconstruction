@@ -8,19 +8,19 @@ Each routine and label cited by native code names its native symbols (`native`),
 
 | Bank | Observed | Inferred | Data | Unknown |
 | --- | ---: | ---: | ---: | ---: |
-| $80 | 22,855 | 1,434 | 24 | 8,455 |
-| $81 | 22,785 | 3,259 | 34 | 6,690 |
-| $82 | 19,822 | 2,791 | 0 | 10,155 |
-| $83 | 21,375 | 5,253 | 16 | 6,124 |
-| All | 86,837 | 12,737 | 74 | 31,424 |
+| $80 | 22,904 | 1,385 | 24 | 8,455 |
+| $81 | 23,670 | 2,374 | 33 | 6,691 |
+| $82 | 19,899 | 2,714 | 0 | 10,155 |
+| $83 | 21,409 | 5,219 | 16 | 6,124 |
+| All | 87,882 | 11,692 | 73 | 31,425 |
 
 The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 | Measure | Value |
 | --- | ---: |
-| Instructions from descent | 5,343 |
-| Instructions from observed | 35,735 |
-| Instructions from table | 65 |
+| Instructions from descent | 4,968 |
+| Instructions from observed | 36,133 |
+| Instructions from table | 42 |
 | Routines | 759 |
 | Routines cited by native code | 581 |
 | Routine bytes cited by native code | 73,996 |
@@ -30,7 +30,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Mode ambiguities | 6 |
 | Conflicts | 0 |
 | Data references into code | 0 |
-| Absolute operands with unknown data bank | 1,024 |
+| Absolute operands with unknown data bank | 869 |
 | Descent stopped: implausible opcode | 3 |
 | Assumption used: call returns in the calling mode | 2,454 |
 
@@ -43,10 +43,11 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | race-crawler-dragster-12000-continuous-right-fields | 679 | 525 | 154 | 2003 | 14113 | 0 |
 | race-crawler-dragster-3000 | 675 | 538 | 137 | 1739 | 12988 | 0 |
 | race-crawler-zoom-zoo-3300 | 591 | 444 | 147 | 2117 | 13834 | 0 |
+| race-listing-branches | 565 | 376 | 189 | 3872 | 18778 | 0 |
 
 ## Cited addresses
 
-2337 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1616, mid 31, sub 471, unk 203 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 105, observed 2013, unknown 203.
+2376 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 15, loc 1654, mid 31, sub 471, unk 205 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 15, inferred 110, observed 2046, unknown 205.
 
 Cited addresses in `unknown` bytes:
 
@@ -185,6 +186,8 @@ Cited addresses in `unknown` bytes:
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
 | $81:8000 | tasks/ACCESS-ROUND-READS.md |
 | $81:8001 | tasks/ACCESS-ROUND-READS.md |
+| $81:834C | docs/research/R-0051-loop-and-tile-pairs.md, docs/research/R-0107-race-listing-branches.md, tasks/TILE-PAIRS-8-12-26.md |
+| $81:84AD | docs/research/R-0107-race-listing-branches.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A343 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0066-stunt-event-race.md |
 | $81:A388 | docs/research/R-0046-track-breadth-matrix.md |

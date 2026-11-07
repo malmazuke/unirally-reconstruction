@@ -78,6 +78,7 @@
    "docs/research/R-0043-classic-race-hud.md",
    "docs/research/R-0044-classic-split-time.md",
    "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0107-race-listing-branches.md",
    "tasks/CLASSIC-RACE-HUD.md"
   ]
  },
@@ -2771,7 +2772,8 @@
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -6741,7 +6743,8 @@
    "src/core/now_playing.cpp:now_playing_frame"
   ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -6785,7 +6788,8 @@
   "comment": "instruction start",
   "label": "loc_80BD9D",
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -9358,7 +9362,8 @@
    "src/core/front_end.cpp:waits_for_frame"
   ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
  {
@@ -13358,6 +13363,19 @@
   ]
  },
  {
+  "address": "$81:82C2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8182C2",
+  "native": [
+   "src/core/race_update.cpp:(file)",
+   "src/core/race_update.cpp:tile_behavior_under"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$81:82D9",
   "class": "observed",
   "comment": "instruction start",
@@ -13382,7 +13400,8 @@
   ],
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -13397,6 +13416,7 @@
    "docs/research/R-0045-static-code-map.md",
    "docs/research/R-0047-special-tiles.md",
    "docs/research/R-0051-loop-and-tile-pairs.md",
+   "docs/research/R-0107-race-listing-branches.md",
    "tasks/SPECIAL-TILE-RESPONSE.md",
    "tasks/STATIC-CODE-MAP.md",
    "tasks/TILE-PAIRS-8-12-26.md"
@@ -13418,27 +13438,30 @@
  },
  {
   "address": "$81:831D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81831D",
   "native": [
    "src/core/race_update.cpp:run_push_tile"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
   "address": "$81:834C",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_81834C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81834C",
   "native": [
    "src/core/content_pack.cpp:loop_required",
    "src/core/zoom_zoo_movement.hpp:ZoomZooContent::loop_offsets"
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md",
+   "docs/research/R-0107-race-listing-branches.md",
    "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
@@ -13458,8 +13481,51 @@
   ]
  },
  {
-  "address": "$81:83E7",
+  "address": "$81:839C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81839C",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
+  "address": "$81:83A6",
   "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8183A6",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:83C4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8183C4",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:83E7",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8183E7",
   "native": [
@@ -13467,7 +13533,37 @@
    "src/core/zoom_zoo_movement.hpp:update_loop_tile"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:83EC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8183EC",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:845D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81845D",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -13483,8 +13579,17 @@
   ]
  },
  {
+  "address": "$81:84AD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8184AD",
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$81:84B2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_8184B2",
   "native": [
@@ -13492,7 +13597,35 @@
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:84B7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8184B7",
+  "native": [
+   "src/core/race_update.cpp:run_lift_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:84CB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8184CB",
+  "native": [
+   "src/core/race_update.cpp:run_lift_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -13529,7 +13662,9 @@
    "src/core/race_update.cpp:run_slow_tile"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -13573,7 +13708,9 @@
    "src/core/zoom_zoo_movement.hpp:SpecialTileRider::slow_counter"
   ],
   "source_records": [
-   "docs/research/R-0051-loop-and-tile-pairs.md"
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -13620,6 +13757,21 @@
   ]
  },
  {
+  "address": "$81:85B3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8185B3",
+  "native": [
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/special_tiles.cpp:update_loop_cooldown",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
+   "src/core/zoom_zoo_movement.hpp:update_loop_cooldown"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$81:85B9",
   "class": "observed",
   "comment": "instruction start",
@@ -13632,6 +13784,36 @@
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
+  "address": "$81:85DD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8185DD",
+  "native": [
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/special_tiles.cpp:update_loop_cooldown",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
+   "src/core/zoom_zoo_movement.hpp:update_loop_cooldown"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
+  "address": "$81:85F2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8185F2",
+  "native": [
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/special_tiles.cpp:update_loop_cooldown",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
+   "src/core/zoom_zoo_movement.hpp:update_loop_cooldown"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -13707,6 +13889,20 @@
   ]
  },
  {
+  "address": "$81:86E0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8186E0",
+  "native": [
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
+   "src/core/zoom_zoo_movement.hpp:update_special_tile_counters"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$81:86EF",
   "class": "observed",
   "comment": "instruction start",
@@ -13758,7 +13954,9 @@
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
    "docs/research/R-0051-loop-and-tile-pairs.md",
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -13773,6 +13971,19 @@
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
    "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$81:87D1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8187D1",
+  "native": [
+   "src/core/special_tiles.cpp:update_corkscrew_tile",
+   "src/core/zoom_zoo_movement.hpp:update_corkscrew_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -13995,6 +14206,7 @@
    "docs/research/R-0012-complete-race-evidence.md",
    "docs/research/R-0021-zoom-zoo-content-contract.md",
    "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "docs/research/R-0107-race-listing-branches.md",
    "tasks/M4-03.md"
   ]
  },
@@ -14940,6 +15152,16 @@
   "source_records": [
    "tasks/M4-06-review.md",
    "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:9140",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819140",
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -16896,6 +17118,34 @@
   ]
  },
  {
+  "address": "$81:C37A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C37A",
+  "native": [
+   "src/core/presentation.hpp:stunt_score_cells",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields",
+   "src/core/race_hud.cpp:decimal_cells"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
+  "address": "$81:C37F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C37F",
+  "native": [
+   "src/core/presentation.hpp:stunt_score_cells",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields",
+   "src/core/race_hud.cpp:decimal_cells"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$81:C3D3",
   "class": "observed",
   "comment": "instruction start",
@@ -16908,15 +17158,43 @@
   ]
  },
  {
+  "address": "$81:C3D7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C3D7",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$81:C3DC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C3DC",
   "native": [
    "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:C3EA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C3EA",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -17950,19 +18228,47 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0080-split-hud.md"
+   "docs/research/R-0080-split-hud.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
+  ]
+ },
+ {
+  "address": "$81:D88A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81D88A",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
   "address": "$81:D8D9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81D8D9",
   "native": [
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:D907",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D907",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -17975,7 +18281,21 @@
   ],
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md",
+   "tasks/RACE-LISTING-BRANCHES.md",
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$81:D9E8",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D9E8",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -17987,7 +18307,47 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:DAB6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81DAB6",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:DAC4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DAC4",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
+  ]
+ },
+ {
+  "address": "$81:DACE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DACE",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18015,7 +18375,83 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:DB75",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DB75",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
+  ]
+ },
+ {
+  "address": "$81:DBB5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DBB5",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
+  ]
+ },
+ {
+  "address": "$81:DC7F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81DC7F",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
+  "address": "$81:DC8D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DC8D",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
+  ]
+ },
+ {
+  "address": "$81:DC92",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DC92",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18029,7 +18465,23 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:DD4D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DD4D",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -18183,15 +18635,29 @@
   ]
  },
  {
+  "address": "$81:E900",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81E900",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$81:E94F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81E94F",
   "native": [
    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
@@ -18205,12 +18671,54 @@
    "src/core/race_hud.cpp:classic_arrow_chevrons"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:EA5E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EA5E",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_classic_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:EA6C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EA6C",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_classic_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
+  "address": "$81:EB2C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EB2C",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_classic_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md",
+   "tasks/RACE-LISTING-BRANCHES.md"
   ]
  },
  {
   "address": "$81:EB40",
-  "class": "inferred",
+  "class": "observed",
   "comment": "inside the instruction at $81:EB3F",
   "label": "mid_81EB40",
   "native": [
@@ -18223,7 +18731,7 @@
  },
  {
   "address": "$81:EB44",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81EB44",
   "native": [
@@ -18237,7 +18745,7 @@
  },
  {
   "address": "$81:EB83",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81EB83",
   "native": [
@@ -19425,6 +19933,15 @@
   ]
  },
  {
+  "address": "$82:8A13",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828A13",
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$82:8AB1",
   "class": "observed",
   "comment": "instruction start",
@@ -19510,7 +20027,8 @@
   ],
   "source_records": [
    "docs/research/R-0010-native-movement.md",
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -19519,7 +20037,8 @@
   "comment": "instruction start",
   "label": "loc_828C45",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -19556,6 +20075,15 @@
   "label": "loc_828D0D",
   "source_records": [
    "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$82:8D2B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828D2B",
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -19677,6 +20205,15 @@
   ]
  },
  {
+  "address": "$82:8F1B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828F1B",
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
   "address": "$82:8FE8",
   "class": "observed",
   "comment": "instruction start",
@@ -19713,6 +20250,7 @@
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0107-race-listing-branches.md",
    "tasks/NATIVE-READABILITY.md"
   ]
  },
@@ -19722,7 +20260,8 @@
   "comment": "instruction start",
   "label": "loc_82912F",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -19741,6 +20280,15 @@
   "label": "loc_8291DD",
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:9219",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829219",
+  "source_records": [
+   "docs/research/R-0107-race-listing-branches.md"
   ]
  },
  {
@@ -19944,6 +20492,7 @@
    "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
    "docs/research/R-0080-split-hud.md",
    "docs/research/R-0103-split-hunter-pictures.md",
+   "docs/research/R-0107-race-listing-branches.md",
    "tasks/SPLIT-HUD-GAPS.md",
    "tasks/SPLIT-HUNTER-PICTURES.md"
   ]
@@ -24680,7 +25229,8 @@
    "docs/research/R-0073-league.md",
    "docs/research/R-0090-save-files.md",
    "docs/research/R-0105-cartridge-option-words.md",
-   "tasks/CARTRIDGE-OPTION-BITS.md"
+   "tasks/CARTRIDGE-OPTION-BITS.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {

@@ -52,9 +52,13 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
     lose all your records". Native recognises the pad code and stops. [L]
   - *HUD branches never shown*: lap and split fields drawn for `$FFFF` or `$1253 < 1`
     (`$81:D8D9`, `$81:E94F`, `$81:DB70`, blocks in `$81:D936`, `$81:DA4F`, `$81:DCE6`,
-    `$81:E9AC`), stunt scores of 100 and more (`$81:C3DC`). Partly cited. [L]
+    `$81:E9AC`), stunt scores of 100 and more (`$81:C3DC`). Partly cited. [L] Answered by
+    R-0107: the up and down arrows, and rider 1's stunt score; captured except the two-view
+    arrow forms and rider 1's score of 100 or more that R-0107 lists as not covered.
   - *Tile behaviours* in the table at `$81:82F0` no capture reaches (`$81:875C`, `$81:84B2`,
-    `$81:831D`, `$81:83E7`, `$81:8565`; tile pair 4 is R-0051's open case). [L]
+    `$81:831D`, `$81:83E7`, `$81:8565`; tile pair 4 is R-0051's open case). [L] Answered by
+    R-0107: pair 4 and pair 8's clamp are unreachable; the others are captured but for three tile
+    arms R-0107 lists as not covered.
   - Small branches (310 blocks under 30 bytes, 1,825 bytes) and the BRK/COP vectors. [L]
 - **What the records say is missing** (`recorded-limits.md`, about 75 items from every accepted
   record). The whole features: native audio stops in 2P, VS, league, OPTIONS and the idle demos
