@@ -3,30 +3,30 @@
   {
    "bank": "$80",
    "data": 24,
-   "inferred": 1385,
-   "observed": 22904,
-   "unknown": 8455
+   "inferred": 371,
+   "observed": 24144,
+   "unknown": 8229
   },
   {
    "bank": "$81",
    "data": 33,
-   "inferred": 1937,
-   "observed": 24107,
-   "unknown": 6691
+   "inferred": 1824,
+   "observed": 24368,
+   "unknown": 6543
   },
   {
    "bank": "$82",
    "data": 0,
-   "inferred": 2702,
-   "observed": 19911,
+   "inferred": 2481,
+   "observed": 20132,
    "unknown": 10155
   },
   {
    "bank": "$83",
-   "data": 16,
-   "inferred": 5207,
-   "observed": 21421,
-   "unknown": 6124
+   "data": 13,
+   "inferred": 635,
+   "observed": 25993,
+   "unknown": 6127
   }
  ],
  "classes": {
@@ -43,6 +43,11 @@
     "coverage_sha256": "1e6c02747d7c1003df42567e7a3e16f65c58f6ea853f59c9c7c6b6142adb8ca6",
     "path": "docs/map/boot-start-600.map.json",
     "scenario_id": "boot-start-600"
+   },
+   {
+    "coverage_sha256": "44a30eb5b10f593964f33018af82e3987976b91aff9c3212024635e8a2ef04a0",
+    "path": "docs/map/coverage-census.map.json",
+    "scenario_id": "coverage-census"
    },
    {
     "coverage_sha256": "60d4d2626bdfc398d6962ea35ed90754d39c36b43636b5da0258cc628f8f5950",
@@ -79,6 +84,7 @@
   "observed_boundaries_from": "raw coverage sites",
   "raw_coverage_sha256": [
    "1e6c02747d7c1003df42567e7a3e16f65c58f6ea853f59c9c7c6b6142adb8ca6",
+   "44a30eb5b10f593964f33018af82e3987976b91aff9c3212024635e8a2ef04a0",
    "476de96fa13b2cff31166037d654c5724634d280de0945ae4baf10e1d9ccd41d",
    "60d4d2626bdfc398d6962ea35ed90754d39c36b43636b5da0258cc628f8f5950",
    "7654ac204a7a130f66a0dfe8228cf367dd88a35ffc7b2eec5a16ac3f3839337e",
@@ -171,6 +177,16 @@
     "scenario_id": "boot-start-600",
     "several_tilings": 24,
     "shared_instructions_checked_against_sites": 1765
+   },
+   {
+    "disagreements": 0,
+    "instructions_not_fixed_by_tiling": 8581,
+    "no_tiling": 0,
+    "one_tiling": 257,
+    "ranges": 471,
+    "scenario_id": "coverage-census",
+    "several_tilings": 214,
+    "shared_instructions_checked_against_sites": 27444
    },
    {
     "disagreements": 0,
@@ -772,6 +788,7 @@
     "$80:9CEC",
     "$80:9E6B",
     "$80:A66C",
+    "$80:AA32",
     "$80:ACFA",
     "$80:B429",
     "$80:C15F",
@@ -800,7 +817,7 @@
    "observed_entries": {},
    "start": "$80:937B",
    "static_entries": {
-    "JSR": 19
+    "JSR": 20
    },
    "vectors": []
   },
@@ -832,6 +849,8 @@
     "$80:9F9E",
     "$80:9FB9",
     "$80:A236",
+    "$80:AACD",
+    "$80:AAEF",
     "$80:B058",
     "$80:C03F",
     "$80:CC17",
@@ -867,7 +886,7 @@
    "observed_entries": {},
    "start": "$80:93A5",
    "static_entries": {
-    "JSR": 27
+    "JSR": 29
    },
    "vectors": []
   },
@@ -1125,7 +1144,7 @@
    "callers": [
     "$83:FB28"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:9868",
    "mode_at_entry": [
     "NmX"
@@ -1174,7 +1193,7 @@
    "callers": [
     "$83:FB3B"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:9884",
    "mode_at_entry": [
     "NmX"
@@ -1227,6 +1246,7 @@
    "callers": [
     "$80:9A43",
     "$80:9C40",
+    "$80:AA20",
     "$80:B03C",
     "$80:BBBB",
     "$80:BD30",
@@ -1251,7 +1271,7 @@
    "observed_entries": {},
    "start": "$80:98A4",
    "static_entries": {
-    "JSR": 13
+    "JSR": 14
    },
    "vectors": []
   },
@@ -1875,6 +1895,26 @@
    "start": "$80:A8A8",
    "static_entries": {
     "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 34,
+   "callers": [
+    "$80:AA53"
+   ],
+   "class": "observed",
+   "end": "$80:AAF8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/wipe_ram.cpp:cancel_reset"
+   ],
+   "observed_entries": {},
+   "start": "$80:AAD7",
+   "static_entries": {
+    "JMP": 1
    },
    "vectors": []
   },
@@ -3062,6 +3102,8 @@
    "bytes": 70,
    "callers": [
     "$80:A689",
+    "$80:AAD3",
+    "$80:AAF5",
     "$80:B05B",
     "$80:C045",
     "$80:C202",
@@ -3107,7 +3149,7 @@
    "observed_entries": {},
    "start": "$80:C206",
    "static_entries": {
-    "JSR": 7
+    "JSR": 9
    },
    "vectors": []
   },
@@ -3115,6 +3157,8 @@
    "bytes": 29,
    "callers": [
     "$80:95A1",
+    "$80:AAD0",
+    "$80:AAF2",
     "$80:C042",
     "$80:DB9E"
    ],
@@ -3141,7 +3185,7 @@
    "observed_entries": {},
    "start": "$80:C24C",
    "static_entries": {
-    "JSR": 3
+    "JSR": 5
    },
    "vectors": []
   },
@@ -3150,7 +3194,7 @@
    "callers": [
     "$80:D6D0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:C2ED",
    "mode_at_entry": [
     "NmX"
@@ -3218,6 +3262,9 @@
     "$80:A558",
     "$80:A637",
     "$80:A64A",
+    "$80:AA2C",
+    "$80:AAC3",
+    "$80:AAE2",
     "$80:ACF4",
     "$80:B1CE",
     "$80:B28B",
@@ -3334,7 +3381,7 @@
    "observed_entries": {},
    "start": "$80:C3BC",
    "static_entries": {
-    "JSR": 129
+    "JSR": 132
    },
    "vectors": []
   },
@@ -3734,7 +3781,7 @@
     "$80:C84C",
     "$80:C92E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:CB03",
    "mode_at_entry": [
     "NMX"
@@ -3877,6 +3924,7 @@
     "$80:9C04",
     "$80:A22E",
     "$80:A239",
+    "$80:AA3D",
     "$80:ABE6",
     "$80:B046",
     "$80:B46E",
@@ -3927,7 +3975,7 @@
    "observed_entries": {},
    "start": "$80:D1EC",
    "static_entries": {
-    "JSR": 25
+    "JSR": 26
    },
    "vectors": []
   },
@@ -4156,6 +4204,7 @@
     "$80:9CFB",
     "$80:9E6E",
     "$80:A67A",
+    "$80:AA35",
     "$80:B42C",
     "$80:C162",
     "$80:CB4D",
@@ -4184,7 +4233,7 @@
    "observed_entries": {},
    "start": "$80:E233",
    "static_entries": {
-    "JSR": 14
+    "JSR": 15
    },
    "vectors": []
   },
@@ -4854,6 +4903,7 @@
    "bytes": 16,
    "callers": [
     "$80:9C34",
+    "$80:AA1D",
     "$80:BB9E",
     "$80:BCC1",
     "$80:BDD6",
@@ -4878,7 +4928,7 @@
    "observed_entries": {},
    "start": "$80:F51B",
    "static_entries": {
-    "JSR": 10
+    "JSR": 11
    },
    "vectors": []
   },
@@ -4886,6 +4936,7 @@
    "bytes": 16,
    "callers": [
     "$80:9EB3",
+    "$80:AAE9",
     "$80:AD0F",
     "$80:C146",
     "$80:C1AA",
@@ -4911,7 +4962,7 @@
    "observed_entries": {},
    "start": "$80:F52B",
    "static_entries": {
-    "JSR": 8
+    "JSR": 9
    },
    "vectors": []
   },
@@ -5354,6 +5405,10 @@
     "$80:A867",
     "$80:A898",
     "$80:A8A8",
+    "$80:AA2F",
+    "$80:AA3A",
+    "$80:AACA",
+    "$80:AAEC",
     "$80:ABE3",
     "$80:ACF7",
     "$80:ADE5",
@@ -5463,7 +5518,7 @@
    "start": "$80:FADF",
    "static_entries": {
     "JSL": 1,
-    "JSR": 112
+    "JSR": 116
    },
    "vectors": []
   },
@@ -6727,12 +6782,12 @@
    "vectors": []
   },
   {
-   "bytes": 46,
+   "bytes": 62,
    "callers": [
     "$81:A300"
    ],
    "class": "observed",
-   "end": "$81:A331",
+   "end": "$81:A341",
    "mode_at_entry": [
     "NMX"
    ],
@@ -6746,6 +6801,52 @@
    "start": "$81:A304",
    "static_entries": {
     "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$81:A33F"
+   ],
+   "class": "observed",
+   "end": "$81:A387",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/presentation.cpp:draw_race_backgrounds",
+    "src/core/race_setup.cpp:track_geometry",
+    "src/core/rider_object.hpp:project_rider_oam",
+    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
+   ],
+   "observed_entries": {},
+   "start": "$81:A343",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 63,
+   "callers": [
+    "$81:A337"
+   ],
+   "class": "inferred",
+   "end": "$81:A3C6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/presentation.cpp:draw_race_backgrounds",
+    "src/core/race_setup.cpp:track_geometry",
+    "src/core/rider_object.hpp:project_rider_oam",
+    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
+   ],
+   "observed_entries": {},
+   "start": "$81:A388",
+   "static_entries": {
+    "JMP": 1
    },
    "vectors": []
   },
@@ -6867,6 +6968,8 @@
   {
    "bytes": 29,
    "callers": [
+    "$81:A385",
+    "$81:A3C4",
     "$81:A403",
     "$81:A442"
    ],
@@ -6884,7 +6987,7 @@
    "observed_entries": {},
    "start": "$81:A4FF",
    "static_entries": {
-    "JMP": 2
+    "JMP": 4
    },
    "vectors": []
   },
@@ -11309,6 +11412,7 @@
    "class": "observed",
    "end": "$82:9A4B",
    "mode_at_entry": [
+    "NMX",
     "NMx"
    ],
    "native": [
@@ -13588,7 +13692,8 @@
    "class": "observed",
    "end": "$82:DF05",
    "mode_at_entry": [
-    "NMx"
+    "NMx",
+    "NmX"
    ],
    "native": [
     "src/core/credits_name.cpp:credits_picture_frame"
@@ -13941,7 +14046,7 @@
     "$80:BC30",
     "$80:BC94"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:895A",
    "mode_at_entry": [
     "NmX"
@@ -14052,6 +14157,9 @@
     "$80:9C30",
     "$80:9F84",
     "$80:A551",
+    "$80:AA25",
+    "$80:AABC",
+    "$80:AADB",
     "$80:B1C7",
     "$80:C02E",
     "$80:C14C",
@@ -14091,7 +14199,7 @@
    "observed_entries": {},
    "start": "$83:8B51",
    "static_entries": {
-    "JSL": 29
+    "JSL": 32
    },
    "vectors": []
   },
@@ -14423,6 +14531,7 @@
     "$80:910A",
     "$80:9EAD",
     "$80:9EB6",
+    "$80:AAB4",
     "$80:AFEB",
     "$80:B038",
     "$80:C7FA",
@@ -14459,7 +14568,7 @@
    "observed_entries": {},
    "start": "$83:90F4",
    "static_entries": {
-    "JSL": 23
+    "JSL": 24
    },
    "vectors": []
   },
@@ -14608,12 +14717,14 @@
   {
    "bytes": 23,
    "callers": [
-    "$80:8C84"
+    "$80:8C84",
+    "$80:AA76"
    ],
    "class": "observed",
    "end": "$83:92E2",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:copy_default_table"
@@ -14621,19 +14732,21 @@
    "observed_entries": {},
    "start": "$83:92CC",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 23,
    "callers": [
-    "$80:8C88"
+    "$80:8C88",
+    "$80:AA7A"
    ],
    "class": "observed",
    "end": "$83:92F9",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:clear_default_words"
@@ -14641,19 +14754,21 @@
    "observed_entries": {},
    "start": "$83:92E3",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 23,
    "callers": [
-    "$80:8C8C"
+    "$80:8C8C",
+    "$80:AA7E"
    ],
    "class": "observed",
    "end": "$83:9310",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:copy_default_table"
@@ -14661,19 +14776,21 @@
    "observed_entries": {},
    "start": "$83:92FA",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 23,
    "callers": [
-    "$80:8C90"
+    "$80:8C90",
+    "$80:AA82"
    ],
    "class": "observed",
    "end": "$83:9327",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:clear_default_words"
@@ -14681,19 +14798,21 @@
    "observed_entries": {},
    "start": "$83:9311",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 24,
    "callers": [
-    "$80:8C94"
+    "$80:8C94",
+    "$80:AA86"
    ],
    "class": "observed",
    "end": "$83:933F",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:copy_default_table"
@@ -14701,19 +14820,21 @@
    "observed_entries": {},
    "start": "$83:9328",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 46,
    "callers": [
-    "$80:8CBA"
+    "$80:8CBA",
+    "$80:AAAC"
    ],
    "class": "observed",
    "end": "$83:936D",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:initialize_rider_bests",
@@ -14722,19 +14843,21 @@
    "observed_entries": {},
    "start": "$83:9340",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 106,
    "callers": [
-    "$80:8C98"
+    "$80:8C98",
+    "$80:AA8A"
    ],
    "class": "observed",
    "end": "$83:93D7",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:initialize_record_times",
@@ -14744,19 +14867,21 @@
    "observed_entries": {},
    "start": "$83:936E",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 29,
    "callers": [
-    "$80:8C9C"
+    "$80:8C9C",
+    "$80:AA8E"
    ],
    "class": "observed",
    "end": "$83:93F4",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:initialize_record_holders",
@@ -14765,19 +14890,21 @@
    "observed_entries": {},
    "start": "$83:93D8",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 145,
    "callers": [
-    "$80:8CA9"
+    "$80:8CA9",
+    "$80:AA9B"
    ],
    "class": "observed",
    "end": "$83:9485",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_league.cpp:native_audio_menu_league_defaults",
@@ -14786,19 +14913,21 @@
    "observed_entries": {},
    "start": "$83:93F5",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 31,
    "callers": [
-    "$80:8CB6"
+    "$80:8CB6",
+    "$80:AAA8"
    ],
    "class": "observed",
    "end": "$83:94A4",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:initialize_settings"
@@ -14806,19 +14935,21 @@
    "observed_entries": {},
    "start": "$83:9486",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
   {
    "bytes": 43,
    "callers": [
-    "$80:8CBE"
+    "$80:8CBE",
+    "$80:AAB0"
    ],
    "class": "observed",
    "end": "$83:94CF",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:write_cartridge_header"
@@ -14826,7 +14957,7 @@
    "observed_entries": {},
    "start": "$83:94A5",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
@@ -14887,6 +15018,7 @@
    "class": "observed",
    "end": "$83:9542",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -15317,6 +15449,7 @@
    "callers": [
     "$80:8C80",
     "$80:94AD",
+    "$80:AA70",
     "$80:AEB0",
     "$80:B011",
     "$80:B18D",
@@ -15341,7 +15474,7 @@
    "observed_entries": {},
    "start": "$83:9983",
    "static_entries": {
-    "JSL": 8
+    "JSL": 9
    },
    "vectors": []
   },
@@ -17377,7 +17510,8 @@
    "class": "observed",
    "end": "$83:CDB6",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
@@ -17421,6 +17555,7 @@
    "end": "$83:CE2B",
    "mode_at_entry": [
     "NMX",
+    "NMx",
     "NmX"
    ],
    "native": [
@@ -17565,7 +17700,9 @@
    "class": "observed",
    "end": "$83:D103",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NMx",
+    "NmX"
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
@@ -17639,7 +17776,7 @@
    "callers": [
     "$83:CED0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D273",
    "mode_at_entry": [
     "NMX"
@@ -17671,10 +17808,10 @@
    "callers": [
     "$83:D1D9"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D274",
    "mode_at_entry": [
-    "Nmx"
+    "NMx"
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
@@ -17701,10 +17838,10 @@
     "$83:D4D6",
     "$83:D510"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D289",
    "mode_at_entry": [
-    "NMX"
+    "NmX"
    ],
    "native": [
     "src/core/hunter_effects.cpp:finish",
@@ -17752,7 +17889,7 @@
    "callers": [
     "$83:CF35"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D348",
    "mode_at_entry": [
     "NMX"
@@ -17779,7 +17916,7 @@
    "callers": [
     "$83:D0BB"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D3BB",
    "mode_at_entry": [
     "NMX"
@@ -17805,7 +17942,7 @@
    "callers": [
     "$83:D079"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D473",
    "mode_at_entry": [
     "NMX"
@@ -17831,7 +17968,7 @@
    "callers": [
     "$83:D037"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D4AD",
    "mode_at_entry": [
     "NMX"
@@ -17856,7 +17993,7 @@
    "callers": [
     "$83:CFF5"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D4E7",
    "mode_at_entry": [
     "NMX"
@@ -17881,7 +18018,7 @@
    "callers": [
     "$83:CFB3"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D52F",
    "mode_at_entry": [
     "NMX"
@@ -17906,7 +18043,7 @@
    "callers": [
     "$83:CF71"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D580",
    "mode_at_entry": [
     "NMX"
@@ -17931,7 +18068,7 @@
    "callers": [
     "$83:D345"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:DAF2",
    "mode_at_entry": [
     "NMX"
@@ -17957,7 +18094,7 @@
    "callers": [
     "$83:D591"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E04E",
    "mode_at_entry": [
     "NMX"
@@ -17978,7 +18115,7 @@
    "callers": [
     "$83:DAF0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E081",
    "mode_at_entry": [
     "NMX"
@@ -19282,7 +19419,7 @@
    "callers": [
     "$82:DDE3"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:FADF",
    "mode_at_entry": [
     "NmX"
@@ -19302,7 +19439,7 @@
    "callers": [
     "$83:FADC"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:FB40",
    "mode_at_entry": [
     "NmX"
@@ -19326,7 +19463,8 @@
   {
    "bytes": 4,
    "callers": [
-    "$80:8C74"
+    "$80:8C74",
+    "$80:AA64"
    ],
    "class": "observed",
    "end": "$83:FB44",
@@ -19343,7 +19481,7 @@
    "observed_entries": {},
    "start": "$83:FB41",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
@@ -19396,46 +19534,46 @@
  "schema_version": 1,
  "scope": "ROM offsets $00000-$1FFFF: banks $80-$83 (mirrored at $00-$03)",
  "totals": {
-  "absolute_operands_with_unknown_data_bank": 790,
+  "absolute_operands_with_unknown_data_bank": 581,
   "assumptions_used": {
-   "call returns in the calling mode": 2454
+   "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2423,
+  "cited_addresses": 2489,
   "cited_by_class": {
-   "data": 15,
-   "inferred": 101,
-   "observed": 2102,
-   "unknown": 205
+   "data": 12,
+   "inferred": 45,
+   "observed": 2205,
+   "unknown": 227
   },
   "cited_by_position": {
-   "dat": 15,
-   "loc": 1699,
+   "dat": 12,
+   "loc": 1731,
    "mid": 31,
-   "sub": 473,
-   "unk": 205
+   "sub": 488,
+   "unk": 227
   },
   "conflicts": 0,
-  "data": 73,
+  "data": 70,
   "data_references_into_code": 0,
   "descent_stops": {
    "implausible opcode": 3
   },
   "gap_sweep_candidate_bytes": 1341,
   "gap_sweep_candidate_instructions": 647,
-  "inferred": 11231,
+  "inferred": 5311,
   "instructions": {
-   "descent": 4798,
-   "observed": 36303,
+   "descent": 2138,
+   "observed": 39093,
    "table": 42
   },
   "jump_tables": 2,
   "mode_ambiguities": 6,
-  "observed": 88343,
-  "routine_bytes_cited_by_native_code": 73996,
-  "routines": 759,
-  "routines_cited_by_native_code": 581,
-  "unknown": 31425,
-  "unknown_share": 0.2398
+  "observed": 94637,
+  "routine_bytes_cited_by_native_code": 74178,
+  "routines": 762,
+  "routines_cited_by_native_code": 584,
+  "unknown": 31054,
+  "unknown_share": 0.2369
  }
 }
