@@ -22,8 +22,8 @@ show each reachable behaviour on the original, and native equals them on every r
 picture. Not every reachable form is captured: the two-view arrow's other forms, rider 1's stunt
 score of 100 or more and three tile arms (Not covered) are queued as
 [RACE-BRANCH-REMAINDER](../../tasks/RACE-BRANCH-REMAINDER.md). [R-0108](R-0108-race-branch-remainder.md) has since
-captured all but one of them (native exact again) and shows a fourth arm unreachable; one tile arm
-remains not reached.
+captured the arrow forms, rider 1's score and the lift on leading support (native exact again), shows
+the loop entry with a loop pose unreachable, and leaves the loop descriptor facing away not reached.
 
 - The "lap and split fields drawn for `$FFFF` or `$1253 < 1`" are the direction arrow's **up and
   down** forms (R-0063 recorded them as listing only). `$0FD9`/`$0FDB` hold the arrow to erase:

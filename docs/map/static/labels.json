@@ -1198,6 +1198,21 @@
   ]
  },
  {
+  "address": "$80:8DF0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808DF0",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:opponent_dots, record_line, record_line_entries",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
   "address": "$80:8E0D",
   "class": "observed",
   "comment": "instruction start",
@@ -2038,6 +2053,15 @@
   ]
  },
  {
+  "address": "$80:9834",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809834",
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
   "address": "$80:9869",
   "class": "observed",
   "comment": "routine start",
@@ -2143,6 +2167,18 @@
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:9912",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809912",
+  "native": [
+   "src/core/race_result.cpp:lap_graph_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
   ]
  },
  {
@@ -13481,6 +13517,32 @@
   ]
  },
  {
+  "address": "$81:8386",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818386",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
+  "address": "$81:8388",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818388",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
   "address": "$81:8397",
   "class": "observed",
   "comment": "instruction start",
@@ -13521,6 +13583,19 @@
    "docs/research/R-0108-race-branch-remainder.md",
    "tasks/RACE-BRANCH-REMAINDER.md",
    "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:83A8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8183A8",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
   ]
  },
  {
@@ -13715,6 +13790,18 @@
   ]
  },
  {
+  "address": "$81:84B9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8184B9",
+  "native": [
+   "src/core/race_update.cpp:run_lift_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
   "address": "$81:84CB",
   "class": "inferred",
   "comment": "instruction start",
@@ -13724,6 +13811,19 @@
   ],
   "source_records": [
    "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
+  "address": "$81:84EB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8184EB",
+  "native": [
+   "src/core/race_update.cpp:run_lift_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -13776,6 +13876,7 @@
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0108-race-branch-remainder.md",
    "tasks/SPECIAL-TILE-RESPONSE.md"
   ]
  },
@@ -13866,7 +13967,9 @@
    "src/core/zoom_zoo_movement.hpp:update_loop_cooldown"
   ],
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -20102,6 +20205,21 @@
   ]
  },
  {
+  "address": "$82:89BE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8289BE",
+  "native": [
+   "src/core/movement.cpp:update_opponent_finish_pose",
+   "src/core/race_progress.cpp:step_finish_pose",
+   "src/core/race_progress.cpp:update_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
+  ]
+ },
+ {
   "address": "$82:89C2",
   "class": "observed",
   "comment": "inside the instruction at $82:89C1",
@@ -20135,12 +20253,21 @@
   ]
  },
  {
+  "address": "$82:8AA0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828AA0",
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
   "address": "$82:8AA3",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_828AA3",
   "source_records": [
-   "docs/research/R-0108-race-branch-remainder.md"
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -20230,7 +20357,8 @@
   "source_records": [
    "docs/research/R-0010-native-movement.md",
    "docs/research/R-0047-special-tiles.md",
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0108-race-branch-remainder.md"
   ]
  },
  {
@@ -20240,7 +20368,8 @@
   "label": "loc_828C45",
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0108-race-branch-remainder.md"
   ]
  },
  {
@@ -20286,6 +20415,16 @@
   "label": "loc_828D2B",
   "source_records": [
    "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
+  "address": "$82:8DA9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828DA9",
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -20416,12 +20555,21 @@
   ]
  },
  {
+  "address": "$82:8FA8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828FA8",
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
   "address": "$82:8FAB",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_828FAB",
   "source_records": [
-   "docs/research/R-0108-race-branch-remainder.md"
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -20462,6 +20610,7 @@
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
    "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0108-race-branch-remainder.md",
    "tasks/NATIVE-READABILITY.md"
   ]
  },
@@ -20472,7 +20621,8 @@
   "label": "loc_82912F",
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0108-race-branch-remainder.md"
   ]
  },
  {
@@ -20500,6 +20650,16 @@
   "label": "loc_829219",
   "source_records": [
    "docs/research/R-0107-race-listing-branches.md"
+  ]
+ },
+ {
+  "address": "$82:9297",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829297",
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md",
+   "tasks/RACE-BRANCH-REMAINDER.md"
   ]
  },
  {
@@ -30700,6 +30860,23 @@
   ]
  },
  {
+  "address": "$83:EA0D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA0D",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:finish_rider",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
   "address": "$83:EA11",
   "class": "observed",
   "comment": "routine start",
@@ -31069,6 +31246,22 @@
   ],
   "source_records": [
    "docs/research/R-0084-two-human-restart.md"
+  ]
+ },
+ {
+  "address": "$83:EB9F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EB9F",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0108-race-branch-remainder.md"
   ]
  },
  {

@@ -56,9 +56,13 @@ serialized layout are unchanged.
 | Upper view's down arrow, three chevrons and the empty step (`$81:DACE-DAE1`, `$81:DAC4`) | Captured | t34-upper (2P, track 34, rider 0 on rider 1's route 651 frames later) | 2,299/2,299; down 0-3 chevrons |
 | Lower view's down arrow and its erase (`$81:DD4D-DDA4`, `$81:DB75-DB9C`) | Captured | t34-lower (rider 1 514 frames later) | 2,169/2,169; down 0-3 chevrons |
 | Rider 1's stunt score of 100 or more (`$81:C3EA-C3F0`) | Captured | vs-hill-rider1 (VS HILL CLIMB, pad 1 idle, pad 2 a route searched for rider 1's score) | 2,949/2,949 pictures; 2,792/2,792 race rows, trailer and tallies; `$77:0825` 100 at frame 3870, 152 at the end |
-| Lift on leading support (`$81:84B7` taken) | Captured | t34-seed155 (1P, random schedule; updates 1915-1916) | 604/604 rows, 602/602 pictures |
-| Loop entry with a pose override inside `$0610-$061F` (`$81:83A6`) | Unreachable by construction | every loop pose comes with the cooldown 3; the reset clears the pose at cooldown 1 before the step can be 0 at a strip [L]; 56,467 native entries [N] | - |
-| Loop descriptor facing away (`$81:83C4`, `$81:83EC`) | Not reached; open | 16,187 native schedules (10,881 player and 45,586 opponent entries, 3 refusals) and 2,000 perturbations before track 25's shaft: none | - |
+| Lift on leading support (`$81:84B7` taken) | Captured | t34-seed155 (1P, random schedule; updates 1915-1916) | 604/604 rows, 602/602 pictures; the original's coverage takes `$81:84B7 -> $81:84EB` twice (review round 1) |
+| Loop entry with a pose override inside `$0610-$061F` (`$81:83A6`) | Unreachable by construction | every loop pose comes with the cooldown 3; the reset clears the pose at cooldown 1 before the step can be 0 at a strip [L]; not seen in 10,881 player entries of the one-player native search | - |
+| Loop descriptor facing away (`$81:83C4`, `$81:83EC`) | Not reached; open | one-player native search only, never run on the original: 16,187 schedules (10,881 player loop entries, 3 refusals; the opponent's 45,586 are the same 12 entries in every run) and 2,000 perturbations before track 25's shaft: none | - |
+
+**The Outcome is not met for `$81:83C4`/`$81:83EC`**: it has neither a captured route nor a reason it is
+unreachable. It is recorded as an open limit in R-0089's gap list (queue item 8's tile behaviours) and
+in `local/evidence/coverage-gaps/recorded-limits.md` (Race engine), not queued as a task.
 
 How: routes built on native by a receding-horizon search over a temporary trace build (never
 committed): a leader rides a searched route, the trailer rides it hundreds of frames later or is
@@ -103,3 +107,38 @@ observed.
   57 min: reading 10 min; trace build, corpus scan and route search 20 min; captures, checks and the
   stunt route 10 min; coverage, mutants, static map and records 18 min (much of it waiting on runs).
 - Next: the tier-1 independent review, then the gates.
+
+## Review round 1 (approve with should-fixes, records only; `21712de3`)
+
+A fresh subagent in its own checkout (`local/evidence/race-branch-remainder/review-1/review.md`,
+12:03-12:21 UTC): `checks.list` 7 of 7 passed, the static map and the coverage map reproduce byte for
+byte, the raw coverage shows every claimed range executed by the route R-0108 names, and its three
+mutants failed the lines that cover them (`mutants.txt`). Findings and fixes:
+
+1. **The `$0F59` writers.** R-0108 now names each rider's saved pose `$0DEF`/`$0DF1` (loaded at
+   `$82:8AA3`/`$82:8FAB`, stored at `$82:8DA9`/`$82:9297`), the finish pose `$82:89BE` (`$0A45-$0AEB`,
+   never a loop pose), and that the bank `$80` object tables at `$0DE0,X` never run in a race.
+2. **The third way back to step 0**, the count up from a refusal (`$81:85B3-85B4`), is in the
+   argument, with why it is harmless; the clear is on the reset that takes the cooldown to exactly 1.
+3. **The entry counts.** The opponent's 45,586 entries are 12 repeated; the search's breadth is the
+   10,881 player entries, and R-0108 and the Checkpoint say the hunts were one-player and native only
+   (a new tag, [N, search]).
+4. **The lift on the original.** The raw coverage records branch outcomes: the reviewer's coverage
+   capture of t34-seed155 (`review-1/cov-t34-seed155`, kept) takes `$81:84B7 -> $81:84EB` twice; the lift
+   is tagged [C] and R-0108's sentence corrected.
+5. **R-0107's introduction** now says R-0108 captures three of its five items, shows one unreachable
+   and leaves one open.
+6. **R-0108's status line** says it answers R-0107's Not covered list with one tile arm open.
+7. **The Outcome.** The Checkpoint states it is not met for `$81:83C4`/`$81:83EC` and where the arm is
+   tracked (R-0089 and `recorded-limits.md`, whose stale pair 4 and clamp line is replaced).
+8. Nits: the manifests' `regeneration_command` names `route_manifest.py` and R-0108's Reproduction
+   (only that field changed; the hashes the coverage captures and the stunt probe recorded are kept
+   in `manifests/sha256-before-review-1.txt`);
+   `check_race.sh` uses worktree-relative paths. STATE.md and NEXT_SESSION.md are left to the
+   coordinator's closeout.
+
+Checks after the fixes (`checks-review-1.out`, under the heavy-run lock): `checks.list` 7 of 7 rc 0
+with the same counts as before (`check_race.sh` changed; the manifests' changed field is not an input,
+and `replay validate` passes on all eight); `regen.sh` rerun last (native-symbols and the static map
+`status=passed`, the tooling tests `OK`) and `coverage native-symbols --check` passed, 0 cited addresses
+without a record.

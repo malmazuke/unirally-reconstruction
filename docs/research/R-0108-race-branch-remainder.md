@@ -3,15 +3,16 @@
 Status: research result ([RACE-BRANCH-REMAINDER](../../tasks/RACE-BRANCH-REMAINDER.md)), 7 November
 2026, on main `788efdaf`. PAL ROM SHA-256
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, reference core bsnes `7d5aa1e6`
-(Strict). Evidence in main `local/evidence/race-branch-remainder/`. It closes R-0107's Not covered
+(Strict). Evidence in main `local/evidence/race-branch-remainder/`. It answers R-0107's Not covered
 list, except the items R-0107 left out of RACE-BRANCH-REMAINDER (a stunt score of 1000, track 13's read
-past its flag table, whole-SRAM and audio).
+past its flag table, whole-SRAM and audio); one tile arm stays open.
 
 Tags: **[L]** read from the listing (`race-listing-branches/listing-after/`, the static map with
 R-0107's six inputs); **[C]** a capture of the original made for this task; **[N]** native's behaviour
 read through a temporary trace build of the runners (`trace_patch.py`, never committed) where native
 equals the original on every compared row and picture of the same route, so native's states are the
-original's.
+original's; **[N, search]** the same trace build on routes never run on the original (the one-player
+tile hunts), native's behaviour only.
 
 ## Summary
 
@@ -22,9 +23,9 @@ original's.
 | Upper view's down arrow, three chevrons (`$81:DACE-DAE1`) and the empty step (`$81:DAC4`) | **Captured** | `t34-upper`: 2P, track 34; rider 0 rides rider 1's route 651 frames later and falls through the down markers about 20 transitions behind | 2,299/2,299; down arrow on 6 frames: 0, 1, 2 and 3 chevrons [C] |
 | Lower view's down arrow (`$81:DD4D-DDA4`) and its erase (`$81:DB75-DB9C`) | **Captured** | `t34-lower`: rider 1 rides the route 514 frames later | 2,169/2,169; down arrow on 6 frames: 0, 1, 2 and 3 chevrons [C] |
 | Rider 1's stunt score of 100 or more (`$81:C3EA-C3F0`) | **Captured** | `vs-hill-rider1`: VS, HILL CLIMB; pad 1 idle, pad 2 a route built for rider 1's score | 2,949/2,949 pictures; 2,792/2,792 race rows, second camera and rider 1's tallies; `$77:0825` reaches 100 at frame 3870 and 152 by the end [C] |
-| The lift on leading support (`$81:84B7` taken) | **Captured** | `t34-seed155`: 1P, track 34, a random schedule; the mirrored lift with `$0F5D` set on updates 1915 and 1916 | 604/604 rows, 602/602 pictures [C, N] |
+| The lift on leading support (`$81:84B7` taken) | **Captured** | `t34-seed155`: 1P, track 34, a random schedule; the mirrored lift with `$0F5D` set on updates 1915 and 1916 | 604/604 rows, 602/602 pictures; the original's raw coverage takes `$81:84B7 -> $81:84EB` twice (review round 1's capture) [C] |
 | A loop entry with a pose override inside `$0610-$061F` (`$81:83A6`) | **Unreachable** by construction (below) | - | - [L, N] |
-| A loop descriptor facing away from the rider (`$81:83C4`, `$81:83EC`) | **Not reached**; reachability open | 16,187 native schedules, 2,000 perturbations, none (below) | - |
+| A loop descriptor facing away from the rider (`$81:83C4`, `$81:83EC`) | **Not reached**; reachability open | one-player native search only: 10,881 player loop entries in 16,187 schedules, 2,000 perturbations, none (below) | - |
 
 No native code changed: native already drew every form and ran every arm the original shows here.
 The pack profile and the race state's serialized layout are unchanged.
@@ -90,28 +91,45 @@ is compared row by row as well.
 ## The loop's two arms
 
 **`$81:83A6` is unreachable by construction** [L]. At a loop strip's step 0 the entry is refused
-unless the pose override `$0F59` is 0 or inside `$0610-$061F` (`$81:8397-83A6`). The writers of
-`$0F59` are the loop's own (`$81:83D0`, `$81:83F8`: `$0610`; `$81:841E`: `$0610` plus the step),
-the corkscrew's (`$81:8911`: `$0600-$060F`), the turn's (`$82:A461`: `$0620` plus the reflection pose
-table word, 0 to `$01F0`, plus a step of 1-15, so `$0621` and up), the spin's (`$82:9630`: `$09A0` and
-up), the per-rider loads (`$82:8AA3`, `$82:8FAB`) and clears (`$81:85CD`, `$81:86CA`, `$81:8888`,
-`$82:9556`, `$82:96E7`, `$82:A49B`). So a loop pose comes only from a loop step, and every loop
-step stores the cooldown `$0359,Y` = 3 (`$81:849D`). The step returns to 0 only on step 16
-(`$81:8414` to `$81:84A5`, which leaves the cooldown) or when the cooldown has run out (`$81:861C`).
-The per-update reset before the tile dispatch (`$81:85B9-85CD`, R-0107's ordering) counts the cooldown
-down and clears `$0F59` when it reaches 1. Step 16 comes at least one reset after the last refresh,
-so the next update's reset takes the cooldown to 1 or below and clears the pose before the strip is
-tested at step 0; and the cooldown cannot run out without passing 1. Native's `update_loop_tile` and
-`update_loop_cooldown` read the same way and never saw the arm in 56,467 entries [N].
+unless the pose override `$0F59` is 0 or inside `$0610-$061F` (`$81:8397-83A6`). `$0F59` is the
+current rider's working copy; each rider's pose lives in `$0DEF` (rider 0) and `$0DF1` (rider 1),
+loaded into `$0F59` before the rider's update (`$82:8AA0-8AA3`, `$82:8FA8-8FAB`) and stored back after
+it (`$82:8DA9`, `$82:9297`). The writers of `$0F59` are the loop's own (`$81:83D0`, `$81:83F8`:
+`$0610`; `$81:841E`: `$0610` plus the step), the corkscrew's (`$81:8911`: `$0600-$060F`), the turn's
+(`$82:A461`: `$0620` plus the reflection pose table word, 0 to `$01F0`, plus a step of 1-15, so `$0621`
+and up), the spin's (`$82:9630`: `$09A0` and up) and the clears (`$81:85CD`, `$81:86CA`, `$81:8888`,
+`$82:9556`, `$82:96E7`, `$82:A49B`). The saved copy has one other writer, the finish pose
+`$82:89BE` (`STA $0DEF,Y`, native's `update_opponent_finish_pose`), whose values come from the lists
+at `$17:C7C8`: all six kinds lie in `$0A45-$0AEB` (its callers `$83:EA0D` and `$83:EB9F` select kinds
+1, 3 and 5, `$0A45-$0A9C` and `$0ADC-$0AEB`), never a loop pose. The bank `$80` object tables at
+`$0DE0,X` (`$80:8DF0`, `$80:9834`, `$80:9912`), whose index could reach `$0DEF`, never run in a race:
+none of them runs in any of the five routes, menus included (review round 1). So a loop pose comes
+only from a loop step, and every loop step stores the cooldown `$0359,Y` = 3 (`$81:849D`). The step
+returns to 0 in three ways: on step 16 (`$81:8414` to `$81:84A5`, which leaves the cooldown), when the
+cooldown has run out (`$81:861C`), and by the reset's count up from a refusal (`$81:85B3-85B4`:
+`$FFFE`, `$FFFF`, 0), which skips the cooldown test and the clear. The last is harmless: a loop pose is
+written only from step 0 or a positive step (`$81:8386`, `$81:8388`), and a refusal (`$81:83A8`) only
+leaves step 0 or a negative step, so no loop pose is written while the step counts up. The per-update
+reset before the tile dispatch (`$81:85B9-85CD`; `$81:858E` runs just before the only two calls of the
+dispatch, `$82:8C3A`/`$82:8C45` and `$82:9124`/`$82:912F`) counts the cooldown down and clears `$0F59`
+on the reset that takes it to exactly 1. Step 16 comes at least one reset after the last refresh, so
+the cooldown is at most 2 on step 16's update, and the reset that takes it to 1 (on that update or the
+next) has cleared the pose before the strip is next tested at step 0; and the cooldown cannot run out
+without passing 1. Native's `update_loop_tile` and `update_loop_cooldown` read the same way, and the
+one-player native search never saw the arm in its 10,881 player entries [N, search].
 
 **`$81:83C4`/`$81:83EC` (a rider facing away from the descriptor) was not reached.** Every loop
 strip is a vertical shaft: the rider falls through it in 16-update cycles, contact suspended, so the
 selected descriptor stays the one of the cycle's first update.
-- Tried: 16,187 schedules (11,396 on tracks 15, 25 and 35, 9,000 of them with 40-300 update Left
-  holds) gave 10,881 player entries, 45,586 opponent entries and 3 refusals, none facing away; 2,000
-  perturbations of track 25 seed 782's inputs in the 75 updates before its shaft (every move, held
-  4-32 updates from every third update) gave only facing entries.
-- Why it resists [N]: track 25's first shaft (x 5248-5280) is entered from a corkscrew whose last
+- Tried, one-player and on native only (none of these schedules ran on the original, and no two-pad
+  search steered rider 1 into a shaft) [N, search]: 16,187 schedules (11,396 on tracks 15, 25 and 35,
+  9,000 of them with 40-300 update Left holds) gave 10,881 player entries and 3 refusals, none facing
+  away. The opponent's 45,586 entries are the same 12, repeated with the same count and first update
+  in every run on a track: track 15 4 entries from update 2197, track 25 6 from 1913,
+  track 35 2 from 3705. 2,000 perturbations of track 25 seed 782's inputs in the 75 updates before its
+  shaft (every move, held 4-32 updates from every third update) gave only facing entries. The search
+  is not exhaustive.
+- Why it resists [N, search]: track 25's first shaft (x 5248-5280) is entered from a corkscrew whose last
   update sets the facing and the reflection lock; the lock counts down only while surface mode is clear,
   and it is set through the fall, so the rider cannot turn before the strip. Each shaft holds a
   column of opposite-facing cells (track 25 x 5264, y 1712-1824 and x 6800, y 2944-3056; track 15
@@ -123,7 +141,8 @@ selected descriptor stays the one of the cycle's first update.
 ## Results
 
 Main `788efdaf`'s binaries (the candidate's are the same: no native change), pack v41. All seven
-`checks.list` lines pass; `mutants.txt` shows each fails on a broken native.
+`checks.list` lines pass; `mutants.txt` shows each fails on a broken native (8 mutants of this
+task's and 3 of review round 1's).
 
 | Check | Original | Native |
 | --- | --- | --- |
@@ -135,10 +154,19 @@ Main `788efdaf`'s binaries (the candidate's are the same: no native change), pac
 | vs-hill-rider1, race rows (`stunt/race_compare2p.py`) | 2,792 updates (1982-4773) | 2,792/2,792 rows, trailer and rider 1's tallies |
 | t34-seed155 (`check_race.sh`) | 604 rows, 602 pictures | 604/604, 602/602 |
 
+The manifests' `regeneration_command` was corrected in review round 1; the hashes the coverage
+captures and the stunt probe recorded are those in `manifests/sha256-before-review-1.txt` (no input
+changed).
+
 **Coverage** (`coverage_captures.sh`): the five two-pad routes, each `status=passed`, merged into
 `coverage/merged.json` and tracked as `docs/map/race-branch-remainder.map.json`, the static map's
-seventh coverage input. t34-seed155 adds no byte: `$81:84B7` (a branch) was already observed, and
-the coverage counts instructions, not branch outcomes. What the seventh input moves from inferred
+seventh coverage input. t34-seed155 adds no byte (`$81:84B7` was already observed), but the raw
+coverage records each executed instruction with the one that follows it, so it shows branch outcomes:
+review round 1's coverage capture of t34-seed155's cold-start timeline (`review-1/t34-seed155.json`,
+`review-1/cov-t34-seed155/coverage.json`, `status=passed`, no preload) takes `$81:84B7 -> $81:84EB`
+twice (updates 1915-1916) and falls through to `$81:84B9` 47 times; no earlier coverage input holds the
+taken pair (race-listing-branches' 72 and the five routes' 234 all fall through). It is kept as
+evidence, not added as a static-map input. What the seventh input moves from inferred
 to observed [L] (`listing-after/`, the listing with seven inputs):
 - every branch this task names but the loop's two: `$81:C3EA-C3F0`, `$81:D907-D933`, `$81:D9E8-DA4C`,
   `$81:DAC4`, `$81:DACE-DAE1`, `$81:DB75-DB9C`, `$81:DBB5-DBCA`, `$81:DC8D`, `$81:DC92-DCCA` and

@@ -19401,16 +19401,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 2403,
+  "cited_addresses": 2418,
   "cited_by_class": {
    "data": 15,
    "inferred": 101,
-   "observed": 2082,
+   "observed": 2097,
    "unknown": 205
   },
   "cited_by_position": {
    "dat": 15,
-   "loc": 1680,
+   "loc": 1695,
    "mid": 31,
    "sub": 472,
    "unk": 205
