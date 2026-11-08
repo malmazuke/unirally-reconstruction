@@ -198,7 +198,6 @@ From the worktree (`local/` linked; app-debug and lab-release built), each throu
   write it ...)` at the first write, a frame after power-on); a damaged one (not 8,192 bytes) is
   refused and kept as it is, its message naming `--no-save-file` and `--save-file PATH`.
   **Decision:** a `--save-file PATH` the player named that cannot be used stays an error.
-
 - The app's outputs are compared with `front_end_runner`'s, which is compared with the original by
   the gates (DEMO-AUDIO's schedules, AUDIO-ONE-PLAYER, TWO-HUMAN-STUNTS-AUDIO). The app's PCM is the
   anchored producer's, measured, not exact (D-0010), and out of scope.
