@@ -188,8 +188,9 @@ std::uint16_t snes_pad_word(std::uint16_t mask) {
 FrontEndSession::FrontEndSession(const ClassicContentPack &pack,
                                  const std::optional<CartridgeImage> &cartridge)
     : content_(front_end_content(pack)) {
-  if (cartridge)
-    insert_cartridge(state_, *cartridge);
+  // Without a save, the cartridge RAM power-on finds (all `$FF`), as the
+  // runner's (R-0111).
+  insert_cartridge(state_, cartridge ? *cartridge : power_on_cartridge());
 }
 
 CartridgeImage FrontEndSession::cartridge() const {

@@ -158,6 +158,7 @@ void choose_next_track(FrontEndState& state, const FrontEndContent& content) {
         track = static_cast<std::uint8_t>(track + 1 >= tracks ? 0 : track + 1);
         play_menu_sound(state, MenuSound::select);
         state.tour_menu.tour = static_cast<std::uint8_t>(track / tracks_per_tour); // $83:99A8
+        store_track_words(state, content);                                         // $80:AEB0
     } while (!tour_open(state, content, state.tour_menu.tour));
 }
 
@@ -234,11 +235,11 @@ void local_continue_frame(FrontEndState& state, const FrontEndContent& content, 
     switch (state.menu.selection) {
     case 0: // NEXT TRACK
         choose_next_track(state, content);
-        enter_now_playing(state);
+        enter_now_playing(state, content);
         state.continuation_back = FrontEndScreen::now_playing;
         return;
     case 1: // SAME TRACK
-        enter_now_playing(state);
+        enter_now_playing(state, content);
         state.continuation_back = FrontEndScreen::now_playing;
         return;
     case 2:                   // SELECT TRACK
@@ -354,7 +355,7 @@ void vs_rematch_frame(FrontEndState& state, const FrontEndContent& content, Fron
     }
     high_bits(state, 32) = four_hidden;
     high_bits(state, 28) = static_cast<std::uint8_t>((high_bits(state, 28) & 0x0fU) | 0x50U);
-    enter_now_playing(state);
+    enter_now_playing(state, content);
 }
 
 } // namespace unirally::front_end_screens

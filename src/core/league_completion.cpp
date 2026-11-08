@@ -146,6 +146,12 @@ void podium_music_pass(FrontEndState& state) {
 
 void enter_league_podium(FrontEndState& state) {
     state.records.league_cycle_complete = false;
+    // $80:BE8A-BEB1: the podium's three riders, the slot's first three places, in `$77:074D-074F`
+    // (a third past the riders as 0xFF; R-0111).
+    const auto& places = state.records.league_pairings.at(state.league.slot);
+    state.cartridge.at(0x074d) = places[0];
+    state.cartridge.at(0x074e) = places[1];
+    state.cartridge.at(0x074f) = places[2] < someone ? places[2] : std::uint8_t{0xff};
     state.league.podium_poses = {0x0a45, 0x0a4d, 0x0a55};
     state.league.podium_phase = 0;
     state.league.podium_music_passes = 0;
@@ -165,6 +171,7 @@ void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& cont
         constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;
         state.sound_cues.push_back(audio_enqueue(music_fade, race_fade_rate));
         state.sound_cues.push_back(audio_dispatch(AudioDispatchSite::race_choice));
+        store_race_words(state, content, state.rider_menu.rider, state.now_playing.opponent);
         state.saved = {state.menu,        state.cycle,       state.logo.offset, state.slide,
                        state.decorations, state.latches,     state.rider_menu,  state.tour_menu,
                        state.track_menu,  state.now_playing, state.printer,     state.arrow.spin};

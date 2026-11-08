@@ -909,7 +909,12 @@
     "src/core/demo_sound.cpp:demo_session_frame",
     "src/core/demo_sound.cpp:demo_title_sounds",
     "src/core/front_end.cpp:choose_idle_demo",
+    "src/core/front_end.cpp:demo_return_frame",
+    "src/core/front_end.cpp:set_up_demo_race",
+    "src/core/front_end.hpp:FrontEndState::demo_option_byte",
     "src/core/front_end.hpp:OnePlayerRecords::demo_track",
+    "src/core/front_end_screens.hpp:store_race_setup",
+    "src/core/front_end_screens.hpp:store_saved_mode",
     "src/core/presentation.cpp:render_classic_race",
     "src/core/title_menu_audio_content.cpp:load_demo_set",
     "src/core/track_records.cpp:show_selected_records"
@@ -1336,6 +1341,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end_screens.hpp:store_race_words"
+   ],
    "observed_entries": {},
    "start": "$80:999F",
    "static_entries": {
@@ -1359,9 +1367,12 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/front_end.cpp:demo_title_frame",
+    "src/core/front_end.cpp:set_up_demo_race",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
     "src/core/front_end.hpp:return_from_race",
+    "src/core/front_end_screens.hpp:store_race_setup",
     "src/core/league_completion.cpp:league_podium_entry_frame",
     "src/core/now_playing.cpp:race_fade_frame",
     "src/core/race_result.cpp:(file)",
@@ -1369,6 +1380,8 @@
     "src/core/race_result.cpp:local_race_scenario",
     "src/core/race_result.cpp:one_player_race_scenario",
     "src/core/race_result.cpp:restore_menus_after_race",
+    "src/core/race_result.cpp:store_race_setup",
+    "src/core/race_result.cpp:store_race_words",
     "src/core/race_setup.cpp:classic_race_start",
     "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/zoom_zoo_movement.hpp:StuntEvent::qualifying_score"
@@ -1648,8 +1661,10 @@
     "src/core/front_end.cpp:boot_frame",
     "src/core/front_end.cpp:boot_frame_number",
     "src/core/front_end.cpp:clear_oam_buffer",
+    "src/core/front_end.cpp:demo_return_frame",
     "src/core/front_end.cpp:early_objects, early_palette",
     "src/core/front_end.cpp:set_early_registers",
+    "src/core/front_end.hpp:FrontEndState::demo_option_byte",
     "src/core/front_end_screens.hpp:clear_oam_buffer",
     "src/core/front_end_screens.hpp:set_early_registers",
     "src/core/league_completion.cpp:league_podium_exit_frame",
@@ -1967,9 +1982,11 @@
     "src/core/audio_cpu_text.cpp:native_audio_begin_menu_text",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:copy_menu_text",
+    "src/core/front_end.cpp:demo_return_frame",
     "src/core/front_end.cpp:start_main_menu",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end_screens.hpp:print_main_menu",
+    "src/core/front_end_screens.hpp:store_saved_mode",
     "src/core/now_playing.cpp:now_playing_frame",
     "src/core/rider_menu.cpp:(file)"
    ],
@@ -3018,7 +3035,6 @@
     "NmX"
    ],
    "native": [
-    "src/core/cartridge_ram.cpp:cartridge_image",
     "src/core/front_end.cpp:cold_start_records",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
@@ -3029,6 +3045,8 @@
     "src/core/front_end_screens.hpp:enter_tour_menu",
     "src/core/front_end_screens.hpp:enter_track_menu",
     "src/core/front_end_screens.hpp:return_to_tour_menu",
+    "src/core/front_end_screens.hpp:store_saved_mode",
+    "src/core/front_end_screens.hpp:store_tour_medal",
     "src/core/now_playing.cpp:note_option_bits",
     "src/core/now_playing.cpp:now_playing_frame",
     "src/core/race_result.cpp:race_restart_frame",
@@ -3037,6 +3055,7 @@
     "src/core/rider_menu.cpp:pick_plays_select",
     "src/core/rider_menu.cpp:rider_menu_exit_frame",
     "src/core/rider_menu.cpp:rider_menu_frame",
+    "src/core/rider_menu.cpp:take_rider_pick",
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:tour_menu_frame",
@@ -4115,6 +4134,7 @@
     "src/core/records_scores.cpp:player_scores_leaving",
     "src/core/rider_menu.cpp:pick_plays_select",
     "src/core/rider_menu.cpp:rider_menu_frame",
+    "src/core/rider_menu.cpp:take_rider_pick",
     "src/core/track_records.cpp:leave_grid"
    ],
    "observed_entries": {},
@@ -4438,6 +4458,7 @@
     "src/core/front_end.hpp:TourMenu::returning",
     "src/core/front_end.hpp:TourMenu::slides_back",
     "src/core/front_end_screens.hpp:return_to_tour_menu",
+    "src/core/front_end_screens.hpp:store_tour_medal",
     "src/core/league_completion.cpp:league_continue_frame",
     "src/core/league_menu.cpp:league_table_frame",
     "src/core/local_modes.cpp:local_continue_frame",
@@ -4542,6 +4563,8 @@
     "src/core/award.cpp:way_back_frame",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:TrackMenu",
+    "src/core/front_end_screens.hpp:store_marker_step",
+    "src/core/front_end_screens.hpp:store_tour_medal",
     "src/core/track_menu.cpp:(file)",
     "src/core/track_menu.cpp:choose_track",
     "src/core/track_menu.cpp:enter_track_menu",
@@ -4574,6 +4597,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:TrackMenu::medal_stepped",
+    "src/core/front_end_screens.hpp:store_tour_medal",
     "src/core/track_menu.cpp:step_medal",
     "src/core/track_menu.cpp:track_menu_frame"
    ],
@@ -4596,6 +4620,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end_screens.hpp:store_marker_step",
     "src/core/front_end_screens.hpp:turn_markers",
     "src/core/league_completion.cpp:league_continue_entry_frame",
     "src/core/local_modes.cpp:local_continue_frame",
@@ -5264,8 +5289,11 @@
     "NMX"
    ],
    "native": [
+    "src/core/cartridge_ram.cpp:store_record_byte",
+    "src/core/cartridge_ram.hpp:store_record_word",
     "src/core/league_menu.cpp:record_league_result",
     "src/core/league_menu.cpp:store_league_totals",
+    "src/core/league_menu.cpp:store_result_totals",
     "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
     "src/core/race_progress.cpp:result_fields",
     "src/core/stunt_result.cpp:after_tally_frame"
@@ -14134,6 +14162,7 @@
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:native_audio_reset_menu_selection",
     "src/core/cartridge_ram.hpp:one_player_mode",
+    "src/core/cartridge_ram.hpp:pending_reveals, pending_reveal_riders",
     "src/core/front_end.cpp:check_records",
     "src/core/front_end.cpp:soft_reset",
     "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today"
@@ -14558,6 +14587,7 @@
     "src/core/audio_cpu_menu_defaults.cpp:write_record_checksums",
     "src/core/cartridge_ram.cpp:cartridge_image",
     "src/core/cartridge_ram.cpp:checksum",
+    "src/core/cartridge_ram.cpp:store_records_checksum",
     "src/core/front_end.hpp:OnePlayerRecords::statistics",
     "src/core/front_end.hpp:RaceResult::records_placed",
     "src/core/front_end_screens.hpp:champions_overrun_frames",
@@ -14582,6 +14612,9 @@
    "mode_at_entry": [
     "NMX",
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::league_members_checksum"
    ],
    "observed_entries": {},
    "start": "$83:90F8",
@@ -15411,6 +15444,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/league_menu.cpp:choose_league_pair",
     "src/core/league_menu.cpp:choose_league_slot",
     "src/core/menu_overruns.cpp:percentage_clocks"
    ],
@@ -15492,6 +15526,7 @@
    ],
    "native": [
     "src/core/front_end.cpp:wipe_cartridge",
+    "src/core/front_end_screens.hpp:store_track_words",
     "src/core/local_modes.cpp:choose_next_track",
     "src/core/menu_overruns.cpp:percentage_clocks",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::stunt_event"
@@ -15982,6 +16017,9 @@
    "end": "$83:9F95",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
    ],
    "observed_entries": {},
    "start": "$83:9F81",
@@ -17211,10 +17249,12 @@
     "src/core/credits_name.cpp:enter_credits_picture",
     "src/core/front_end.cpp:choose_idle_demo",
     "src/core/front_end.cpp:demo_title_frame",
+    "src/core/front_end.cpp:set_up_demo_race",
     "src/core/front_end.hpp:OnePlayerRecords::demo_split",
     "src/core/front_end.hpp:OnePlayerRecords::hunter_races",
     "src/core/front_end.hpp:return_from_race",
     "src/core/front_end_screens.hpp:clear_hunter_races",
+    "src/core/front_end_screens.hpp:store_demo_race_setup",
     "src/core/race_result.cpp:(file)"
    ],
    "observed_entries": {},
@@ -17239,8 +17279,10 @@
     "src/core/credits_name.cpp:restart_total",
     "src/core/front_end.cpp:demo_title_frame",
     "src/core/front_end.cpp:idle_demo_loading_frames",
+    "src/core/front_end.cpp:set_up_demo_race",
     "src/core/front_end.hpp:LeagueSetup::podium_music_passes",
     "src/core/front_end.hpp:choose_race_song",
+    "src/core/front_end.hpp:update_race_loading",
     "src/core/front_end_runner.cpp:start_race",
     "src/core/now_playing.cpp:race_fade_frame",
     "src/core/race_result.cpp:choose_race_song",
@@ -17582,7 +17624,8 @@
    ],
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
-    "src/core/race_result.cpp:start_race_return",
+    "src/core/front_end.hpp:update_race_loading",
+    "src/core/race_result.cpp:set_tutorial_bits",
     "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/reward_queue.cpp:hint_interval",
     "src/core/reward_queue.cpp:update_player_tutorial_hints",
@@ -17630,7 +17673,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_result.cpp:start_race_return",
+    "src/core/front_end.hpp:update_race_loading",
+    "src/core/race_result.cpp:set_tutorial_bits",
     "src/core/race_setup.cpp:restart_zoom_zoo"
    ],
    "observed_entries": {},
@@ -19539,18 +19583,18 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2489,
+  "cited_addresses": 2538,
   "cited_by_class": {
    "data": 12,
    "inferred": 45,
-   "observed": 2205,
+   "observed": 2254,
    "unknown": 227
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1731,
+   "loc": 1777,
    "mid": 31,
-   "sub": 488,
+   "sub": 491,
    "unk": 227
   },
   "conflicts": 0,
@@ -19570,9 +19614,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 94637,
-  "routine_bytes_cited_by_native_code": 74178,
+  "routine_bytes_cited_by_native_code": 74416,
   "routines": 762,
-  "routines_cited_by_native_code": 584,
+  "routines_cited_by_native_code": 587,
   "unknown": 31054,
   "unknown_share": 0.2369
  }

@@ -730,7 +730,7 @@ void rename_commit_frame(FrontEndState& state, const FrontEndContent& content) {
         const auto first = static_cast<std::size_t>(state.league.slot) * 32U;
         std::copy(state.keyboard.scratch.begin(), state.keyboard.scratch.end(),
                   state.records.league_names.begin() + first);
-        state.records.active_league_members = state.league.members;
+        state.records.league_members_checksum = state.league.members;
         state.records.league_naming = false;
         state.menu.selection = 0;
         high_bits(state, 123) |= hidden_bit(123);

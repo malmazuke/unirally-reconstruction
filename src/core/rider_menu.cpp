@@ -3,6 +3,7 @@
 // loop (`$80:CBC8`), and the way out (`$80:F4E9`): a rider chosen, or Y back to the main menu
 // (`$80:BC9B`, `$80:ACD5`, `$80:E27E`). Like the boot, the steps between screens take fixed
 // frames, counted from the frame each script starts.
+#include "cartridge_ram.hpp"
 #include "front_end_screens.hpp"
 
 #include <array>
@@ -470,6 +471,48 @@ void take_second_human(FrontEndState& state) {
     state.records.second_human = true;
     if (state.mode == FrontEndMode::versus) state.records.versus_chosen = true;
 }
+
+// A rider chosen (not Y or X): the pick's fields, by mode and purpose.
+void take_rider_pick(FrontEndState& state) {
+    if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
+    if (state.rider_menu.second
+        || (state.rider_menu.challenger && state.rider_menu.challenger_for_rider_one)) {
+        state.second_rider = state.menu.selection;
+        state.now_playing.opponent = state.second_rider;
+        // $80:BD1C-BD23: 2P's second choice starts the session's wins at 0 (R-0084).
+        if (state.mode == FrontEndMode::two_player && state.rider_menu.second) {
+            state.records.player_wins = state.records.opponent_wins = 0;
+            store_saved_mode(state, SavedMode::two_player, true); // $80:BD27-BD2A
+        }
+        if (state.mode == FrontEndMode::versus && state.rider_menu.second)
+            store_saved_mode(state, SavedMode::versus, true); // $80:BFA2-BFA5
+        if (state.rider_menu.second) take_second_human(state);
+    } else if (state.rider_menu.challenger) {
+        state.rider_menu.rider = state.menu.selection; // $80:C0C0-C0C2 into `$017D`
+    } else if (state.rider_menu.purpose != RiderMenuPurpose::normal) {
+        state.options_rider = state.menu.selection; // $80:C139, $80:D457
+    } else {
+        state.rider_menu.rider = state.menu.selection;
+        state.now_playing.opponent = someone; // $80:BBC3
+        if (state.mode == FrontEndMode::one_player) {
+            state.options_rider = state.menu.selection; // $80:BBBE-BBC1, R-0097
+            state.records.second_human = false;         // $80:BBC8-BBCE
+            // $80:BBD6-BBE5: a new run, no track done, three tries (R-0057).
+            state.records.tracks_done.fill(0);
+            state.records.tries = 3;
+        }
+    }
+    // $80:BBD2 (1P), $80:BD16 (2P's second), $80:BF9C (VS's second), $80:C0C9-C0D3 (VS's
+    // challenger): the pick copies `$77:0742`'s low byte to `$0750`, which the race's setup
+    // rewrites before any reader (R-0105, R-0111).
+    const bool one_player_pick = state.mode == FrontEndMode::one_player
+                              && state.rider_menu.purpose == RiderMenuPurpose::normal;
+    const bool second_pick =
+        state.rider_menu.second
+        && (state.mode == FrontEndMode::two_player || state.mode == FrontEndMode::versus);
+    if (one_player_pick || second_pick || state.rider_menu.challenger)
+        store_race_mode_from_option_byte(state);
+}
 } // namespace
 
 void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
@@ -516,38 +559,16 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         return;
     }
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
-    state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
+    if (state.mode == FrontEndMode::one_player
+        && state.rider_menu.purpose == RiderMenuPurpose::normal)
+        store_saved_mode(state, state.rider_menu.back ? SavedMode::none : SavedMode::one_player,
+                         !state.rider_menu.back);
     if (pick_plays_select(state)) play_menu_sound(state, MenuSound::select);
     // $80:C139-C13B, $80:D457-D459: an OPTIONS picker stores `$009B` in `$00CA` for Y too, bit 7
     // set (PLAYER SCORES masks it, R-0097).
     if (state.rider_menu.back && state.rider_menu.purpose != RiderMenuPurpose::normal)
         state.options_rider = state.menu.selection;
-    if (!state.rider_menu.back) {
-        if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
-        if (state.rider_menu.second
-            || (state.rider_menu.challenger && state.rider_menu.challenger_for_rider_one)) {
-            state.second_rider = state.menu.selection;
-            state.now_playing.opponent = state.second_rider;
-            // $80:BD1C-BD23: 2P's second choice starts the session's wins at 0 (R-0084).
-            if (state.mode == FrontEndMode::two_player && state.rider_menu.second)
-                state.records.player_wins = state.records.opponent_wins = 0;
-            if (state.rider_menu.second) take_second_human(state);
-        } else if (state.rider_menu.challenger) {
-            state.rider_menu.rider = state.menu.selection; // $80:C0C0-C0C2 into `$017D`
-        } else if (state.rider_menu.purpose != RiderMenuPurpose::normal) {
-            state.options_rider = state.menu.selection; // $80:C139, $80:D457
-        } else {
-            state.rider_menu.rider = state.menu.selection;
-            state.now_playing.opponent = someone; // $80:BBC3
-            if (state.mode == FrontEndMode::one_player) {
-                state.options_rider = state.menu.selection; // $80:BBBE-BBC1, R-0097
-                state.records.second_human = false;         // $80:BBC8-BBCE
-                // $80:BBD6-BBE5: a new run, no track done, three tries (R-0057).
-                state.records.tracks_done.fill(0);
-                state.records.tries = 3;
-            }
-        }
-    }
+    if (!state.rider_menu.back) take_rider_pick(state);
     state.line_colours.clear();
     state.screen = FrontEndScreen::rider_menu_exit;
 }

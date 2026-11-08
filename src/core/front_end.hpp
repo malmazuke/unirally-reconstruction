@@ -305,7 +305,9 @@ struct OnePlayerRecords {
     std::array<std::uint8_t, 352> rider_names{};
     std::array<std::uint8_t, 192> league_names{};  // $77:016E, six 32-byte names
     std::array<std::uint16_t, 6> league_members{}; // $77:02B2, rider bit per slot
-    std::uint16_t active_league_members{};         // $77:02BE, last saved league
+    // $77:02BE: the members words' checksum (`$83:9157-916A`); no reader (R-0111). Native stores
+    // the edited slot's members there, the sum only while the other slots are empty.
+    std::uint16_t league_members_checksum{};
     // $77:02C0 + 32 * slot + 4 * row + 2: eight league score words per slot.
     // $77:02C0 + 32 * slot + 4 * row: played counters; scratch sorting indices are separate.
     std::array<std::array<std::uint16_t, 8>, 6> league_played{};
@@ -728,6 +730,10 @@ struct FrontEndState {
     bool one_player{};          // $77:10AD = 1: 1P from a rider's choice to the main menu's return
     std::uint8_t demo_cycles{}; // completed idle races since power-on (ATTRACT-DEMO)
     bool demo_split_race{};     // the idle demo now loading or running is a split race ($0DE1)
+    // `$77:0742`'s low byte while the idle demo's race holds it (R-0105, R-0111): 0x0A from the
+    // setup (`$80:94BC-94C3`), bit 1 cleared on the return's first frame (`$80:A09A`), the
+    // menus' bits back on its frame 105 (`$80:94CB`). The image shows it over the fields.
+    std::optional<std::uint8_t> demo_option_byte;
     // After a timer exit from the demo races on tracks 20, 24 and 36 the menu's return holds its
     // frame 100 one picture longer (R-0087, measured on two cold laps).
     bool demo_return_held{};
@@ -813,6 +819,14 @@ std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const Control
 std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& first,
                                                const ControllerButtons& second,
                                                const ZoomZooContent& content);
+
+// The cartridge RAM a race from the menus writes while it loads and runs (R-0111), so a save
+// taken during it holds what the original's does. `update_race_loading` on each frame from the
+// choice to the race's first update: the song counter on the race's sound load (`$83:CA08`).
+// `update_race_cartridge` after each race update: its increments past rider 1's tallies (R-0098)
+// and the tutorial bits as the hints end (`$83:CE2C`, `$83:CEB1-CEC5`).
+void update_race_loading(FrontEndState& state, std::uint32_t frame);
+void update_race_cartridge(FrontEndState& state, const ZoomZooState& race);
 
 // The race returns on `frame` (its result load begins, R-0049): the front end resumes with that
 // frame's work, the original's `$80:99A4` after `$83:C8E0`.

@@ -261,6 +261,11 @@ them since closed and 6 partly [R]. What stays open, by system:
 - **The saved image's last bytes**: `$074C-074F`, `$10AD`'s other values, `$10A7`'s write-back,
   `$0750`'s race words, `$10B1`'s and `$1115-1117`'s write timing, a save taken during a race
   (R-0090, R-0095, R-0100, R-0105).
+  Since [R-0111](R-0111-save-image-exact.md) (SAVE-IMAGE-EXACT): measured at every write frame of
+  the corpus and these written as the original writes them, but the outcome is met only in part:
+  outside the bytes no later boot reads, 14,380 write frames on 207 of 916 routes still differ,
+  mostly timing shifts; the rest, which has no cannot-matter argument yet, is queued as
+  [SAVE-IMAGE-REMAINDER](../../tasks/SAVE-IMAGE-REMAINDER.md).
 - **Never-captured branches**: the stunt score of 1000, track 13's cell past its flag table, the
   loop descriptor facing away, the never-captured sounds (corkscrew ejection, the 9:5x warning,
   the cheat page reveal, the slow checkpoint, BRONSEN's praise), 2P/VS menus on the locked tours'

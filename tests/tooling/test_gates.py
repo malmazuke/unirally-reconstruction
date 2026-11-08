@@ -211,6 +211,19 @@ class Corpus(unittest.TestCase):
             self.assertEqual(cur['pack']['path'], pin['pack']['path'])
             self.assertNotEqual(cur['key'], pin['key'])
 
+    def test_a_cartridge_trace_is_an_output(self):
+        # SAVE-IMAGE-EXACT's `--cartridge-trace OUT.txt` (R-0111): recorded without its output, so
+        # replay leaves it out and reads the cartridge RAM through its `R` digests.
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / 'pack').write_bytes(b'p')
+            traced = corpus.normalize(['--content-pack', 'pack', '--frames', '9', '--cartridge-trace', 'out.txt'],
+                                      Path(d), None)
+            plain = corpus.normalize(['--content-pack', 'pack', '--frames', '9'], Path(d), None)
+            self.assertEqual(traced['inputs'], ['--frames', '9'])
+            self.assertEqual(traced['outputs'], ['--cartridge-trace'])
+            self.assertEqual(traced['key'], plain['key'])
+            self.assertEqual(corpus.reads({'--cartridge-trace'}), {'stdout', 'stderr', 'records'})
+
     def test_an_unknown_option_is_refused(self):
         with tempfile.TemporaryDirectory() as d:
             (Path(d) / 'pack').write_bytes(b'p')
