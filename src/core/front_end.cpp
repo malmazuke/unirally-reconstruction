@@ -333,9 +333,9 @@ void check_records(FrontEndState& state, const FrontEndContent& content) {
         wipe_cartridge(state, content);
     }
     state.records.versus_today.fill(0);
-    state.one_player = false;
-    state.cartridge[one_player_mode] = state.cartridge[one_player_mode + 1] = 0; // `$83:8B3B`
+    store_saved_mode(state, SavedMode::none, true); // `$83:8B3B`
     state.records.pending_reveal = 0;
+    std::fill_n(state.cartridge.begin() + pending_reveals, pending_reveal_riders, std::uint8_t{0});
 }
 
 } // namespace
@@ -806,7 +806,7 @@ void reload_menu_text_tiles(FrontEndState& state, const FrontEndContent& content
 
 void start_main_menu(FrontEndState& state) {
     state.screen = FrontEndScreen::main_menu;
-    state.one_player = false;     // $80:AD18
+    store_saved_mode(state, SavedMode::none, false); // $80:AD18-AD1A
     gate_pads(state, true, true); // $80:ABC8
     state.continuation_back = FrontEndScreen::boot;
     state.menu.selection = 0;
@@ -1034,7 +1034,7 @@ namespace {
 // (saved by `$83:9894` as `$77:0F34`), modulo 16. A split race's opponent is the track less
 // both, or 13 more when that is the rider; a one-view race keeps the mode's opponent 1
 // (`$80:9491`).
-void choose_idle_demo(FrontEndState& state) {
+void choose_idle_demo(FrontEndState& state, const FrontEndContent& content) {
     constexpr unsigned demo_tracks = 40, stunt_place = 2, riders = 16;
     auto& records = state.records;
     // `$80:949C-94A7`: one more, and 0 from 40 up (`CMP #$28`, `BCC`), not a modulo.
@@ -1045,12 +1045,14 @@ void choose_idle_demo(FrontEndState& state) {
     // `$83:C8EF-C8FB` and `$83:C91C-C92A` store a counter outside its range back as 0.
     if (records.race_song_counter >= race_song_count) records.race_song_counter = 0;
     const unsigned counter = records.race_song_counter;
-    if (records.demo_split > 1) records.demo_split = 0;
-    records.demo_split = static_cast<std::uint8_t>(1U - records.demo_split);
+    // The race's setup stores the flipped `$77:1115` eight frames on (demo_title_frame).
+    const bool split = records.demo_split != 1;
     const unsigned track = records.demo_track;
     const unsigned phase = static_cast<std::uint8_t>(state.cycle.phase);
     state.tour_menu.track = records.demo_track;
-    state.demo_split_race = records.demo_split != 0;
+    store_saved_mode(state, SavedMode::demo, false); // $80:9496-9498
+    store_track_words(state, content);               // $80:94AD
+    state.demo_split_race = split;
     state.rider_menu.rider = static_cast<std::uint8_t>((track + counter + phase) % riders);
     state.now_playing.opponent = 1;
     if (state.demo_split_race) {
@@ -1118,7 +1120,14 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
     }
     // The race's setup (`$83:C8E0`) after the fade: the demo's clears `$77:111A-111B`
     // (`$83:C914`), then tests the first rider's name (`$83:FB8A`, R-0094).
+    // `$83:C8E0` runs on the frame after the setup's `$80:99A4` (`$83:C912-C994`, R-0111).
+    if (frame == setup_frame + 1U) store_demo_race_setup(state);
     if (frame == setup_frame) {
+        // $80:94BC-94C7: the race's option byte 0x0A (the logo's bit and two views) while
+        // `$80:99A4` sets the race up with `$017D` 3 and `$017F` 1.
+        constexpr std::uint8_t demo_race_option_byte = 0x0a, demo_rider = 3, demo_second = 1;
+        state.demo_option_byte = demo_race_option_byte;
+        store_race_setup(state, content, demo_rider, demo_second);
         clear_hunter_races(state);
         if (credits_named(state, content)) {
             enter_credits_picture(state);
@@ -1129,7 +1138,7 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
     // The race setup chooses the demo on the frame it writes the track (`$77:074A`), and the race
     // starts when the track has loaded (R-0087).
     constexpr unsigned choice_frame = 451;
-    if (frame == choice_frame) choose_idle_demo(state);
+    if (frame == choice_frame) choose_idle_demo(state, content);
     const ClassicRaceTrack track{state.tour_menu.track};
     const auto race_frame = choice_frame + idle_demo_loading_frames(track);
     // With no sound session to drop it, the race's start cue plays (R-0096).
@@ -1169,6 +1178,14 @@ void demo_return_frame(FrontEndState& state, const FrontEndContent& content) {
             !state.demo_return_interrupted && state.demo_cycles > 1 && !state.demo_title_was_short;
     }
     if (frame == 102) state.arrow.spin = 4;
+    // The race's option byte (`state.demo_option_byte`): the logo's bit cleared on the return's
+    // first frame (`$80:A09A`), the menus' byte back on frame 105 (`$80:94CB`).
+    constexpr std::uint8_t logo_bit = 0x02;
+    if (frame == 1 && state.demo_option_byte)
+        state.demo_option_byte = static_cast<std::uint8_t>(*state.demo_option_byte & ~logo_bit);
+    if (frame == 105) state.demo_option_byte.reset();
+    // $80:AD18-AD1A clears the mode before the menu's fade (R-0111), and start_main_menu again.
+    if (frame == 108) store_saved_mode(state, SavedMode::none, false);
     if (within(frame, 109, fade_frames)) fade(state, frame, 109, true);
     if (frame == 118) {
         state.demo_title_was_short = state.demo_title_held = false;
@@ -1225,7 +1242,7 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::race_result: race_result_frame(state, content, physical); break;
     case FrontEndScreen::race_result_exit: race_result_exit_frame(state, content, physical); break;
     case FrontEndScreen::tour_award: tour_award_frame(state, content, physical); break;
-    case FrontEndScreen::race_restart: race_restart_frame(state); break;
+    case FrontEndScreen::race_restart: race_restart_frame(state, content); break;
     case FrontEndScreen::award_return: award_return_frame(state, content); break;
     case FrontEndScreen::tour_ending: tour_ending_frame(state, content); break;
     case FrontEndScreen::hunter_ending: hunter_ending_frame(state, content, physical); break;

@@ -285,7 +285,8 @@ void move_now_playing_arrow(FrontEndState& state, std::uint16_t pad) {
 
 } // namespace
 
-void enter_now_playing(FrontEndState& state) {
+void enter_now_playing(FrontEndState& state, const FrontEndContent& content) {
+    store_track_words(state, content); // $80:B18D
     state.now_playing.choice = NowPlayingChoice::none;
     state.now_playing.pushed_rider_word = state.options_rider; // $80:B194-B196
     state.screen = FrontEndScreen::now_playing_entry;
@@ -382,6 +383,7 @@ void race_fade_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame < fade_frames) return;
     state.registers.force_blank = true;
     state.options_rider = state.rider_menu.rider; // $80:99E8-99EB, before the menus are saved
+    store_race_setup(state, content, state.rider_menu.rider, state.now_playing.opponent);
     // $80:99B7-99BE: the race fades the menu music (rate -112 * 8) and sends it at once. Its
     // exception, `$77:10AD` = 5, is never set from NOW PLAYING.
     constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;

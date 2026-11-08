@@ -76,7 +76,6 @@ void transfer_records(Codec& at, OnePlayerRecords& records) {
         at.byte(0x10d3 + k, records.tour_levels[k]);
     for (std::size_t k = 0; k < records.levels_before_cheat.size(); ++k)
         at.byte(0x10e3 + k, records.levels_before_cheat[k]);
-    at.byte(0x10fd, records.pending_reveal);
     at.byte(0x1115, records.demo_split);
     at.word(0x1116, records.tutorial_bits);
     at.byte(0x111a, records.hunter_races);
@@ -95,7 +94,11 @@ struct Store {
         value = static_cast<std::uint16_t>(set ? value | mask : value & ~mask);
         word(at, value);
     }
-    void flag(std::size_t at, bool set) { byte(at, set ? 1 : 0); }
+    // A flag native keeps as a bool: a byte that already reads as the flag stays as it is (an
+    // image's `$FF` before the boot's check), else 1 or 0.
+    void flag(std::size_t at, bool set) {
+        if ((image.at(at) != 0) != set) byte(at, set ? 1 : 0);
+    }
 };
 
 struct Load {
@@ -147,6 +150,17 @@ std::uint16_t checksum(const CartridgeImage& image, std::size_t first, std::size
                                          + (image.at(first + 2 * k + 1) << 8U));
     return sum;
 }
+
+// A records checksum (`$83:90F4`) at `at`, rewritten only when its records differ from `kept`'s.
+void store_records_checksum(CartridgeImage& image, const CartridgeImage& kept, std::size_t first,
+                            std::size_t words, std::size_t at) {
+    const auto summed = std::span(image).subspan(first, 2 * words);
+    if (std::equal(summed.begin(), summed.end(), kept.begin() + static_cast<std::ptrdiff_t>(first)))
+        return;
+    const auto sum = checksum(image, first, words);
+    image.at(at) = static_cast<std::uint8_t>(sum);
+    image.at(at + 1) = static_cast<std::uint8_t>(sum >> 8U);
+}
 } // namespace
 
 CartridgeImage cartridge_image(const FrontEndState& state) {
@@ -154,11 +168,25 @@ CartridgeImage cartridge_image(const FrontEndState& state) {
     auto records = state.records;
     Store store{image};
     transfer_records(store, records);
-    // The names' checksums, which the original rewrites with the names (`$83:90F4`); `$83:89EF`
-    // reads the riders'. Its other checksums (`$02B0`, `$0420`, `$054E`, `$05E6`, `$073C`,
-    // `$0E69`) are not read and keep what the boot left (R-0090).
-    store.word(0x016c, checksum(image, 0x000c, 176));
-    store.word(0x022e, checksum(image, 0x016e, 96));
+    // The records' checksums (`$83:90F4`): the original rewrites them all at the end of each
+    // records update; native follows a checksum's records as they change (R-0111). While the
+    // records are as loaded or as the wipe wrote them, the checksum is too (an image's `$FF`
+    // before the boot's check). Only the riders' names' sum has a reader (`$83:89EF`, R-0090).
+    // `$02BE` is the league members' sum, which native keeps as a field. The personal bests'
+    // (`$0E69`) keeps what the boot left: the race's increments (R-0098) change the bests long
+    // before the original's next update sums them.
+    struct ChecksumGroup {
+        std::size_t first, words, at;
+    };
+    constexpr std::array<ChecksumGroup, 7> checksum_groups{{{0x000c, 176, 0x016c},
+                                                            {0x0230, 64, 0x02b0},
+                                                            {0x016e, 96, 0x022e},
+                                                            {0x02c0, 176, 0x0420},
+                                                            {0x0422, 150, 0x054e},
+                                                            {0x0550, 75, 0x05e6},
+                                                            {0x05e8, 170, 0x073c}}};
+    for (const auto& group : checksum_groups)
+        store_records_checksum(image, state.cartridge, group.first, group.words, group.at);
     // `$77:0742` bit 1 is the logo held up as well as the league keyboard's (`$80:F51B`,
     // `$80:F53F`, `$80:F52B`); every boot clears it (`$80:A0A5`) before the logo hook reads it.
     store.bit(0x0742, 0x0002, records.league_naming || state.logo.raised);
@@ -166,11 +194,11 @@ CartridgeImage cartridge_image(const FrontEndState& state) {
     // not read them: the main menu opens both pads (`$80:ABC8`) before any gated test (R-0105).
     store.bit(0x0742, 0x0200, state.pad_one_ignored);
     store.bit(0x0742, 0x0400, state.pad_two_ignored);
-    // `$10AD` is the mode (1 for one-player, `$80:BBEE`); native keeps only whether it is 1.
-    if (state.one_player)
-        image[one_player_mode] = 1;
-    else if (image[one_player_mode] == 1)
-        image[one_player_mode] = 0;
+    if (state.demo_option_byte) image[0x0742] = *state.demo_option_byte;
+    // `$77:10FD + $CA`: the pending reveal is kept per rider (`$83:9F8F`); native keeps the
+    // current rider's (R-0062, R-0111).
+    image.at(pending_reveals + (state.options_rider & 0x0fU)) = state.records.pending_reveal;
+    // `$10AD`, the mode, is stored in the image where the original stores it (store_saved_mode).
     return image;
 }
 
@@ -179,6 +207,12 @@ OnePlayerRecords records_from_cartridge(const CartridgeImage& image) {
     const Load load{image};
     transfer_records(load, records);
     return records;
+}
+
+CartridgeImage power_on_cartridge() {
+    CartridgeImage image;
+    image.fill(0xff);
+    return image;
 }
 
 void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image) {
@@ -191,6 +225,7 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
     // keeps these fields or wipes them (front_end.cpp's check_records).
     state.records = records_from_cartridge(state.cartridge);
     state.records.league_naming = false; // `$80:A0A5` clears `$0742` bit 1 on every boot
+    state.records.pending_reveal = state.cartridge[pending_reveals + (state.options_rider & 0x0fU)];
     const Load load_gate{state.cartridge};
     load_gate.bit(0x0742, 0x0200, state.pad_one_ignored); // the pad gate, as saved
     load_gate.bit(0x0742, 0x0400, state.pad_two_ignored);
@@ -202,6 +237,39 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
     constexpr std::uint8_t marker_steps = 14;
     if (state.cartridge[marker_step_byte] < marker_steps)
         state.track_menu.marker_step = state.cartridge[marker_step_byte];
+}
+
+void store_race_mode_from_option_byte(FrontEndState& state) {
+    constexpr std::size_t option_word = 0x0742, race_mode = 0x0750;
+    state.cartridge.at(race_mode) = cartridge_image(state).at(option_word);
+}
+
+namespace {
+// One byte of a word field: its low byte at an even distance from `first`, else its high byte.
+void store_field_byte(std::uint16_t& word, std::size_t distance, std::uint8_t byte) {
+    const unsigned shift = distance % 2 * 8U;
+    word = static_cast<std::uint16_t>((word & ~(0xffU << shift)) | unsigned{byte} << shift);
+}
+
+void store_record_byte(FrontEndState& state, std::size_t offset, std::uint8_t byte) {
+    constexpr std::size_t totals = 0x0618, bests = 0x0829;
+    auto& records = state.records;
+    const std::size_t totals_bytes = 2 * 8 * records.league_event_totals.size();
+    if (offset >= totals && offset < totals + totals_bytes) {
+        const auto index = (offset - totals) / 2;
+        store_field_byte(records.league_event_totals.at(index / 8).at(index % 8), offset - totals,
+                         byte);
+    } else if (offset >= bests && offset < bests + 2 * records.best.size()) {
+        store_field_byte(records.best.at((offset - bests) / 2), offset - bests, byte);
+    } else {
+        state.cartridge.at(offset) = byte;
+    }
+}
+} // namespace
+
+void store_record_word(FrontEndState& state, std::size_t offset, std::uint16_t value) {
+    store_record_byte(state, offset, static_cast<std::uint8_t>(value));
+    store_record_byte(state, offset + 1, static_cast<std::uint8_t>(value >> 8U));
 }
 
 void add_race_cartridge_increments(FrontEndState& state, std::span<const std::uint16_t> offsets) {

@@ -12,6 +12,8 @@ namespace unirally {
 
 // `$77:10AD`: the mode the main menu last chose; the boot clears it (`$83:8B3B`).
 inline constexpr std::size_t one_player_mode = 0x10ad;
+// `$77:10FD`: a pending tour reveal for each of the 16 riders; the boot clears them (`$83:8B41`).
+inline constexpr std::size_t pending_reveals = 0x10fd, pending_reveal_riders = 16;
 
 // The image a cold start leaves on boot frame 405: the wipe (`$83:FB41`) and the defaults
 // (`$80:8C80-8CC2`), signature first.
@@ -27,10 +29,23 @@ CartridgeImage cartridge_image(const FrontEndState& state);
 // The records' fields read from an image.
 OnePlayerRecords records_from_cartridge(const CartridgeImage& image);
 
+// The cartridge RAM a power-on without a saved image finds: every byte `$FF`, as in the reference
+// core. Inserted like a saved image, its fields read as the original reads them before the boot's
+// check wipes them (SAVE-IMAGE-EXACT, R-0111).
+CartridgeImage power_on_cartridge();
+
 // Before the first frame: the cartridge RAM the boot will find, its fields read at once, as the
 // original reads them from power-on. At the boot's check an image with the signature keeps them
 // (as after a soft reset); any other is wiped to a cold start's.
 void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image);
+
+// `$77:0750` = `$77:0742`'s low byte as the image holds it (the menus' picks, R-0105, R-0111).
+void store_race_mode_from_option_byte(FrontEndState& state);
+
+// A word the original stores at a cartridge RAM offset it computes (`$80:F88D`, R-0111): into
+// the event totals or the personal bests when it falls there, else into the bytes native keeps
+// no field for.
+void store_record_word(FrontEndState& state, std::size_t offset, std::uint16_t value);
 
 // A race update's increments of cartridge RAM bytes past rider 1's tallies
 // (`ZoomZooState::cartridge_increments`, an overrun of the original; R-0098): each adds 1 to one

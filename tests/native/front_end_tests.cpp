@@ -2376,6 +2376,92 @@ void race_cartridge_increment_tests() {
   require(refuses([&] { unirally::add_race_cartridge_increments(state, tallies); }));
 }
 
+// SAVE-IMAGE-EXACT (R-0111): the image holds what the original's cartridge RAM
+// holds at every frame it writes: power-on's $FF before the boot's check, the
+// menus' words where the original stores them, a race's words from its setup,
+// the song counter on the race's sound load and the tutorial bits as the hints
+// end.
+void save_image_exact_tests() {
+  using namespace unirally::front_end_screens;
+  // Power-on without a save: the reference core's $FF, its fields read as
+  // the original reads them; the flag keeps its $FF, every boot clears bit 1.
+  auto power_on = unirally::start_front_end();
+  unirally::insert_cartridge(power_on, unirally::power_on_cartridge());
+  const auto blank = unirally::cartridge_image(power_on);
+  require(blank[0x10d0] == 0xff && blank[0x016c] == 0xff &&
+          blank[0x0a00] == 0xff && blank[0x0742] == 0xfd &&
+          power_on.records.cheat);
+  // `$77:10AD`: the mode byte as stored, the word stores clearing `$10AE`.
+  auto state = unirally::start_front_end();
+  state.cartridge[0x10ae] = 0x77;
+  store_saved_mode(state, SavedMode::demo, false);
+  require(unirally::cartridge_image(state)[0x10ad] == 5 &&
+          state.cartridge[0x10ae] == 0x77 && !state.one_player);
+  store_saved_mode(state, SavedMode::one_player, true);
+  require(unirally::cartridge_image(state)[0x10ad] == 1 &&
+          state.cartridge[0x10ae] == 0 && state.one_player);
+  // `$83:9987`: track 23's words: its kind, place 3 and race mode 0.
+  std::vector<std::vector<std::uint8_t>> storage;
+  auto content = synthetic_content(storage);
+  storage.emplace_back(50, 0);
+  storage.back()[23] = 6;
+  content.track_types = storage.back();
+  state.tour_menu.track = 23;
+  store_track_words(state, content);
+  require(state.cartridge[0x074a] == 23 && state.cartridge[0x0744] == 6 &&
+          state.cartridge[0x0745] == 0 && state.cartridge[0x074c] == 3 &&
+          state.cartridge[0x074b] == 0);
+  // `$80:99A4`: the race's setup words.
+  state.cartridge[0x0760] = 0x12;
+  storage.emplace_back(2 * 27, 0);
+  content.qualifying_scores = storage.back();
+  store_race_setup(state, content, 4, 0x11);
+  require(state.cartridge[0x074d] == 0xff && state.cartridge[0x074e] == 0xff &&
+          state.cartridge[0x0760] == 0 && state.cartridge[0x0748] == 4 &&
+          state.cartridge[0x0749] == 0x11);
+  // `$80:F88D` outside a league: at the cursor word, whose high byte (the
+  // next slot's cursor) moves the totals 512 bytes on, into the bests.
+  state.mode = unirally::FrontEndMode::two_player;
+  state.league.slot = 0;
+  state.records.league_pair_cursor = {2, 0, 0, 0, 0, 0};
+  store_league_race_totals(state);
+  require(state.records.league_event_totals[0][2] ==
+          state.race_result.times.player_total);
+  state.records.league_pair_cursor = {0, 2, 0, 0, 0, 0};
+  state.race_result.times.player_total = 0x1234;
+  store_league_race_totals(state);
+  const auto moved = unirally::cartridge_image(state);
+  require(moved[0x0618 + 2 * 0x200] == 0x34 &&
+          moved[0x0618 + 2 * 0x200 + 1] == 0x12);
+  // The pending reveal is kept per rider (`$77:10FD + $CA`).
+  state.options_rider = 3;
+  state.records.pending_reveal = 2;
+  require(unirally::cartridge_image(state)[0x10fd + 3] == 2);
+  // The race's song counter is stored on its sound load, not at the choice.
+  state.mode = unirally::FrontEndMode::one_player;
+  state.tour_menu.track = 0;
+  state.records.race_song_counter = 1;
+  choose_race_song(state);
+  require(state.race_song == 2 && state.records.race_song_counter == 1);
+  state.frame = 1000;
+  const auto load =
+      999U + unirally::race_sound_load_offset(unirally::ClassicRaceTrack{0});
+  unirally::update_race_loading(state, load - 1U);
+  require(state.records.race_song_counter == 1);
+  unirally::update_race_loading(state, load);
+  require(state.records.race_song_counter == 2);
+  // The tutorial bit as the race's hints end, before the race returns.
+  unirally::ZoomZooState race{};
+  state.rider_menu.rider = 5;
+  state.records.tutorial_bits = 0;
+  race.player_announcements.hints_active = 1;
+  unirally::update_race_cartridge(state, race);
+  require(state.records.tutorial_bits == 0);
+  race.player_announcements.hints_active = 0;
+  unirally::update_race_cartridge(state, race);
+  require(state.records.tutorial_bits == 1U << 5U);
+}
+
 // NAME-CHECK (R-0101): `$83:84D9` on a synthetic word list laid out as the
 // ROM's (71 pointers into bank $83 from $83:8537, then the words, each ended
 // by 0xFF): word 0 "abc", word 70 "bcd", the others "qqqq".
@@ -2503,6 +2589,7 @@ int main() try {
   option_bits_image_tests();
   now_playing_option_bit_tests();
   race_cartridge_increment_tests();
+  save_image_exact_tests();
   wipe_ram_tests();
   credits_picture_tests();
   faedine_tests();

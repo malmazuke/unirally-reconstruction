@@ -312,10 +312,14 @@ void emit_picture(const Options& options, std::uint32_t frame, const unirally::R
     if (picture_digest_wanted(options, frame)) write_digest(options, frame, 'P', file);
 }
 
-// Power-on, with the cartridge RAM `--cartridge-in` gives (SAVE-FILES).
+// Power-on, with the cartridge RAM `--cartridge-in` gives (SAVE-FILES), or the reference core's
+// all `$FF`.
 unirally::FrontEndState start_state(const Options& options) {
     auto state = unirally::start_front_end();
-    if (options.cartridge_in.empty()) return state;
+    if (options.cartridge_in.empty()) {
+        unirally::insert_cartridge(state, unirally::power_on_cartridge());
+        return state;
+    }
     std::ifstream in(options.cartridge_in, std::ios::binary);
     if (!in)
         throw std::runtime_error("cannot read --cartridge-in " + options.cartridge_in.string());
@@ -792,6 +796,16 @@ void write_loading_frame(const Options& options, const unirally::FrontEndState& 
     emit_records(options, frame, state);
 }
 
+// A loading frame of a race from the menus: the cartridge RAM the original writes during it (the
+// song counter on the sound load, R-0111), then its outputs.
+void run_loading_frame(const Options& options, unirally::FrontEndState& state,
+                       const RaceBetweenMenus& race, std::uint32_t frame, SoundCueLog& sound_cues,
+                       CartridgeTrace& cartridge_trace) {
+    unirally::update_race_loading(state, frame);
+    write_loading_frame(options, state, race, frame, sound_cues);
+    cartridge_trace.write(frame, state);
+}
+
 // An output timeline, or none when its option is not given.
 std::ofstream open_timeline(const std::filesystem::path& path, const std::string& kind) {
     std::ofstream out;
@@ -839,7 +853,7 @@ int main(int argc, char** argv) try {
             if (state.mode == unirally::FrontEndMode::demo) {
                 if (frame > race.initialization_frame) {
                     update_demo_race(options, pack, state, race, frame, pads, races);
-                    unirally::add_race_cartridge_increments(state, race.state.cartridge_increments);
+                    unirally::update_race_cartridge(state, race.state);
                     write_race_state(race_timeline, frame, race.state);
                     sound_cues.write(frame, race.state.sound_cues);
                 }
@@ -847,14 +861,13 @@ int main(int argc, char** argv) try {
                 continue;
             }
             if (frame <= race.initialization_frame) {
-                write_loading_frame(options, state, race, frame, sound_cues);
-                cartridge_trace.write(frame, state);
+                run_loading_frame(options, state, race, frame, sound_cues, cartridge_trace);
                 continue;
             }
             update_local_race(options, pack, content, state, race, race_timeline,
                               one_player_timeline, look_timeline, restored_local, races, frame,
                               pads);
-            unirally::add_race_cartridge_increments(state, race.state.cartridge_increments);
+            unirally::update_race_cartridge(state, race.state);
             sound_cues.write(frame, race.state.sound_cues);
         } else if (state.mode_chosen) {
             break;

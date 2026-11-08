@@ -289,10 +289,14 @@ public:
   // has begun, or its pause menu quit or restarted it. The front end takes over
   // with its times.
   void return_from_race(const ZoomZooState &race, const RaceTimes &times);
-  // A race update's cartridge RAM increments past rider 1's tallies, an
-  // overrun of the original (`ZoomZooState::cartridge_increments`, R-0098).
-  void add_cartridge_increments(std::span<const std::uint16_t> offsets) {
-    add_race_cartridge_increments(state_, offsets);
+  // The cartridge RAM a race writes (R-0111): on each of its loading frames
+  // (the front end's frame), and after each race update (its increments past
+  // rider 1's tallies, R-0098, and the tutorial bits).
+  void race_loading_frame(std::uint32_t frame) {
+    update_race_loading(state_, frame);
+  }
+  void update_race_cartridge(const ZoomZooState &race) {
+    unirally::update_race_cartridge(state_, race);
   }
   void return_from_demo(std::uint32_t exit_frame, std::uint16_t demo_elapsed);
 

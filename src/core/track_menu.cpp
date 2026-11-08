@@ -141,6 +141,7 @@ bool step_medal(FrontEndState& state, const FrontEndContent& content) {
     auto next = static_cast<std::uint8_t>(tour.medal + 1);
     if (next > gold || next > best) next = 0;
     tour.medal = next;
+    store_tour_medal(state);
     print_medal(state, content);
     return true;
 }
@@ -174,9 +175,10 @@ void move_track_cursor(FrontEndState& state, const FrontEndContent& content, std
 
 // $80:E9E4-E9F2: the track chosen, 5 * tour + item. (`$83:9983` then derives the race's laps and
 // kind for the race's SRAM words; the screens read them from the track.)
-void choose_track(FrontEndState& state) {
+void choose_track(FrontEndState& state, const FrontEndContent& content) {
     state.tour_menu.track =
         static_cast<std::uint8_t>(tour_of(state) * tracks_per_tour + state.track_menu.cursor);
+    store_track_words(state, content); // $80:E9F8
 }
 
 } // namespace
@@ -186,6 +188,7 @@ void choose_track(FrontEndState& state) {
 void turn_markers(FrontEndState& state, const FrontEndContent& content) {
     auto& step = state.track_menu.marker_step;
     step = step == 0 ? marker_steps - 1 : static_cast<std::uint8_t>(step - 1);
+    store_marker_step(state); // $80:EB32
     for (const unsigned entry : {64U, 66U, 68U})
         oam_byte(state, entry, 2) = content.marker_tiles[step];
     for (const unsigned entry : {65U, 67U})
@@ -197,8 +200,10 @@ void enter_track_menu(FrontEndState& state, bool returning) {
     auto& menu = state.track_menu;
     menu.returning = returning;
     menu.medal_latched = false;
+    store_medal_latched(state);
     state.records.tries = 3; // $80:E857
     menu.marker_step = 0;
+    store_marker_step(state); // $80:E872
     for (unsigned entry = 0; entry < hidden_on_entry_end; entry += 4)
         high_bits(state, entry) = four_hidden;
     state.screen = FrontEndScreen::track_menu_entry;
@@ -236,6 +241,7 @@ void track_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         copy_oam(state);
         load_text(state, state.slide.shown_half);
         menu.medal_latched = true;
+        store_medal_latched(state);
         turn_markers(state, content);
         return;
     }
@@ -251,7 +257,7 @@ void track_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
             turn_markers(state, content);
             return;
         }
-        if (!menu.back) choose_track(state);
+        if (!menu.back) choose_track(state, content);
         // $80:E9FC: the markers hidden.
         for (unsigned entry = first_marker; entry < markers_group_end; entry += 4)
             high_bits(state, entry) = four_hidden;
@@ -259,6 +265,7 @@ void track_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         return;
     }
     menu.medal_latched = false;
+    store_medal_latched(state);
     move_track_cursor(state, content, pad);
     turn_markers(state, content);
 }
@@ -285,7 +292,7 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
         return_to_tour_menu(state);
         return;
     }
-    enter_now_playing(state);
+    enter_now_playing(state, content);
 }
 
 } // namespace unirally::front_end_screens

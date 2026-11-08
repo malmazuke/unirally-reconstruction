@@ -254,7 +254,7 @@ void podium_music(const Content& content) {
 void option_bits(const Content& content) {
     auto pair = league(0, 0x0500);
     pair.records.cheat = true;
-    choose_league_pair(pair);
+    choose_league_pair(pair, content.view);
     require(!pair.records.cheat && pair.screen == FrontEndScreen::now_playing_entry,
             "a league pair's choice clears the title code's flag");
     for (const auto mode : {FrontEndMode::versus, FrontEndMode::two_player}) {

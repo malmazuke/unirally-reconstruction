@@ -321,7 +321,7 @@ void after_tally_frame(FrontEndState& state, const FrontEndContent& content, Fro
     const bool qualifying_line = !second && state.mode != FrontEndMode::league;
     if (after == 2) {
         load_text(state, state.slide.shown_half);
-        if (state.mode == FrontEndMode::league && (second || against_computer(state)))
+        if (second || (state.mode == FrontEndMode::league && against_computer(state)))
             store_league_stunt_totals(state, !second);
         if (!second && !against_computer(state)) {
             start_second_tally(state, content);
@@ -334,6 +334,7 @@ void after_tally_frame(FrontEndState& state, const FrontEndContent& content, Fro
     }
     if (after == 3 && qualifying_line) { // $80:F26F-F272
         load_text(state, state.slide.shown_half);
+        store_league_stunt_totals(state, true); // $80:F275-F27F, the score alone (R-0111)
         return;
     }
     copy_oam(state);

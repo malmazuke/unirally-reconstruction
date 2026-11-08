@@ -2,11 +2,14 @@
 // machine is reloaded as at the boot, the one-run result screen is built (`$80:951C`,
 // `$80:CE90`) and faded in, and a press leaves it (`$80:C24C`, `$80:C206`). Leaving it updates
 // the records (`$80:C786`) and scores the race (`$83:879A`), then PICK TRACK comes again.
+#include "cartridge_ram.hpp"
 #include "front_end_screens.hpp"
 
+#include <algorithm>
 #include <array>
 #include <numeric>
 #include <stdexcept>
+#include <utility>
 
 namespace unirally::front_end_screens {
 
@@ -365,6 +368,14 @@ void update_stunt_records(FrontEndState& state) {
 // (`$80:C7C4`) the totals, for a lap race (`$80:C868`) the best laps; a win is still the lower
 // total. A computer opponent (16 and up) keeps no counts and no records (`$80:CAAA`, `$80:C82F`).
 void update_records(FrontEndState& state) {
+    // $80:C789-C7A1: the riders' statistics offsets, 8 x `$77:0748` and 8 x `$77:0749`, kept in
+    // `$77:073E` and `$0740` (R-0111).
+    constexpr unsigned statistics_bytes = 8;
+    for (const auto [at, rider_byte] : {std::pair{0x073eU, 0x0748U}, std::pair{0x0740U, 0x0749U}}) {
+        const unsigned offset = statistics_bytes * state.cartridge.at(rider_byte);
+        state.cartridge.at(at) = static_cast<std::uint8_t>(offset);
+        state.cartridge.at(at + 1) = static_cast<std::uint8_t>(offset >> 8U);
+    }
     if (state.race_result.times.stunt_event) {
         update_stunt_records(state); // $80:C948
         return;
@@ -525,6 +536,69 @@ std::uint16_t tour_qualifying_score(const FrontEndState& state, const FrontEndCo
                                   best_medal(state));
 }
 
+void store_track_words(FrontEndState& state, const FrontEndContent& content) {
+    auto& cartridge = state.cartridge;
+    const auto track = state.tour_menu.track;
+    cartridge.at(0x074a) = track; // a word: `$074B` 0 until the race mode below
+    if (track < content.track_types.size()) {
+        cartridge.at(0x0744) = content.track_types[track];
+        cartridge.at(0x0745) = 0;
+    }
+    const auto place = static_cast<std::uint8_t>(track % tracks_per_tour);
+    cartridge.at(0x074c) = place;
+    constexpr std::uint8_t places_with_own_mode = 3;
+    cartridge.at(0x074b) = place < places_with_own_mode
+                             ? place
+                             : static_cast<std::uint8_t>(place - places_with_own_mode);
+}
+
+void store_race_setup(FrontEndState& state, const FrontEndContent& content, std::uint8_t rider,
+                      std::uint8_t second) {
+    state.cartridge.at(0x074d) = state.cartridge.at(0x074e) = 0xff; // $80:99A7-99AA
+    store_race_words(state, content, rider, second);
+}
+
+void store_race_words(FrontEndState& state, const FrontEndContent& content, std::uint8_t rider,
+                      std::uint8_t second) {
+    auto& cartridge = state.cartridge;
+    const auto store_word = [&cartridge](std::size_t at, unsigned value) {
+        cartridge.at(at) = static_cast<std::uint8_t>(value);
+        cartridge.at(at + 1) = static_cast<std::uint8_t>(value >> 8U);
+    };
+    // $80:99C2-99C6: the option word, saved for the race's return.
+    const auto image = cartridge_image(state);
+    const unsigned option_word = image[0x0742] | static_cast<unsigned>(image[0x0743]) << 8U;
+    store_word(0x106b, option_word);
+    // $80:99CA-99E4: both riders' seventeen race words cleared.
+    constexpr std::size_t race_word_bytes = 34;
+    std::fill_n(cartridge.begin() + 0x0755, race_word_bytes, std::uint8_t{0});
+    std::fill_n(cartridge.begin() + 0x07bf, race_word_bytes, std::uint8_t{0});
+    // $80:99E8-99F1: the qualifying score by `$017D`'s best medal on the track's tour (`$017D` is
+    // a rider here, below 16). A pack without the scores (older than v17) leaves the word.
+    const ClassicRaceTrack track{state.tour_menu.track};
+    const auto medal = state.records.medals.at(track.index / tracks_per_tour * 16U + rider) & 3U;
+    if (!content.qualifying_scores.empty())
+        store_word(0x0753, stunt_qualifying_score(content.qualifying_scores, track,
+                                                  static_cast<std::uint8_t>(medal)));
+    cartridge.at(0x0748) = rider;  // $80:99F7-99FA
+    cartridge.at(0x0749) = second; // $80:99FE-9A01
+    // $80:9A05-9A1D: the race's mode, VS and two views from the option word, 2 in the demo.
+    const bool demo = cartridge.at(one_player_mode) == static_cast<std::uint8_t>(SavedMode::demo);
+    cartridge.at(0x0750) = static_cast<std::uint8_t>((option_word & 0x0cU) | (demo ? 2U : 0U));
+    cartridge.at(0x074a) = state.tour_menu.track; // $80:9A21-9A23, `$00CE`
+}
+
+void store_demo_race_setup(FrontEndState& state) {
+    auto& cartridge = state.cartridge;
+    const bool split = state.demo_split_race;
+    state.records.demo_split = split ? 1 : 0;
+    constexpr std::uint8_t two_views = 0x08;
+    auto& mode = cartridge.at(0x0750);
+    mode = static_cast<std::uint8_t>(split ? mode | two_views : mode & ~two_views);
+    cartridge.at(0x0748) = state.rider_menu.rider;
+    if (split) cartridge.at(0x0749) = state.now_playing.opponent;
+}
+
 void raise_logo(FrontEndState& state) { // $80:F53F
     state.logo.raised = true;
     state.logo.offset = 0x52;
@@ -608,7 +682,7 @@ void restore_menus_after_race(FrontEndState& state, const FrontEndContent& conte
     }
 }
 
-void race_restart_frame(FrontEndState& state) {
+void race_restart_frame(FrontEndState& state, const FrontEndContent& content) {
     const auto frame = state.script_frame;
     if (frame == 1) { // $80:8903-890A: the logo up, the blank text shown
         state.logo.raised = true;
@@ -623,7 +697,7 @@ void race_restart_frame(FrontEndState& state) {
     state.registers.force_blank = false;
     // Each handler loops back to its own NOW PLAYING: 1P `$80:BC36-BC45`, 2P `$80:BD5D`, VS
     // `$80:BFE0`, with its mode, pairing and flags as they were (R-0084).
-    if (frame == last_fade_frame) enter_now_playing(state);
+    if (frame == last_fade_frame) enter_now_playing(state, content);
 }
 
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
@@ -633,18 +707,17 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
         start_result(state, content);
         return;
     }
-    const bool league = state.mode == FrontEndMode::league;
     if (frame == rows_frame) {
         if (result.times.lap_race)
             print_lap_result(state, content);
         else
             print_result(state, content);
-        if (league && result.times.lap_race) store_league_race_totals(state);
+        if (result.times.lap_race) store_league_race_totals(state); // every mode (R-0111)
         return;
     }
     if (frame == icons_frame) {
         show_icons(state, content);
-        if (league && !result.times.lap_race) store_league_race_totals(state);
+        if (!result.times.lap_race) store_league_race_totals(state);
         return;
     }
     copy_oam(state);
@@ -731,21 +804,23 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
     ++state.frame;
 }
 
+// $83:CE2C sets the rider's bit when the race's hints end. $83:CEB1-CEC5 sets rider 1's bit
+// while its hints are off, outside the demo, in every two-human race; MIKE's bit `$12E9` stays 0
+// (R-0082).
+void set_tutorial_bits(FrontEndState& state, bool hints_over, bool opponent_hints_over) {
+    auto& bits = state.records.tutorial_bits;
+    if (hints_over) bits = static_cast<std::uint16_t>(bits | (1U << state.rider_menu.rider));
+    if (two_human_mode(state.mode) && state.second_rider != 0 && state.second_rider < 16
+        && opponent_hints_over)
+        bits = static_cast<std::uint16_t>(bits | (1U << state.second_rider));
+}
+
 void start_race_return(FrontEndState& state, const FrontEndContent& content,
                        const RaceTimes& times) {
     state.mode_chosen = false;
     state.race_result = {};
     state.race_result.times = times;
-    // $83:CE2C set the rider's bit when the race's hints ended.
-    if (times.tutorial_hints_over)
-        state.records.tutorial_bits = static_cast<std::uint16_t>(state.records.tutorial_bits
-                                                                 | (1U << state.rider_menu.rider));
-    // $83:CEB1-CEC5 sets rider 1's bit while its hints are off, outside the demo, in every
-    // two-human race; MIKE's bit `$12E9` stays 0 (R-0082).
-    if (two_human_mode(state.mode) && state.second_rider != 0 && state.second_rider < 16
-        && times.opponent_tutorial_hints_over)
-        state.records.tutorial_bits =
-            static_cast<std::uint16_t>(state.records.tutorial_bits | (1U << state.second_rider));
+    set_tutorial_bits(state, times.tutorial_hints_over, times.opponent_tutorial_hints_over);
     state.screen = FrontEndScreen::race_return;
     state.script_frame = 0;
     early_loads(state, content);
@@ -758,6 +833,25 @@ void begin_menu_restore(FrontEndState& state, const FrontEndContent& content) {
 } // namespace unirally::front_end_screens
 
 namespace unirally {
+
+void update_race_loading(FrontEndState& state, std::uint32_t frame) {
+    // The choice was the frame before the front end's next (`state.frame`); the race's sound load
+    // `race_sound_load_offset` frames later stores the counter `choose_race_song` advanced.
+    const auto offset = race_sound_load_offset(ClassicRaceTrack{state.tour_menu.track});
+    if (offset != 0 && frame + 1U == state.frame + offset)
+        state.records.race_song_counter = state.race_song;
+}
+
+void update_race_cartridge(FrontEndState& state, const ZoomZooState& race) {
+    add_race_cartridge_increments(state, race.cartridge_increments);
+    if (state.mode == FrontEndMode::demo) return;
+    // A race that runs without its loading frames (the app without audio) counts its song by its
+    // first update.
+    state.records.race_song_counter = state.race_song;
+    const auto times = race_times(race);
+    front_end_screens::set_tutorial_bits(state, times.tutorial_hints_over,
+                                         times.opponent_tutorial_hints_over);
+}
 
 void return_from_race(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
                       const RaceTimes& times) {
@@ -857,12 +951,12 @@ std::uint32_t race_loading_frames(ClassicRaceTrack track) {
     return 0;
 }
 // $83:CA08-CA1E on the race's sound load: the cartridge counter advances modulo 6 and names
-// the song. Native advances it when the race begins, 42 to 117 frames before the original's
-// load; nothing reads the counter in between (R-0077).
+// the song. Native names the song when the race begins, 42 to 142 frames before the original's
+// load, and stores the counter on the load (`update_race_loading`, R-0111); nothing reads the
+// counter in between (R-0077). A race that returns first (none in the corpus) stores it then.
 void choose_race_song(FrontEndState& state) {
-    auto& counter = state.records.race_song_counter;
-    counter = static_cast<std::uint8_t>((counter + 1U) % race_song_count);
-    state.race_song = counter;
+    state.race_song =
+        static_cast<std::uint8_t>((state.records.race_song_counter + 1U) % race_song_count);
 }
 
 std::uint32_t race_loading_frames(const FrontEndState& state) {

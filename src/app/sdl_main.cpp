@@ -911,6 +911,10 @@ int main(int argc, char **argv) try {
         race_loading_shown = true;
         const auto loading_track = waiting_front_end->race_track();
         const auto loading_song = waiting_front_end->race_song();
+        // The front end's frame this loading frame stands for.
+        waiting_front_end->race_loading_frame(
+            waiting_front_end->race_initialization_frame() -
+            (race_start_update - updates));
         audio_cues = unirally::race_sound::loading(
             race_start_update - updates,
             unirally::race_sound_load_timing(loading_track, loading_song),
@@ -949,8 +953,7 @@ int main(int argc, char **argv) try {
           unirally::update_zoom_zoo(zoom_state, buttons, zoom_content);
         // Only an update fills them; a restart leaves the last update's.
         if (waiting_front_end && !(at_stable_result && buttons.start))
-          waiting_front_end->add_cartridge_increments(
-              zoom_state.cartridge_increments);
+          waiting_front_end->update_race_cartridge(zoom_state);
         // Selector 0 is a real trick (the flat path's negative-velocity
         // rotation), so the impulse is the activity signal; the selector alone
         // would silently drop it.

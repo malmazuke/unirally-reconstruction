@@ -1,4 +1,5 @@
 // The saved league's standings and pairing entry. $80:BDD4-BEE4; R-0073.
+#include "cartridge_ram.hpp"
 #include "front_end_screens.hpp"
 #include "menu_overruns.hpp"
 
@@ -143,10 +144,28 @@ bool league_race_quit(const RaceTimes& times) {
     return times.player_total == 0xea62 || times.opponent_total == 0xea62;
 }
 
+// $80:F88D outside a league (R-0095, R-0111): the same stores at `$77:0618 + 16 x $CC + 2 x` the
+// cursor word at `$77:0678 + $CC`, whose high byte is the next slot's cursor, so a nonzero one
+// sends them 512 bytes on for each step (into the personal bests, or past the records).
+void store_result_totals(FrontEndState& state, std::uint16_t first, std::uint16_t second,
+                         bool store_second) {
+    const auto slot = state.league.slot;
+    const auto& cursors = state.records.league_pair_cursor;
+    const unsigned next_cursor = slot + 1U < cursors.size() ? cursors[slot + 1U] : 0U;
+    const unsigned cursor_word = cursors.at(slot) | next_cursor << 8U;
+    const std::size_t at = 0x0618 + 16U * slot + 2U * cursor_word;
+    store_record_word(state, at, first);
+    if (store_second) store_record_word(state, at + 2, second);
+}
+
 // $80:F88D: the pair's totals at the cursor, in pairing order; the second is not stored when the
 // caller passes 0xFFFF ($80:F8A9-F8AF), which only a stunt event against the computer does.
 void store_league_totals(FrontEndState& state, std::uint16_t first, std::uint16_t second,
                          bool store_second) {
+    if (state.mode != FrontEndMode::league) {
+        store_result_totals(state, first, second, store_second);
+        return;
+    }
     const auto slot = state.league.slot;
     const auto cursor = state.records.league_pair_cursor[slot];
     if (cursor >= league_rows) throw std::invalid_argument("invalid league cursor");
@@ -165,7 +184,7 @@ void store_league_totals(FrontEndState& state, std::uint16_t first, std::uint16_
 // (`$80:F275-F27F`).
 void store_league_stunt_totals(FrontEndState& state, bool against_computer) {
     const auto& times = state.race_result.times;
-    if (league_race_quit(times)) return;
+    if (state.mode == FrontEndMode::league && league_race_quit(times)) return;
     store_league_totals(state, times.player_score, times.opponent_score, !against_computer);
 }
 
@@ -173,7 +192,7 @@ void store_league_stunt_totals(FrontEndState& state, bool against_computer) {
 // second frame (`$80:9107`), the one-run result's third (`$80:D15F`) (R-0098).
 void store_league_race_totals(FrontEndState& state) {
     const auto& times = state.race_result.times;
-    if (league_race_quit(times)) return;
+    if (state.mode == FrontEndMode::league && league_race_quit(times)) return;
     store_league_totals(state, times.player_total, times.opponent_total, true);
 }
 
@@ -494,7 +513,7 @@ void leave_league_awards(FrontEndState& state, const FrontEndContent& content, F
 
 // $80:AFF5-B015 at the second pass's end: the icons shown, the pairing reordered, the cursor back
 // to the first pair and the next track (R-0073, R-0098).
-void end_award_passes(FrontEndState& state) {
+void end_award_passes(FrontEndState& state, const FrontEndContent& content) {
     const auto slot = state.league.slot;
     show_award_icons(state);
     reorder_league(state);
@@ -505,6 +524,7 @@ void end_award_passes(FrontEndState& state) {
     // tour (`$00D0`), where a podium's PICK TOUR puts its cursor (R-0098).
     state.tour_menu.track = state.records.league_tracks[slot];
     state.tour_menu.tour = static_cast<std::uint8_t>(state.tour_menu.track / tracks_per_tour);
+    store_track_words(state, content);
     if (state.records.league_tracks[slot] % tracks_per_tour == 0)
         state.records.league_cycle_complete = true;
 }
@@ -533,7 +553,7 @@ void league_awards_frame(FrontEndState& state, const FrontEndContent& content, F
         play_menu_sound(state, MenuSound::result);
         load_text(state, state.slide.shown_half);
     }
-    if (frame == frames.passes_end) end_award_passes(state);
+    if (frame == frames.passes_end) end_award_passes(state, content);
     leave_league_awards(state, content, pads);
 }
 
@@ -541,6 +561,7 @@ void choose_league_slot(FrontEndState& state, const FrontEndContent& content) {
     // $80:BE00-BE14; R-0073.
     if (!state.records.league_members[state.league.slot]) return;
     if (state.records.league_pair_cursor[state.league.slot]) {
+        store_saved_mode(state, SavedMode::league, true); // $80:BE2C to $80:BE45-BE48
         enter_league_table(state, content);
         return;
     }
@@ -592,11 +613,11 @@ void league_table_frame(FrontEndState& state, const FrontEndContent& content, Fr
         enter_league_podium(state);
         return;
     }
-    choose_league_pair(state);
+    choose_league_pair(state, content);
 }
 
 // $83:958C/95CA; R-0073. Both standings and post-podium tour choice launch this pairing.
-void choose_league_pair(FrontEndState& state) {
+void choose_league_pair(FrontEndState& state, const FrontEndContent& content) {
     const auto slot = state.league.slot;
     const auto& members = state.records.league_pairings[slot];
     const auto cursor = state.records.league_pair_cursor[slot];
@@ -608,10 +629,17 @@ void choose_league_pair(FrontEndState& state) {
         std::swap(state.rider_menu.rider, state.second_rider);
     state.tour_menu.track = state.records.league_tracks[slot];
     state.tour_menu.tour = state.tour_menu.track / tracks_per_tour;
+    store_track_words(state, content); // $83:98AB-98B5
+    // $83:98F1-98F7 and $83:9910-9916: `$77:0750` bit 3 set for two humans, cleared against the
+    // computer (R-0105's dead stores; R-0111).
+    constexpr std::uint8_t two_views = 0x08;
+    auto& race_mode = state.cartridge.at(0x0750);
+    race_mode = static_cast<std::uint8_t>(state.second_rider < someone ? race_mode | two_views
+                                                                       : race_mode & ~two_views);
     state.now_playing.opponent = state.second_rider;
     // `$83:958F-9592` stores 0 to `$77:10CF-10D0`, so the pair's choice also clears the title
     // code's flag, before NOW PLAYING (`$80:BEF9`; R-0105).
     state.records.cheat = false;
-    enter_now_playing(state);
+    enter_now_playing(state, content);
 }
 } // namespace unirally::front_end_screens

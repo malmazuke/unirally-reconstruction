@@ -83,6 +83,7 @@ void print_tour_menu(FrontEndState& state, const FrontEndContent& content) {
         // `$83:9983` then also rewrites the race's SRAM words (R-0056).
         menu.track = 0;
         menu.tour = 0;
+        store_track_words(state, content); // $80:E74B-E74F
     }
     const auto print = [&](TourText which) {
         print_text(state.text, state.printer, tour_text(content, which), content.character_table);
@@ -350,6 +351,7 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
         if (menu.cursor == hunter_right) menu.cursor = hunter;
         menu.tour = menu.cursor;
         menu.medal = state.records.medals[menu.tour * 16U + state.rider_menu.rider];
+        store_tour_medal(state);
     }
     // From a completion PICK TOUR returns into the scoring (`$83:88D1`), which goes on to PICK
     // TRACK without testing Y or X.
@@ -375,8 +377,9 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
                 static_cast<std::uint8_t>(menu.tour * tracks_per_tour);
             if (state.league.after_podium) {
                 state.league.after_podium = false;
-                choose_league_pair(state);
+                choose_league_pair(state, content);
             } else {
+                store_saved_mode(state, SavedMode::league, true); // $80:BE3F-BE48
                 enter_league_table(state, content);
             }
         }

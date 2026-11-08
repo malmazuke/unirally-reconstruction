@@ -55,6 +55,33 @@ inline void gate_pads(FrontEndState& state, bool pad_one, bool pad_two) {
     state.pad_one_ignored = !pad_one;
     state.pad_two_ignored = !pad_two;
 }
+// `$77:10A7`, the done-track markers' step, is a word of cartridge RAM (`$80:E872`, `$80:EB32`):
+// the image keeps it as the menus store it (R-0100, R-0111).
+inline void store_marker_step(FrontEndState& state) {
+    constexpr std::size_t marker_step_word = 0x10a7;
+    state.cartridge.at(marker_step_word) = state.track_menu.marker_step;
+    state.cartridge.at(marker_step_word + 1) = 0;
+}
+// `$77:10D1`, the medal PICK TRACK shows (`$80:E6D5`, `$80:EACF`), and `$77:10D2`, its line
+// stepped on this press (`$80:E853`, `$80:EAFE`, `$80:BABE`): bytes of cartridge RAM the image
+// keeps as the menus store them (R-0111).
+inline void store_tour_medal(FrontEndState& state) {
+    state.cartridge.at(0x10d1) = state.tour_menu.medal;
+}
+inline void store_medal_latched(FrontEndState& state) {
+    state.cartridge.at(0x10d2) = state.track_menu.medal_latched ? 1 : 0;
+}
+// `$77:10AD`, the mode the menus last chose (R-0090, R-0111): kept in the cartridge RAM image,
+// with `one_player` as the flag the menus test.
+enum class SavedMode : std::uint8_t { none, one_player, two_player, versus, league, demo };
+// A word store (`$80:BBEE` 1P, `$80:BD2A` 2P, `$80:BFA5` VS, `$80:BE48` the league) also clears
+// `$77:10AE`; a byte store (`$80:AD1A` and `$80:BC9B` none, `$80:9498` the demo) leaves it.
+inline void store_saved_mode(FrontEndState& state, SavedMode mode, bool word) {
+    constexpr std::size_t saved_mode_byte = 0x10ad;
+    state.cartridge.at(saved_mode_byte) = static_cast<std::uint8_t>(mode);
+    if (word) state.cartridge.at(saved_mode_byte + 1) = 0;
+    state.one_player = mode == SavedMode::one_player;
+}
 // The result screen's third frame, its tail (`$80:9579`); after a lap result's second frame's
 // overrun it starts without a frame wait.
 inline constexpr std::uint32_t result_tail_frame = 3;
@@ -123,6 +150,21 @@ std::uint8_t best_medal(const FrontEndState& state);
 std::uint16_t tour_qualifying_score(const FrontEndState& state, const FrontEndContent& content);
 // $80:F53F: the logo held up.
 void raise_logo(FrontEndState& state);
+// $83:9987 wherever the original calls it (R-0111): the race's words from the track `$00CE`:
+// `$77:074A` the track, `$0744` its kind (`$83:A254`, the pack's `audio.track-types`), `$074C`
+// its place on the tour and `$074B` the race mode (places 3 and 4 as 0 and 1).
+void store_track_words(FrontEndState& state, const FrontEndContent& content);
+// $80:99A4-9A23 on the frame a race is set up (the menus' choice, the idle demo's setup frame):
+// the race's words in cartridge RAM (R-0105, R-0111). `rider` and `second` are `$017D` and
+// `$017F`, which the idle demo sets to 3 and 1 (`$80:948C-9493`) before its own pairing.
+void store_race_setup(FrontEndState& state, const FrontEndContent& content, std::uint8_t rider,
+                      std::uint8_t second);
+// The same from `$80:999F`, which the league's podium takes (`$80:BEB8`): all but `$77:074D`.
+void store_race_words(FrontEndState& state, const FrontEndContent& content, std::uint8_t rider,
+                      std::uint8_t second);
+// $83:C912-C994, the idle demo's setup on the next frame: `$77:1115` flipped, `$0750` bit 3 for
+// a split race, the demo's rider (and a split race's opponent) in `$0748-0749`.
+void store_demo_race_setup(FrontEndState& state);
 // A stunt result's third frame (R-0067): in one-player play its streams' printing ran past the
 // second frame's end, so the text's upload starts without a frame wait. Without the 1P dashes
 // (`$80:F3E0`) the printing ends inside the second frame, which then shows the text, and the
@@ -286,7 +328,7 @@ void enter_league_table(FrontEndState& state, const FrontEndContent& content,
                         bool slides_back = false);
 void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_table_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
-void choose_league_pair(FrontEndState& state);
+void choose_league_pair(FrontEndState& state, const FrontEndContent& content);
 void enter_league_podium(FrontEndState& state);
 void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& content,
                                FrontEndPads pads);
@@ -365,7 +407,7 @@ void scores_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void scores_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 // now_playing.cpp: NOW PLAYING after a track is chosen, and Race's fade.
-void enter_now_playing(FrontEndState& state);
+void enter_now_playing(FrontEndState& state, const FrontEndContent& content);
 void now_playing_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void now_playing_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void race_fade_frame(FrontEndState& state, const FrontEndContent& content);
@@ -383,7 +425,7 @@ void restore_menus_after_race(FrontEndState& state, const FrontEndContent& conte
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // $80:88DD-8914 after a restart from the race's pause menu: the logo up, a blank text faded in,
 // then NOW PLAYING (R-0060).
-void race_restart_frame(FrontEndState& state);
+void race_restart_frame(FrontEndState& state, const FrontEndContent& content);
 void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content,
                             FrontEndPads pads);
 // $80:951C-955A: the result's first frame as every race mode starts it.
