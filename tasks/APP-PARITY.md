@@ -23,6 +23,95 @@ otherwise, the idle demo's race runs as the runner's does, the race after a noti
 can write the runner's per-frame race rows so a scripted app run is compared with the runner on rows,
 cues and pictures (not only cues and totals).
 
-## Handoff
+## Checkpoint (worker, 8 November 2026)
 
-Not started.
+[R-0110](../docs/research/R-0110-app-parity.md) holds the detail.
+
+- **Causes.** (2) `sdl_main.cpp` read a scripted race's pads from the script only for a two-human
+  race or a one-player race whose loading it waits (audio); the idle demo's race, and a one-player
+  race without audio, took the live pads, so a scripted pad press never ended a demo. (3) After a
+  notice the front end goes back to the main menu's first state, frame counter included, and read
+  the script there again: the same presses chose the same notice (main's app: 29 notices in 5,581
+  updates, no race). (4) The runner's row and digest writers were private to it. (1) Defaults.
+- **Changes.** `launch_settings` and `default_save_file` (audio and a save by default, opt-outs,
+  laboratory launches keep the old defaults); every race from the menus numbered with the runner's
+  frames (`ScriptedRaceFrames`, the demo's race included) and read from the script there;
+  `FrontEndSession::script_frame`/`script_offset` (the script goes on past a notice);
+  `src/core/lab_outputs.{hpp,cpp}` (the runner's row, PPM and digest writers, shared) and the app's
+  `--race-timeline`, `--one-player-timeline` and `--frame-digests`; the screen blank while a race
+  loads.
+- **Decisions.** A laboratory launch is `--hidden`, `--front-end-inputs` or
+  `--fixed-controller-mask`: silent and saveless unless asked, so every existing gate and evidence
+  run (all pass `--hidden`) behaves as before and never touches the player's save. The default save
+  is `~/Library/Application Support/Unirally/unirally.sav` (macOS),
+  `$XDG_DATA_HOME/unirally/unirally.sav` or `~/.local/share/unirally/unirally.sav` (Linux and other
+  Unix), `%APPDATA%\Unirally\unirally.sav` (Windows), read from the environment. A launch that did
+  not ask for audio runs silent when the pack has none or no device starts; `--audio` (old name
+  `--native-title-menu-audio`, still accepted) makes either an error. The app writes only the
+  runner's `P` (picture) digests, not `V` or `R`.
+
+## Handoff (worker)
+
+- Branch `task/app-parity` on claim `572839dd` (main `68b1c9b4`). Commits: `fb4821bf` (the
+  change, tests and user docs), then the records commit (R-0110, this handoff, R-0109's pointer).
+- **Review tier 1**, not 2: `src/core` changed (`lab_outputs.{hpp,cpp}`, the runner's row, PPM and
+  digest writers moved there; `front_end_runner.cpp` calls them). The runner's outputs are
+  byte-identical to main's; no race or front-end state code changed. The rest is `src/app`.
+- Results (app-debug, `--hidden --native-title-menu-audio`, real time, against lab-release
+  `front_end_runner`; pack v41 unless stated; main's app is `base-68b1c9b4/`, cues only):
+
+| Item | Route | Frames | Candidate's app against the runner | Main's app |
+| --- | --- | ---: | --- | --- |
+| 2 | DEMO-AUDIO `demo-pad-early` | 9,000 | cues 13,662, demo rows 4,280, pictures 8,997: equal; exit at 5001 | ignores the press (timeout 6424); cues differ from 5001 |
+| 2 | `demo-pad-late` | 10,000 | 16,535 / 5,680 / 9,997 equal; exit 6401 | differs from 6401 |
+| 2 | `demo-pad-port2` (pad 2, split demo) | 11,000 | 17,948 / 6,075 / 10,996 equal; exit 8001 | differs from 8001 (timeout 9479) |
+| 2, 4 | `demo-long` (gate step's route) | 13,000 | 21,879 / 7,604 / 12,996 equal | (gate: cues equal) |
+| 3 | `two-races` after the WIPE RAM notice (v35) | 5,581 | cues before the code 348 and after the notice (moved back 181) 7,955 equal; one-player rows 2,550, pictures 500 + 4,979 equal; race returns at 3454, 3357/3358 | 29 notices, no race |
+| 4 | AUDIO-ONE-PLAYER `two-races` | 5,400 | cues 8,223, one-player rows 2,550, pictures 5,399 equal | (cues equal, R-0106) |
+| 4 | the same without audio (`SILENT=1`) | 5,400 | one-player rows 2,550 equal | (takes the live pads: rows part at 1500, M6) |
+| 4 | TWO-HUMAN-STUNTS-AUDIO `twop-bowl` | 6,100 | cues 9,019, race rows 2,727, pictures 6,100 equal | (cues equal, R-0106) |
+| 1 | `defaults.sh` (HOME a scratch folder) | 150 a case | audio and the default save (8,192 bytes) written, then loaded; `--no-audio --no-save-file` and `--hidden` silent, no file; `--native-title-menu-audio` plays; no audio device: silent, `--audio` fails | silent, no save (its hidden run as the candidate's) |
+
+- Runner: `runner_same.sh` byte-identical to main's on stdout, stderr, cues, race, one-player and
+  look timelines and frame digests (`demo-pad-port2` 17,948 cue / 6,075 row / 20,850 digest lines;
+  `two-races` 8,223 / 2,550 / 13,359; `twop-bowl` 9,019 / 2,727 / 15,445).
+- The old app checks on the candidate: APP-LEAGUE-RACE's `warm_route.sh` (equal through 3599, 6,201
+  lines) and `twop_bowl.sh` (equal through 6099, 9,019 lines, return at 4713). The demo-long run is
+  the `app-demo-audio` step's route and equals the runner.
+- Mutants (R-0110 "Each change reverted"): M1 audio default off (ctest and `defaults.sh` fail), M2
+  demo on live pads, M5 demo numbered without `- 1`, M6 silent 1P on live pads, M3 race without
+  `script_offset`, M4 front end without `script_offset`, M7 the shared digest's seed: each check
+  DIFFERS. Main's app is the all-reverted case for items 1-3 (table).
+- Checks run: `project.py build` `status=passed` for app-debug, lab-debug and lab-release;
+  `ctest` app-debug 41/41 and lab-debug 41/41; `clang-tidy` (`-p build/app-debug`) clean on
+  `lab_outputs.cpp`, `front_end_runner.cpp`, `frontend.cpp`, `save_file.cpp`, `sdl_main.cpp`;
+  `git-clang-format` applied to the changed `src/app` and `tests/app` lines (clean on `src/core`);
+  `coverage native-symbols --check` `status=passed` (no new ROM address, so no static-map regen);
+  `PYTHONPATH=tools python3 -m unittest tests.tooling.test_frontend` 15 OK. app-release not built
+  (no live listening check was needed). Synthetic suite and gates not run by the worker. Platform
+  paths are plain `std::getenv` and `#if` on `__APPLE__`/`_WIN32`; not built on Linux here (CI).
+- For the gates: `--task-checks local/evidence/app-parity/checks.list` (five checks, about 25 min:
+  `runner_same.sh "$B/front_end_runner"`, `defaults.sh` (opens a visible window and plays sound,
+  about 3 s a case, `HOME` pointed at `$G`), `demo_pads.sh` (10 min), `notice_race.sh` (2 min),
+  `race_routes.sh` (6 min)). Expected changes against main: none in `front_end_runner` or any lab
+  runner; the app's defaults (laboratory runs unchanged) and its scripted demo, silent one-player and
+  after-notice races. The pack profile is unchanged.
+- Limits (R-0110): the app writes only the runner's `P` digests (no `V`, `R`); with
+  `--frame-digests` the debug app draws every update and its producer reports 0-7 later drops (no
+  effect on cues, rows or pictures); NEON's leftover colours and the held-pose fallback are drawn by
+  the app only (no route here has them); no local pack that runs the front end lacks native audio,
+  so that degrade path is read, not run (the no-device path is run); a notice is the app's own
+  screen and is compared with the runner's route without it; short titles are still not predicted.
+  `docs/research/README.md` does not exist, so R-0110 is linked from this record, R-0109 and
+  `docs/BUILD_AND_VALIDATION.md`.
+- Evidence: main `local/evidence/app-parity/`, 26 MB after gzip: the scripts (`app_vs_runner.sh`,
+  `demo_pads.sh`, `notice_race.sh`, `notice_route.py`, `notice_compare.py`, `race_routes.sh`,
+  `defaults.sh`, `runner_same.sh`, `batch1.sh`, `mutants.sh`, `m6.sh`, `checks.list`), the runs
+  (`item1-*` to `item4-*`, `mutants/`, `m6/`, `batch1.out`, `mutants.out`, `m6.out`) and
+  `base-68b1c9b4/` (main's app and runner; the app loads SDL and the DSP library from this
+  worktree's build). Private `TMPDIR` under the worktree's `artifacts/tmp`. A note: while
+  `batch1.sh` ran, `app_vs_runner.sh` was edited once (a silent mode); the twop-bowl run in flight
+  printed normal results, and `race_routes.sh` reruns it in the gates.
+- Time: worker 03:11:30 to 04:26 UTC on 8 November 2026 (`date -u`), about 1 h 15 min: reading and
+  design 20 min; the change and tests 15 min; app runs under the heavy-run lock (item 2 10 min,
+  batch 1 28 min, mutants 27 min, M6 rerun 5 min) with the records written alongside.

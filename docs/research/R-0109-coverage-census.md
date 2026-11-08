@@ -282,6 +282,8 @@ What the original does that the shipped app (`unirally`) does not, as the record
   PCM is the anchored producer's, measured, not exact (D-0010, R-0077).
 - Fixed since R-0089: the app's audio through the idle demos (R-0096) and LEAGUE's scripted
   second race (R-0106).
+- Since [R-0110](R-0110-app-parity.md) (APP-PARITY): audio and saves by default, the idle demo's
+  race and the race after a notice on the script, and per-frame rows and pictures from the app.
 
 ## What "100%" can mean
 
