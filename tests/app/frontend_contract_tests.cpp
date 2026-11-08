@@ -1,10 +1,12 @@
 #include "frontend.hpp"
 #include "movement.hpp"
 #include "presentation.hpp"
+#include "save_file.hpp"
 #include "zoom_zoo_movement.hpp"
 
 #include <array>
 #include <cstdint>
+#include <filesystem>
 #include <stdexcept>
 #include <vector>
 
@@ -84,9 +86,87 @@ void scripted_race_frames_rule() {
   frames.start(2827, 0); // no loading waited (no native audio)
   require(frames.next() == 2828,
           "without the wait the race's first update comes at once");
+  // An idle demo's race, chosen at front-end frame 900 (R-0110): its first
+  // update is front_end_runner's frame 900, as its exit frame counts it.
+  frames.start(900 - 1, 0);
+  require(frames.next() == 900,
+          "the demo's first update is the front end's frame");
+}
+
+// APP-PARITY (R-0110): a player's launch has audio and the default save; a
+// laboratory launch has neither unless asked, so a scripted run never touches
+// the player's save; a --track race has neither.
+void launch_settings_rule() {
+  using unirally::app::launch_settings;
+  using unirally::app::LaunchRequest;
+  const auto player = launch_settings(LaunchRequest{});
+  require(player.audio && !player.audio_asked && player.default_save_file,
+          "a player's launch has audio and the default save");
+  LaunchRequest laboratory;
+  laboratory.laboratory = true;
+  const auto silent = launch_settings(laboratory);
+  require(!silent.audio && !silent.default_save_file,
+          "a laboratory launch is silent and keeps no save");
+  laboratory.audio = true;
+  laboratory.save_file_given = true;
+  const auto asked = launch_settings(laboratory);
+  require(asked.audio && asked.audio_asked && !asked.default_save_file,
+          "a laboratory launch takes audio and a save file when asked");
+  LaunchRequest opted_out;
+  opted_out.audio = false;
+  opted_out.no_save_file = true;
+  const auto none = launch_settings(opted_out);
+  require(!none.audio && !none.default_save_file,
+          "--no-audio and --no-save-file opt a player out");
+  LaunchRequest track;
+  track.track = true;
+  const auto race = launch_settings(track);
+  require(!race.audio && !race.default_save_file, "a --track race has neither");
+  const auto refused = [](LaunchRequest request) {
+    try {
+      (void)launch_settings(request);
+    } catch (const std::invalid_argument &) {
+      return true;
+    }
+    return false;
+  };
+  track.audio = true;
+  require(refused(track), "audio needs the front end");
+  LaunchRequest both;
+  both.save_file_given = both.no_save_file = true;
+  require(refused(both), "--save-file and --no-save-file contradict");
+}
+
+void default_save_file_rule() {
+  using unirally::app::default_save_file;
+  using unirally::app::SavePlatform;
+  require(
+      default_save_file(SavePlatform::macos, {"/Users/a", nullptr, nullptr}) ==
+          "/Users/a/Library/Application Support/Unirally/unirally.sav",
+      "macOS keeps it in Application Support");
+  require(default_save_file(SavePlatform::other_unix,
+                            {"/home/a", "/data", nullptr}) ==
+              "/data/unirally/unirally.sav",
+          "Linux keeps it in XDG_DATA_HOME");
+  require(default_save_file(SavePlatform::other_unix,
+                            {"/home/a", "rel", nullptr}) ==
+              "/home/a/.local/share/unirally/unirally.sav",
+          "a relative XDG_DATA_HOME is ignored");
+  require(
+      default_save_file(SavePlatform::other_unix, {"/home/a", "", nullptr}) ==
+          "/home/a/.local/share/unirally/unirally.sav",
+      "an empty XDG_DATA_HOME is ignored");
+  require(default_save_file(SavePlatform::windows,
+                            {nullptr, nullptr, "C:/AppData"}) ==
+              std::filesystem::path("C:/AppData") / "Unirally" / "unirally.sav",
+          "Windows keeps it in APPDATA");
+  require(default_save_file(SavePlatform::macos, {}).empty(),
+          "no home, no default save");
 }
 
 int main() {
+  launch_settings_rule();
+  default_save_file_rule();
   one_player_race_rule();
   track_option_rule();
   scripted_race_frames_rule();

@@ -2,6 +2,7 @@
 
 #include "front_end.hpp"
 
+#include <cstdint>
 #include <filesystem>
 #include <optional>
 
@@ -9,6 +10,27 @@ namespace unirally::app {
 
 // The cartridge RAM kept on disk between runs (SAVE-FILES): 8192 bytes, the
 // original's image, so an emulator's save of this ROM loads too.
+// Where a platform keeps a user's application data (APP-PARITY, R-0110).
+enum class SavePlatform : std::uint8_t { macos, windows, other_unix };
+SavePlatform this_platform();
+
+// The environment variables the default save location is read from; null when
+// unset.
+struct SaveLocationEnvironment {
+  const char *home{}, *xdg_data_home{}, *app_data{};
+};
+
+// The save file the app keeps when it is not given `--save-file`: macOS
+// `~/Library/Application Support/Unirally/unirally.sav`, Windows
+// `%APPDATA%\Unirally\unirally.sav`, Linux and other Unix systems
+// `$XDG_DATA_HOME/unirally/unirally.sav` (`~/.local/share` when it is unset or
+// not absolute). Empty when the environment gives no home.
+std::filesystem::path
+default_save_file(SavePlatform platform,
+                  const SaveLocationEnvironment &environment);
+// The same for this process's platform and environment.
+std::filesystem::path default_save_file();
+
 class SaveFile {
 public:
   explicit SaveFile(std::filesystem::path path);

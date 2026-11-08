@@ -38,7 +38,8 @@ limitations.*
 difference. Frames like this one are how the project's changes are accepted; see
 [build and validation](docs/BUILD_AND_VALIDATION.md) for how the comparisons are run.*
 
-This is a prototype with limited game coverage. Audio, complete DRAGSTER rider
+This is a prototype with limited game coverage. The desktop app plays native audio and keeps
+a save file by default ([desktop app guide](src/app/README.md)). Complete DRAGSTER rider
 artwork, other playable tracks and modes, menus and progression, multiplayer, and public
 release packages are not yet supported. Native play uses extracted content and
 does not execute the original CPU.
