@@ -371,7 +371,8 @@ void update_records(FrontEndState& state) {
     // $80:C789-C7A1: the riders' statistics offsets, 8 x `$77:0748` and 8 x `$77:0749`, kept in
     // `$77:073E` and `$0740` (R-0111).
     constexpr unsigned statistics_bytes = 8;
-    for (const auto [at, rider_byte] : {std::pair{0x073eU, 0x0748U}, std::pair{0x0740U, 0x0749U}}) {
+    for (const auto& [at, rider_byte] :
+         {std::pair{0x073eU, 0x0748U}, std::pair{0x0740U, 0x0749U}}) {
         const unsigned offset = statistics_bytes * state.cartridge.at(rider_byte);
         state.cartridge.at(at) = static_cast<std::uint8_t>(offset);
         state.cartridge.at(at + 1) = static_cast<std::uint8_t>(offset >> 8U);

@@ -250,7 +250,11 @@ back `status=failed` for two reasons. The worker did not run the gate runner.
   `pa-anchors` and the conditional audio checks read only the original's captures). Between the
   two rounds only `tools/unirally_lab/gates/corpus.py` and its test changed, which no native
   binary reads.
-- Hosted CI: on the pull request.
+- Hosted CI: the first run on `d0d41da4` failed the Linux job: GCC's `-Wrange-loop-construct`
+  (an error under `-Werror`) on `race_result.cpp:374`, a range-for over pairs bound by value.
+  Bound by reference in the next commit (no behaviour change: the pairs are two constants); every
+  C++ file this branch changes then compiles cleanly under GCC 13.3 (Ubuntu 24.04) with CI's
+  warning flags (`-fsyntax-only`, in a container), and lab-debug ctest is 41/41.
 
 ## Review (rounds 1 and 2)
 
