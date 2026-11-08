@@ -4,6 +4,9 @@
     "sdl3": {
       "version": "3.4.10",
       "source_url": "https://github.com/libsdl-org/SDL/releases/download/release-3.4.10/SDL3-3.4.10.tar.gz",
+      "mirror_urls": [
+        "https://www.libsdl.org/release/SDL3-3.4.10.tar.gz"
+      ],
       "sha256": "12b34280415ec8418c864408b93d008a20a6530687ee613d60bfbd20411f2785",
       "arrangement": "CMake FetchContent source build inside app preset build directory; no install"
     }

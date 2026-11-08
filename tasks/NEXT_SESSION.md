@@ -40,8 +40,16 @@ frame by frame (R-0110).
   app picked the same notice again and never raced.
 - **Per frame:** the app writes the runner's race rows and picture digests from shared writers
   (`src/core/lab_outputs`); the runner's outputs are byte-identical to main's.
-- **Time:** about 5 h 55 min from claim to merge; the gates selected every step (2 h 46 min).
+- **Time:** about 7 h from claim to merge: the gates selected every step (2 h 46 min), and GitHub's
+  release-download outage held the Linux CI job for about an hour (fixed by SDL-MIRROR, #98).
 [R-0110](../docs/research/R-0110-app-parity.md) and [APP-PARITY](APP-PARITY.md) hold the detail.
+
+**8 November 2026: SDL-MIRROR is accepted (tier 2, #98) and integrated by merge commit.**
+GitHub's release downloads answered 504 on and off from about 08:40 UTC, failing the Linux CI job
+at whichever app preset's SDL fetch hit one (APP-PARITY's run four times, a manual run on main
+once). The lock (`tools/locks/frontend.json`) now lists libsdl.org's copy of the same archive as
+`mirror_urls`; FetchContent tries it after GitHub's URL and `URL_HASH` still checks the archive.
+[SDL-MIRROR](SDL-MIRROR.md) holds the detail.
 
 **8 November 2026: COVERAGE-CENSUS is accepted (tier 3, #96) and integrated by merge commit.**
 R-0109 measures how far native is from the whole original, now that R-0089's queue is done.

@@ -204,10 +204,16 @@ runner's output writers only).
 - Commits on `task/app-parity`: `572839dd` (claim), `fb4821bf`, `738a1cbe`, `986d5ad2` (worker),
   `2f0a4fa7`, `02f2a204` (review round 1's fixes), `4544cb29`, `355b5361` (coordinator records),
   then this record.
-- Time, claim 03:10 UTC to merge about 09:05 UTC, about 5 h 55 min against D-0013's 6 hours:
-  worker 1 h 15 min; review round 1 47 min; fixes and their check run 28 min; round 2 6 min;
-  gates 2 h 46 min; PR and closeout about 30 min. The gates selected every step because the
-  front-end tooling changed: they were 47% of the time.
+- Time, claim 03:10 UTC to merge about 10:10 UTC, about 7 h against D-0013's 6 hours: worker
+  1 h 15 min; review round 1 47 min; fixes and their check run 28 min; round 2 6 min; gates 2 h 46
+  min; PR and closeout about 30 min; then about 1 h 20 min of hosted CI. The gates selected every
+  step because the front-end tooling changed (40% of the time). The overrun is the hosted CI:
+  from about 08:40 UTC GitHub's release downloads answered 504 on and off, and the Linux job
+  failed four times (run 42463821792) at whichever app preset's SDL fetch hit one, while
+  `lab (macos-15)` passed. A manual run on main failed the same way. SDL-MIRROR (#98, merged
+  09:50 UTC) added libsdl.org's copy of the archive as a fallback; this branch then merged main
+  (records conflicts in `tasks/README.md`, `docs/STATE.md`, `tasks/NEXT_SESSION.md`, both entries
+  kept) for a fresh run.
 - Disk: main `local/evidence/app-parity/` 138 MB after `compact_evidence.py` (13 files
   compressed), under the 1 GB budget; the reviews' output is in `review-1/` and `review-2/` there.
 - The task's five checks (`checks.list`) are not in the catalogue. `defaults.sh` runs a player's
