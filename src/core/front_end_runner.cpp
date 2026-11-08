@@ -5,7 +5,7 @@
 //                         [--race-initialization FRAME]...
 //                         [--reset-upload-delay FRAMES]...
 //                         [--record-write FRAME OFFSET BYTE]...
-//                         [--one-player-timeline FILE]
+//                         [--one-player-timeline FILE] [--cartridge-trace FILE]
 //
 // FILE rows are "frame pad1 pad2" (hex controller words, as `$4218`/`$421A` read them); a frame
 // without a row has both pads released. Each frame prints one line: the frame, the arrow (spin,
@@ -18,6 +18,9 @@
 // Writes happen after FRAME, as in the bounded reference interventions (R-0065).
 // `--one-player-timeline` writes each one-player race update's serialized state, as
 // `--race-timeline` does a two-pad race's or a demo's (CREDITS-NAME, R-0094).
+// `--cartridge-trace` writes, after every frame, the cartridge RAM bytes that changed since the
+// frame before (power-on's all `$FF` before frame 0): "FRAME OFFSET=BYTE ..." in hex, so the
+// image at any frame can be compared with a capture's (SAVE-IMAGE-EXACT, R-0111).
 #include "cartridge_ram.hpp"
 #include "content_pack.hpp"
 #include "front_end.hpp"
@@ -50,6 +53,7 @@ namespace {
 struct Options {
     std::filesystem::path pack, inputs;
     std::filesystem::path race_timeline, look_timeline, sound_cues, one_player_timeline;
+    std::filesystem::path cartridge_trace;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
     // `--frame-digests FILE`: digests instead of files, so the gates compare two runs' outputs
@@ -194,6 +198,8 @@ Options parse_options(int argc, char** argv) {
             options.look_timeline = value();
         else if (option == "--sound-cues")
             options.sound_cues = value();
+        else if (option == "--cartridge-trace")
+            options.cartridge_trace = value();
         else if (option == "--frame-digests") {
             options.frame_digests = std::make_shared<std::ofstream>(value());
             if (!*options.frame_digests)
@@ -244,7 +250,8 @@ Options parse_options(int argc, char** argv) {
                                     "[--human-after FRAME] "
                                     "[--restore-check FRAME] "
                                     "[--reset-upload-delay FRAMES]... "
-                                    "[--record-write FRAME OFFSET BYTE]...");
+                                    "[--record-write FRAME OFFSET BYTE]... "
+                                    "[--cartridge-trace OUT.txt]");
     return options;
 }
 
@@ -665,6 +672,44 @@ private:
     std::array<bool, 2> rotating_{};
 };
 
+// `--cartridge-trace`: after each frame, the bytes of the cartridge RAM image
+// (cartridge_ram.hpp) that changed since the frame before, as "FRAME OFFSET=BYTE ..." in hex.
+// The first frame is compared with power-on's cartridge RAM, every byte `$FF`. The last line,
+// "end N", gives the frames run, which is fewer than `--frames` when the run stops early.
+class CartridgeTrace {
+public:
+    explicit CartridgeTrace(const std::filesystem::path& path) {
+        if (path.empty()) return;
+        out_.open(path);
+        if (!out_) throw std::runtime_error("cannot create the cartridge trace");
+        last_.fill(0xff);
+    }
+    CartridgeTrace(const CartridgeTrace&) = delete;
+    CartridgeTrace& operator=(const CartridgeTrace&) = delete;
+    ~CartridgeTrace() {
+        if (out_.is_open()) out_ << "end " << frames_run_ << '\n';
+    }
+    void write(std::uint32_t frame, const unirally::FrontEndState& state) {
+        if (!out_.is_open()) return;
+        const auto image = unirally::cartridge_image(state);
+        bool changed = false;
+        for (std::size_t offset = 0; offset < image.size(); ++offset) {
+            if (image[offset] == last_[offset]) continue;
+            if (!changed) out_ << frame;
+            changed = true;
+            out_ << ' ' << std::hex << offset << '=' << unsigned(image[offset]) << std::dec;
+        }
+        if (changed) out_ << '\n';
+        last_ = image;
+        frames_run_ = frame + 1;
+    }
+
+private:
+    std::ofstream out_;
+    unirally::CartridgeImage last_{};
+    std::uint32_t frames_run_{};
+};
+
 void write_frame_outputs(const Options& options, std::uint32_t frame,
                          const unirally::FrontEndState& state) {
     print_state(frame, state);
@@ -771,6 +816,7 @@ int main(int argc, char** argv) try {
     std::optional<unirally::ZoomZooState> restored_local;
     std::size_t races = 0, resets = 0;
     SoundCueLog sound_cues(options.sound_cues);
+    CartridgeTrace cartridge_trace(options.cartridge_trace);
     for (std::uint32_t frame = 0; frame < options.frames; ++frame) {
         for (const auto& [after, offset, byte] : options.record_writes)
             if (frame == after + 1) set_record_byte(state.records, offset, byte);
@@ -791,15 +837,18 @@ int main(int argc, char** argv) try {
                 restored_local.reset();
             }
             if (state.mode == unirally::FrontEndMode::demo) {
-                if (frame <= race.initialization_frame) continue;
-                update_demo_race(options, pack, state, race, frame, pads, races);
-                unirally::add_race_cartridge_increments(state, race.state.cartridge_increments);
-                write_race_state(race_timeline, frame, race.state);
-                sound_cues.write(frame, race.state.sound_cues);
+                if (frame > race.initialization_frame) {
+                    update_demo_race(options, pack, state, race, frame, pads, races);
+                    unirally::add_race_cartridge_increments(state, race.state.cartridge_increments);
+                    write_race_state(race_timeline, frame, race.state);
+                    sound_cues.write(frame, race.state.sound_cues);
+                }
+                cartridge_trace.write(frame, state);
                 continue;
             }
             if (frame <= race.initialization_frame) {
                 write_loading_frame(options, state, race, frame, sound_cues);
+                cartridge_trace.write(frame, state);
                 continue;
             }
             update_local_race(options, pack, content, state, race, race_timeline,
@@ -824,6 +873,7 @@ int main(int argc, char** argv) try {
                 emit_picture(options, frame, unirally::RgbFrame{});
             emit_records(options, frame, state);
         }
+        cartridge_trace.write(frame, state);
     }
     // A mode chosen; for 1P the race NOW PLAYING chose.
     if (state.mode_chosen)
