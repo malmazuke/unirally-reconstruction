@@ -70,7 +70,8 @@ What makes each differ, and can the app match the runner on the same inputs?
   `start_race` labels it), and a scripted run reads every race's pads there: the one-player race
   without audio and the idle demo's race too. A live run still takes the pads, so a press still ends
   the demo.
-- **The script past a notice (item 3)** (`FrontEndSession::script_frame`, `script_offset`). The
+- **The script past a notice (item 3)** (`ScriptClock`, `FrontEndSession::script_frame`,
+  `script_offset`). The
   script's frames now go on through a notice and after it: the notice's 100 frames count, and when
   the main menu is put back the script runs `script_offset` frames ahead of the front end's frame
   (the notice's frames plus the main-menu frames the front end went back over). The front end and
@@ -117,8 +118,11 @@ output):
   Against `front_end_runner` on two-races itself: the cues before the code equal (348 lines), the
   cues after the notice moved back 181 equal (7,955 lines; the 2 lines between are the app's own),
   the one-player rows equal (2,550 lines, labelled with the runner's frames as they are), the
-  pictures before the code equal (500) and after the notice equal (4,979). The race returns at the
-  runner's frame (3454) with its totals 3357/3358. Main's app read the code again on every pass:
+  pictures before the code equal (500) and after the notice equal (4,979). The race ends on the
+  runner's frame 3454 with its totals 3357/3358: the runner logs `race returned at 3454`, the frame
+  of the race's last update; the app logs `race returned at front-end frame 3455`, the front end's
+  frame after the return (`front_end_frame()`, the frame its next update reads), with or without a
+  notice. The rows and pictures, labelled alike, are equal. Main's app read the code again on every pass:
   29 notices, no race; its cues equal before the code and differ from the notice's end on.
 - A one-player race without audio (a laboratory run's default, `SILENT=1`): the app's one-player
   rows equal the runner's before frame 5400 (2,550 rows; the race returns at 3454 with 3357/3358).
@@ -130,7 +134,10 @@ output):
 - `front_end_runner` is byte-identical to main's on every output (stdout, stderr, cues, race,
   one-player and look timelines, frame digests) on `demo-pad-port2` (11,000 frames), `two-races`
   (5,400) and `twop-bowl` (6,100) (`runner_same.sh`).
-- The defaults (`defaults.sh`, `HOME` pointed at a fresh folder): a player's launch plays native
+- The defaults (`defaults.sh`, `HOME` pointed at a fresh folder; since review 1 with SDL's dummy
+  video, software renderer and dummy audio, still a player's launch, and from an output path with a
+  space, as the gates' is; a read-only home plays on without a save, `--save-file` there fails, and
+  a damaged default save is refused and kept): a player's launch plays native
   audio and writes the default save (8,192 bytes), which the next launch loads; `--no-audio
   --no-save-file` is silent and writes nothing; `--hidden` is silent and writes nothing, as main's
   app is; `--hidden --native-title-menu-audio` plays; with no audio device (`SDL_AUDIO_DRIVER`
@@ -157,6 +164,8 @@ each fails:
 | M3 a race after a notice read without `script_offset` | `notice_race.sh` | cues, rows and pictures DIFFER from 1381 (the app pauses at the countdown) |
 | M4 the front end read at its own frame after a notice (main's) | `notice_race.sh` | notices again, no race: cues, rows, pictures DIFFER |
 | M7 the shared digest's seed changed | `runner_same.sh` | the runner's digests DIFFER on all three routes |
+| M8 `ScriptClock::frame` frozen during a notice (review 1) | `frontend_contract_tests` | fails: "a notice's frames count" (`notice_race.sh` cannot see it: during a notice only the producer's pad words read the script) |
+| M9 an unwritable default save ends the launch again (review 1) | `defaults.sh` | `read-only` DIFFERS (rc 1) |
 
 ## Reproduction
 
@@ -172,6 +181,23 @@ From the worktree (`local/` linked; app-debug and lab-release built), each throu
 - The task's checks: `local/evidence/app-parity/checks.list`.
 
 ## Limits
+
+- **What item 3 reaches.** Every race track 0-44 has a scenario, so with pack v36 or later (v41
+  here) no menu route shows a notice: only the WIPE RAM code on a pack before v36 does, which is why
+  the item-3 check runs pack v35. Item 3 mainly keeps laboratory input scripts working past a notice.
+  `front_end_runner` has no notices (it stops on a mode it does not have), and the original shows
+  the WIPE RAM menu there, so there is no capture of the original through a notice: the app after a
+  notice is tied to the original only through the runner on the route without it, which the gates
+  check against the original (AUDIO-ONE-PLAYER's `two-races` cues, on v41).
+- **The default save on Windows** is read with `std::getenv("APPDATA")` into a `path` from a
+  narrow string, which decodes in the ANSI code page: a user folder with characters outside it
+  would be mis-decoded, and MSVC warns (C4996). There is no Windows build or CI; `_wgetenv` would be
+  the fix when there is.
+- **An unusable save** (review 1): a default save that cannot be read or written leaves the
+  launch without one, with a note (`Save file: none (cannot use ...)`, or `none from now on (cannot
+  write it ...)` at the first write, a frame after power-on); a damaged one (not 8,192 bytes) is
+  refused and kept as it is, its message naming `--no-save-file` and `--save-file PATH`.
+  **Decision:** a `--save-file PATH` the player named that cannot be used stays an error.
 
 - The app's outputs are compared with `front_end_runner`'s, which is compared with the original by
   the gates (DEMO-AUDIO's schedules, AUDIO-ONE-PLAYER, TWO-HUMAN-STUNTS-AUDIO). The app's PCM is the

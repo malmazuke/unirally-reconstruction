@@ -116,3 +116,52 @@ cues and pictures (not only cues and totals).
   and design 10 min; the change and the first builds 10 min; then about 55 min of app runs under
   the heavy-run lock (item 2 03:23-03:34, batch 1 03:35-04:00, mutants 04:01-04:20, the M6 rerun
   04:21-04:24), with the tests, lints, the commit and the records done alongside.
+
+## Review round 1 fixes (worker)
+
+Review: `local/evidence/app-parity/review-1/review.md` (request changes, one blocking finding).
+
+- **1 (blocking), `defaults.sh`.** Rewritten without `eval`: each case is a function, every path is
+  quoted, and every exit-code test reads an rc file that must exist (`rc` prints `missing`, never a
+  number, so a missing file fails both `== 0` and `!= 0`). Run from absolute paths with a space.
+- **2, no window or sound.** `defaults.sh` runs every case with `SDL_VIDEO_DRIVER=dummy
+  SDL_RENDER_DRIVER=software SDL_AUDIO_DRIVER=dummy` (still a player's launch); `checks.list`'s
+  comment says so.
+- **3, an unusable default save.** `open_save_file` (`sdl_main.cpp`): a default save that cannot be
+  read leaves the launch without one (`Save file: none (cannot use PATH: why)`); a first write that
+  fails (the read-only home's `create_directories`) drops it (`Save file: none from now on (cannot
+  write it: why)`) and play goes on. A damaged one (`DamagedSaveFile`, not 8,192 bytes) is refused
+  and kept, its message naming `--no-save-file` and `--save-file PATH`. **Decision:** a
+  `--save-file PATH` the player named that cannot be used stays an error. New `defaults.sh` cases:
+  `read-only`, `read-only-named`, `damaged` (10 cases now).
+- **4.** `SaveFile`'s comment is back above its class.
+- **5, notes.** The notice term is now in `ScriptClock` (`frontend.hpp`), which `FrontEndSession`
+  uses, with a contract test of the clock through two notices (`script_clock_rule`); R-0110 states
+  the 3454/3455 labelling (the runner's last race frame, the app's next front-end frame); README and
+  `src/app/README.md` no longer call menus, multiplayer, LEAGUE or OPTIONS missing, give the
+  relative-`XDG_DATA_HOME` rule and the save's degrade rules, and say no menu route reaches a notice
+  from pack v36 (every track 0-44 has a scenario); `notice_compare.py` prints `pictures: DIFFERS`
+  and exits 1 when there is no notice; `app_vs_runner.sh` clears its route's old outputs first;
+  `frontend run` reports a `--track` run's audio as `off (--track)`; R-0110's Limits add what item 3
+  reaches (mainly lab scripts past a notice, tied to the original only through the runner), the
+  Windows `getenv` decoding and the save's degrade rules. `tasks/README.md`'s tier is left to the
+  coordinator.
+- Mutants: **M8** `ScriptClock::frame`'s notice term frozen: `frontend_contract_tests` fails ("a
+  notice's frames count"; `review-1-fixes/mutant-clock.out`). **M9** the store's degrade removed:
+  `defaults.sh` `read-only` DIFFERS, rc 1 (`review-1-fixes/mutant-save-degrade.out`). Main's app on
+  the new `defaults.sh`: 8 of 10 cases DIFFER (`no-device-asked` and `read-only-named` pass: main's
+  app refuses `--audio` as an unknown option, and fails on the read-only `--save-file` too).
+- Checks: `project.py build` `status=passed` app-debug and lab-debug; `ctest` app-debug 41/41,
+  lab-debug 41/41; `git-clang-format` applied on the changed `src/app` and `tests/app` lines;
+  `clang-tidy` clean on `frontend.cpp`, `save_file.cpp`, `sdl_main.cpp`; `coverage native-symbols
+  --check` `status=passed` (no `src/core` change this round); `tests.tooling.test_frontend` OK.
+  The whole `checks.list` once, each line with its own absolute `$G` under
+  `artifacts/round 1/checks/` (spaces in the path) and `$B` main's binaries
+  (`run_checks.sh`, `review-1-fixes/checks.out`): all five rc 0, 05:21-05:42 UTC:
+  `runner_same.sh` byte-identical on all three routes; `defaults.sh` 10/10; `demo_pads.sh` equal on
+  all three routes (13,662 / 4,280 / 8,997, 16,535 / 5,680 / 9,997, 17,948 / 6,075 / 10,996);
+  `notice_race.sh` equal (cues 348 + 7,955, rows 2,550, pictures 500 + 4,979); `race_routes.sh`
+  equal (two-races 8,223 / 2,550 / 5,399, twop-bowl 9,019 / 2,727 / 6,100, silent two-races 2,550).
+- Commits: `2f0a4fa7` (the code, tests and user docs), then this record.
+- Time: 05:15:42 to 05:43 UTC (`date -u`), about 28 min, of which the checks run took 22 min.
+
