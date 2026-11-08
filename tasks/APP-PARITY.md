@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 8 November 2026 03:10 UTC on main `68b1c9b4`, on the user's instruction
+- Status: **accepted** 8 November 2026 (tier 1, #97). Claimed 8 November 2026 03:10 UTC on main
+  `68b1c9b4`, on the user's instruction
   ("Start APP-PARITY"). Queued 8 November 2026 by [COVERAGE-CENSUS](COVERAGE-CENSUS.md) (R-0109,
   queue item 1). Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`): coordinator and
   integrator; a worker subagent implements, a fresh subagent reviews. Run under
@@ -166,3 +167,51 @@ Review: `local/evidence/app-parity/review-1/review.md` (request changes, one blo
 - Commits: `2f0a4fa7` (the code, tests and user docs), then this record.
 - Time: 05:15:42 to 05:43 UTC (`date -u`), about 28 min, of which the checks run took 22 min.
 
+
+## Review (rounds 1 and 2, approved `02f2a204`)
+
+A fresh subagent in its own checkout at the candidate (tier 1: `src/core` changed, for the
+runner's output writers only).
+- [Round 1](https://github.com/malmazuke/unirally-reconstruction/pull/97#pullrequestreview-5817223165)
+  at `986d5ad2` (04:27-05:15 UTC): request changes. Blocking: `defaults.sh` split its output path
+  on spaces (`eval`), so 6 of 7 cases failed under the gate runner's path and one passed
+  vacuously. Should-fixes: the check opened a window and played sound; a default save that could
+  not be written ended the launch; a misplaced class comment. Notes: the notice term of the
+  script frame untested, the 3454/3455 wording, stale docs, a traceback in `notice_compare.py`,
+  the Windows `APPDATA` decoding, item 3's reach. All handled in "Review round 1 fixes" above.
+- [Round 2](https://github.com/malmazuke/unirally-reconstruction/pull/97#pullrequestreview-5817223203)
+  at `02f2a204` (05:43-05:50 UTC): approve. The reviewer reran `defaults.sh` from a path with a
+  space (10/10; main's app 8 of 10 differ; a copy that never writes its exit-code files fails all
+  10), the read-only home, the damaged and unreadable saves, the frozen-notice-clock mutant, and
+  `notice_race.sh`. Its notes: the dropped-save note goes to standard output only (in R-0110's
+  limits); a stray blank line in R-0110's limits (removed in `355b5361`); the shared toolchain
+  manifest pointed at the review checkout (rebootstrapped).
+- `4544cb29` records the tier change; `355b5361` the blank line. Neither touches code.
+
+## Gates (D-0012)
+
+- `gates-1` at `355b5361` (05:50-08:37 UTC, 9,975 s): `status=passed`. Every step was selected
+  (`tools/unirally_lab/frontend/commands.py` changed). 105 checks against the original
+  `same-as-main`, 32 steps passed, 3 skipped (`race-sweep-classify` and its twin: the race sweep
+  found nothing to classify; `pa-anchors` reads only the original's captures), and the task's 5
+  checks rc 0. `fe-replay`: 519 recorded runner invocations, 16,305,823 frames, 0 differing.
+  `app-podium-audio` passed in 770 s and `app-demo-audio` in 263 s. Peak temp 4.2 GB; free disk
+  89.7 GB at the lowest.
+- Hosted CI: on the pull request.
+
+## Handoff (closeout)
+
+- Commits on `task/app-parity`: `572839dd` (claim), `fb4821bf`, `738a1cbe`, `986d5ad2` (worker),
+  `2f0a4fa7`, `02f2a204` (review round 1's fixes), `4544cb29`, `355b5361` (coordinator records),
+  then this record.
+- Time, claim 03:10 UTC to merge about 09:05 UTC, about 5 h 55 min against D-0013's 6 hours:
+  worker 1 h 15 min; review round 1 47 min; fixes and their check run 28 min; round 2 6 min;
+  gates 2 h 46 min; PR and closeout about 30 min. The gates selected every step because the
+  front-end tooling changed: they were 47% of the time.
+- Disk: main `local/evidence/app-parity/` 138 MB after `compact_evidence.py` (13 files
+  compressed), under the 1 GB budget; the reviews' output is in `review-1/` and `review-2/` there.
+- The task's five checks (`checks.list`) are not in the catalogue. `defaults.sh` runs a player's
+  launch with HOME pointed at a scratch folder and SDL's dummy drivers.
+- The closing session removes `.worktrees/app-parity` and `.worktrees/app-parity-review` and the
+  local branch, then bootstraps and rebuilds app-debug in the main checkout.
+- Next in R-0109's queue: SAVE-IMAGE-EXACT (tier 1).
