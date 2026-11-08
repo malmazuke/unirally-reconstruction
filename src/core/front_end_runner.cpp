@@ -21,6 +21,7 @@
 #include "cartridge_ram.hpp"
 #include "content_pack.hpp"
 #include "front_end.hpp"
+#include "lab_outputs.hpp"
 #include "presentation.hpp"
 #include "race_camera.hpp"
 #include "race_sound.hpp"
@@ -29,7 +30,6 @@
 
 #include <array>
 #include <cstdint>
-#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -39,10 +39,8 @@
 #include <optional>
 #include <set>
 #include <span>
-#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -276,40 +274,16 @@ void write_file(const std::filesystem::path& path, std::span<const std::uint8_t>
     if (!out) throw std::runtime_error("cannot write front-end " + what);
 }
 
-// A picture as `--picture` writes it, a binary PPM.
-std::vector<std::uint8_t> ppm_file(const unirally::RgbFrame& frame) {
-    static constexpr std::string_view header = "P6\n256 224\n255\n";
-    std::vector<std::uint8_t> bytes(header.begin(), header.end());
-    bytes.insert(bytes.end(), frame.pixels.begin(), frame.pixels.end());
-    return bytes;
-}
-
 // The VRAM as `--vram` writes it.
 std::span<const std::uint8_t> vram_file(const unirally::FrontEndState& state) {
     return std::span(reinterpret_cast<const std::uint8_t*>(state.video.vram.data()),
                      state.video.vram.size() * sizeof state.video.vram[0]);
 }
 
-// 64-bit FNV-1a: a regression check between two runs, not a security hash.
-std::uint64_t digest_of(std::span<const std::uint8_t> bytes) {
-    std::uint64_t digest = 0xcbf29ce484222325ULL;
-    for (const auto byte : bytes) {
-        digest ^= byte;
-        digest *= 0x100000001b3ULL;
-    }
-    return digest;
-}
-
+// The digest of the bytes a file option would write (lab_outputs.hpp, shared with the app).
 void write_digest(const Options& options, std::uint32_t frame, char kind,
                   std::span<const std::uint8_t> bytes) {
-    std::ostringstream written;
-    write_bytes(written, bytes);
-    const auto text = std::move(written).str();
-    char line[40];
-    std::snprintf(line, sizeof line, "%u %c %016llx\n", frame, kind,
-                  static_cast<unsigned long long>(digest_of(
-                      std::span(reinterpret_cast<const std::uint8_t*>(text.data()), text.size()))));
-    *options.frame_digests << line;
+    *options.frame_digests << unirally::digest_line(frame, kind, bytes);
 }
 
 // Whether a frame's picture and VRAM digests are asked for.
@@ -326,7 +300,7 @@ bool picture_wanted(const Options& options, std::uint32_t frame) {
 void emit_picture(const Options& options, std::uint32_t frame, const unirally::RgbFrame& picture) {
     const bool to_file = options.pictures.contains(frame);
     if (!to_file && !picture_digest_wanted(options, frame)) return;
-    const auto file = ppm_file(picture);
+    const auto file = unirally::ppm_picture(picture);
     if (to_file) write_file(options.pictures.at(frame), file, "picture");
     if (picture_digest_wanted(options, frame)) write_digest(options, frame, 'P', file);
 }
@@ -574,12 +548,7 @@ void write_look(std::ofstream& out, std::uint32_t frame, const unirally::RiderLo
 void write_race_state(std::ofstream& out, std::uint32_t frame,
                       const unirally::ZoomZooState& state) {
     if (!out.is_open()) return;
-    out << frame << ' ';
-    for (const auto byte : unirally::serialize_zoom_zoo(state)) {
-        constexpr char hex[] = "0123456789abcdef";
-        out << hex[byte >> 4U] << hex[byte & 15U];
-    }
-    out << '\n';
+    out << unirally::race_state_row(frame, state);
 }
 
 // Check both local save layouts, the AI guard and the frame after restoration.

@@ -1,5 +1,6 @@
 #include "content_pack.hpp"
 #include "frontend.hpp"
+#include "lab_outputs.hpp"
 #include "movement.hpp"
 #include "presentation.hpp"
 #include "race_camera.hpp"
@@ -23,6 +24,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace {
 using unirally::app::GamepadButton;
@@ -176,7 +178,9 @@ struct Options {
   std::uint32_t maximum_updates{};
   std::optional<std::uint16_t> fixed_controller_mask;
   bool hidden{};
-  bool native_title_menu_audio{};
+  // --audio (its old name --native-title-menu-audio) or --no-audio; unset, a
+  // player's launch has audio and a laboratory launch none (launch_settings).
+  std::optional<bool> audio;
   unirally::ClassicRaceTrack track{unirally::ClassicRaceTrack::Dragster};
   bool track_given{}; // without --track the app starts at power-on (the front
                       // end)
@@ -187,8 +191,14 @@ struct Options {
   // writes it.
   std::filesystem::path audio_cue_log;
   // The cartridge RAM kept between runs (SAVE-FILES): loaded at power-on,
-  // written whenever it changes.
+  // written whenever it changes. Without it a player's launch keeps the
+  // default save file (`default_save_file`) unless --no-save-file.
   std::filesystem::path save_file;
+  bool no_save_file{};
+  // front_end_runner's per-frame outputs (R-0110): `--race-timeline` (two-pad
+  // races and idle demos), `--one-player-timeline` and `--frame-digests`
+  // (each frame's picture).
+  std::filesystem::path race_timeline, one_player_timeline, frame_digests;
 };
 
 // "frame pad1 pad2" rows, the pads as hex SNES words, as `front_end_runner`
@@ -261,14 +271,36 @@ void print_help() {
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, "
          "Start, Back=Select;\n"
       << "the analog stick is not mapped. Either gamepad exits the idle demo.\n"
-      << "Native audio (opt-in): --native-title-menu-audio (v31 pack: title "
-         "and menus; v32: also\n"
-      << "the one-player game, 2P, VS, LEAGUE, OPTIONS and the idle demos).\n"
-      << "Saves: --save-file PATH keeps the cartridge RAM (records, players, "
-         "leagues, open tours)\n"
-      << "between runs, loaded at power-on and written when it changes; an "
-         "emulator's 8 KiB save\n"
-      << "of this ROM loads too.\n";
+      << "Native audio plays from power-on (v31 pack: title and menus; v32 and "
+         "later: also the\n"
+      << "one-player game, 2P, VS, LEAGUE, OPTIONS and the idle demos); "
+         "--no-audio turns it off.\n"
+      << "A pack without native audio, or no audio device, runs silent. "
+         "--audio (formerly\n"
+      << "--native-title-menu-audio) asks for it: then either is an error.\n"
+      << "Saves: the cartridge RAM (records, players, leagues, open tours) is "
+         "kept between runs,\n"
+      << "loaded at power-on and written when it changes, in "
+#if defined(__APPLE__)
+         "~/Library/Application Support/Unirally/unirally.sav"
+#elif defined(_WIN32)
+         "%APPDATA%\\Unirally\\unirally.sav"
+#else
+         "$XDG_DATA_HOME/unirally/unirally.sav (~/.local/share/unirally)"
+#endif
+         ";\n"
+      << "--save-file PATH keeps it there instead, --no-save-file keeps none. "
+         "An emulator's 8 KiB\n"
+      << "save of this ROM loads too.\n"
+      << "Laboratory runs (--hidden, --front-end-inputs, "
+         "--fixed-controller-mask) are silent and\n"
+      << "keep no save unless given --audio or --save-file; --track races have "
+         "neither.\n"
+      << "Laboratory outputs, in front_end_runner's form: --race-timeline "
+         "FILE, "
+         "--one-player-timeline\n"
+      << "FILE, --frame-digests FILE (every frame's picture), --audio-cue-log "
+         "FILE (with audio).\n";
 }
 
 std::optional<Options> options(int argc, char **argv) {
@@ -283,8 +315,16 @@ std::optional<Options> options(int argc, char **argv) {
       result.hidden = true;
       continue;
     }
-    if (option == "--native-title-menu-audio") {
-      result.native_title_menu_audio = true;
+    if (option == "--audio" || option == "--native-title-menu-audio") {
+      result.audio = true;
+      continue;
+    }
+    if (option == "--no-audio") {
+      result.audio = false;
+      continue;
+    }
+    if (option == "--no-save-file") {
+      result.no_save_file = true;
       continue;
     }
     if (option == "--supported-profiles") {
@@ -328,13 +368,15 @@ std::optional<Options> options(int argc, char **argv) {
       result.audio_cue_log = value;
     else if (option == "--save-file")
       result.save_file = value;
+    else if (option == "--race-timeline")
+      result.race_timeline = value;
+    else if (option == "--one-player-timeline")
+      result.one_player_timeline = value;
+    else if (option == "--frame-digests")
+      result.frame_digests = value;
     else
       throw std::invalid_argument("unknown option: " + std::string(option));
   }
-  if (result.native_title_menu_audio && result.track_given)
-    throw std::invalid_argument("native title/menu audio starts at power-on");
-  if (!result.save_file.empty() && result.track_given)
-    throw std::invalid_argument("a save file needs the front end (no --track)");
   if (result.pack.empty())
     throw std::invalid_argument("--content-pack is required; use `project.py "
                                 "frontend run` for first-launch extraction");
@@ -369,6 +411,109 @@ void write_audio_cues(std::ofstream &out, std::uint32_t frame,
           << unsigned(cue.parameter) << '\n';
       break;
     }
+}
+
+// A laboratory script's pads for a frame: both released when it has no row.
+unirally::FrontEndPads
+script_pads(const std::map<std::uint32_t, unirally::FrontEndPads> &rows,
+            std::uint32_t frame) {
+  const auto row = rows.find(frame);
+  return row == rows.end() ? unirally::FrontEndPads{} : row->second;
+}
+
+// A laboratory output file, or none when its option is not given.
+std::ofstream open_output(const std::filesystem::path &path,
+                          std::string_view option) {
+  std::ofstream out;
+  if (path.empty())
+    return out;
+  out.open(path);
+  if (!out)
+    throw std::runtime_error("cannot create " + std::string(option));
+  return out;
+}
+
+// The launch's settings for these options (launch_settings, R-0110).
+unirally::app::LaunchSettings settings_for(const Options &options) {
+  unirally::app::LaunchRequest request;
+  request.laboratory = options.hidden || !options.front_end_inputs.empty() ||
+                       options.fixed_controller_mask.has_value();
+  request.track = options.track_given;
+  request.audio = options.audio;
+  request.save_file_given = !options.save_file.empty();
+  request.no_save_file = options.no_save_file;
+  return unirally::app::launch_settings(request);
+}
+
+// Native audio, if the launch has it. A launch that did not ask for it runs
+// silent, as the app did before audio was the default, when the pack has no
+// native audio (before v31) or no audio device starts; one that asked fails.
+std::unique_ptr<unirally::app::SdlTitleMenuAudio>
+start_audio(const unirally::app::LaunchSettings &settings,
+            const unirally::ClassicContentPack &pack,
+            const std::optional<unirally::CartridgeImage> &saved) {
+  if (!settings.audio) {
+    std::cout << "Audio playback disabled.\n";
+    return {};
+  }
+  const auto silent = [&](const std::string &why) {
+    std::cout << "Audio playback disabled: " << why << ".\n";
+    return std::unique_ptr<unirally::app::SdlTitleMenuAudio>{};
+  };
+  if (pack.optional_entry("audio.hunter-graphics-work-directory").empty()) {
+    if (settings.audio_asked)
+      throw std::invalid_argument(
+          "--audio requires a v31 or later content pack");
+    return silent(
+        "this content pack has no native audio (v31 and later have it)");
+  }
+  if (!SDL_InitSubSystem(SDL_INIT_AUDIO)) {
+    if (settings.audio_asked)
+      throw sdl_error("SDL audio initialization failed");
+    return silent(std::string("no audio: ") + SDL_GetError());
+  }
+  try {
+    auto audio =
+        std::make_unique<unirally::app::SdlTitleMenuAudio>(pack, saved);
+    std::cout << "Native audio enabled.\n";
+    return audio;
+  } catch (const std::exception &error) {
+    if (settings.audio_asked)
+      throw;
+    return silent(std::string("native audio did not start: ") + error.what());
+  }
+}
+
+// The save file the launch keeps, if any (R-0110). The default save, which the
+// player did not ask for, degrades as audio does: one that cannot be read
+// leaves the launch without a save, with a note. A damaged one (not 8 KiB) is
+// refused and kept as it is, its message naming --no-save-file. A save the
+// player named with --save-file that cannot be used is an error.
+std::optional<unirally::app::SaveFile>
+open_save_file(const unirally::app::LaunchSettings &settings,
+               const std::filesystem::path &given) {
+  const auto path =
+      settings.default_save_file ? unirally::app::default_save_file() : given;
+  if (path.empty()) {
+    std::cout << "Save file: none"
+              << (settings.default_save_file ? " (no home folder)" : "")
+              << '\n';
+    return std::nullopt;
+  }
+  try {
+    std::optional<unirally::app::SaveFile> save(std::in_place, path);
+    std::cout << "Save file: " << path.string()
+              << (save->loaded() ? " (loaded)" : " (new)") << '\n';
+    return save;
+  } catch (const unirally::app::DamagedSaveFile &) {
+    throw;
+  } catch (const std::exception &error) {
+    if (!settings.default_save_file)
+      throw;
+    std::cout << "Save file: none (cannot use " << path.string() << ": "
+              << error.what() << ")\n";
+    return std::nullopt;
+  }
 }
 
 std::string window_title(const std::string &track_name) {
@@ -406,6 +551,7 @@ int main(int argc, char **argv) try {
   const auto parsed = options(argc, argv);
   if (!parsed)
     return 0;
+  const auto settings = settings_for(*parsed);
   RuntimeContent content(parsed->pack); // validate before SDL or gameplay
   auto track = parsed->track;           // NOW PLAYING can choose another race
   const bool zoom_zoo = track == unirally::ClassicRaceTrack::ZoomZoo;
@@ -438,8 +584,7 @@ int main(int argc, char **argv) try {
   // pause menu does not.
   unsigned results_reached = 0, result_restarts = 0, pause_restarts = 0;
 
-  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD |
-                (parsed->native_title_menu_audio ? SDL_INIT_AUDIO : 0U)))
+  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     throw sdl_error("SDL initialization failed");
   SdlQuitter quit;
   const auto flags =
@@ -461,10 +606,7 @@ int main(int argc, char **argv) try {
     throw sdl_error("cannot select nearest-neighbor scaling");
 
   std::cout << "Classic pack validated: " << parsed->pack << '\n'
-            << "PAL scheduler: 50 Hz, maximum catch-up 4 updates\n"
-            << (parsed->native_title_menu_audio
-                    ? "Native title/menu audio prototype enabled.\n"
-                    : "Audio playback disabled.\n");
+            << "PAL scheduler: 50 Hz, maximum catch-up 4 updates\n";
 
   unirally::app::InputState input;
   Gamepads gamepads(input);
@@ -501,23 +643,21 @@ int main(int argc, char **argv) try {
   bool reported_held_frame{};
   // Without --track the session starts at power-on; NOW PLAYING's Race starts
   // the race.
-  std::optional<unirally::app::SaveFile> save_file;
+  auto save_file = open_save_file(settings, parsed->save_file);
   std::optional<unirally::CartridgeImage> saved;
-  if (!parsed->save_file.empty()) {
-    save_file.emplace(parsed->save_file);
+  if (save_file)
     saved = save_file->loaded();
-  }
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given)
     front_end.emplace(content.pack, saved);
-  std::unique_ptr<unirally::app::SdlTitleMenuAudio> native_audio;
-  if (parsed->native_title_menu_audio)
-    native_audio =
-        std::make_unique<unirally::app::SdlTitleMenuAudio>(content.pack, saved);
+  const auto native_audio = start_audio(settings, content.pack, saved);
   // During a race the front end waits here for the race's result load.
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
   std::uint32_t demo_race_updates = 0;
   unirally::app::ScriptedRaceFrames scripted_race;
+  bool notice_was_showing = false;
+  // The last update was one of a race's loading frames: the screen is blank.
+  bool race_loading_shown = false;
   // Native audio past the main menu's exit (D-0010): with it, a race waits its
   // track's measured loading frames, as the original does, while the race's
   // sound program loads (R-0077: every track and song); production stops
@@ -528,12 +668,17 @@ int main(int argc, char **argv) try {
   // frames.
   std::uint32_t race_loading_remaining = 0, race_start_update = 0;
   bool audio_stopped = false;
-  std::ofstream audio_cue_log;
-  if (!parsed->audio_cue_log.empty()) {
-    audio_cue_log.open(parsed->audio_cue_log);
-    if (!audio_cue_log)
-      throw std::runtime_error("cannot create --audio-cue-log");
-  }
+  auto audio_cue_log = open_output(parsed->audio_cue_log, "--audio-cue-log");
+  auto race_timeline = open_output(parsed->race_timeline, "--race-timeline");
+  auto one_player_timeline =
+      open_output(parsed->one_player_timeline, "--one-player-timeline");
+  auto frame_digests = open_output(parsed->frame_digests, "--frame-digests");
+  // A picture's digest line, labelled with front_end_runner's frame (R-0110).
+  const auto write_picture_digest = [&](std::uint32_t frame,
+                                        const unirally::RgbFrame &picture) {
+    frame_digests << unirally::digest_line(frame, 'P',
+                                           unirally::ppm_picture(picture));
+  };
   while (running) {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
@@ -624,15 +769,19 @@ int main(int argc, char **argv) try {
         ++gamepad_only_updates;
       if (parsed->fixed_controller_mask.has_value())
         ports[0] = *parsed->fixed_controller_mask;
-      // A scripted two-human race, and with native audio a one-player race,
-      // read the script by front_end_runner's frames (R-0106).
-      const bool race_waits_loading = race_start_update != 0;
-      if (waiting_front_end && !parsed->front_end_inputs.empty() &&
-          (waiting_front_end->local_race() || race_waits_loading)) {
-        const auto row = parsed->front_end_inputs.find(scripted_race.next());
-        ports = row == parsed->front_end_inputs.end()
-                    ? std::array<std::uint16_t, 2>{}
-                    : logical_masks(row->second);
+      // Every update of a race from the menus, its loading frames and an idle
+      // demo's race included, is a front_end_runner frame (R-0106, R-0110). A
+      // scripted race reads the script there, as the runner does: one-player
+      // and two-human races, and the idle demo's race, where a pad only ends
+      // the demo (`update_demo_controllers`, R-0096). After a notice the
+      // script runs ahead of the front end's frames (`script_offset`).
+      std::optional<std::uint32_t> race_frame;
+      if (waiting_front_end) {
+        race_frame = scripted_race.next();
+        if (!parsed->front_end_inputs.empty())
+          ports = logical_masks(
+              script_pads(parsed->front_end_inputs,
+                          *race_frame + waiting_front_end->script_offset()));
       }
       last_ports = ports;
       if (ports[0] != 0) {
@@ -649,24 +798,35 @@ int main(int argc, char **argv) try {
         audio_words = {unirally::app::snes_pad_word(ports[0]),
                        unirally::app::snes_pad_word(ports[1])};
         if (front_end && !parsed->front_end_inputs.empty()) {
-          const auto row =
-              parsed->front_end_inputs.find(front_end->front_end_frame());
-          if (row == parsed->front_end_inputs.end())
-            audio_words = {};
-          else
-            audio_words = {row->second.one, row->second.two};
+          const auto pads =
+              script_pads(parsed->front_end_inputs, front_end->script_frame());
+          audio_words = {pads.one, pads.two};
         }
       }
       bool race_chosen = false;
+      // The front end's frame this update is, for its picture's digest; none
+      // on a notice's frames, which front_end_runner does not have.
+      std::optional<std::uint32_t> front_end_digest_frame;
+      if (front_end && !front_end->notice_showing())
+        front_end_digest_frame = front_end->front_end_frame();
       if (front_end && !parsed->front_end_inputs.empty()) {
-        const auto row =
-            parsed->front_end_inputs.find(front_end->front_end_frame());
-        race_chosen = front_end->update(row == parsed->front_end_inputs.end()
-                                            ? unirally::FrontEndPads{}
-                                            : row->second);
+        race_chosen = front_end->update(
+            script_pads(parsed->front_end_inputs, front_end->script_frame()));
       } else if (front_end) {
         race_chosen = front_end->update(ports);
       }
+      if (front_end && notice_was_showing && !front_end->notice_showing())
+        std::cout << "Front end: notice ended; the main menu resumes at "
+                     "front-end frame "
+                  << front_end->front_end_frame() << ", script frame "
+                  << front_end->script_frame() << '\n';
+      if (front_end)
+        notice_was_showing = front_end->notice_showing();
+      // The race's choice is no picture of the runner's (it draws none on the
+      // frame NOW PLAYING or the demo's title ends).
+      if (frame_digests && front_end_digest_frame && !race_chosen)
+        write_picture_digest(*front_end_digest_frame,
+                             front_end->front_end_picture());
       if (front_end) {
         audio_cues = front_end->sound_cues();
         if (race_chosen && native_audio && !audio_stopped &&
@@ -711,9 +871,13 @@ int main(int argc, char **argv) try {
           // same track again.
           zoom_state = unirally::classic_race_start(zoom_content, scenario);
           zoom_state.league_statistics.enabled = front_end->league_race();
-          // With native audio the race's loading frames are waited first.
-          scripted_race.start(front_end->race_initialization_frame(),
-                              race_loading_remaining);
+          // With native audio the race's loading frames are waited first; an
+          // idle demo's race initializes on the frame before the front end's.
+          if (front_end->demo_race())
+            scripted_race.start(front_end->front_end_frame() - 1U, 0);
+          else
+            scripted_race.start(front_end->race_initialization_frame(),
+                                race_loading_remaining);
           if (front_end->local_race())
             unirally::initialize_split_cameras(zoom_state);
           if (front_end->demo_race()) {
@@ -731,6 +895,10 @@ int main(int argc, char **argv) try {
             if (zoom_state.split_screen)
               zoom_state.opponent_tier.ai_level = 0;
             demo_race_updates = 0;
+            // front_end_runner's demo timeline starts with the race's setup.
+            if (race_timeline)
+              race_timeline << unirally::race_state_row(
+                  front_end->front_end_frame() - 1U, zoom_state);
           }
           zoom_hud_state = zoom_state;
           live_presentation = unirally::app::LivePresentation{};
@@ -740,13 +908,18 @@ int main(int argc, char **argv) try {
         }
       } else if (race_loading_remaining) {
         --race_loading_remaining;
+        race_loading_shown = true;
         const auto loading_track = waiting_front_end->race_track();
         const auto loading_song = waiting_front_end->race_song();
         audio_cues = unirally::race_sound::loading(
             race_start_update - updates,
             unirally::race_sound_load_timing(loading_track, loading_song),
             loading_track.index, loading_song);
+        // The screen is forced blank while the race loads.
+        if (frame_digests)
+          write_picture_digest(*race_frame, unirally::RgbFrame{});
       } else {
+        race_loading_shown = false;
         const auto previous_simulation_frame = zoom_state.movement.frame;
         const bool was_paused = zoom_state.pause.selection != 0;
         const bool at_stable_result =
@@ -816,6 +989,21 @@ int main(int argc, char **argv) try {
           live_presentation.observe_update(zoom_hud_state, zoom_state,
                                            content.pack);
         }
+        // front_end_runner's rows and pictures for this race frame (R-0110).
+        if (race_frame) {
+          auto &timeline =
+              waiting_front_end->demo_race() || waiting_front_end->local_race()
+                  ? race_timeline
+                  : one_player_timeline;
+          if (timeline)
+            timeline << unirally::race_state_row(*race_frame, zoom_state);
+          if (frame_digests)
+            write_picture_digest(
+                *race_frame,
+                live_presentation
+                    .render_race(zoom_state, zoom_hud_state, race_presentation)
+                    .frame);
+        }
         // The race's end for the menus: its result, or NOW PLAYING after a
         // restart (R-0057, R-0058, R-0060).
         if (waiting_front_end && waiting_front_end->demo_race() &&
@@ -834,6 +1022,9 @@ int main(int argc, char **argv) try {
           race_start_update = 0;
           front_end = std::move(waiting_front_end);
           waiting_front_end.reset();
+          // The runner draws the menus' first picture on the same frame.
+          if (frame_digests)
+            write_picture_digest(*race_frame, front_end->front_end_picture());
           // The input is kept: a button held from the race holds a one-run
           // result (`$80:C24C`) and ends a lap result at its first test
           // (`$80:B6D3`), as in the original.
@@ -851,9 +1042,20 @@ int main(int argc, char **argv) try {
       }
       ++updates;
       redraw = true;
-      if (save_file && (front_end || waiting_front_end))
-        save_file->store(front_end ? front_end->cartridge()
-                                   : waiting_front_end->cartridge());
+      if (save_file && (front_end || waiting_front_end)) {
+        try {
+          save_file->store(front_end ? front_end->cartridge()
+                                     : waiting_front_end->cartridge());
+        } catch (const std::exception &error) {
+          // The default save degrades (open_save_file); a named one is an
+          // error.
+          if (!settings.default_save_file)
+            throw;
+          std::cout << "Save file: none from now on (cannot write it: "
+                    << error.what() << ")\n";
+          save_file.reset();
+        }
+      }
       if (parsed->maximum_updates != 0 && updates >= parsed->maximum_updates) {
         running = false;
         break;
@@ -861,6 +1063,10 @@ int main(int argc, char **argv) try {
     }
     if (redraw && front_end) {
       draw(renderer.get(), texture.get(), front_end->frame());
+      redraw = false;
+    }
+    if (redraw && race_loading_shown) {
+      draw(renderer.get(), texture.get(), unirally::RgbFrame{});
       redraw = false;
     }
     if (redraw) {

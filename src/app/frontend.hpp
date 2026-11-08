@@ -112,13 +112,16 @@ private:
   std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
 
-// The frames a scripted race (`--front-end-inputs`) reads its pads by, numbered
-// as `front_end_runner` numbers them (R-0106): the race initializes on its
-// `race_initialization_frame` and its n-th update reads that frame plus n. The
+// The `front_end_runner` frame of each update of a race from the menus, its
+// loading frames included (R-0106, R-0110): the frame a scripted race
+// (`--front-end-inputs`) reads its pads by, and the frame its timeline rows and
+// digests are labelled with. The race initializes on its
+// `race_initialization_frame` and its n-th update is that frame plus n. The
 // loading frames the app waits before the race (with native audio, as the
-// original does) read the frames up to and including the initialization frame
-// (`start(I, L)` reads I-L+1 through I, the runner's loading frames); without
-// the wait the race's first update comes at once.
+// original does) are the frames up to and including the initialization frame
+// (`start(I, L)` gives I-L+1 through I, the runner's loading frames); without
+// the wait the race's first update comes at once. An idle demo's race
+// initializes on the frame before the front end's (`start(F - 1, 0)`).
 class ScriptedRaceFrames {
 public:
   // A race chosen: it initializes on `initialization_frame`, after the app has
@@ -126,12 +129,62 @@ public:
   void start(std::uint32_t initialization_frame, std::uint32_t loading_waited) {
     next_ = initialization_frame + 1U - loading_waited;
   }
-  // The frame the next update (a loading frame or the race's) reads.
+  // The frame of the next update (a loading frame or the race's).
   std::uint32_t next() { return next_++; }
 
 private:
   std::uint32_t next_{};
 };
+
+// The frame a laboratory input script (`--front-end-inputs`) is read at
+// (R-0110): the front end's frame until a notice; a notice's frames count, and
+// after it the main menu's frames go on from the notice's end, though the front
+// end's own frame goes back to the main menu's first. So a script can drive
+// past a notice, and the same script with its rows from the notice's end moved
+// back by `offset()` drives `front_end_runner` the way the app went after it.
+class ScriptClock {
+public:
+  // Two seconds of notice at 50 Hz.
+  static constexpr std::uint32_t notice_length = 100;
+  // The script's frame at the front end's frame, with `notice_left` of a
+  // notice's frames still to show (0 when none shows).
+  std::uint32_t frame(std::uint32_t front_end_frame,
+                      std::uint32_t notice_left) const {
+    return front_end_frame + offset_ +
+           (notice_left ? notice_length - notice_left : 0U);
+  }
+  // A notice shown while the front end stood at `frozen_frame` has ended, and
+  // the front end went back to the main menu's first frame `main_menu_frame`.
+  void notice_ended(std::uint32_t frozen_frame, std::uint32_t main_menu_frame) {
+    offset_ += frozen_frame + notice_length - main_menu_frame;
+  }
+  // How far the script's frames run ahead of the front end's: the frames every
+  // notice so far took, and the main-menu frames it went back over.
+  std::uint32_t offset() const { return offset_; }
+
+private:
+  std::uint32_t offset_{};
+};
+
+// What a launch asked for, and what it then gets (APP-PARITY, R-0110). A
+// player's launch has native audio and keeps a save file unless told not to; a
+// laboratory launch (`--hidden`, `--front-end-inputs` or
+// `--fixed-controller-mask`) is silent and keeps no save unless asked, so a
+// scripted run never reads or writes the player's own save; a race started by
+// `--track` has neither (both need the front end).
+struct LaunchRequest {
+  bool laboratory{}, track{};
+  std::optional<bool>
+      audio;              // --audio (or --native-title-menu-audio), --no-audio
+  bool save_file_given{}; // --save-file PATH
+  bool no_save_file{};    // --no-save-file
+};
+struct LaunchSettings {
+  bool audio{};
+  bool audio_asked{};       // explicitly: a failure to start it is an error
+  bool default_save_file{}; // keep the save at `default_save_file()`
+};
+LaunchSettings launch_settings(const LaunchRequest &request);
 
 // The app's front end: power-on, native 1P, 2P and VS menu-race paths, their
 // results and continuations (R-0054-R-0058, R-0071), the idle demo (R-0069)
@@ -152,10 +205,21 @@ public:
   bool update(FrontEndPads pads);
   // The front end's own frame since power-on (notices do not count).
   std::uint32_t front_end_frame() const { return state_.frame; }
+  // The frame a laboratory input script is read at (`ScriptClock`, R-0110).
+  std::uint32_t script_frame() const {
+    return script_clock_.frame(state_.frame, notice_frames_);
+  }
+  // How far the script's frames run ahead of the front end's.
+  std::uint32_t script_offset() const { return script_clock_.offset(); }
+  // A notice is on the screen: the front end does not run.
+  bool notice_showing() const { return notice_frames_ != 0; }
   // This frame's sound queue work (R-0076), empty on a notice's frames.
   const AudioCueList &sound_cues() const { return state_.sound_cues; }
   bool one_player_mode() const { return state_.mode == FrontEndMode::one_player; }
+  // The picture shown: the front end's, or a notice.
   RgbFrame frame() const;
+  // The front end's own picture, as `front_end_runner` draws it.
+  RgbFrame front_end_picture() const { return render_front_end(state_); }
   std::uint32_t frames() const { return frames_; }
   std::uint32_t notices() const { return notices_; }
   std::uint32_t returns_to_menu() const { return returns_; }
@@ -236,7 +300,9 @@ private:
   FrontEndContent content_;
   FrontEndState state_ = start_front_end();
   std::optional<FrontEndState> main_menu_;
+  static constexpr std::uint32_t notice_length = ScriptClock::notice_length;
   std::uint32_t notice_frames_{}, frames_{}, notices_{}, returns_{}, races_{};
+  ScriptClock script_clock_;
   FrontEndMode notice_mode_{};
 };
 

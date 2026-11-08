@@ -22,12 +22,13 @@ are comparison outputs only. Its strict URAU0004 includes reveal HDMA and
 retained timer work. Independent tier-1 review accepts the source and the
 narrowly scoped warm opaque executable-transport correction.
 `audio_playback_runner` also owns modern output fractions and queued PCM.
-The app's opt-in `--native-title-menu-audio` prototype delivers native audio
+The app's native audio (opt-in as `--native-title-menu-audio` until APP-PARITY; now the default,
+see below) delivers native audio
 through SDL from cold power-on and follows the coupled HUNTER path through
 a warm title/menu restart. Other menu exits stop its bounded producer. A visible
 unscripted controller run and human listening confirm menu music/navigation.
 That run reports 265,848 underrun pairs; it does not prove continuous sound
-after every exit. The default app stays silent. Quiescent native/playback saves
+after every exit. Quiescent native/playback saves
 pass; live device/thread save is outside
 this declared continuation domain. A stream restore needs a quiescent producer and device;
 no OS mixer state is serialized.
@@ -56,6 +57,18 @@ with the signature `$83:8000` keeps its records, as the original's boot does; an
 to a cold start's. An emulator's save of the ROM loads too. `front_end_runner --cartridge-in
 IMAGE` boots from an image and `--records FRAME OUT.bin` writes the whole image; the laboratory
 scripts are in main `local/evidence/save-files/`.
+
+APP-PARITY ([R-0110](research/R-0110-app-parity.md)) makes native audio and a save file the app's
+defaults: a player's launch plays audio (`--no-audio` turns it off; `--audio`, formerly
+`--native-title-menu-audio`, makes a failure to start it an error, where a default launch runs silent
+with a note) and keeps `~/Library/Application Support/Unirally/unirally.sav` on macOS,
+`$XDG_DATA_HOME/unirally/unirally.sav` (or `~/.local/share/unirally/`) on Linux and
+`%APPDATA%\Unirally\unirally.sav` on Windows (`--save-file PATH` instead, `--no-save-file` none). A
+laboratory launch (`--hidden`, `--front-end-inputs` or `--fixed-controller-mask`) keeps the old
+defaults, silent and without a save, so every gate and evidence script runs as before. A scripted
+app run reads its rows by `front_end_runner`'s frames in every race, the idle demo's included, and
+past a notice; `--race-timeline FILE`, `--one-player-timeline FILE` and `--frame-digests FILE` write
+the runner's rows and picture digests (`P` lines) from the same code (`src/core/lab_outputs.cpp`).
 
 For LEAGUE (R-0073), the current supported Classic pack profile is
 `classic.pal.crawler.tracks.v29` with 475 exact PAL entries. Nine additions hold

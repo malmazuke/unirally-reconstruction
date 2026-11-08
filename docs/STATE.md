@@ -27,6 +27,23 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**8 November 2026: APP-PARITY is accepted (tier 1, #97) and integrated by merge commit.**
+The shipped app (`unirally`) plays what `front_end_runner` plays, and can be compared with it
+frame by frame (R-0110).
+- **Defaults:** a player's launch has native audio and a save file (macOS
+  `~/Library/Application Support/Unirally/unirally.sav`, XDG on Linux, `%APPDATA%` on Windows);
+  `--no-audio` and `--no-save-file` opt out. `--hidden`, `--front-end-inputs` and
+  `--fixed-controller-mask` keep the old silent, no-save runs, so no gate touches a player's save.
+- **Idle demo:** its race reads the demo's own inputs on the runner's frames; a scripted pad
+  press ends it where the runner does (main's app ignored it).
+- **After a notice:** the script's own count carries on through a notice (`ScriptClock`); main's
+  app picked the same notice again and never raced.
+- **Per frame:** the app writes the runner's race rows and picture digests from shared writers
+  (`src/core/lab_outputs`); the runner's outputs are byte-identical to main's.
+- **Time:** about 7 h from claim to merge: the gates selected every step (2 h 46 min), and GitHub's
+  release-download outage held the Linux CI job for about an hour (fixed by SDL-MIRROR, #98).
+[R-0110](research/R-0110-app-parity.md) and [APP-PARITY](../tasks/APP-PARITY.md) hold the detail.
+
 **8 November 2026: SDL-MIRROR is accepted (tier 2, #98) and integrated by merge commit.**
 GitHub's release downloads answered 504 on and off from about 08:40 UTC, failing the Linux CI job
 at whichever app preset's SDL fetch hit one (APP-PARITY's run four times, a manual run on main

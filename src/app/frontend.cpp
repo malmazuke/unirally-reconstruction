@@ -196,6 +196,23 @@ CartridgeImage FrontEndSession::cartridge() const {
   return cartridge_image(state_);
 }
 
+LaunchSettings launch_settings(const LaunchRequest &request) {
+  if (request.audio == true && request.track)
+    throw std::invalid_argument("native audio starts at power-on (no --track)");
+  if (request.save_file_given && request.no_save_file)
+    throw std::invalid_argument(
+        "--save-file and --no-save-file contradict each other");
+  if (request.save_file_given && request.track)
+    throw std::invalid_argument("a save file needs the front end (no --track)");
+  const bool player = !request.laboratory && !request.track;
+  LaunchSettings settings;
+  settings.audio = request.audio.value_or(player);
+  settings.audio_asked = request.audio == true;
+  settings.default_save_file =
+      player && !request.save_file_given && !request.no_save_file;
+  return settings;
+}
+
 bool native_race_track(ClassicRaceTrack track) {
   // A stunt event from --track would end on the race's own Classic result screen, not the
   // menus' stunt result (R-0067), so --track takes the other races only.
@@ -221,6 +238,8 @@ bool FrontEndSession::update(FrontEndPads pads) {
   if (notice_frames_) {
     if (--notice_frames_ == 0) {
       const auto records = state_.records;
+      // The script goes on from the notice's end (`script_frame`).
+      script_clock_.notice_ended(state_.frame, main_menu_->frame);
       state_ = *main_menu_;
       state_.records = records;
       ++returns_;
@@ -236,9 +255,8 @@ bool FrontEndSession::update(FrontEndPads pads) {
     return true;
   if (state_.mode == FrontEndMode::demo && state_.screen == FrontEndScreen::race)
     return true;
-  // Two seconds of notice at 50 Hz.
   notice_mode_ = state_.mode;
-  notice_frames_ = 100;
+  notice_frames_ = notice_length;
   ++notices_;
   return false;
 }

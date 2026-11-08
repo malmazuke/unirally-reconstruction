@@ -41,9 +41,11 @@ Select+Y+A answer puts the cartridge RAM (and the save file) back to a cold star
 a pack older than v36 the code shows a notice). A first rider renamed "credits" in OPTIONS shows
 the programmers' picture at the next race's start, which then goes back to NOW PLAYING; one named
 "faedine" gives the next three races HUNTER's tag effects and opponent tier on any track; both become
-"mike" (R-0094; with a pack older than v37 neither name does anything). LEAGUE and OPTIONS still show a notice and return to the main menu
-as it first appeared, so the rider and tour chosen last start over (the original keeps them);
-the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
+"mike" (R-0094; with a pack older than v37 neither name does anything). LEAGUE (R-0073) and
+OPTIONS (R-0099) run natively. A mode or race the app does not have shows a short notice and
+returns to the main menu as it first appeared, so the rider and tour chosen last start over (the
+original keeps them); the records are kept. Every race track 0-44 has a scenario, so with pack v36
+or later no menu route reaches a notice; with an older pack the WIPE RAM code does. `--track dragster|zoom-zoo|NN` starts directly in that
 race instead (not a stunt event, whose result only the menus show).
 
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
@@ -73,7 +75,7 @@ turns back, A, X, L and R act in the air, and Start pauses (RESUME or RESTART
 RACE; in a race from the menus RESTART RACE is the original's QUIT, see above). Opposing directions held together on a keyboard are dropped, as a SNES
 pad cannot report them. Start on the stable result screen races again.
 
-Audio is intentionally not implemented in M3. Both tracks are drawn by the
+Both tracks are drawn by the
 same renderer from the shared race state and their own track content: every
 packed rider pose is composed from the original's pose tables (R-0036); a pose
 outside the packed tables holds that rider's last drawn pose and is counted as
@@ -82,14 +84,34 @@ a fallback frame. Presentation never changes canonical simulation state. See
 display, dependency and first-launch contracts.
 
 
-The opt-in option `--native-title-menu-audio` requires a v31 tracks pack and
-starts from power-on. Native title/menu music and navigation effects continue
-through the HUNTER pages and credits to a warm title/menu restart. Other menu
-exits stop this bounded audio producer. Since MODE-AUDIO and DEMO-AUDIO (pack v39) it continues
-through 2P, VS, LEAGUE, OPTIONS and the idle demos and back to the menus. The default app remains silent; R-0075
-records the exact differential domain and accepted physical controller/listening
-check. That live run also reports 265,848 underrun pairs; continuous sound
-after every menu exit remains outside the bounded outcome.
+The app plays native audio from power-on unless started with `--no-audio` (APP-PARITY,
+R-0110). Audio needs a v31 tracks pack: title/menu music and navigation effects continue through
+the HUNTER pages and credits to a warm title/menu restart; with v32 and later the races, and since
+MODE-AUDIO and DEMO-AUDIO (pack v39) 2P, VS, LEAGUE, OPTIONS and the idle demos and back to the
+menus. A pack without native audio, or a machine whose audio device does not start, runs silent
+with a note; `--audio` (the old `--native-title-menu-audio`, still accepted) asks for audio, and
+then either is an error. A race started with `--track` is silent. R-0075 records the exact
+differential domain and accepted physical controller/listening check. That live run also reports
+265,848 underrun pairs; continuous sound after every menu exit remains outside the bounded outcome.
+
+The app keeps the cartridge RAM (records, players, leagues, medals and open tours) between runs
+(SAVE-FILES, R-0090): loaded at power-on and written whenever it changes, by default in
+`~/Library/Application Support/Unirally/unirally.sav` on macOS, `$XDG_DATA_HOME/unirally/unirally.sav`
+(`~/.local/share/unirally/unirally.sav` when it is unset or relative, as the XDG base directory
+specification says) on Linux and `%APPDATA%\Unirally\unirally.sav` on Windows. `--save-file PATH` keeps it in another file,
+`--no-save-file` keeps none. The app prints the file it uses at start. A default save that cannot
+be read or written leaves the launch without one, with a note; a damaged one (not 8 KiB) is refused
+and kept as it is, the message naming `--no-save-file`; a `--save-file PATH` that cannot be used is
+an error.
+
+Laboratory runs (`--hidden`, `--front-end-inputs FILE` or `--fixed-controller-mask`) are silent
+and keep no save unless given `--audio` or `--save-file PATH`, so a scripted run never reads or
+writes the player's save. A scripted run reads `front_end_runner`'s input rows by the runner's
+frames, its races and idle demos included, and past the notice of a mode the app does not have
+(R-0106, R-0110). It can write the runner's per-frame outputs: `--race-timeline FILE` (each
+two-human race's and idle demo's serialized state), `--one-player-timeline FILE`,
+`--frame-digests FILE` (each frame's picture digest, the runner's `P` lines) and, with audio,
+`--audio-cue-log FILE`.
 
 Native audio plays in either build. A sound-set upload runs the native IPL and driver at about
 16x real time in `app-release` and 6.5x in `app-debug` (AUDIO-UPLOAD-SPEED; 1.2x and 0.8x

@@ -308,6 +308,12 @@ def cmd_run(args: argparse.Namespace) -> int:
         command.extend(["--front-end-inputs", str(Path(args.front_end_inputs).resolve())])
     if getattr(args, "save_file", None):
         command.extend(["--save-file", str(Path(args.save_file).resolve())])
+    # APP-PARITY (R-0110): the app plays native audio and keeps its default save unless told not to;
+    # a --hidden or scripted run has neither unless asked.
+    if getattr(args, "no_save_file", False):
+        command.append("--no-save-file")
+    if getattr(args, "no_audio", False):
+        command.append("--no-audio")
     launched = run_bounded(command, timeout=args.timeout, cwd=ROOT)
     detail = launched.tail(2000)
     if launched.outcome == "timeout":
@@ -320,7 +326,14 @@ def cmd_run(args: argparse.Namespace) -> int:
         rep.add_check("frontend_launch", "failed", detail=detail)
         return _finish(rep, paths.report, EXIT_FAILURE)
     rep.add_check("frontend_launch", "passed", detail=detail or "frontend exited successfully")
-    rep.data["audio"] = "intentionally omitted in M3"
+    if getattr(args, "no_audio", False):
+        rep.data["audio"] = "off (--no-audio)"
+    elif track is not None:
+        rep.data["audio"] = "off (--track)"
+    elif args.hidden or getattr(args, "front_end_inputs", None) or args.fixed_controller_mask is not None:
+        rep.data["audio"] = "off (laboratory run)"
+    else:
+        rep.data["audio"] = "native, by default"
     return _finish(rep, paths.report, EXIT_OK)
 
 
@@ -330,7 +343,8 @@ def register(sub: argparse._SubParsersAction) -> None:
     run = actions.add_parser("run", help="validate/create the Classic pack and run the desktop app",
                              description="Validate an existing Classic pack, or exact-gate --rom and create it atomically before launch. "
                                          "Without --pack, the newest pack under local/ that carries the supported profile is used. "
-                                         "Audio is intentionally not implemented in M3.")
+                                         "The app plays native audio and keeps a save file by default; a --hidden run "
+                                         "has neither.")
     run.add_argument("--pack", default=None,
                      help="one pack to validate and launch; omit it to select a pack by profile under local/")
     run.add_argument("--track", type=_track_choice, default=None,
@@ -348,7 +362,10 @@ def register(sub: argparse._SubParsersAction) -> None:
     # The front end's pads by frame, "frame pad1 pad2" in hex SNES words (smoke-test aid).
     run.add_argument("--front-end-inputs", help=argparse.SUPPRESS)
     run.add_argument("--save-file", help="keep the cartridge RAM (records, players, leagues, open tours) "
-                     "in this file between runs (SAVE-FILES); an emulator's 8 KiB save of the ROM loads too")
+                     "in this file between runs (SAVE-FILES) instead of the default save (macOS: ~/Library/"
+                     "Application Support/Unirally/unirally.sav); an emulator's 8 KiB save of the ROM loads too")
+    run.add_argument("--no-save-file", action="store_true", help="keep no save file")
+    run.add_argument("--no-audio", action="store_true", help="run without native audio")
     run.add_argument("--hidden", action="store_true", help="create a hidden window (smoke-test aid)")
     run.add_argument("--timeout", type=float, default=86400)
     run.add_argument("--report")

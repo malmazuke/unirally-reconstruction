@@ -30,7 +30,7 @@ add_library(unirally_presentation STATIC presentation.cpp picture.cpp result_scr
             demo_sound.cpp
             tour_ending.cpp
             tour_ending_scripts.cpp tour_ending_right_column.cpp
-            hunter_ending.cpp)
+            hunter_ending.cpp lab_outputs.cpp)
 target_include_directories(unirally_presentation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_presentation PUBLIC unirally_movement unirally_audio_score lab_options)
 add_executable(presentation_runner presentation_runner.cpp)
