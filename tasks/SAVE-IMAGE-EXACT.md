@@ -255,6 +255,11 @@ back `status=failed` for two reasons. The worker did not run the gate runner.
   Bound by reference in the next commit (no behaviour change: the pairs are two constants); every
   C++ file this branch changes then compiles cleanly under GCC 13.3 (Ubuntu 24.04) with CI's
   warning flags (`-fsyntax-only`, in a container), and lab-debug ctest is 41/41.
+- The second run (`353e7619`) failed the Linux sanitizer build: `-Wsign-conversion` on
+  `cartridge_ram.cpp:136`, a `std::uint16_t` mask promoted to `int` before its shift. Widened to
+  `unsigned` first (no behaviour change). Every changed C++ file but `sdl_main.cpp` (SDL3 has no
+  Ubuntu package) then compiles to object code under GCC 13.3 with CI's flags, with and without
+  `-fsanitize=address,undefined`; ctest 41/41 on lab-debug and app-debug.
 
 ## Review (rounds 1 and 2)
 

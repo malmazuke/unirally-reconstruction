@@ -133,7 +133,8 @@ struct Patch {
     void bit(std::size_t at, std::uint16_t mask, bool& set) const {
         if (offset != at && offset != at + 1) return;
         const unsigned shift = offset == at ? 0U : 8U;
-        if (((mask >> shift) & 0xffU) != 0) set = ((unsigned{value} << shift) & mask) != 0;
+        if (((unsigned{mask} >> shift) & 0xffU) != 0)
+            set = ((unsigned{value} << shift) & mask) != 0;
     }
     void flag(std::size_t at, bool& set) const {
         if (at == offset) set = value != 0;
