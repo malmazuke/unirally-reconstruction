@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **claimed** 8 November 2026 09:20 UTC on main `68b1c9b4`, by the coordinator, to unblock
+- Status: **accepted** 8 November 2026 (tier 2, #98). Claimed 8 November 2026 09:20 UTC on main `68b1c9b4`, by the coordinator, to unblock
   [APP-PARITY](APP-PARITY.md)'s hosted CI (#97). Claude Code desktop app, Claude Opus 5.5
   (`claude-opus-5-5`): coordinator and implementer; a fresh subagent reviews.
 - Branch `task/sdl-mirror` in `.worktrees/sdl-mirror`.
@@ -71,3 +71,8 @@ builds every preset.
 - Review 1's fixes, checked: `cmake -P` on the CMakeLists' URL lines with the real lock gives the
   GitHub URL then the mirror; with `mirror_urls` removed, and with it empty, the GitHub URL alone.
   App-debug reconfigures and builds (`status=passed`), `ctest` 41/41.
+- Hosted CI on `c9372e62` (run 42467380403): `changes`, `lab (ubuntu-24.04)` (10 min 8 s, every app
+  preset fetched SDL while GitHub was answering 504 on and off) and `lab (macos-15)` passed. No
+  local gates: no binary can differ (review 1's note above).
+- Time: claim 09:20 UTC to merge about 09:50 UTC, about 30 minutes.
+- Next: rerun APP-PARITY's (#97) hosted CI against main with this change.
