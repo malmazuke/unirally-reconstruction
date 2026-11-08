@@ -2433,6 +2433,12 @@ void save_image_exact_tests() {
   const auto moved = unirally::cartridge_image(state);
   require(moved[0x0618 + 2 * 0x200] == 0x34 &&
           moved[0x0618 + 2 * 0x200 + 1] == 0x12);
+  // A save with cursors the game never writes sends the store past the 8 KiB:
+  // skipped, and play goes on.
+  state.records.league_pair_cursor = {0xff, 0xff, 0, 0, 0, 0};
+  const auto before = unirally::cartridge_image(state);
+  store_league_race_totals(state);
+  require(unirally::cartridge_image(state) == before);
   // The pending reveal is kept per rider (`$77:10FD + $CA`).
   state.options_rider = 3;
   state.records.pending_reveal = 2;

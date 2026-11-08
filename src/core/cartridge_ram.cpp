@@ -236,7 +236,7 @@ void store_race_mode_from_option_byte(FrontEndState& state) {
 namespace {
 // One byte of a word field: its low byte at an even distance from `first`, else its high byte.
 void store_field_byte(std::uint16_t& word, std::size_t distance, std::uint8_t byte) {
-    const unsigned shift = distance % 2 * 8U;
+    const unsigned shift = static_cast<unsigned>(distance % 2) * 8U;
     word = static_cast<std::uint16_t>((word & ~(0xffU << shift)) | unsigned{byte} << shift);
 }
 
@@ -250,9 +250,12 @@ void store_record_byte(FrontEndState& state, std::size_t offset, std::uint8_t by
                          byte);
     } else if (offset >= bests && offset < bests + 2 * records.best.size()) {
         store_field_byte(records.best.at((offset - bests) / 2), offset - bests, byte);
-    } else {
+    } else if (offset < state.cartridge.size()) {
         state.cartridge.at(offset) = byte;
     }
+    // Past the 8 KiB only a save the game did not write leads (league cursors above 6): the
+    // original's long-indexed store goes on past `$77:1FFF`, where its mapping is not recovered;
+    // native skips the byte and plays on (R-0111).
 }
 } // namespace
 
