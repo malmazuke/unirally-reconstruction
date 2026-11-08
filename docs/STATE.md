@@ -27,6 +27,22 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**9 November 2026: SAVE-IMAGE-EXACT is accepted in part (tier 1, #99) and integrated by merge commit.**
+Native's cartridge RAM image against the original's after every frame of R-0109's 919 routes
+(5.05 M frames; the runner's new `--cartridge-trace`), from frame 406 (R-0111):
+- **Write frames differing:** main 355,423, now 181,547 of 363,007; outside the bytes no later
+  boot reads, 353,073 to 14,380, and 709 of 916 routes equal there (main 16).
+- **Changed:** the empty save reads as power-on's `$FF` image; `$10AD`, `$074C-074F`, `$0750`,
+  `$10A7`, the 2P/VS league totals at `$0618`, `$10B1`, `$1115-1117` written as the original does;
+  a save during a race holds what the race writes; corrupt league cursors land where the
+  original's 16-bit, mirrored store puts them. Pictures, rows, cues and timelines unchanged.
+- **Left:** timing shifts (the boot's three-frame wipe), and queued as SAVE-IMAGE-REMAINDER the
+  hunter-effects personal bests native's race adds to, the endings' `$10A7` stores and the rest of
+  the value differences; OPPONENT-POSE-BOUNDS for a hardened-build abort at `presentation.cpp:243`.
+- **Time:** about 8 h 25 min from claim to merge: two review rounds and two gate rounds (the gate
+  recorder had to learn the new option).
+[R-0111](research/R-0111-save-image-exact.md) and [SAVE-IMAGE-EXACT](../tasks/SAVE-IMAGE-EXACT.md) hold the detail.
+
 **8 November 2026: APP-PARITY is accepted (tier 1, #97) and integrated by merge commit.**
 The shipped app (`unirally`) plays what `front_end_runner` plays, and can be compared with it
 frame by frame (R-0110).

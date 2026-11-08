@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 8 November 2026 10:03 UTC on main `901018a5`, on the user's instruction
+- Status: **accepted** 9 November 2026 (tier 1, #99), outcome met in part (R-0111). Claimed
+  8 November 2026 10:03 UTC on main `901018a5`, on the user's instruction
   ("Start SAVE-IMAGE-EXACT"). Queued 8 November 2026 by [COVERAGE-CENSUS](COVERAGE-CENSUS.md)
   (R-0109, queue item 2). Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`):
   coordinator and integrator; a worker subagent implements, a fresh subagent reviews. Run under
@@ -235,3 +236,46 @@ back `status=failed` for two reasons. The worker did not run the gate runner.
   other stream is equal.
 - For `--expect-changed`:
   `checks4,lt-tours-a-w0,lt-tours-a-w1,lt-tours-a-w2,lt-tours-a-w3,lt-tours-a-w4,lt-tours-a-w5,lt-tours-a-w6,lt-tours-a-w7,lt-tours-a-w8,lt-tours-b-w0,lt-tours-b-w1,lt-odd-tours-w0,lt-odd-tours-w1,lt-podium-back,lt-t-crawler,lt-five-w0,rs-records`
+
+## Gates round 2 (`87571019`)
+
+- `gates-2` at `87571019` (17:13-18:02 UTC, 2,914 s): `status=passed`, with `--only` the task's 4
+  checks, the 18 checks round 1 found `changed`, `fe-replay` and `synthetic`, and
+  `--expect-changed` the 18 (each read in round 1, every one toward the original). The task's 4
+  checks rc 0; the 18 `changed (expected)`; `synthetic` passed (the new recorder test included);
+  `fe-replay` 535 recorded runner invocations, 16,431,946 frames, every one differing in the
+  `records` stream only (the cartridge RAM) and equal on every other stream, rc 0 on both sides.
+- Round 1 ran every other step on `e0922dbf`: 85 checks against the original `same-as-main`, 20
+  passed, 19 skipped (the frozen race gates and their sweeps: no race binary input changed;
+  `pa-anchors` and the conditional audio checks read only the original's captures). Between the
+  two rounds only `tools/unirally_lab/gates/corpus.py` and its test changed, which no native
+  binary reads.
+- Hosted CI: on the pull request.
+
+## Review (rounds 1 and 2)
+
+A fresh subagent in its own checkout at the candidate.
+- [Round 1](https://github.com/malmazuke/unirally-reconstruction/pull/99#pullrequestreview-5819004428)
+  at `85962576` (12:33-13:28 UTC): approve with should-fixes, handled in "Review round 1 fixes".
+- [Round 2](https://github.com/malmazuke/unirally-reconstruction/pull/99#pullrequestreview-5819004498)
+  at `d6483757` (13:53-14:13 UTC): approve with one should-fix (the original's store for corrupt
+  cursors), handled in "Review round 2 fixes" and checked by `check_cursor.sh`.
+
+## Handoff (closeout)
+
+- Commits on `task/save-image-exact`: `20f1eab4` (claim), `e41810f9` to `85962576` (worker),
+  `bd229f63`, `d6483757` (review 1's fixes), `fd292d08`, `e0922dbf` (review 2's fixes), `87571019`
+  (gates 1's recorder fix), then this record.
+- Time, claim 10:03 UTC to merge about 18:30 UTC, about 8 h 25 min against D-0013's 6 hours:
+  worker 2 h 28 min; review round 1 55 min; fixes 26 min; round 2 20 min; fixes 18 min; gates
+  round 1 2 h 35 min; the recorder fix 7 min; gates round 2 49 min; PR and closeout about 30 min.
+  The overrun is the second gate round (the recorder did not know the task's new option) and two
+  review rounds of fixes.
+- Disk: main `local/evidence/save-image-exact/` 120 MB after `compact_evidence.py`, under the 1 GB
+  budget; the reviews' output in `review-1/` and `review-2/` there.
+- The outcome is met in part (R-0111's answer): SAVE-IMAGE-REMAINDER and OPPONENT-POSE-BOUNDS are
+  queued. The task's four checks (`checks.list`) are not in the catalogue.
+- The closing session removes `.worktrees/save-image-exact` and `.worktrees/save-image-exact-review`
+  and the local branch, then bootstraps and rebuilds app-debug in the main checkout.
+- Next in R-0109's queue: CENSUS-REMAINDER (tier 3); SAVE-IMAGE-REMAINDER and
+  OPPONENT-POSE-BOUNDS are queued behind the queue's tier 1 items.
