@@ -136,7 +136,7 @@ Review 1 (main `local/evidence/save-image-exact/review-1/review.md`, approve wit
 `85962576`.
 
 - Commits: `bd229f63` (a save with league cursors the game never writes no longer ends a 2P, VS or
-  1P result: `$80:F88D`'s store past the 8 KiB is skipped, with a unit test; `store_field_byte`
+  1P result: `$80:F88D`'s store past the 8 KiB is skipped (round 2: stored at its mirror instead), with a unit test; `store_field_byte`
   casts before its shift), then the records commit (R-0111, this handoff, R-0109, BUILD_AND_VALIDATION,
   the two queued tasks and their README rows, the regenerated native symbols and static map).
 - 1. The records say plainly that the outcome is met in part (R-0111's answer line, the
@@ -170,3 +170,34 @@ Review 1 (main `local/evidence/save-image-exact/review-1/review.md`, approve wit
   on every route, `app_save.sh` 15 of 15 points equal, `behaviour_check.sh` 15 of 15 routes equal
   (`review-1-fixes-checks.log`).
 - Time: 13:28:43 to 13:54 UTC on 8 November 2026 (`date -u`), about 25 min.
+
+## Review round 2 fixes (worker)
+
+Review 2 (main `local/evidence/save-image-exact/review-2/review.md`, approve with one should-fix and
+two notes) on `d6483757`.
+
+- Commit `fd292d08`: corrupt league cursors now land where the original's store does.
+  `store_result_totals` computes `$80:F88D`'s index in 16 bits, and `store_record_byte` stores at
+  the 8 KiB's mirror (`& 0x1FFF`), through whichever record field covers the byte (a `Patch` codec
+  over `transfer_records`), else into the bytes native keeps no field for. The unit test now expects
+  `$0616-0619` for all cursors `0xFF` and `$0618` for a cursor word of 0x1000. Note 2: renamed
+  `records.active_league_members` to `league_members_checksum`, which is what `$02BE` is
+  (`$83:9157-916A`), with a comment that native stores the edited slot's members there. Note 3: the
+  comment sits on the store it explains. Then the records commit (R-0111's limits, this subsection).
+- Results: on review 2's five poked runs (`routes-cursor.json`, the original's logs in
+  `original-cursor/`), native's image equals the original's at every write frame outside the
+  residual bytes. The exception is `$0743`'s one-frame bit timing on 4 of them, as on the unpoked
+  routes. Main differs on 517-531 write frames each. A check line: `check_cursor.sh`, recorded in
+  `expected-cursor.json`, about 30 s. Mutant: the round-1 skip restored makes it fail ("outside the
+  residual bytes 1993"; `mutants/cursor-skip/`). `expected.json` is unchanged: `check_image.sh` is
+  equal on every route, since no corpus route's store reaches past the 8 KiB or an unaligned field
+  byte.
+- Checks: `ctest` lab-debug and app-debug 41/41; `clang-tidy` clean on `cartridge_ram.cpp`,
+  `league_menu.cpp`, `options_menu.cpp` and `front_end_tests.cpp`; `git-clang-format` applied;
+  `coverage native-symbols --check` passed (0 citations without a record); the static map
+  regenerated. checks.list (now four lines) ran once from `artifacts/review 2 checks` with `$B`
+  main's plain `front_end_runner` (built at `901018a5` in `.worktrees/save-image-exact-main`):
+  14:21 to 14:29 UTC, `check_image.sh` equal to the recorded result on every route,
+  `app_save.sh` 15 of 15 points equal, `check_cursor.sh` equal to `expected-cursor.json`,
+  `behaviour_check.sh` 15 of 15 routes equal (`review-2-fixes-checks.log`).
+- Time: 14:13:40 to 14:29 UTC on 8 November 2026 (`date -u`), about 20 min.

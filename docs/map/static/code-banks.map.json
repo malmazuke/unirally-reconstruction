@@ -5289,6 +5289,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/cartridge_ram.cpp:store_record_byte",
     "src/core/cartridge_ram.hpp:store_record_word",
     "src/core/league_menu.cpp:record_league_result",
     "src/core/league_menu.cpp:store_league_totals",
@@ -14612,6 +14613,9 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::league_members_checksum"
+   ],
    "observed_entries": {},
    "start": "$83:90F8",
    "static_entries": {
@@ -19579,16 +19583,16 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2537,
+  "cited_addresses": 2538,
   "cited_by_class": {
    "data": 12,
    "inferred": 45,
-   "observed": 2253,
+   "observed": 2254,
    "unknown": 227
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1776,
+   "loc": 1777,
    "mid": 31,
    "sub": 491,
    "unk": 227
@@ -19610,9 +19614,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 94637,
-  "routine_bytes_cited_by_native_code": 74204,
+  "routine_bytes_cited_by_native_code": 74416,
   "routines": 762,
-  "routines_cited_by_native_code": 586,
+  "routines_cited_by_native_code": 587,
   "unknown": 31054,
   "unknown_share": 0.2369
  }

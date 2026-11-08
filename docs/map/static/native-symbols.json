@@ -7426,6 +7426,7 @@
   {
    "address": "$80:F88D",
    "native": [
+    "src/core/cartridge_ram.cpp:store_record_byte",
     "src/core/cartridge_ram.hpp:store_record_word",
     "src/core/league_menu.cpp:record_league_result",
     "src/core/league_menu.cpp:store_league_totals",
@@ -7436,6 +7437,16 @@
    ],
    "range_ends": [
     "$80:F8A5"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F891",
+   "native": [
+    "src/core/league_menu.cpp:store_result_totals"
+   ],
+   "range_ends": [
+    "$80:F8A3"
    ],
    "region": "rom"
   },
@@ -12060,6 +12071,16 @@
     "src/core/menu_overruns.hpp:LeagueExitFrames",
     "src/core/race_result.cpp:insert_record",
     "src/core/wipe_ram.cpp:reset_busy_frames"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9157",
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::league_members_checksum"
+   ],
+   "range_ends": [
+    "$83:916A"
    ],
    "region": "rom"
   },
@@ -17159,6 +17180,20 @@
    "region": "wram"
   },
   {
+   "address": "$0616",
+   "native": [
+    "src/core/cartridge_ram.cpp:store_record_byte"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0618",
+   "native": [
+    "src/core/cartridge_ram.cpp:store_record_byte"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$073C",
    "native": [
     "src/core/cartridge_ram.cpp:cartridge_image"
@@ -17175,7 +17210,8 @@
   {
    "address": "$0742",
    "native": [
-    "src/core/cartridge_ram.cpp:insert_cartridge"
+    "src/core/cartridge_ram.cpp:insert_cartridge",
+    "src/core/cartridge_ram.hpp:store_record_word"
    ],
    "region": "wram"
   },
@@ -19152,7 +19188,7 @@
   {
    "address": "$77:02BE",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::active_league_members"
+    "src/core/front_end.hpp:OnePlayerRecords::league_members_checksum"
    ],
    "region": "sram"
   },
@@ -20813,8 +20849,15 @@
    ]
   },
   "src/core/cartridge_ram.cpp:store_record_byte": {
+   "rom": [
+    "$80:F88D"
+   ],
    "sram": [
     "$77:1FFF"
+   ],
+   "wram": [
+    "$0616",
+    "$0618"
    ]
   },
   "src/core/cartridge_ram.cpp:store_records_checksum": {
@@ -20864,6 +20907,9 @@
   "src/core/cartridge_ram.hpp:store_record_word": {
    "rom": [
     "$80:F88D"
+   ],
+   "wram": [
+    "$0742"
    ]
   },
   "src/core/content_pack.cpp:credits_name_required": {
@@ -22022,11 +22068,6 @@
     "$83:9464"
    ]
   },
-  "src/core/front_end.hpp:OnePlayerRecords::active_league_members": {
-   "sram": [
-    "$77:02BE"
-   ]
-  },
   "src/core/front_end.hpp:OnePlayerRecords::best": {
    "sram": [
     "$77:0829"
@@ -22093,6 +22134,14 @@
   "src/core/front_end.hpp:OnePlayerRecords::league_members": {
    "sram": [
     "$77:02B2"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::league_members_checksum": {
+   "rom": [
+    "$83:9157"
+   ],
+   "sram": [
+    "$77:02BE"
    ]
   },
   "src/core/front_end.hpp:OnePlayerRecords::league_names": {
@@ -24123,7 +24172,8 @@
   },
   "src/core/league_menu.cpp:store_result_totals": {
    "rom": [
-    "$80:F88D"
+    "$80:F88D",
+    "$80:F891"
    ],
    "sram": [
     "$77:0618",
@@ -31051,11 +31101,11 @@
   }
  },
  "totals": {
-  "addresses": 2200,
+  "addresses": 2204,
   "io_addresses": 12,
   "native_symbols": 1611,
-  "rom_addresses": 1747,
+  "rom_addresses": 1749,
   "sram_addresses": 69,
-  "wram_addresses": 372
+  "wram_addresses": 374
  }
 }

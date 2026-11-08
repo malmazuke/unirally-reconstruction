@@ -247,9 +247,18 @@ All of these go to SAVE-IMAGE-REMAINDER.
 - The original's logs come from pool processes that each run several cores in turn; `BsnesCore`
   asks for one per process. The cartridge RAM is unaffected (review 1's own capture, other process
   order, is byte-equal on 17 routes), but sound digests from such processes are not reproducible.
-- A save whose league cursors the game never writes (above 6) sends `$80:F88D`'s store past the
-  8 KiB in a 2P, VS or 1P result: native skips the byte and plays on; the original's store goes
-  past `$77:1FFF`, where its mapping is not recovered (review 1).
+- A save whose league cursors the game never writes (above 6): `$80:F88D` computes its index in
+  16 bits (`$80:F891-F8A3`: 16 x `$CC` + 2 x the cursor word, `ASL`/`ADC` in 16 bits) and stores at
+  `$77:0618,X`, which can run into bank `$78`; the reference core mirrors the 8 KiB through banks
+  `$77` and `$78`. So the offset is `(0x0618 + ((16 x slot + 2 x word) & 0xFFFF)) & 0x1FFF`: all
+  cursors `0xFF` put the totals at `$0616-0619` (into the pairings), a cursor word of 0x1000 or
+  0x4000 at `$0618`, as review 2 found on the original (`review-2/rv_cursor.py`). Native stores
+  there through whichever field covers each byte (`store_record_word`); review 1's version skipped
+  the bytes, round 0's threw. On review 2's five poked runs (`routes-cursor.json`: all six cursors
+  `0xFF` after frame 600 of `rs-ca-vs-lap`, `rs-ca-2p-lap` and `rs-ca-vs-stunt`, and `$0679` 0x10
+  and 0x40 on `rs-ca-vs-stunt`), native's image equals the original's at every write frame outside
+  the residual bytes but `$0743`'s one-frame bit timing on 4 of them, as on the unpoked routes
+  (`check_cursor.sh`, `original-cursor/`); the original also resums `$073C`, a residual checksum.
 - A saved `$10A7` of 14 or more (HUNTER's ending's drop) still starts native's markers from 0
   (R-0100); the endings' own `$10A7` stores are not modelled (`$83:B649` on), 7 routes' *value*
   differences.

@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 | Instructions from observed | 39,093 |
 | Instructions from table | 42 |
 | Routines | 762 |
-| Routines cited by native code | 586 |
-| Routine bytes cited by native code | 74,204 |
+| Routines cited by native code | 587 |
+| Routine bytes cited by native code | 74,416 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -49,7 +49,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 
 ## Cited addresses
 
-2537 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1776, mid 31, sub 491, unk 227 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 45, observed 2253, unknown 227.
+2538 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1777, mid 31, sub 491, unk 227 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 45, observed 2254, unknown 227.
 
 Cited addresses in `unknown` bytes:
 

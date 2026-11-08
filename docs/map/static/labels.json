@@ -13313,6 +13313,7 @@
   "comment": "routine start",
   "label": "sub_80F88D",
   "native": [
+   "src/core/cartridge_ram.cpp:store_record_byte",
    "src/core/cartridge_ram.hpp:store_record_word",
    "src/core/league_menu.cpp:record_league_result",
    "src/core/league_menu.cpp:store_league_totals",
@@ -13331,6 +13332,25 @@
    "docs/research/R-0098-league-tours.md",
    "docs/research/R-0111-save-image-exact.md",
    "tasks/SAVE-IMAGE-EXACT.md"
+  ]
+ },
+ {
+  "address": "$80:F891",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F891",
+  "native": [
+   "src/core/cartridge_ram.cpp:store_record_byte",
+   "src/core/cartridge_ram.hpp:store_record_word",
+   "src/core/league_menu.cpp:record_league_result",
+   "src/core/league_menu.cpp:store_league_totals",
+   "src/core/league_menu.cpp:store_result_totals",
+   "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
+   "src/core/race_progress.cpp:result_fields",
+   "src/core/stunt_result.cpp:after_tally_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -26454,8 +26474,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_839157",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::league_members_checksum"
+  ],
   "source_records": [
-   "docs/research/R-0111-save-image-exact.md"
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
   ]
  },
  {
