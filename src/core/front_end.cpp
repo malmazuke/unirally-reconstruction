@@ -1073,6 +1073,25 @@ std::uint32_t idle_demo_loading_frames(ClassicRaceTrack track) {
 // The original's idle title has a 31-line brightness wave. Its 16-level
 // profile repeats every picture, moving three lines down the display. The
 // region above the wave is bright; below it the display is blank (R-0069).
+// The idle demo's setup frame (R-0111): `$80:94BC-94C7` holds the race's option byte at 0x0A (the
+// logo's bit and two views) while `$80:99A4` sets the race up with `$017D` 3 and `$017F` 1; then
+// `$83:C8E0`'s first work. True when the first rider's name shows the "credits" picture instead.
+bool set_up_demo_race(FrontEndState& state, const FrontEndContent& content) {
+    constexpr std::uint8_t demo_race_option_byte = 0x0a, demo_rider = 3, demo_second = 1;
+    state.demo_option_byte = demo_race_option_byte;
+    store_race_setup(state, content, demo_rider, demo_second);
+    clear_hunter_races(state);
+    if (credits_named(state, content)) {
+        // `$83:C912-C994` flips `$77:1115` before the name test (`$83:C99E`), so the picture's
+        // demo counts as a split or one-view race too.
+        store_demo_race_setup(state);
+        enter_credits_picture(state);
+        return true;
+    }
+    check_rider_names(state, content);
+    return false;
+}
+
 void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
     const auto frame = state.script_frame;
     demo_title_sounds(state);
@@ -1122,19 +1141,7 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
     // (`$83:C914`), then tests the first rider's name (`$83:FB8A`, R-0094).
     // `$83:C8E0` runs on the frame after the setup's `$80:99A4` (`$83:C912-C994`, R-0111).
     if (frame == setup_frame + 1U) store_demo_race_setup(state);
-    if (frame == setup_frame) {
-        // $80:94BC-94C7: the race's option byte 0x0A (the logo's bit and two views) while
-        // `$80:99A4` sets the race up with `$017D` 3 and `$017F` 1.
-        constexpr std::uint8_t demo_race_option_byte = 0x0a, demo_rider = 3, demo_second = 1;
-        state.demo_option_byte = demo_race_option_byte;
-        store_race_setup(state, content, demo_rider, demo_second);
-        clear_hunter_races(state);
-        if (credits_named(state, content)) {
-            enter_credits_picture(state);
-            return;
-        }
-        check_rider_names(state, content);
-    }
+    if (frame == setup_frame && set_up_demo_race(state, content)) return;
     // The race setup chooses the demo on the frame it writes the track (`$77:074A`), and the race
     // starts when the track has loaded (R-0087).
     constexpr unsigned choice_frame = 451;
