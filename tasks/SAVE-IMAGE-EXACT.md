@@ -119,7 +119,7 @@ cold routes (the ones R-0109 lists), or each remaining byte is recorded with why
   reports (`report-base-vs-candidate.txt`, `groups-*.txt`, `classify-candidate.*`), the behaviour
   runs, `mutants/` and `base-trace/` (main's runner with the trace option, `e41810f9`). Private
   `TMPDIR` under the worktree's `artifacts/tmp`.
-- Time: worker 10:04:15 to 12:38 UTC on 8 November 2026 (`date -u`), about 2 h 34 min: reading and
+- Time: worker 10:04:15 to 12:32 UTC on 8 November 2026 (`date -u`), about 2 h 28 min: reading and
   the trace option 20 min; the original's capture 26 min (alongside the first changes); the changes
   and sweeps about 1 h; the full behaviour run 61 min (records written alongside); mutants (25 min),
   the checksum decision and the closing checks after.
