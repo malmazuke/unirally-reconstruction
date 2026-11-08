@@ -112,6 +112,7 @@ cues and pictures (not only cues and totals).
   worktree's build). Private `TMPDIR` under the worktree's `artifacts/tmp`. A note: while
   `batch1.sh` ran, `app_vs_runner.sh` was edited once (a silent mode); the twop-bowl run in flight
   printed normal results, and `race_routes.sh` reruns it in the gates.
-- Time: worker 03:11:30 to 04:26 UTC on 8 November 2026 (`date -u`), about 1 h 15 min: reading and
-  design 20 min; the change and tests 15 min; app runs under the heavy-run lock (item 2 10 min,
-  batch 1 28 min, mutants 27 min, M6 rerun 5 min) with the records written alongside.
+- Time: worker 03:11:30 to 04:26 UTC on 8 November 2026 (`date -u`), about 1 h 15 min: reading
+  and design 10 min; the change and the first builds 10 min; then about 55 min of app runs under
+  the heavy-run lock (item 2 03:23-03:34, batch 1 03:35-04:00, mutants 04:01-04:20, the M6 rerun
+  04:21-04:24), with the tests, lints, the commit and the records done alongside.
