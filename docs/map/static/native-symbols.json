@@ -19778,6 +19778,7 @@
   {
    "address": "$77:1FFF",
    "native": [
+    "src/core/cartridge_ram.cpp:store_record_byte",
     "src/core/front_end.cpp:check_records"
    ],
    "region": "sram"
@@ -20809,6 +20810,11 @@
    "wram": [
     "$0742",
     "$10AD"
+   ]
+  },
+  "src/core/cartridge_ram.cpp:store_record_byte": {
+   "sram": [
+    "$77:1FFF"
    ]
   },
   "src/core/cartridge_ram.cpp:store_records_checksum": {
@@ -31047,7 +31053,7 @@
  "totals": {
   "addresses": 2200,
   "io_addresses": 12,
-  "native_symbols": 1610,
+  "native_symbols": 1611,
   "rom_addresses": 1747,
   "sram_addresses": 69,
   "wram_addresses": 372

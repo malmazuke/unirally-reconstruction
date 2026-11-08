@@ -57,6 +57,12 @@ cold routes (the ones R-0109 lists), or each remaining byte is recorded with why
 - **Review tier 1** (cartridge RAM state and its write timing). `src/core` and `src/app` change;
   the save format and the pack profile do not (the image is the original's layout, old saves load
   as before). The saved bytes do change: a save written by the candidate differs from main's.
+- **Outcome partly met.** The image is not byte-equal at every write frame: outside the bytes no
+  later boot reads, 709 of 916 routes are equal from frame 406, and on the other 207 14,380 write
+  frames differ, mostly timing shifts R-0111 argues; the rest (hunter-effects' personal bests from a
+  race difference, the endings' `$10A7`, the Value list) has no cannot-matter argument yet and is
+  queued as [SAVE-IMAGE-REMAINDER](SAVE-IMAGE-REMAINDER.md). Figures below as of review round 1's
+  residual (`$02BE-02BF`, `$073E-0741`, `$10F9-10FC` added).
 - Results (R-0111; 916 of 919 routes, every frame; main is `e41810f9`'s runner, main plus the
   trace option):
 
@@ -64,9 +70,9 @@ cold routes (the ones R-0109 lists), or each remaining byte is recorded with why
 | --- | ---: | ---: |
 | write frames (the original's image changes), from frame 406 | 363,007 | 363,007 |
 | differing at those | 355,423 | 181,547 |
-| differing outside the bytes no later boot reads (`residual.txt`) | 353,194 | 17,544 |
+| differing outside the bytes no later boot reads (`residual.txt`) | 353,073 | 14,380 |
 | routes equal at every write frame from 406 | 16 | 90 |
-| routes equal outside the residual bytes | 16 | 702 |
+| routes equal outside the residual bytes | 16 | 709 |
 | bytes that differ somewhere (any frame) | 4,099 | 3,727 |
 
   Per group (routes differing from 406, main to candidate): `$0618` totals 406 to 2, `$073E` 328
@@ -123,3 +129,44 @@ cold routes (the ones R-0109 lists), or each remaining byte is recorded with why
   the trace option 20 min; the original's capture 26 min (alongside the first changes); the changes
   and sweeps about 1 h; the full behaviour run 61 min (records written alongside); mutants (25 min),
   the checksum decision and the closing checks after.
+
+## Review round 1 fixes (worker)
+
+Review 1 (main `local/evidence/save-image-exact/review-1/review.md`, approve with should-fixes) on
+`85962576`.
+
+- Commits: `bd229f63` (a save with league cursors the game never writes no longer ends a 2P, VS or
+  1P result: `$80:F88D`'s store past the 8 KiB is skipped, with a unit test; `store_field_byte`
+  casts before its shift), then the records commit (R-0111, this handoff, R-0109, BUILD_AND_VALIDATION,
+  the two queued tasks and their README rows, the regenerated native symbols and static map).
+- 1. The records say plainly that the outcome is met in part (R-0111's answer line, the
+  handoff's, R-0109's pointer).
+- 2. Queued [SAVE-IMAGE-REMAINDER](SAVE-IMAGE-REMAINDER.md) (hunter-effects' personal bests from
+  native's race increments at `$085F`/`$085B`, `race_update.cpp:852`; the endings' `$10A7`; the
+  rest of the Value list) and [OPPONENT-POSE-BOUNDS](OPPONENT-POSE-BOUNDS.md) (`presentation.cpp:243`
+  for opponent `0x14` under a hardened build); both named in R-0111's limits.
+- 3. `$02BE-02BF` (the members' checksum), `$073E-0741` and `$10F9-10FC` argued from the listing
+  and added to `residual.txt`; `expected.json` re-recorded. Outside the residual bytes: 14,380
+  write frames on 207 routes differ (was 17,544 on 214); 709 of 916 routes equal (was 702). Main
+  on the same residual: 353,073 and 16. The rest of the numbers are unchanged (181,547 differing
+  write frames from 406, 90 routes equal there).
+- 4. R-0111's residual section cites R-0090 for what it covers and review 1's perturbation (9
+  warm routes, two ways, with its positive controls) for the rest; `$10B2` stated as without a
+  capture.
+- 5. `check_image.sh` fails on a runner exit code other than the recorded ones (the 3 refused
+  pokes); `app_save.sh` adds R-0089's `diff-fuzz-135` (g020), points 1598, 1599, 2400, 3199 around
+  its hints' end; `store_result_totals` skips past 8 KiB; the shift cast.
+- 6. Recorded in R-0111's limits and timing list: `--records`/`R` skip the demo race's frames (also
+  in BUILD_AND_VALIDATION), the credits demo's `$83:C8E0` a frame early, one core per process.
+- Mutants (`mutants/`): an app built without the race hook's tutorial bits: `app_save.sh` DIFFERS
+  at g020 1599, 2400 and 3199 (`app-tutorial-at-return/app_save.out`); a runner that exits 1 after
+  complete outputs: `check_image.sh` DIFFERS on the exit codes (`runner-exits-1/`); the 8 KiB check
+  removed: ctest fails (`array::at`).
+- Checks: `ctest` lab-debug and app-debug 41/41; `clang-tidy` clean on `cartridge_ram.cpp` and
+  `front_end_tests.cpp`; `git-clang-format` clean; `coverage native-symbols --check` passed (0
+  citations without a record); the static map regenerated (`coverage-census/regen.sh`, the tooling
+  tests OK); checks.list run once from `artifacts/review 1 checks` (a path with a space, `$B` main's
+  runner with the trace option), 13:45 to 13:52 UTC: `check_image.sh` equal to the recorded result
+  on every route, `app_save.sh` 15 of 15 points equal, `behaviour_check.sh` 15 of 15 routes equal
+  (`review-1-fixes-checks.log`).
+- Time: 13:28:43 to 13:54 UTC on 8 November 2026 (`date -u`), about 25 min.

@@ -19579,18 +19579,18 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2525,
+  "cited_addresses": 2537,
   "cited_by_class": {
    "data": 12,
    "inferred": 45,
-   "observed": 2241,
+   "observed": 2253,
    "unknown": 227
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1765,
+   "loc": 1776,
    "mid": 31,
-   "sub": 490,
+   "sub": 491,
    "unk": 227
   },
   "conflicts": 0,

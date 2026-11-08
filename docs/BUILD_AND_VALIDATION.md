@@ -58,7 +58,8 @@ to a cold start's. An emulator's save of the ROM loads too. `front_end_runner --
 IMAGE` boots from an image and `--records FRAME OUT.bin` writes the whole image; the laboratory
 scripts are in main `local/evidence/save-files/`. `--cartridge-trace OUT.txt` writes the image's
 changed bytes after every frame, which SAVE-IMAGE-EXACT compares with the original's at every frame
-([R-0111](research/R-0111-save-image-exact.md), main `local/evidence/save-image-exact/`).
+([R-0111](research/R-0111-save-image-exact.md), main `local/evidence/save-image-exact/`); unlike
+`--records` and the `R` digests, which skip the idle demo race's frames, it covers every frame.
 
 APP-PARITY ([R-0110](research/R-0110-app-parity.md)) makes native audio and a save file the app's
 defaults: a player's launch plays audio (`--no-audio` turns it off; `--audio`, formerly

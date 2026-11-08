@@ -16,6 +16,13 @@ Does native's cartridge RAM image (`cartridge_image`, what the runner's `--recor
 save file write) equal the original's byte for byte at every frame the original writes cartridge
 RAM, over R-0109's corpus; where not, which bytes, and can they matter?
 
+**Answer: partly.** The image is not byte-equal at every write frame. Outside the bytes no later
+boot reads (`residual.txt`, argued below), 709 of 916 routes are equal at every write frame from
+frame 406; on the other 207, 14,380 write frames still differ: mostly timing shifts of the same
+write (argued below), plus the Value items, which have no cannot-matter argument yet and go to
+[SAVE-IMAGE-REMAINDER](../../tasks/SAVE-IMAGE-REMAINDER.md) (personal bests on four
+`hunter-effects` routes from a race difference, the endings' own `$10A7`, and the rest).
+
 ## Method
 
 - **The corpus** (`routes.py`, `routes.json`): R-0109's warm and cold routes, 919 runs, 5,048,046
@@ -131,9 +138,9 @@ records with timing residues below.
 | Write frames from 406 | Main | Candidate |
 | --- | ---: | ---: |
 | differing | 355,423 | 181,547 |
-| differing outside the bytes no later boot reads (`residual.txt`) | 353,194 | 17,544 |
+| differing outside the bytes no later boot reads (`residual.txt`) | 353,073 | 14,380 |
 | routes equal at every write frame from 406 | 16 | 90 |
-| routes equal outside those bytes | 16 | 702 |
+| routes equal outside those bytes | 16 | 709 |
 
 No frame is equal on every route: the cold start's wipe frames 403-404 and the race words differ.
 
@@ -155,26 +162,43 @@ changes, as meant.
 race's loading and update hooks: on two-races (two one-player DRAGSTER races, native audio) its save
 after 11 points (the track's choice, the setup, before and after the song counter's store, the race,
 its return and result, the second setup and loading, the end) equals the runner's `--records` at the
-same frame (`app_save.sh`).
+same frame; on R-0089's `dragster-ordinary-controls/explore/diff-fuzz-135` (one one-player DRAGSTER
+race whose hints end at 1599) its save equals the runner's at 1598, 1599 (the tutorial bit set by
+the race hook), 2400 and 3199 (`app_save.sh`, review 1).
 
 ## The residual, and why
 
-**Cannot matter** (no later boot reads them before they are rewritten; R-0090's perturbation of
-saved images found no read [R], and each is rewritten as listed) [L, R]:
+**Cannot matter** (no later boot reads them before they are rewritten) [L, R, C]. R-0090's
+perturbation found no read for `$0744-0751`, `$0753-07BB`, `$10A9-10AC`, `$10AF`, `$10B4`,
+`$10BF-10CF`, `$1118` and the checksums [R]; it does not cover `$0752`, `$07BC-0828`, `$1119`,
+`$10B2-10B3`, `$10B5-10BE` or part of `$10C0-10C7`. Review round 1's perturbation does
+(`review-1/rv_perturb.py`, `perturb.json`): on 9 warm routes (`c115`, `c116` leagues through their
+awards, `c083`, `c085`, `c077` records, `c175`, `c263`, `c268`, `c290` races) the original booted with
+every residual byte XOR `0xA5`, and again set to 0, gives the unperturbed boot's picture, work RAM
+and cartridge RAM outside the residual at every frame; positive controls see a read (`$1116-1117`
+XOR changes `c263`'s picture from 1601 and `c175`'s from 1664, `$10A7` XOR changes `c115`'s and
+`c085`'s work RAM from 640 and 660). The league awards run `$80:AF88`'s read of `$10B6,X`
+(`c115`, `c116`) and the statistics stay equal, so `$10B6-10C6` is rewritten
+(`$80:8996`, `$83:967C`, `$83:969F`) before it is read there. `$10B2` (readers `$83:8F9A`,
+`$83:8FD8`) still has no capture behind it: a hypothesis from the listing. The bytes:
 - the race's own words `$0752-0828`: lap and time slots, scores, written by the race; each setup
   clears `$0755-0776` and `$07BF-07E0` and rewrites `$0753` (above), the result reads them in the
   same session;
 - the work RAM copy `$0E6B-106A` of `$0000-019D` every race start makes (`$83:9894`), which only the
   race's end reads back (`$80:9A3F`); native keeps no work RAM layout;
 - the checksums without a reader `$02B0`, `$0420`, `$054E`, `$05E6`, `$073C`, `$0E69` (only `$016C` is
-  read, `$83:89EF`), which keep the boot's (item 11);
+  read, `$83:89EF`), which keep the boot's (item 11), and `$02BE-02BF`, the league members' sum
+  (`$83:9157-916A`, `ADC $02B2,X` over six words), which native writes as its "active members" field
+  and which has no reader in banks `$80-$83` (review 1; it alone made `menu-input/scores-carry`
+  differ on 1,214 write frames);
+- `$073E-0741` (8 x `$0748`, 8 x `$0749`): read only at `$80:C984-CAF5`, inside the records update
+  `$80:C786` after its own stores `$80:C793` and `$80:C7A1`;
+- `$10F9-10FC` (the VS percentage's words): read only in `$83:9D80`, whose four callers
+  (`$80:D84F`, `$80:F986`, `$83:91DD`, `$83:9878`) store both words first (`$80:D841/D84B`,
+  `$80:F978/F982`, `$83:91D4/91D9`, `$83:986A/9872`);
 - work bytes: `$106D-1072` (league, `$83:908C-90E9`), `$10AF` (`$80:8A1E`), `$10B2-10C7` (`$83:91E1`,
   `$83:96A9`, `$83:9711`), `$10C9-10CF` (the endings' counters from `$83:AFD6`; `$10CF` the league
-  pair's swap flag, read only after its race, R-0105), `$1118` (the race's flags, `$83:FAAE-FAD4`):
-  R-0090's perturbation lists `$106B-1073`, `$10AF`,
-  `$10B4`, `$10BF-10CF` and `$1118` as never read. `$10B2` and `$10B6-10BE` are not on R-0090's list
-  and have readers (`$83:8F9A`, `$83:8FD8`); that those run only after their routine's own store
-  (`$83:91E1`, `$83:96A9`) is a hypothesis from the listing, not shown by a capture.
+  pair's swap flag, read only after its race, R-0105), `$1118` (the race's flags, `$83:FAAE-FAD4`).
 
 **Timing** (the same write a few frames apart; `classify.py`'s *shift*, 120 frames) [C]:
 - the wipe's three frames: the original clears `$1FFF` down to `$08C0` on frame 403, the rest and
@@ -190,31 +214,49 @@ saved images found no read [R], and each is rewritten as listed) [L, R]:
   byte-frames);
 - the routes whose menus native runs a frame or more apart from the original (the late idle demo
   cycles' short titles, R-0087; league table prints, R-0095): `$10AD`, `$1115`, `$074C`, `$0750`,
-  `$10C8`, `$10D0` and the race track words on 1 to 12 routes.
+  `$10C8`, `$10D0` and the race track words on 1 to 12 routes;
+- the demo that shows the "credits" picture runs `$83:C8E0`'s stores (`$1115`, `$0748`, `$0750`) on
+  the setup frame, a frame before the original, since native tests the name there (R-0094).
 
 **Value** (still different, bounded) [C]:
 - name bytes after a name's terminator (`rv-warn`, `w5`, `warnings`: 3 routes): the keyboard's
   leftovers, never printed; each side's names checksum agrees with its own bytes;
+- personal bests on 4 `hunter-effects` routes (`c175`, `c177`, `c210`, `c220`): native's race adds
+  to `$085F` (or `$085B`) at frames 1973 and 1991 through a computer opponent's voice class read
+  past rider 1's tallies (`race_update.cpp:852`, R-0098); the original writes nothing; main the
+  same. A race difference that lands in a saved record (review 1);
+- the endings' own `$10A7` stores (`$83:B649` on, 7 routes), which a later boot reads;
 - `$0742`'s bit 10 in one fuzz run (7 frames), `$1116` in 3 track_reference runs (one frame each),
-  `$10B1` and `$074D` once in `league/organic-full-tour` at its end, the league members' word in
-  `menu-input/scores-carry` (1,214 write frames), VS percentages (`$10F9-10FC`, PLAYER SCORES'
-  work words, 5 routes), personal bests (4 routes, 12 byte-frames), `$073E` (12 league routes, the
-  statistics offsets of a swapped pair: `$83:95CA` swaps `$0748-0749` and the race words after a
-  league race, which native does not model); not investigated further here.
+  `$10B1` and `$074D` once in `league/organic-full-tour` at its end, and `$0748-0749` of a swapped
+  league pair (`$83:95CA` swaps them and the race words after a league race, which native does not
+  model; they are not read by a later boot).
+All of these go to SAVE-IMAGE-REMAINDER.
 
 ## Limits
 
 - Compared: every frame of 916 routes; 3 routes not run natively (above). A write of an unchanged
   value is not seen, and is equal by construction.
-- The residual classes rest on R-0090's perturbation (its corpus and seven scripts) and the
-  listing; no new perturbation was run for `$10B2` and `$10B6-10BE`.
+- The residual classes rest on R-0090's perturbation, review 1's (9 warm routes) and the listing;
+  `$10B2` has no capture behind it.
+- Follow-ups: [SAVE-IMAGE-REMAINDER](../../tasks/SAVE-IMAGE-REMAINDER.md) (the Value list) and
+  [OPPONENT-POSE-BOUNDS](../../tasks/OPPONENT-POSE-BOUNDS.md): a libc++-hardened build aborts on
+  `c175` at `presentation.cpp:243`, a `subspan` past the colour maths for the computer opponent
+  `0x14` (main's code, unchanged here; a Linux debug run of that route would abort).
+- `--records` and the `R` digests skip the idle demo race's frames (as on main: the runner
+  continues before writing them); `--cartridge-trace` covers them.
+- The original's logs come from pool processes that each run several cores in turn; `BsnesCore`
+  asks for one per process. The cartridge RAM is unaffected (review 1's own capture, other process
+  order, is byte-equal on 17 routes), but sound digests from such processes are not reproducible.
+- A save whose league cursors the game never writes (above 6) sends `$80:F88D`'s store past the
+  8 KiB in a 2P, VS or 1P result: native skips the byte and plays on; the original's store goes
+  past `$77:1FFF`, where its mapping is not recovered (review 1).
 - A saved `$10A7` of 14 or more (HUNTER's ending's drop) still starts native's markers from 0
   (R-0100); the endings' own `$10A7` stores are not modelled (`$83:B649` on), 7 routes' *value*
   differences.
 - The league pair's swap (`$83:95C4`, `$83:95CA`) and the race words it swaps are not modelled.
 - The pending reveal is native's one field shown at the current rider's place: a reveal pending when
   the rider changes stays at the old rider's place in the original.
-- The app is compared on one scripted route (two one-player races, no save at start).
+- The app is compared on two scripted routes (three one-player races, no save at start).
 - Save format and pack profile unchanged; old saves load as before (the image's layout is the
   original's, and every byte is read as before).
 

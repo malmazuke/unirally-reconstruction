@@ -972,6 +972,15 @@
   ]
  },
  {
+  "address": "$80:8996",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808996",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:8A02",
   "class": "observed",
   "comment": "instruction start",
@@ -4947,6 +4956,21 @@
   ]
  },
  {
+  "address": "$80:AF88",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AF88",
+  "native": [
+   "src/core/league_menu.cpp:count_league_pair",
+   "src/core/league_menu.cpp:played_after_count",
+   "src/core/menu_overruns.hpp:LeagueExitFrames",
+   "src/core/race_result.cpp:race_result_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:AFC3",
   "class": "observed",
   "comment": "instruction start",
@@ -8535,6 +8559,30 @@
   ]
  },
  {
+  "address": "$80:C793",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C793",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
+  "address": "$80:C7A1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C7A1",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:C7C4",
   "class": "observed",
   "comment": "instruction start",
@@ -8781,7 +8829,8 @@
    "src/core/stunt_result.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -10046,6 +10095,36 @@
   "source_records": [
    "docs/research/R-0100-record-screens.md",
    "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
+  "address": "$80:D841",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D841",
+  "native": [
+   "src/core/front_end.hpp:HighScoresPhase",
+   "src/core/high_scores.cpp:(file)",
+   "src/core/high_scores.cpp:high_score_leaders",
+   "src/core/high_scores.cpp:print_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
+  "address": "$80:D84F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D84F",
+  "native": [
+   "src/core/front_end.hpp:HighScoresPhase",
+   "src/core/high_scores.cpp:(file)",
+   "src/core/high_scores.cpp:high_score_leaders",
+   "src/core/high_scores.cpp:print_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -13336,6 +13415,36 @@
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:F978",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F978",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
+   "src/core/front_end_screens.hpp:champions_overrun_frames",
+   "src/core/local_modes.cpp:print_champion_row",
+   "src/core/local_modes.cpp:versus_percentage"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
+  "address": "$80:F986",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F986",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_percentage_races, OnePlayerRecords::versus_percentage_wins",
+   "src/core/front_end_screens.hpp:champions_overrun_frames",
+   "src/core/local_modes.cpp:print_champion_row",
+   "src/core/local_modes.cpp:versus_percentage"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -26341,6 +26450,15 @@
   ]
  },
  {
+  "address": "$83:9157",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839157",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$83:91D0",
   "class": "observed",
   "comment": "routine start",
@@ -26352,6 +26470,24 @@
   "source_records": [
    "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$83:91D4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8391D4",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
+  "address": "$83:91DD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8391DD",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -26806,7 +26942,8 @@
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md",
    "docs/research/R-0111-save-image-exact.md",
-   "tasks/SAVE-IMAGE-EXACT.md"
+   "tasks/SAVE-IMAGE-EXACT.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },
  {
@@ -26821,7 +26958,8 @@
   "source_records": [
    "docs/research/R-0073-league.md",
    "docs/research/R-0111-save-image-exact.md",
-   "tasks/SAVE-IMAGE-EXACT.md"
+   "tasks/SAVE-IMAGE-EXACT.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },
  {
@@ -26862,6 +27000,15 @@
   ]
  },
  {
+  "address": "$83:967C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83967C",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$83:969F",
   "class": "observed",
   "comment": "routine start",
@@ -26870,7 +27017,8 @@
    "src/core/audio_cpu_menu_league.cpp:read_members"
   ],
   "source_records": [
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -26990,7 +27138,8 @@
    "src/core/menu_overruns.cpp:statistics_clocks"
   ],
   "source_records": [
-   "docs/research/R-0102-menu-frame-overruns.md"
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -27002,7 +27151,8 @@
    "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
-   "docs/research/R-0102-menu-frame-overruns.md"
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -27449,6 +27599,7 @@
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
    "docs/research/R-0102-menu-frame-overruns.md",
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/MENU-INPUT.md",
    "tasks/PODIUM-RETURN-TIMING.md"
   ]
@@ -28718,7 +28869,8 @@
    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
   ],
   "source_records": [
-   "docs/research/R-0111-save-image-exact.md"
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },
  {
