@@ -168,25 +168,14 @@ CartridgeImage cartridge_image(const FrontEndState& state) {
     auto records = state.records;
     Store store{image};
     transfer_records(store, records);
-    // The records' checksums (`$83:90F4`): the original rewrites them all at the end of each
-    // records update; native follows a checksum's records as they change (R-0111). While the
-    // records are as loaded or as the wipe wrote them, the checksum is too (an image's `$FF`
-    // before the boot's check). Only the riders' names' sum has a reader (`$83:89EF`, R-0090).
-    // `$02BE` is the league members' sum, which native keeps as a field. The personal bests'
-    // (`$0E69`) keeps what the boot left: the race's increments (R-0098) change the bests long
-    // before the original's next update sums them.
-    struct ChecksumGroup {
-        std::size_t first, words, at;
-    };
-    constexpr std::array<ChecksumGroup, 7> checksum_groups{{{0x000c, 176, 0x016c},
-                                                            {0x0230, 64, 0x02b0},
-                                                            {0x016e, 96, 0x022e},
-                                                            {0x02c0, 176, 0x0420},
-                                                            {0x0422, 150, 0x054e},
-                                                            {0x0550, 75, 0x05e6},
-                                                            {0x05e8, 170, 0x073c}}};
-    for (const auto& group : checksum_groups)
-        store_records_checksum(image, state.cartridge, group.first, group.words, group.at);
+    // The names' checksums, which the original rewrites with the names (`$83:90F4`); `$83:89EF`
+    // reads the riders'. While the names are as loaded or as the wipe wrote them, so is the
+    // checksum (an image's `$FF` before the boot's check, R-0111). Its other checksums (`$02B0`,
+    // `$0420`, `$054E`, `$05E6`, `$073C`, `$0E69`) are not read and keep what the boot left
+    // (R-0090): following their records moved more write frames away from the original's than it
+    // brought to it, since the original sums them only at the end of each records update (R-0111).
+    store_records_checksum(image, state.cartridge, 0x000c, 176, 0x016c);
+    store_records_checksum(image, state.cartridge, 0x016e, 96, 0x022e);
     // `$77:0742` bit 1 is the logo held up as well as the league keyboard's (`$80:F51B`,
     // `$80:F53F`, `$80:F52B`); every boot clears it (`$80:A0A5`) before the logo hook reads it.
     store.bit(0x0742, 0x0002, records.league_naming || state.logo.raised);
