@@ -62,7 +62,9 @@ SaveFile::SaveFile(std::filesystem::path path) : path_(std::move(path)) {
                                 std::istreambuf_iterator<char>());
   CartridgeImage image{};
   if (bytes.size() != image.size())
-    throw std::runtime_error("a save file is 8192 bytes: " + path_.string());
+    throw DamagedSaveFile("a save file is 8192 bytes: " + path_.string() +
+                          " (kept as it is; --no-save-file runs without a "
+                          "save, --save-file PATH keeps another)");
   std::copy(bytes.begin(), bytes.end(), image.begin());
   loaded_ = written_ = image;
 }

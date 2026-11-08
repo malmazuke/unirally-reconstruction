@@ -136,6 +136,36 @@ private:
   std::uint32_t next_{};
 };
 
+// The frame a laboratory input script (`--front-end-inputs`) is read at
+// (R-0110): the front end's frame until a notice; a notice's frames count, and
+// after it the main menu's frames go on from the notice's end, though the front
+// end's own frame goes back to the main menu's first. So a script can drive
+// past a notice, and the same script with its rows from the notice's end moved
+// back by `offset()` drives `front_end_runner` the way the app went after it.
+class ScriptClock {
+public:
+  // Two seconds of notice at 50 Hz.
+  static constexpr std::uint32_t notice_length = 100;
+  // The script's frame at the front end's frame, with `notice_left` of a
+  // notice's frames still to show (0 when none shows).
+  std::uint32_t frame(std::uint32_t front_end_frame,
+                      std::uint32_t notice_left) const {
+    return front_end_frame + offset_ +
+           (notice_left ? notice_length - notice_left : 0U);
+  }
+  // A notice shown while the front end stood at `frozen_frame` has ended, and
+  // the front end went back to the main menu's first frame `main_menu_frame`.
+  void notice_ended(std::uint32_t frozen_frame, std::uint32_t main_menu_frame) {
+    offset_ += frozen_frame + notice_length - main_menu_frame;
+  }
+  // How far the script's frames run ahead of the front end's: the frames every
+  // notice so far took, and the main-menu frames it went back over.
+  std::uint32_t offset() const { return offset_; }
+
+private:
+  std::uint32_t offset_{};
+};
+
 // What a launch asked for, and what it then gets (APP-PARITY, R-0110). A
 // player's launch has native audio and keeps a save file unless told not to; a
 // laboratory launch (`--hidden`, `--front-end-inputs` or
@@ -175,20 +205,12 @@ public:
   bool update(FrontEndPads pads);
   // The front end's own frame since power-on (notices do not count).
   std::uint32_t front_end_frame() const { return state_.frame; }
-  // The frame a laboratory input script (`--front-end-inputs`) is read at
-  // (R-0110): the front end's frame until a notice; a notice's frames count,
-  // and after it the main menu's frames go on from the notice's end, though the
-  // front end's own frame goes back to the main menu's first. So a script can
-  // drive past a notice, and the same script with its rows from the notice's
-  // end moved back by `script_offset()` drives `front_end_runner` the way the
-  // app went after the notice.
+  // The frame a laboratory input script is read at (`ScriptClock`, R-0110).
   std::uint32_t script_frame() const {
-    return state_.frame + script_offset_ +
-           (notice_frames_ ? notice_length - notice_frames_ : 0U);
+    return script_clock_.frame(state_.frame, notice_frames_);
   }
-  // How far the script's frames run ahead of the front end's: the frames every
-  // notice so far took, and the main-menu frames it went back over.
-  std::uint32_t script_offset() const { return script_offset_; }
+  // How far the script's frames run ahead of the front end's.
+  std::uint32_t script_offset() const { return script_clock_.offset(); }
   // A notice is on the screen: the front end does not run.
   bool notice_showing() const { return notice_frames_ != 0; }
   // This frame's sound queue work (R-0076), empty on a notice's frames.
@@ -278,10 +300,9 @@ private:
   FrontEndContent content_;
   FrontEndState state_ = start_front_end();
   std::optional<FrontEndState> main_menu_;
-  // Two seconds of notice at 50 Hz.
-  static constexpr std::uint32_t notice_length = 100;
+  static constexpr std::uint32_t notice_length = ScriptClock::notice_length;
   std::uint32_t notice_frames_{}, frames_{}, notices_{}, returns_{}, races_{};
-  std::uint32_t script_offset_{};
+  ScriptClock script_clock_;
   FrontEndMode notice_mode_{};
 };
 

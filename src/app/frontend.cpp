@@ -239,7 +239,7 @@ bool FrontEndSession::update(FrontEndPads pads) {
     if (--notice_frames_ == 0) {
       const auto records = state_.records;
       // The script goes on from the notice's end (`script_frame`).
-      script_offset_ += state_.frame + notice_length - main_menu_->frame;
+      script_clock_.notice_ended(state_.frame, main_menu_->frame);
       state_ = *main_menu_;
       state_.records = records;
       ++returns_;

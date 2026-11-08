@@ -326,9 +326,14 @@ def cmd_run(args: argparse.Namespace) -> int:
         rep.add_check("frontend_launch", "failed", detail=detail)
         return _finish(rep, paths.report, EXIT_FAILURE)
     rep.add_check("frontend_launch", "passed", detail=detail or "frontend exited successfully")
-    rep.data["audio"] = "off (--no-audio)" if getattr(args, "no_audio", False) else (
-        "off (laboratory run)" if args.hidden or getattr(args, "front_end_inputs", None)
-        or args.fixed_controller_mask is not None or track is not None else "native, by default")
+    if getattr(args, "no_audio", False):
+        rep.data["audio"] = "off (--no-audio)"
+    elif track is not None:
+        rep.data["audio"] = "off (--track)"
+    elif args.hidden or getattr(args, "front_end_inputs", None) or args.fixed_controller_mask is not None:
+        rep.data["audio"] = "off (laboratory run)"
+    else:
+        rep.data["audio"] = "native, by default"
     return _finish(rep, paths.report, EXIT_OK)
 
 

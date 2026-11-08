@@ -164,7 +164,31 @@ void default_save_file_rule() {
           "no home, no default save");
 }
 
+// APP-PARITY (R-0110): a laboratory script's frames go on through a notice and
+// after it. notice_race.sh's route: the WIPE RAM code at front-end frame 500
+// leaves the front end at 501 for the notice's 100 frames, then the main menu
+// comes back at its first frame, 420.
+void script_clock_rule() {
+  unirally::app::ScriptClock clock;
+  require(clock.frame(420, 0) == 420 && clock.offset() == 0,
+          "before a notice the script is read at the front end's frame");
+  require(clock.frame(501, 100) == 501, "a notice's first frame");
+  require(clock.frame(501, 99) == 502, "a notice's frames count");
+  require(clock.frame(501, 1) == 600, "a notice's last frame");
+  clock.notice_ended(501, 420);
+  require(clock.offset() == 181,
+          "the notice and the main-menu frames gone back over");
+  require(clock.frame(420, 0) == 601,
+          "the main menu goes on from the notice's end");
+  // A second notice at front-end frame 500 again (script frame 681).
+  require(clock.frame(501, 100) == 682 && clock.frame(501, 1) == 781,
+          "a second notice counts on");
+  clock.notice_ended(501, 420);
+  require(clock.frame(420, 0) == 782, "and the main menu goes on from its end");
+}
+
 int main() {
+  script_clock_rule();
   launch_settings_rule();
   default_save_file_rule();
   one_player_race_rule();

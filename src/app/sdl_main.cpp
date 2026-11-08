@@ -24,6 +24,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace {
 using unirally::app::GamepadButton;
@@ -483,6 +484,38 @@ start_audio(const unirally::app::LaunchSettings &settings,
   }
 }
 
+// The save file the launch keeps, if any (R-0110). The default save, which the
+// player did not ask for, degrades as audio does: one that cannot be read
+// leaves the launch without a save, with a note. A damaged one (not 8 KiB) is
+// refused and kept as it is, its message naming --no-save-file. A save the
+// player named with --save-file that cannot be used is an error.
+std::optional<unirally::app::SaveFile>
+open_save_file(const unirally::app::LaunchSettings &settings,
+               const std::filesystem::path &given) {
+  const auto path =
+      settings.default_save_file ? unirally::app::default_save_file() : given;
+  if (path.empty()) {
+    std::cout << "Save file: none"
+              << (settings.default_save_file ? " (no home folder)" : "")
+              << '\n';
+    return std::nullopt;
+  }
+  try {
+    std::optional<unirally::app::SaveFile> save(std::in_place, path);
+    std::cout << "Save file: " << path.string()
+              << (save->loaded() ? " (loaded)" : " (new)") << '\n';
+    return save;
+  } catch (const unirally::app::DamagedSaveFile &) {
+    throw;
+  } catch (const std::exception &error) {
+    if (!settings.default_save_file)
+      throw;
+    std::cout << "Save file: none (cannot use " << path.string() << ": "
+              << error.what() << ")\n";
+    return std::nullopt;
+  }
+}
+
 std::string window_title(const std::string &track_name) {
   return "Unirally \u2014 Classic / " + track_name;
 }
@@ -610,21 +643,10 @@ int main(int argc, char **argv) try {
   bool reported_held_frame{};
   // Without --track the session starts at power-on; NOW PLAYING's Race starts
   // the race.
-  std::optional<unirally::app::SaveFile> save_file;
+  auto save_file = open_save_file(settings, parsed->save_file);
   std::optional<unirally::CartridgeImage> saved;
-  const auto save_path = settings.default_save_file
-                             ? unirally::app::default_save_file()
-                             : parsed->save_file;
-  if (!save_path.empty()) {
-    save_file.emplace(save_path);
+  if (save_file)
     saved = save_file->loaded();
-    std::cout << "Save file: " << save_path.string()
-              << (saved ? " (loaded)" : " (new)") << '\n';
-  } else {
-    std::cout << "Save file: none"
-              << (settings.default_save_file ? " (no home folder)" : "")
-              << '\n';
-  }
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given)
     front_end.emplace(content.pack, saved);
@@ -1020,9 +1042,20 @@ int main(int argc, char **argv) try {
       }
       ++updates;
       redraw = true;
-      if (save_file && (front_end || waiting_front_end))
-        save_file->store(front_end ? front_end->cartridge()
-                                   : waiting_front_end->cartridge());
+      if (save_file && (front_end || waiting_front_end)) {
+        try {
+          save_file->store(front_end ? front_end->cartridge()
+                                     : waiting_front_end->cartridge());
+        } catch (const std::exception &error) {
+          // The default save degrades (open_save_file); a named one is an
+          // error.
+          if (!settings.default_save_file)
+            throw;
+          std::cout << "Save file: none from now on (cannot write it: "
+                    << error.what() << ")\n";
+          save_file.reset();
+        }
+      }
       if (parsed->maximum_updates != 0 && updates >= parsed->maximum_updates) {
         running = false;
         break;
