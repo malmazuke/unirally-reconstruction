@@ -201,3 +201,37 @@ two notes) on `d6483757`.
   `app_save.sh` 15 of 15 points equal, `check_cursor.sh` equal to `expected-cursor.json`,
   `behaviour_check.sh` 15 of 15 routes equal (`review-2-fixes-checks.log`).
 - Time: 14:13:40 to 14:29 UTC on 8 November 2026 (`date -u`), about 20 min.
+
+## Gates round 1 (`e0922dbf`)
+
+The coordinator's gate run (main `local/evidence/save-image-exact/gates-1/`, `gates-1.out`) came
+back `status=failed` for two reasons. The worker did not run the gate runner.
+
+- **The corpus recorder.** checks.list's `check_image.sh` and `check_cursor.sh` passed their own
+  comparisons. But the recorder (`tools/unirally_lab/gates/corpus.py`) refused all 919 runner
+  invocations: `unknown front_end_runner option '--cartridge-trace'`. Fix (this commit):
+  `--cartridge-trace` is an output (`OUTPUTS`, one value) whose stream is the replay's `R` digests
+  (`records`). `normalize` drops it from the inputs, so a traced invocation keys as the plain one,
+  and replay runs main's runner without it. New test `test_a_cartridge_trace_is_an_output` in
+  `tests/tooling/test_gates.py`. `test_gates` and `test_gate_identity` give 31 tests OK. With the
+  option taken out of `OUTPUTS`, the new test errors.
+- **18 checks against the original changed** from their run on main. Each moves the image toward
+  the original's; no other output moves:
+  - `checks4` (2P and VS warm records): the `$1116` and `$106C` differences from the original are
+    gone.
+  - `lt-tours-a-w0` to `lt-tours-a-w8`, `lt-tours-b-w0`, `lt-tours-b-w1`, `lt-odd-tours-w0`,
+    `lt-odd-tours-w1`, `lt-podium-back`, `lt-t-crawler`: in the league tours' records comparison,
+    the image's ranges that differ from the original shrink (`$106C`, `$10B1`, `$10D1`,
+    `$1115-1117` gone).
+  - `lt-five-w0`: as the league tours. Main's list there is cut at 12 ranges by
+    `league-tours/summarise.py`. Rerun in full with main's binary (`gates-1/base-bin`,
+    `901018a5`), it has 14: `$106C`, `$106F-1072`, `$10AF`, `$10B1`, `$10B4`, `$10BD`, `$10BF`,
+    `$10C1`, `$10C3`, `$10C5-10C6`, `$10CF`, `$10D1`, `$10F3`, `$1116-1117`
+    (`gates-1-followup/records-five-w0-main.json`). So `$10F3` differs from the original on main
+    too. The candidate's 10 ranges are main's less `$106C`, `$10B1`, `$10D1` and `$1116-1117`.
+  - `rs-records`: `wr-stats`, `wr-stats2` and `wr-track` go from 1 differing byte (`$10A7`) to 0;
+    `wr-1p-ca` from 223 bytes to 206.
+- **fe-replay.** All 519 cases differ only in the `records` stream (the cartridge RAM). Every
+  other stream is equal.
+- For `--expect-changed`:
+  `checks4,lt-tours-a-w0,lt-tours-a-w1,lt-tours-a-w2,lt-tours-a-w3,lt-tours-a-w4,lt-tours-a-w5,lt-tours-a-w6,lt-tours-a-w7,lt-tours-a-w8,lt-tours-b-w0,lt-tours-b-w1,lt-odd-tours-w0,lt-odd-tours-w1,lt-podium-back,lt-t-crawler,lt-five-w0,rs-records`

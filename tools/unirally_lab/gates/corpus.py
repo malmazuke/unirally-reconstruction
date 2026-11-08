@@ -36,7 +36,7 @@ INPUT_VALUES = {'--frames': 1, '--race-initialization': 1, '--short-demo-title':
 # Output options with their value count; replay replaces them by its own streams.
 OUTPUTS = {'--race-timeline': 1, '--one-player-timeline': 1, '--look-timeline': 1,
            '--sound-cues': 1, '--picture': 2, '--records': 2, '--vram': 2,
-           '--frame-digests': 1, '--rider-word': 1}
+           '--frame-digests': 1, '--rider-word': 1, '--cartridge-trace': 1}
 
 SHIM = """#!/bin/bash
 # Gate corpus recorder (tools/unirally_lab/gates/corpus.py): log this invocation, then run the
@@ -181,7 +181,9 @@ def load(corpus: Path) -> tuple[dict[str, dict], dict[str, set[str]]]:
 # The replay's streams each output option feeds. Stdout and stderr are read by every check.
 STREAMS_OF = {'--race-timeline': 'race-timeline', '--one-player-timeline': 'one-player-timeline',
               '--look-timeline': 'look-timeline', '--sound-cues': 'sound-cues', '--picture': 'pictures',
-              '--vram': 'vram', '--records': 'records', '--frame-digests': 'pictures', '--rider-word': 'rider-word'}
+              '--vram': 'vram', '--records': 'records', '--frame-digests': 'pictures', '--rider-word': 'rider-word',
+              # The cartridge RAM's changes every frame (SAVE-IMAGE-EXACT): the replay's `R` digests.
+              '--cartridge-trace': 'records'}
 
 
 def reads(outputs: set[str]) -> set[str]:
