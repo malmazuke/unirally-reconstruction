@@ -56,7 +56,9 @@ at power-on and writes it, through a temporary file and a rename, whenever it ch
 with the signature `$83:8000` keeps its records, as the original's boot does; any other is wiped
 to a cold start's. An emulator's save of the ROM loads too. `front_end_runner --cartridge-in
 IMAGE` boots from an image and `--records FRAME OUT.bin` writes the whole image; the laboratory
-scripts are in main `local/evidence/save-files/`.
+scripts are in main `local/evidence/save-files/`. `--cartridge-trace OUT.txt` writes the image's
+changed bytes after every frame, which SAVE-IMAGE-EXACT compares with the original's at every frame
+([R-0111](research/R-0111-save-image-exact.md), main `local/evidence/save-image-exact/`).
 
 APP-PARITY ([R-0110](research/R-0110-app-parity.md)) makes native audio and a save file the app's
 defaults: a player's launch plays audio (`--no-audio` turns it off; `--audio`, formerly

@@ -984,6 +984,15 @@
   ]
  },
  {
+  "address": "$80:8A1E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808A1E",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:8A70",
   "class": "observed",
   "comment": "instruction start",
@@ -1731,6 +1740,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80948C",
+  "native": [
+   "src/core/front_end_screens.hpp:store_race_setup"
+  ],
   "source_records": [
    "docs/research/R-0087-idle-demo-rotation.md",
    "tasks/IDLE-DEMO-ROTATION.md"
@@ -1742,10 +1754,23 @@
   "comment": "instruction start",
   "label": "loc_809491",
   "native": [
-   "src/core/front_end.cpp:choose_idle_demo"
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end_screens.hpp:store_race_setup"
   ],
   "source_records": [
    "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$80:9496",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809496",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -1762,12 +1787,30 @@
   ]
  },
  {
+  "address": "$80:94AD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8094AD",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.hpp:OnePlayerRecords::demo_track"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:94BC",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8094BC",
+  "native": [
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndState::demo_option_byte"
+  ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -1775,6 +1818,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8094C3",
+  "native": [
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndState::demo_option_byte"
+  ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
   ]
@@ -1784,6 +1831,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8094CB",
+  "native": [
+   "src/core/front_end.cpp:demo_return_frame",
+   "src/core/front_end.hpp:FrontEndState::demo_option_byte"
+  ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
   ]
@@ -2223,17 +2274,53 @@
   ]
  },
  {
+  "address": "$80:999F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80999F",
+  "native": [
+   "src/core/front_end_screens.hpp:store_race_words"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
+  ]
+ },
+ {
   "address": "$80:99A4",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_8099A4",
   "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
    "src/core/race_result.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
+  ]
+ },
+ {
+  "address": "$80:99A7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8099A7",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:store_race_setup"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -2241,6 +2328,14 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8099B2",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
+   "src/core/race_result.cpp:(file)"
+  ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
   ]
@@ -2251,8 +2346,14 @@
   "comment": "instruction start",
   "label": "loc_8099B7",
   "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
    "src/core/league_completion.cpp:league_podium_entry_frame",
-   "src/core/now_playing.cpp:race_fade_frame"
+   "src/core/now_playing.cpp:race_fade_frame",
+   "src/core/race_result.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
@@ -2266,8 +2367,14 @@
   "label": "loc_8099BE",
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
    "src/core/league_completion.cpp:league_podium_entry_frame",
-   "src/core/now_playing.cpp:race_fade_frame"
+   "src/core/now_playing.cpp:race_fade_frame",
+   "src/core/race_result.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md"
@@ -2278,9 +2385,36 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8099C2",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:store_race_words"
+  ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md",
    "tasks/CARTRIDGE-OPTION-BITS.md"
+  ]
+ },
+ {
+  "address": "$80:99CA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8099CA",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:store_race_words"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -2289,8 +2423,15 @@
   "comment": "instruction start",
   "label": "loc_8099E8",
   "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
    "src/core/now_playing.cpp:race_fade_frame",
-   "src/core/race_result.cpp:local_race_scenario"
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:local_race_scenario",
+   "src/core/race_result.cpp:store_race_words"
   ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
@@ -2306,9 +2447,16 @@
   "comment": "instruction start",
   "label": "loc_8099ED",
   "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
    "src/core/now_playing.cpp:race_fade_frame",
+   "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:local_race_scenario",
    "src/core/race_result.cpp:one_player_race_scenario",
+   "src/core/race_result.cpp:store_race_words",
    "src/core/race_setup.cpp:classic_race_start",
    "src/core/race_setup.cpp:restart_zoom_zoo",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::qualifying_score"
@@ -2323,7 +2471,14 @@
   "comment": "instruction start",
   "label": "loc_809A05",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen"
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:store_race_words"
   ],
   "source_records": [
    "docs/research/R-0081-split-race-end.md",
@@ -2336,8 +2491,36 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_809A0B",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:OnePlayerRecords::versus_chosen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:store_race_words"
+  ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:9A21",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809A21",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:store_race_words"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -2359,7 +2542,8 @@
   "comment": "instruction start",
   "label": "loc_809A3F",
   "source_records": [
-   "docs/research/R-0090-save-files.md"
+   "docs/research/R-0090-save-files.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -3090,8 +3274,10 @@
    "src/core/front_end.cpp:boot_frame",
    "src/core/front_end.cpp:boot_frame_number",
    "src/core/front_end.cpp:clear_oam_buffer",
+   "src/core/front_end.cpp:demo_return_frame",
    "src/core/front_end.cpp:early_objects, early_palette",
    "src/core/front_end.cpp:set_early_registers",
+   "src/core/front_end.hpp:FrontEndState::demo_option_byte",
    "src/core/front_end_screens.hpp:clear_oam_buffer",
    "src/core/front_end_screens.hpp:set_early_registers",
    "src/core/race_result.cpp:early_loads",
@@ -3130,7 +3316,8 @@
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md",
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -4370,10 +4557,12 @@
   "comment": "instruction start",
   "label": "loc_80AD18",
   "native": [
+   "src/core/front_end.cpp:demo_return_frame",
    "src/core/front_end.cpp:start_main_menu"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -4571,6 +4760,18 @@
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:AEB0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AEB0",
+  "native": [
+   "src/core/local_modes.cpp:choose_next_track"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -4811,6 +5012,18 @@
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:B011",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B011",
+  "native": [
+   "src/core/league_menu.cpp:end_award_passes"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -5062,13 +5275,15 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:NowPlayingChoice",
-   "src/core/now_playing.cpp:(file)"
+   "src/core/now_playing.cpp:(file)",
+   "src/core/now_playing.cpp:enter_now_playing"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -5183,6 +5398,21 @@
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:B346",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B346",
+  "native": [
+   "src/core/now_playing.cpp:opponent_for",
+   "src/core/now_playing.cpp:print_now_playing",
+   "src/core/race_setup.cpp:classic_race_scenario",
+   "src/core/zoom_zoo_movement.hpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -6169,6 +6399,18 @@
   ]
  },
  {
+  "address": "$80:BABE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BABE",
+  "native": [
+   "src/core/front_end_screens.hpp:store_tour_medal"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:BAC4",
   "class": "observed",
   "comment": "instruction start",
@@ -6269,7 +6511,8 @@
   "label": "loc_80BBBE",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
@@ -6284,7 +6527,8 @@
   "native": [
    "src/core/now_playing.cpp:note_option_bits",
    "src/core/rider_menu.cpp:pick_plays_select",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -6297,7 +6541,8 @@
   "label": "loc_80BBC8",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
@@ -6310,10 +6555,12 @@
   "label": "loc_80BBD2",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -6323,7 +6570,8 @@
   "label": "loc_80BBD6",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -6338,7 +6586,8 @@
   "label": "loc_80BBDC",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md"
@@ -6352,7 +6601,8 @@
   "native": [
    "src/core/front_end.cpp:cold_start_records",
    "src/core/rider_menu.cpp:pick_plays_select",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -6364,12 +6614,13 @@
   "comment": "instruction start",
   "label": "loc_80BBEE",
   "native": [
-   "src/core/cartridge_ram.cpp:cartridge_image",
+   "src/core/front_end_screens.hpp:store_saved_mode",
    "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -6614,12 +6865,14 @@
   "comment": "instruction start",
   "label": "loc_80BC9B",
   "native": [
+   "src/core/front_end_screens.hpp:store_saved_mode",
    "src/core/rider_menu.cpp:(file)",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -6752,8 +7005,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BD16",
+  "native": [
+   "src/core/rider_menu.cpp:take_rider_pick"
+  ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -6762,7 +7019,7 @@
   "comment": "instruction start",
   "label": "loc_80BD1C",
   "native": [
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0084-two-human-restart.md"
@@ -6774,10 +7031,22 @@
   "comment": "instruction start",
   "label": "loc_80BD1F",
   "native": [
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:BD27",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD27",
+  "native": [
+   "src/core/rider_menu.cpp:take_rider_pick"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -6932,7 +7201,8 @@
   "comment": "instruction start",
   "label": "loc_80BE3F",
   "native": [
-   "src/core/league_menu.cpp:(file)"
+   "src/core/league_menu.cpp:(file)",
+   "src/core/tour_menu.cpp:tour_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -6945,10 +7215,13 @@
   "comment": "instruction start",
   "label": "loc_80BE45",
   "native": [
-   "src/core/league_menu.cpp:(file)"
+   "src/core/league_menu.cpp:(file)",
+   "src/core/league_menu.cpp:choose_league_slot",
+   "src/core/tour_menu.cpp:tour_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -6957,7 +7230,10 @@
   "comment": "instruction start",
   "label": "loc_80BE48",
   "native": [
-   "src/core/league_menu.cpp:(file)"
+   "src/core/front_end_screens.hpp:store_saved_mode",
+   "src/core/league_menu.cpp:(file)",
+   "src/core/league_menu.cpp:choose_league_slot",
+   "src/core/tour_menu.cpp:tour_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0079-two-pad-pause.md"
@@ -7078,6 +7354,21 @@
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:BE8A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE8A",
+  "native": [
+   "src/core/league_completion.cpp:(file)",
+   "src/core/league_completion.cpp:enter_league_podium",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
   ]
  },
  {
@@ -7310,8 +7601,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BF9C",
+  "native": [
+   "src/core/rider_menu.cpp:take_rider_pick"
+  ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -7321,6 +7616,18 @@
   "label": "mid_80BF9F",
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:BFA2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BFA2",
+  "native": [
+   "src/core/rider_menu.cpp:take_rider_pick"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -7569,7 +7876,7 @@
   "native": [
    "src/core/front_end.hpp:RiderMenu::challenger",
    "src/core/rider_menu.cpp:player_won_versus",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -7580,8 +7887,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C0C9",
+  "native": [
+   "src/core/rider_menu.cpp:take_rider_pick"
+  ],
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -7654,7 +7965,8 @@
   "native": [
    "src/core/front_end.hpp:FrontEndState::options_rider",
    "src/core/options_menu.cpp:enter_define_player_warning",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
@@ -8206,7 +8518,20 @@
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0102-menu-frame-overruns.md",
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/PODIUM-RETURN-TIMING.md"
+  ]
+ },
+ {
+  "address": "$80:C789",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C789",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -9366,7 +9691,8 @@
   "label": "loc_80D457",
   "native": [
    "src/core/front_end.hpp:FrontEndState::options_rider",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/rider_menu.cpp:take_rider_pick"
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
@@ -10960,6 +11286,19 @@
   ]
  },
  {
+  "address": "$80:E6D5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E6D5",
+  "native": [
+   "src/core/front_end_screens.hpp:store_tour_medal",
+   "src/core/tour_menu.cpp:tour_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:E6DD",
   "class": "observed",
   "comment": "routine start",
@@ -10989,6 +11328,18 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:E74B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E74B",
+  "native": [
+   "src/core/tour_menu.cpp:print_tour_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -11111,6 +11462,19 @@
   ]
  },
  {
+  "address": "$80:E853",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E853",
+  "native": [
+   "src/core/front_end_screens.hpp:store_tour_medal",
+   "src/core/track_menu.cpp:enter_track_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:E857",
   "class": "observed",
   "comment": "instruction start",
@@ -11120,6 +11484,19 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:E872",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E872",
+  "native": [
+   "src/core/front_end_screens.hpp:store_marker_step",
+   "src/core/track_menu.cpp:enter_track_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -11245,6 +11622,18 @@
   ]
  },
  {
+  "address": "$80:E9F8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E9F8",
+  "native": [
+   "src/core/track_menu.cpp:choose_track"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:E9FC",
   "class": "observed",
   "comment": "instruction start",
@@ -11326,6 +11715,30 @@
   ]
  },
  {
+  "address": "$80:EACF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EACF",
+  "native": [
+   "src/core/front_end_screens.hpp:store_tour_medal"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
+  "address": "$80:EAFE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EAFE",
+  "native": [
+   "src/core/front_end_screens.hpp:store_tour_medal"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$80:EB23",
   "class": "observed",
   "comment": "routine start",
@@ -11347,6 +11760,19 @@
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
    "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:EB32",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EB32",
+  "native": [
+   "src/core/front_end_screens.hpp:store_marker_step",
+   "src/core/track_menu.cpp:turn_markers"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -11941,6 +12367,7 @@
    "src/core/league_menu.cpp:store_league_stunt_totals",
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:after_tally_frame",
    "src/core/stunt_result.cpp:start_stunt_result"
   ],
   "source_records": [
@@ -12350,7 +12777,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0090-save-files.md"
+   "docs/research/R-0090-save-files.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -12806,8 +13234,10 @@
   "comment": "routine start",
   "label": "sub_80F88D",
   "native": [
+   "src/core/cartridge_ram.hpp:store_record_word",
    "src/core/league_menu.cpp:record_league_result",
    "src/core/league_menu.cpp:store_league_totals",
+   "src/core/league_menu.cpp:store_result_totals",
    "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
    "src/core/race_progress.cpp:result_fields",
    "src/core/stunt_result.cpp:after_tally_frame"
@@ -12819,7 +13249,9 @@
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0073-league.md",
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
   ]
  },
  {
@@ -25481,7 +25913,8 @@
    "src/core/cartridge_ram.cpp:cartridge_image"
   ],
   "source_records": [
-   "docs/research/R-0090-save-files.md"
+   "docs/research/R-0090-save-files.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -25535,7 +25968,20 @@
    "src/core/front_end.cpp:check_records"
   ],
   "source_records": [
-   "docs/research/R-0090-save-files.md"
+   "docs/research/R-0090-save-files.md",
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
+  "address": "$83:8B41",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838B41",
+  "native": [
+   "src/core/cartridge_ram.hpp:pending_reveals, pending_reveal_riders"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -25777,6 +26223,34 @@
   ]
  },
  {
+  "address": "$83:8F9A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838F9A",
+  "native": [
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:part_of_races",
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
+  "address": "$83:8FD8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838FD8",
+  "native": [
+   "src/core/records_scores.cpp:PlayerFigures",
+   "src/core/records_scores.cpp:part_of_races",
+   "src/core/records_scores.cpp:player_figures"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$83:8FDE",
   "class": "observed",
   "comment": "instruction start",
@@ -25822,6 +26296,22 @@
   ]
  },
  {
+  "address": "$83:908C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83908C",
+  "native": [
+   "src/core/lap_result.cpp:GraphScale",
+   "src/core/lap_result.cpp:graph_height, minimum_range",
+   "src/core/presentation.cpp:render_authored_result",
+   "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$83:90F4",
   "class": "observed",
   "comment": "routine start",
@@ -25830,6 +26320,7 @@
    "src/core/audio_cpu_menu_defaults.cpp:write_record_checksums",
    "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/cartridge_ram.cpp:checksum",
+   "src/core/cartridge_ram.cpp:store_records_checksum",
    "src/core/front_end.hpp:OnePlayerRecords::statistics",
    "src/core/front_end.hpp:RaceResult::records_placed",
    "src/core/front_end_screens.hpp:champions_overrun_frames",
@@ -25845,6 +26336,7 @@
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0102-menu-frame-overruns.md",
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/FIFTH-WIN-COMPLETION.md"
   ]
  },
@@ -25860,6 +26352,15 @@
   "source_records": [
    "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$83:91E1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8391E1",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -26303,7 +26804,9 @@
   "comment": "instruction start",
   "label": "loc_8395C4",
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
   ]
  },
  {
@@ -26316,7 +26819,9 @@
    "src/core/league_menu.cpp:restore_league_pair"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
   ]
  },
  {
@@ -26369,6 +26874,15 @@
   ]
  },
  {
+  "address": "$83:96A9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8396A9",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$83:96BE",
   "class": "observed",
   "comment": "routine start",
@@ -26388,6 +26902,15 @@
   "label": "loc_8396FB",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$83:9711",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839711",
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -26531,7 +27054,21 @@
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0087-idle-demo-rotation.md",
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$83:98AB",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8398AB",
+  "native": [
+   "src/core/league_menu.cpp:choose_league_pair",
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -26560,15 +27097,42 @@
   ]
  },
  {
+  "address": "$83:98F1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8398F1",
+  "native": [
+   "src/core/league_menu.cpp:choose_league_pair",
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$83:98F7",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8398F7",
   "native": [
+   "src/core/league_menu.cpp:choose_league_pair",
    "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:9910",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839910",
+  "native": [
+   "src/core/league_menu.cpp:choose_league_pair",
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -26577,6 +27141,7 @@
   "comment": "instruction start",
   "label": "loc_839916",
   "native": [
+   "src/core/league_menu.cpp:choose_league_pair",
    "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
@@ -26623,10 +27188,13 @@
   "label": "sub_839987",
   "native": [
    "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:store_track_words",
    "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
-   "docs/research/R-0092-wipe-ram.md"
+   "docs/research/R-0092-wipe-ram.md",
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
   ]
  },
  {
@@ -27010,6 +27578,18 @@
   ]
  },
  {
+  "address": "$83:9F8F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839F8F",
+  "native": [
+   "src/core/cartridge_ram.cpp:cartridge_image"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$83:9F96",
   "class": "unknown",
   "comment": "unknown",
@@ -27076,8 +27656,12 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_83A254",
+  "native": [
+   "src/core/front_end_screens.hpp:store_track_words"
+  ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -27869,6 +28453,21 @@
   ]
  },
  {
+  "address": "$83:AFD6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83AFD6",
+  "native": [
+   "src/core/award.cpp:(file)",
+   "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
+   "src/core/award.cpp:reset_for_award",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
+  ]
+ },
+ {
   "address": "$83:AFE8",
   "class": "observed",
   "comment": "instruction start",
@@ -28107,6 +28706,19 @@
   ],
   "source_records": [
    "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B649",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B649",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:hit_part",
+   "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -28581,6 +29193,7 @@
   "label": "sub_83C8E0",
   "native": [
    "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
    "src/core/front_end.hpp:return_from_race",
    "src/core/race_result.cpp:(file)"
   ],
@@ -28588,7 +29201,9 @@
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0060-pause-exits.md",
-   "docs/research/R-0094-name-cheats.md"
+   "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0111-save-image-exact.md",
+   "tasks/SAVE-IMAGE-EXACT.md"
   ]
  },
  {
@@ -28641,9 +29256,13 @@
   "comment": "instruction start",
   "label": "loc_83C912",
   "native": [
-   "src/core/front_end.cpp:choose_idle_demo"
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end_screens.hpp:store_demo_race_setup"
   ],
   "source_records": [
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/IDLE-DEMO-ROTATION.md"
   ]
  },
@@ -28655,8 +29274,10 @@
   "native": [
    "src/core/front_end.cpp:choose_idle_demo",
    "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
    "src/core/front_end.hpp:OnePlayerRecords::hunter_races",
-   "src/core/front_end_screens.hpp:clear_hunter_races"
+   "src/core/front_end_screens.hpp:clear_hunter_races",
+   "src/core/front_end_screens.hpp:store_demo_race_setup"
   ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md"
@@ -28669,7 +29290,10 @@
   "label": "loc_83C91C",
   "native": [
    "src/core/front_end.cpp:choose_idle_demo",
-   "src/core/front_end.hpp:OnePlayerRecords::demo_split"
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:OnePlayerRecords::demo_split",
+   "src/core/front_end_screens.hpp:store_demo_race_setup"
   ],
   "source_records": [
    "docs/research/R-0087-idle-demo-rotation.md"
@@ -28681,7 +29305,10 @@
   "comment": "instruction start",
   "label": "loc_83C93D",
   "native": [
-   "src/core/front_end.cpp:choose_idle_demo"
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end_screens.hpp:store_demo_race_setup"
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
@@ -28693,7 +29320,10 @@
   "comment": "instruction start",
   "label": "loc_83C94A",
   "native": [
-   "src/core/front_end.cpp:choose_idle_demo"
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end_screens.hpp:store_demo_race_setup"
   ],
   "source_records": [
    "docs/research/R-0087-idle-demo-rotation.md"
@@ -28704,8 +29334,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83C99E",
+  "native": [
+   "src/core/front_end.cpp:set_up_demo_race"
+  ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/CREDITS-NAME.md"
   ]
  },
@@ -28818,6 +29452,7 @@
    "src/core/front_end.cpp:demo_title_frame",
    "src/core/front_end.cpp:idle_demo_loading_frames",
    "src/core/front_end.hpp:choose_race_song",
+   "src/core/front_end.hpp:update_race_loading",
    "src/core/now_playing.cpp:race_fade_frame",
    "src/core/race_result.cpp:choose_race_song",
    "src/core/race_setup.cpp:restart_zoom_zoo",
@@ -28829,6 +29464,7 @@
    "docs/research/R-0084-two-human-restart.md",
    "docs/research/R-0094-name-cheats.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/AUDIO-FIRST-RACE.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]
@@ -28843,6 +29479,7 @@
    "src/core/front_end.cpp:demo_title_frame",
    "src/core/front_end.cpp:idle_demo_loading_frames",
    "src/core/front_end.hpp:choose_race_song",
+   "src/core/front_end.hpp:update_race_loading",
    "src/core/now_playing.cpp:race_fade_frame",
    "src/core/race_result.cpp:choose_race_song",
    "src/core/race_setup.cpp:restart_zoom_zoo",
@@ -29420,14 +30057,16 @@
   "label": "sub_83CE2C",
   "native": [
    "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
-   "src/core/race_result.cpp:start_race_return",
+   "src/core/front_end.hpp:update_race_loading",
+   "src/core/race_result.cpp:set_tutorial_bits",
    "src/core/race_setup.cpp:restart_zoom_zoo",
    "src/core/reward_queue.cpp:hint_interval",
    "src/core/reward_queue.cpp:update_player_tutorial_hints",
    "src/core/reward_queue.hpp:update_tutorial_hints"
   ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -29452,11 +30091,13 @@
   "comment": "routine start",
   "label": "sub_83CEB1",
   "native": [
-   "src/core/race_result.cpp:start_race_return",
+   "src/core/front_end.hpp:update_race_loading",
+   "src/core/race_result.cpp:set_tutorial_bits",
    "src/core/race_setup.cpp:restart_zoom_zoo"
   ],
   "source_records": [
-   "docs/research/R-0082-split-captions.md"
+   "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {
@@ -33072,6 +33713,7 @@
   "comment": "instruction start",
   "label": "loc_83FAAE",
   "source_records": [
+   "docs/research/R-0111-save-image-exact.md",
    "tasks/LOCKED-TOURS.md"
   ]
  },
@@ -33203,7 +33845,8 @@
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0090-save-files.md",
-   "docs/research/R-0092-wipe-ram.md"
+   "docs/research/R-0092-wipe-ram.md",
+   "docs/research/R-0111-save-image-exact.md"
   ]
  },
  {

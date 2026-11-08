@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 | Instructions from observed | 39,093 |
 | Instructions from table | 42 |
 | Routines | 762 |
-| Routines cited by native code | 584 |
-| Routine bytes cited by native code | 74,178 |
+| Routines cited by native code | 586 |
+| Routine bytes cited by native code | 74,204 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -49,7 +49,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 
 ## Cited addresses
 
-2489 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1731, mid 31, sub 488, unk 227 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 45, observed 2205, unknown 227.
+2525 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1765, mid 31, sub 490, unk 227 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 45, observed 2241, unknown 227.
 
 Cited addresses in `unknown` bytes:
 
@@ -229,7 +229,7 @@ Cited addresses in `unknown` bytes:
 | $83:88F7 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0067-stunt-result.md |
 | $83:88FD | docs/research/R-0057-one-run-result.md, docs/research/R-0059-tour-completion.md, docs/research/R-0062-gold-endings.md, tasks/FRONT-END-ENDINGS.md, tasks/FRONT-END-TOUR-END.md |
 | $83:8971 | docs/research/R-0109-coverage-census.md |
-| $83:89EF | docs/research/R-0090-save-files.md |
+| $83:89EF | docs/research/R-0090-save-files.md, docs/research/R-0111-save-image-exact.md |
 | $83:8A59 | docs/research/R-0109-coverage-census.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
@@ -245,7 +245,7 @@ Cited addresses in `unknown` bytes:
 | $83:A1B4 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:A1DA | docs/research/R-0008-track-decode.md |
 | $83:A218 | docs/research/R-0066-stunt-event-race.md |
-| $83:A254 | docs/research/R-0056-tour-track-now-playing.md |
+| $83:A254 | docs/research/R-0056-tour-track-now-playing.md, docs/research/R-0111-save-image-exact.md |
 | $83:A43F | docs/research/R-0109-coverage-census.md |
 | $83:A4A8 | docs/research/R-0109-coverage-census.md |
 | $83:A9DD | docs/research/R-0109-coverage-census.md |
