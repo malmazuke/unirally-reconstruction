@@ -2433,12 +2433,22 @@ void save_image_exact_tests() {
   const auto moved = unirally::cartridge_image(state);
   require(moved[0x0618 + 2 * 0x200] == 0x34 &&
           moved[0x0618 + 2 * 0x200 + 1] == 0x12);
-  // A save with cursors the game never writes sends the store past the 8 KiB:
-  // skipped, and play goes on.
+  // Cursors the game never writes (a save from elsewhere): the 16-bit index
+  // wraps and the 8 KiB mirrors, as the original's (review 2). All 0xFF:
+  // 0xFFFE, the totals at `$0616` (into the pairings) and `$0618`.
   state.records.league_pair_cursor = {0xff, 0xff, 0, 0, 0, 0};
-  const auto before = unirally::cartridge_image(state);
+  state.race_result.times.player_total = 0x1234;
+  state.race_result.times.opponent_total = 0x5678;
   store_league_race_totals(state);
-  require(unirally::cartridge_image(state) == before);
+  const auto wrapped = unirally::cartridge_image(state);
+  require(wrapped[0x0616] == 0x34 && wrapped[0x0617] == 0x12 &&
+          wrapped[0x0618] == 0x78 && wrapped[0x0619] == 0x56 &&
+          state.records.league_pairings[5][6] == 0x34);
+  // A cursor word of 0x1000: index 0x2000, the mirror of `$0618`.
+  state.records.league_pair_cursor = {0x00, 0x10, 0, 0, 0, 0};
+  state.race_result.times.player_total = 0x0102;
+  store_league_race_totals(state);
+  require(state.records.league_event_totals[0][0] == 0x0102);
   // The pending reveal is kept per rider (`$77:10FD + $CA`).
   state.options_rider = 3;
   state.records.pending_reveal = 2;

@@ -18,6 +18,12 @@ constexpr std::size_t cartridge_defaults_bytes = 1158, track_count = 50;
 // One pass over every field native keeps, at its cartridge RAM address (front_end.hpp's
 // OnePlayerRecords). `Codec` either stores the fields into the image or loads them from it, so
 // the two directions cannot disagree.
+// One byte of a word field: its low byte at an even distance, else its high byte.
+void store_word_byte(std::uint16_t& word, std::size_t distance, std::uint8_t byte) {
+    const unsigned shift = static_cast<unsigned>(distance % 2) * 8U;
+    word = static_cast<std::uint16_t>((word & ~(0xffU << shift)) | unsigned{byte} << shift);
+}
+
 template <class Codec>
 void transfer_records(Codec& at, OnePlayerRecords& records) {
     for (std::size_t k = 0; k < records.rider_names.size(); ++k)
@@ -40,7 +46,7 @@ void transfer_records(Codec& at, OnePlayerRecords& records) {
         at.word(0x0684 + 4 * slot, records.league_best[slot]);
         at.word(0x0686 + 4 * slot, records.league_best_holder[slot]);
     }
-    at.word(0x02be, records.active_league_members);
+    at.word(0x02be, records.league_members_checksum);
     constexpr std::array<std::size_t, 3> times{0x0422, 0x0486, 0x04ea};
     constexpr std::array<std::size_t, 3> holders{0x0550, 0x0582, 0x05b4};
     for (std::size_t place = 0; place < times.size(); ++place)
@@ -111,6 +117,27 @@ struct Load {
         set = ((image.at(at) | image.at(at + 1) << 8U) & mask) != 0;
     }
     void flag(std::size_t at, bool& set) const { set = image.at(at) != 0; }
+};
+
+// One byte stored at a cartridge RAM offset, into whichever field native keeps there (one bit of a
+// word field takes the byte's bit; a flag, whether the byte is nonzero).
+struct Patch {
+    std::size_t offset;
+    std::uint8_t value;
+    void byte(std::size_t at, std::uint8_t& field) const {
+        if (at == offset) field = value;
+    }
+    void word(std::size_t at, std::uint16_t& field) const {
+        if (offset == at || offset == at + 1) store_word_byte(field, offset - at, value);
+    }
+    void bit(std::size_t at, std::uint16_t mask, bool& set) const {
+        if (offset != at && offset != at + 1) return;
+        const unsigned shift = offset == at ? 0U : 8U;
+        if (((mask >> shift) & 0xffU) != 0) set = ((unsigned{value} << shift) & mask) != 0;
+    }
+    void flag(std::size_t at, bool& set) const {
+        if (at == offset) set = value != 0;
+    }
 };
 
 } // namespace
@@ -234,28 +261,16 @@ void store_race_mode_from_option_byte(FrontEndState& state) {
 }
 
 namespace {
-// One byte of a word field: its low byte at an even distance from `first`, else its high byte.
-void store_field_byte(std::uint16_t& word, std::size_t distance, std::uint8_t byte) {
-    const unsigned shift = static_cast<unsigned>(distance % 2) * 8U;
-    word = static_cast<std::uint16_t>((word & ~(0xffU << shift)) | unsigned{byte} << shift);
-}
 
 void store_record_byte(FrontEndState& state, std::size_t offset, std::uint8_t byte) {
-    constexpr std::size_t totals = 0x0618, bests = 0x0829;
-    auto& records = state.records;
-    const std::size_t totals_bytes = 2 * 8 * records.league_event_totals.size();
-    if (offset >= totals && offset < totals + totals_bytes) {
-        const auto index = (offset - totals) / 2;
-        store_field_byte(records.league_event_totals.at(index / 8).at(index % 8), offset - totals,
-                         byte);
-    } else if (offset >= bests && offset < bests + 2 * records.best.size()) {
-        store_field_byte(records.best.at((offset - bests) / 2), offset - bests, byte);
-    } else if (offset < state.cartridge.size()) {
-        state.cartridge.at(offset) = byte;
-    }
-    // Past the 8 KiB only a save the game did not write leads (league cursors above 6): the
-    // original's long-indexed store goes on past `$77:1FFF`, where its mapping is not recovered;
-    // native skips the byte and plays on (R-0111).
+    // The reference core mirrors the 8 KiB through banks `$77` and `$78`, so an offset past
+    // `$77:1FFF` lands on its mirror (review 2: cursors poked to 0xFF put `$80:F88D`'s totals at
+    // `$0616`, a cursor word of 0x1000 at `$0618`).
+    constexpr std::size_t mirror = 0x1fff;
+    offset &= mirror;
+    const Patch patch{offset, byte};
+    transfer_records(patch, state.records);
+    state.cartridge.at(offset) = byte;
 }
 } // namespace
 

@@ -144,16 +144,19 @@ bool league_race_quit(const RaceTimes& times) {
     return times.player_total == 0xea62 || times.opponent_total == 0xea62;
 }
 
-// $80:F88D outside a league (R-0095, R-0111): the same stores at `$77:0618 + 16 x $CC + 2 x` the
-// cursor word at `$77:0678 + $CC`, whose high byte is the next slot's cursor, so a nonzero one
-// sends them 512 bytes on for each step (into the personal bests, or past the records).
+// $80:F88D outside a league (R-0095, R-0111): the same stores at `$77:0618,X` with X = 16 x `$CC`
+// + 2 x the cursor word at `$77:0678 + $CC` in 16 bits (`$80:F891-F8A3`). The word's high byte is
+// the next slot's cursor, so a nonzero one sends them 512 bytes on for each step (into the
+// personal bests, or past the records); a save the game did not write can wrap the index and
+// land on the 8 KiB's mirrors (store_record_word).
 void store_result_totals(FrontEndState& state, std::uint16_t first, std::uint16_t second,
                          bool store_second) {
     const auto slot = state.league.slot;
     const auto& cursors = state.records.league_pair_cursor;
     const unsigned next_cursor = slot + 1U < cursors.size() ? cursors[slot + 1U] : 0U;
     const unsigned cursor_word = cursors.at(slot) | next_cursor << 8U;
-    const std::size_t at = 0x0618 + 16U * slot + 2U * cursor_word;
+    const unsigned index = (16U * slot + 2U * cursor_word) & 0xffffU;
+    const std::size_t at = 0x0618 + index;
     store_record_word(state, at, first);
     if (store_second) store_record_word(state, at + 2, second);
 }

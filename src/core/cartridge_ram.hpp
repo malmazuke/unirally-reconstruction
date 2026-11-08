@@ -43,8 +43,10 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
 void store_race_mode_from_option_byte(FrontEndState& state);
 
 // A word the original stores at a cartridge RAM offset it computes (`$80:F88D`, R-0111): into
-// the event totals or the personal bests when it falls there, else into the bytes native keeps
-// no field for.
+// whichever field native keeps at each byte, else into the bytes native keeps no field for; an
+// offset past the 8 KiB lands on its mirror, as the reference core maps banks `$77` and `$78`.
+// The bytes the image derives from front-end state (`$0742` bits 1, 9 and 10, the pending
+// reveals) are not patched.
 void store_record_word(FrontEndState& state, std::size_t offset, std::uint16_t value);
 
 // A race update's increments of cartridge RAM bytes past rider 1's tallies

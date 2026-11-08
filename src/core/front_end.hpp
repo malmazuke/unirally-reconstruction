@@ -305,7 +305,9 @@ struct OnePlayerRecords {
     std::array<std::uint8_t, 352> rider_names{};
     std::array<std::uint8_t, 192> league_names{};  // $77:016E, six 32-byte names
     std::array<std::uint16_t, 6> league_members{}; // $77:02B2, rider bit per slot
-    std::uint16_t active_league_members{};         // $77:02BE, last saved league
+    // $77:02BE: the members words' checksum (`$83:9157-916A`); no reader (R-0111). Native stores
+    // the edited slot's members there, the sum only while the other slots are empty.
+    std::uint16_t league_members_checksum{};
     // $77:02C0 + 32 * slot + 4 * row + 2: eight league score words per slot.
     // $77:02C0 + 32 * slot + 4 * row: played counters; scratch sorting indices are separate.
     std::array<std::array<std::uint16_t, 8>, 6> league_played{};
