@@ -11,7 +11,8 @@
 - Branch `task/app-parity` in `.worktrees/app-parity`; evidence in main
   `local/evidence/app-parity/`.
 - Task provider: Anthropic.
-- Milestone: M4. Review tier: **2** (the app shell and its defaults; a change that reaches `src/core`
+- Milestone: M4. Review tier: **1** since the worker's change moved the runner's output writers to
+  `src/core` (queued as 2: the app shell and its defaults; a change that reaches `src/core`
   race or front-end state raises it to tier 1).
 
 The lab runner (`front_end_runner`) is checked against the original frame for frame, but the shipped
