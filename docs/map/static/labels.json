@@ -6,6 +6,7 @@
   "label": "unk_808000",
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/STATIC-CODE-MAP.md"
   ]
  },
@@ -379,6 +380,24 @@
   "label": "loc_808598",
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:859B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80859B",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$80:85A3",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8085A3",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -1858,6 +1877,24 @@
   ]
  },
  {
+  "address": "$80:94EB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8094EB",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$80:9505",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809505",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:951C",
   "class": "observed",
   "comment": "routine start",
@@ -2822,6 +2859,19 @@
   ]
  },
  {
+  "address": "$80:9CAC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809CAC",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:9CEF",
   "class": "observed",
   "comment": "instruction start",
@@ -3147,6 +3197,7 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -3271,6 +3322,15 @@
   ],
   "source_records": [
    "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:A096",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A096",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -4097,6 +4157,15 @@
   ]
  },
  {
+  "address": "$80:A8A4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A8A4",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:A8A8",
   "class": "observed",
   "comment": "routine start",
@@ -4170,6 +4239,15 @@
   ]
  },
  {
+  "address": "$80:A9C4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A9C4",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:A9CA",
   "class": "observed",
   "comment": "instruction start",
@@ -4223,6 +4301,7 @@
   "label": "unk_80A9FA",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/WIPE-RAM.md"
   ]
  },
@@ -4237,6 +4316,15 @@
   ],
   "source_records": [
    "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:A9FF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A9FF",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -5146,6 +5234,15 @@
   ]
  },
  {
+  "address": "$80:B0DC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B0DC",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:B0F0",
   "class": "observed",
   "comment": "routine start",
@@ -5792,6 +5889,15 @@
   ]
  },
  {
+  "address": "$80:B6CA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B6CA",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:B6CF",
   "class": "observed",
   "comment": "routine start",
@@ -6098,6 +6204,7 @@
   ],
   "source_records": [
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -6109,6 +6216,7 @@
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md",
    "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/CARTRIDGE-OPTION-BITS.md"
   ]
  },
@@ -6172,6 +6280,15 @@
    "docs/research/R-0091-mode-audio.md",
    "docs/research/R-0097-menu-input.md",
    "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:B93B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B93B",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -6410,6 +6527,16 @@
   ]
  },
  {
+  "address": "$80:BA7C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80BA7C",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
+  ]
+ },
+ {
   "address": "$80:BAA4",
   "class": "observed",
   "comment": "routine start",
@@ -6459,6 +6586,19 @@
   ]
  },
  {
+  "address": "$80:BB1E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80BB1E",
+  "native": [
+   "src/core/track_menu.cpp:move_track_cursor"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
+  ]
+ },
+ {
   "address": "$80:BB45",
   "class": "observed",
   "comment": "instruction start",
@@ -6468,6 +6608,19 @@
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$80:BB72",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80BB72",
+  "native": [
+   "src/core/track_menu.cpp:move_track_cursor"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -7734,6 +7887,15 @@
   ]
  },
  {
+  "address": "$80:BFEE",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BFEE",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:BFF9",
   "class": "observed",
   "comment": "instruction start",
@@ -8277,7 +8439,8 @@
    "src/core/text_printer.hpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -8376,6 +8539,15 @@
   ]
  },
  {
+  "address": "$80:C545",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C545",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:C557",
   "class": "observed",
   "comment": "instruction start",
@@ -8417,6 +8589,15 @@
   ]
  },
  {
+  "address": "$80:C5CB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C5CB",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:C5D3",
   "class": "observed",
   "comment": "instruction start",
@@ -8428,6 +8609,15 @@
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:C620",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C620",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -9496,6 +9686,15 @@
   ]
  },
  {
+  "address": "$80:D20A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D20A",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:D20E",
   "class": "observed",
   "comment": "routine start",
@@ -9944,6 +10143,15 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D5E1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D5E1",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -11762,6 +11970,15 @@
   ]
  },
  {
+  "address": "$80:EA31",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EA31",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:EA40",
   "class": "unknown",
   "comment": "unknown",
@@ -12016,6 +12233,15 @@
   ]
  },
  {
+  "address": "$80:EF37",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EF37",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$80:EF3D",
   "class": "unknown",
   "comment": "unknown",
@@ -12042,7 +12268,8 @@
   "source_records": [
    "docs/research/R-0072-options.md",
    "docs/research/R-0092-wipe-ram.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -12841,6 +13068,15 @@
   "label": "loc_80F553",
   "source_records": [
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$80:F55B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80F55B",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -13796,6 +14032,15 @@
   ]
  },
  {
+  "address": "$80:FFD8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80FFD8",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$81:8000",
   "class": "unknown",
   "comment": "unknown",
@@ -14400,7 +14645,8 @@
   "comment": "unknown",
   "label": "unk_8184AD",
   "source_records": [
-   "docs/research/R-0107-race-listing-branches.md"
+   "docs/research/R-0107-race-listing-branches.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -14508,6 +14754,18 @@
    "docs/research/R-0107-race-listing-branches.md",
    "docs/research/R-0109-coverage-census.md",
    "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:8583",
+  "class": "inferred",
+  "comment": "inside the instruction at $81:8582",
+  "label": "mid_818583",
+  "native": [
+   "src/core/race_update.cpp:run_slow_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -16093,6 +16351,15 @@
   ]
  },
  {
+  "address": "$81:9161",
+  "class": "inferred",
+  "comment": "inside the instruction at $81:9160",
+  "label": "mid_819161",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$81:917C",
   "class": "observed",
   "comment": "instruction start",
@@ -16347,6 +16614,15 @@
   ]
  },
  {
+  "address": "$81:946A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81946A",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$81:9474",
   "class": "observed",
   "comment": "instruction start",
@@ -16579,6 +16855,15 @@
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:9693",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_819693",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -16943,6 +17228,15 @@
   ]
  },
  {
+  "address": "$81:9963",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_819963",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$81:996F",
   "class": "observed",
   "comment": "instruction start",
@@ -16972,7 +17266,8 @@
   "source_records": [
    "docs/research/R-0010-native-movement.md",
    "docs/research/R-0011-contact.md",
-   "docs/research/R-0093-data-coverage.md"
+   "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -16986,6 +17281,19 @@
   ],
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:9E2B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_819E2B",
+  "native": [
+   "src/core/track_sampling.hpp:SamplePoint"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -17142,6 +17450,21 @@
   ]
  },
  {
+  "address": "$81:A337",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81A337",
+  "native": [
+   "src/core/presentation.cpp:draw_race_backgrounds",
+   "src/core/race_setup.cpp:track_geometry",
+   "src/core/rider_object.hpp:project_rider_oam",
+   "src/core/zoom_zoo_movement.hpp:TrackGeometry"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$81:A342",
   "class": "unknown",
   "comment": "unknown",
@@ -17277,7 +17600,8 @@
   "comment": "unknown",
   "label": "unk_81A7A7",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -17463,7 +17787,17 @@
   "comment": "unknown",
   "label": "unk_81B3F0",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$81:B5F4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81B5F4",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -17484,7 +17818,8 @@
   "comment": "unknown",
   "label": "unk_81B704",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -17497,12 +17832,30 @@
   ]
  },
  {
+  "address": "$81:B768",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81B768",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$81:B795",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_81B795",
   "source_records": [
    "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$81:B7BA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81B7BA",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -17520,7 +17873,8 @@
   "comment": "unknown",
   "label": "unk_81B7ED",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -17537,6 +17891,24 @@
    "docs/research/R-0093-data-coverage.md",
    "tasks/DATA-COVERAGE.md",
    "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$81:B908",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81B908",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$81:B91A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81B91A",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -17582,7 +17954,8 @@
   "comment": "routine start",
   "label": "sub_81BB60",
   "source_records": [
-   "docs/research/R-0093-data-coverage.md"
+   "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -17715,6 +18088,20 @@
   ]
  },
  {
+  "address": "$81:BF5E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BF5E",
+  "native": [
+   "src/core/race_hud.cpp:hud_message_at_consumers",
+   "src/core/reward_queue.cpp:show_hunter_message",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$81:BFB9",
   "class": "observed",
   "comment": "routine start",
@@ -17735,6 +18122,7 @@
   "label": "loc_81BFE9",
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/CLASSIC-STUNT-NAMES-review.md",
    "tasks/CLASSIC-STUNT-NAMES.md"
   ]
@@ -17789,6 +18177,18 @@
   "source_records": [
    "docs/research/R-0082-split-captions.md",
    "tasks/SPLIT-CAPTIONS.md"
+  ]
+ },
+ {
+  "address": "$81:C05F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C05F",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -18417,12 +18817,40 @@
   ]
  },
  {
+  "address": "$81:C68F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C68F",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$81:C691",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81C691",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$81:C692",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81C692",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$81:C694",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C694",
   "source_records": [
-   "docs/research/R-0010-input-timer.md"
+   "docs/research/R-0010-input-timer.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -19041,7 +19469,8 @@
   "comment": "unknown",
   "label": "unk_81CB24",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -19130,6 +19559,19 @@
   ]
  },
  {
+  "address": "$81:D218",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D218",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_hud"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
+  ]
+ },
+ {
   "address": "$81:D255",
   "class": "inferred",
   "comment": "instruction start",
@@ -19183,6 +19625,19 @@
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$81:D692",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D692",
+  "native": [
+   "src/core/race_hud.cpp:classic_hud_left_field"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -19552,12 +20007,32 @@
   ]
  },
  {
+  "address": "$81:DE90",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DE90",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
+  ]
+ },
+ {
   "address": "$81:DEBB",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_81DEBB",
   "source_records": [
    "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$81:DFC1",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81DFC1",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -19991,6 +20466,19 @@
   "source_records": [
    "docs/research/R-0043-classic-race-hud.md",
    "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EC6F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81EC6F",
+  "native": [
+   "src/core/race_hud.cpp:classic_hud_left_field"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -20551,6 +21039,7 @@
    "docs/research/R-0074-audio-foundation.md",
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0099-podium-audio.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/AUDIO-ONE-PLAYER.md",
    "tasks/DEMO-AUDIO.md"
   ]
@@ -20682,6 +21171,7 @@
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
    "docs/research/R-0074-audio-foundation.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
   ]
@@ -20741,7 +21231,8 @@
   "comment": "unknown",
   "label": "unk_82816C",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -20778,7 +21269,8 @@
   "label": "sub_8282A5",
   "source_records": [
    "docs/research/R-0099-podium-audio.md",
-   "docs/research/R-0102-menu-frame-overruns.md"
+   "docs/research/R-0102-menu-frame-overruns.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -20810,6 +21302,24 @@
   "label": "loc_8282D6",
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:82D9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8282D9",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$82:82E1",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8282E1",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -21779,6 +22289,15 @@
   ],
   "source_records": [
    "tasks/M4-12-review.md"
+  ]
+ },
+ {
+  "address": "$82:97ED",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8297ED",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -23550,6 +24069,15 @@
   ]
  },
  {
+  "address": "$82:AE7E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82AE7E",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$82:AEF5",
   "class": "observed",
   "comment": "routine start",
@@ -23724,7 +24252,8 @@
   "comment": "unknown",
   "label": "unk_82B225",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -23753,6 +24282,18 @@
   "label": "sub_82B2AC",
   "source_records": [
    "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
+  "address": "$82:B2B0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B2B0",
+  "native": [
+   "src/core/audio_cpu_boot.cpp:read_asset_directory_value"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -23815,6 +24356,7 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/DATA-COVERAGE.md",
    "tasks/M1-03.md",
    "tasks/TRACK-BREADTH.md"
@@ -23840,6 +24382,7 @@
    "docs/research/R-0021-zoom-zoo-content-contract.md",
    "docs/research/R-0046-track-breadth-matrix.md",
    "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/DATA-COVERAGE.md",
    "tasks/M1-03.md",
    "tasks/M4-03.md",
@@ -23866,6 +24409,16 @@
   "label": "sub_82B8AE",
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$82:B8E3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B8E3",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -23918,6 +24471,16 @@
   "label": "sub_82C53D",
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$82:C53E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82C53E",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -24221,6 +24784,15 @@
   ],
   "source_records": [
    "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$82:D6ED",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D6ED",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -25178,7 +25750,8 @@
    "src/core/zoom_zoo_movement.hpp:ClassicRaceTrack"
   ],
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -25188,7 +25761,17 @@
   "label": "loc_82E17A",
   "source_records": [
    "docs/research/R-0093-data-coverage.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/DATA-COVERAGE.md"
+  ]
+ },
+ {
+  "address": "$82:E19D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82E19D",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -25229,6 +25812,15 @@
   "label": "loc_82E1AD",
   "source_records": [
    "docs/research/R-0021-zoom-zoo-content-contract.md"
+  ]
+ },
+ {
+  "address": "$82:E1BB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E1BB",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -25276,6 +25868,15 @@
   "source_records": [
    "docs/content/dragster-segment.md",
    "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$82:E352",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E352",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -25520,6 +26121,7 @@
   "label": "unk_838535",
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/STATIC-CODE-MAP.md"
   ]
  },
@@ -25665,7 +26267,8 @@
   "comment": "unknown",
   "label": "unk_8387E9",
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -25743,6 +26346,7 @@
    "src/core/front_end.hpp:FrontEndScreen"
   ],
   "source_records": [
+   "docs/research/R-0112-census-remainder.md",
    "tasks/FRONT-END-1P-CONTINUATION.md"
   ]
  },
@@ -26034,6 +26638,15 @@
   ]
  },
  {
+  "address": "$83:89D9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8389D9",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$83:89EF",
   "class": "unknown",
   "comment": "unknown",
@@ -26068,6 +26681,24 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0090-save-files.md"
+  ]
+ },
+ {
+  "address": "$83:8AFA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838AFA",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$83:8B18",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_838B18",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -26483,6 +27114,15 @@
   ]
  },
  {
+  "address": "$83:91CC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8391CC",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$83:91D0",
   "class": "observed",
   "comment": "routine start",
@@ -26740,7 +27380,8 @@
   "comment": "instruction start",
   "label": "loc_839454",
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -27591,6 +28232,30 @@
   ]
  },
  {
+  "address": "$83:9C2A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839C2A",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$83:9C3D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839C3D",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$83:9C47",
   "class": "inferred",
   "comment": "routine start",
@@ -27877,6 +28542,15 @@
   ],
   "source_records": [
    "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$83:A4D1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A4D1",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -30367,6 +31041,25 @@
   ]
  },
  {
+  "address": "$83:CEF3",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CEF3",
+  "native": [
+   "src/core/announcements.hpp:invisible_unis",
+   "src/core/hunter_effects.cpp:priority",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
+  ]
+ },
+ {
   "address": "$83:CF1C",
   "class": "observed",
   "comment": "instruction start",
@@ -30475,6 +31168,23 @@
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:D1D4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83D1D4",
+  "native": [
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -30639,6 +31349,25 @@
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:D343",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83D343",
+  "native": [
+   "src/core/hunter_effects.cpp:run_screen_flip",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/presentation.cpp:race_scroll",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -32930,6 +33659,15 @@
   ]
  },
  {
+  "address": "$83:EC14",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83EC14",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
   "address": "$83:EC2E",
   "class": "unknown",
   "comment": "unknown",
@@ -32987,6 +33725,15 @@
    "docs/research/R-0010-native-movement.md",
    "docs/research/R-0011-motion.md",
    "docs/research/R-0109-coverage-census.md"
+  ]
+ },
+ {
+  "address": "$83:EDAB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83EDAB",
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -33174,7 +33921,8 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -33334,6 +34082,20 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F2C6",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83F2C6",
+  "native": [
+   "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
+   "src/core/rider_object.hpp:compose_rider_object"
+  ],
+  "source_records": [
+   "docs/research/R-0112-census-remainder.md"
   ]
  },
  {
@@ -34212,6 +34974,7 @@
   "source_records": [
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0099-podium-audio.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/AUDIO-ONE-PLAYER.md",
    "tasks/PODIUM-AUDIO.md"
   ]
@@ -34227,6 +34990,7 @@
   ],
   "source_records": [
    "docs/research/R-0096-demo-audio.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/DEMO-AUDIO.md",
    "tasks/NEXT_SESSION.md"
   ]
@@ -34242,6 +35006,7 @@
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0077-one-player-audio.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/AUDIO-FIRST-RACE.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]
@@ -34253,6 +35018,7 @@
   "label": "unk_83FCF5",
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/AUDIO-TITLE-MENU.md"
   ]
  },
@@ -34263,6 +35029,7 @@
   "label": "unk_83FD35",
   "source_records": [
    "docs/research/R-0077-one-player-audio.md",
+   "docs/research/R-0112-census-remainder.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
