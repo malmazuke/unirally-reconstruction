@@ -1,6 +1,16 @@
 # OPEN-BRANCHES - the reachable branches no capture of the original has run
 
-- Status: **queued** 8 November 2026 by [COVERAGE-CENSUS](COVERAGE-CENSUS.md) (R-0109, queue item 4).
+## Assignment
+
+- Status: **claimed** 9 November 2026 23:41 UTC on main `19ecb59f`, on the user's instruction
+  ("Start OPEN-BRANCHES"). Queued 8 November 2026 by [COVERAGE-CENSUS](COVERAGE-CENSUS.md)
+  (R-0109, queue item 4). Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`):
+  coordinator and integrator; a worker subagent captures and implements, a fresh subagent reviews.
+  Run under [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge against
+  the 6-hour target, new evidence under 1 GB. Usage at the claim: 5-hour 0%, weekly 29%.
+- Branch `task/open-branches` in `.worktrees/open-branches`; evidence in main
+  `local/evidence/open-branches/`.
+- Task provider: Anthropic.
 - Milestone: M4. Review tier: **1** (race and front-end state).
 
 R-0109's code whose reachability is open and the branches the records list as never captured: the
@@ -22,3 +32,7 @@ of the sprite-tile queue (`$82:B8E3-BF76` and `$82:C53E-CFC7` never stopped at t
 `$80:BB1E`, `$80:BB72`); and the HUD numbers of 10 and more at `$81:D218`, `$81:D692`, `$81:DE90`,
 `$81:DFC1`, `$81:EC6F` (with R-0043's fields, above). The other 187 of the 278 small arms left R-0112 groups by
 guard and leaves open.
+
+## Handoff
+
+Not started.
