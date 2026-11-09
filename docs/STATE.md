@@ -27,6 +27,23 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**9 November 2026: CENSUS-REMAINDER is accepted (tier 3, #100) and integrated by merge commit.**
+R-0112 reads the bytes R-0109 left unexplained, with access records for all 919 corpus runs (533 +
+32 new, 2.80 M frames, all `status=passed`):
+- **Headline:** 8,237 bytes (6.3% of the code banks) to **4,276 (3.3%)**: the 2,361 bytes of named
+  open code (OPEN-BRANCHES), 1,875 bytes of small arms in 278 blocks, the printer's codes `$FA`,
+  `$F5`, `$F4` (34) and the loop descriptor (6). With the new class "unreferenced" (3,415 bytes no
+  operand, immediate, word or long pointer names) not accepted, 7,691 (5.9%).
+- **Unreachable, newly argued:** the routine at `$81:CB24` (its only call jumped over by a `BRA`),
+  the GAME PAK NOT FOUND screen behind the 8 KiB cartridge RAM check, four bank-crossing arms, a
+  `BRK` and the IRQ handler; no unknown byte is left without a reading.
+- **Data banks:** 86.7% read (R-0109 84.8%), every track stream now read; R-0093's open entries
+  read, unused or outside every computed index under the records' value ranges, except bank `$A2`
+  (rider poses of 4096 and more; the corpus's highest is 2,795).
+- **Time:** about 3 h 20 min from claim to merge, 2 h 50 min of it access captures; records only,
+  so no local gates.
+[R-0112](research/R-0112-census-remainder.md) and [CENSUS-REMAINDER](../tasks/CENSUS-REMAINDER.md) hold the detail.
+
 **9 November 2026: SAVE-IMAGE-EXACT is accepted in part (tier 1, #99) and integrated by merge commit.**
 Native's cartridge RAM image against the original's after every frame of R-0109's 919 routes
 (5.05 M frames; the runner's new `--cartridge-trace`), from frame 406 (R-0111):

@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 8 November 2026 21:33 UTC on main `2a38ec3e`, on the user's instruction
+- Status: **accepted** 9 November 2026 (tier 3, [#100](https://github.com/malmazuke/unirally-reconstruction/pull/100)),
+  integrated by merge commit. Claimed 8 November 2026 21:33 UTC on main `2a38ec3e`, on the user's instruction
   ("Start CENSUS-REMAINDER"). Queued 8 November 2026 by [COVERAGE-CENSUS](COVERAGE-CENSUS.md)
   (R-0109, queue item 3). Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`):
   coordinator and integrator; a worker subagent runs the census. Run under
@@ -109,3 +110,16 @@ deleted after), `pairs.py`/`pairs.json`,
 - Time, from the clock: worker start 21:34 UTC 8 November, handoff 00:32 UTC 9 November; machine
   time: access captures 2 h 43 min and 7 min, during which the listing work was done.
 - Next: [OPEN-BRANCHES](OPEN-BRANCHES.md), tier 1, with the arms R-0112 adds to it.
+
+## Closeout (coordinator)
+
+- Review: tier 3, no independent review (D-0008). The coordinator checked the class table's sums
+  (42,656 in both columns; bank `$81` 8,628), the headline (4,276 = 2,361 + 6 + 1,875 + 34; 3.3% of
+  131,072, 3.8% of 113,496; without "unreferenced" 7,691 of 116,911), two arguments against the ROM
+  (`$81:C68F` is `BRA +3` over `$81:C691 JSR $CB24`, the only operand naming `$CB24` in bank `$81`;
+  `$83:8AFA-8B1B` writes `$12` to `$77:0000` and `$3456` to `$77:1FFF`, compares `$77:0000` with
+  `$34` and takes `JML $8094EB` only when they differ; the header's `$80:FFD8` is 3) and the diff's
+  scope (no `src/`, `tools/` or `tests/` file).
+- Gates (D-0012) on `d4f94047`: `only records changed: no local gates (CI's docs-only fast path covers them)`.
+- Evidence: main `local/evidence/census-remainder/`, 28 MB after `compact_evidence.py`. Worktree
+  and branch removed after the merge.
