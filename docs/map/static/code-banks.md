@@ -49,13 +49,13 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 
 ## Cited addresses
 
-2538 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1777, mid 31, sub 491, unk 227 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 45, observed 2254, unknown 227.
+2609 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1808, mid 33, sub 493, unk 263 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 65, observed 2269, unknown 263.
 
 Cited addresses in `unknown` bytes:
 
 | Address | Records |
 | --- | --- |
-| $80:8000 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
+| $80:8000 | docs/research/R-0045-static-code-map.md, docs/research/R-0112-census-remainder.md, tasks/STATIC-CODE-MAP.md |
 | $80:8004 | docs/research/R-0009-m1-acceptance.md |
 | $80:8008 | docs/research/R-0011-motion.md, docs/research/R-0109-coverage-census.md |
 | $80:8020 | docs/research/R-0009-m1-acceptance.md |
@@ -74,17 +74,22 @@ Cited addresses in `unknown` bytes:
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:84FB | docs/research/R-0010-native-movement.md |
 | $80:850B | tasks/NATIVE-READABILITY.md |
+| $80:859B | docs/research/R-0112-census-remainder.md |
+| $80:85A3 | docs/research/R-0112-census-remainder.md |
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0075-title-menu-audio.md |
 | $80:910F | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:918F | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:91A1 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:91B9 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
+| $80:94EB | docs/research/R-0112-census-remainder.md |
+| $80:9505 | docs/research/R-0112-census-remainder.md |
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9E0F | docs/research/R-0072-options.md, docs/research/R-0097-menu-input.md, tasks/MENU-INPUT.md |
-| $80:9F74 | docs/research/R-0097-menu-input.md, tasks/MENU-INPUT.md |
+| $80:9F74 | docs/research/R-0097-menu-input.md, docs/research/R-0112-census-remainder.md, tasks/MENU-INPUT.md |
+| $80:A096 | docs/research/R-0112-census-remainder.md |
 | $80:A4C9 | docs/research/R-0097-menu-input.md, docs/research/R-0101-name-check.md, tasks/NAME-CHECK.md, tasks/NEXT_SESSION.md |
 | $80:A4DD | docs/research/R-0072-options.md |
 | $80:A4F1 | docs/research/R-0072-options.md |
@@ -93,9 +98,11 @@ Cited addresses in `unknown` bytes:
 | $80:A52A | docs/research/R-0072-options.md |
 | $80:A68D | docs/research/R-0073-league.md |
 | $80:A72B | docs/research/R-0055-rider-menu.md |
+| $80:A8A4 | docs/research/R-0112-census-remainder.md |
 | $80:A8D4 | docs/research/R-0054-boot-title-main-menu.md |
-| $80:A9FA | docs/research/R-0054-boot-title-main-menu.md, tasks/WIPE-RAM.md |
+| $80:A9FA | docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0112-census-remainder.md, tasks/WIPE-RAM.md |
 | $80:A9FE | docs/research/R-0092-wipe-ram.md |
+| $80:A9FF | docs/research/R-0112-census-remainder.md |
 | $80:AA19 | docs/research/R-0092-wipe-ram.md |
 | $80:AAF9 | docs/research/R-0092-wipe-ram.md, docs/research/R-0109-coverage-census.md |
 | $80:AAFA | docs/research/R-0089-coverage-gaps.md |
@@ -104,6 +111,7 @@ Cited addresses in `unknown` bytes:
 | $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
 | $80:AE3F | docs/research/R-0071-two-player-versus.md |
 | $80:AE81 | docs/research/R-0095-two-human-stunts.md |
+| $80:B0DC | docs/research/R-0112-census-remainder.md |
 | $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B50A | docs/research/R-0084-two-human-restart.md |
@@ -111,14 +119,20 @@ Cited addresses in `unknown` bytes:
 | $80:B567 | docs/research/R-0098-league-tours.md |
 | $80:B66E | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:B6C2 | docs/research/R-0072-options.md |
-| $80:B855 | docs/research/R-0105-cartridge-option-words.md, docs/research/R-0109-coverage-census.md, tasks/CARTRIDGE-OPTION-BITS.md |
+| $80:B6CA | docs/research/R-0112-census-remainder.md |
+| $80:B855 | docs/research/R-0105-cartridge-option-words.md, docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md, tasks/CARTRIDGE-OPTION-BITS.md |
 | $80:B87A | docs/research/R-0105-cartridge-option-words.md, tasks/CARTRIDGE-OPTION-BITS.md |
 | $80:B89F | docs/research/R-0105-cartridge-option-words.md, tasks/CARTRIDGE-OPTION-BITS.md |
+| $80:B93B | docs/research/R-0112-census-remainder.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
+| $80:BFEE | docs/research/R-0112-census-remainder.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
 | $80:C120 | docs/research/R-0095-two-human-stunts.md |
 | $80:C1DE | docs/research/R-0072-options.md |
-| $80:C3DC | docs/research/R-0053-result-title-printer.md |
+| $80:C3DC | docs/research/R-0053-result-title-printer.md, docs/research/R-0112-census-remainder.md |
+| $80:C545 | docs/research/R-0112-census-remainder.md |
+| $80:C5CB | docs/research/R-0112-census-remainder.md |
+| $80:C620 | docs/research/R-0112-census-remainder.md |
 | $80:C709 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/RESULT-TITLE-GLYPHS.md |
 | $80:CD47 | docs/research/R-0055-rider-menu.md |
 | $80:CD5C | docs/research/R-0055-rider-menu.md |
@@ -127,9 +141,11 @@ Cited addresses in `unknown` bytes:
 | $80:D17B | docs/research/R-0057-one-run-result.md |
 | $80:D187 | docs/research/R-0053-result-title-printer.md, docs/research/R-0057-one-run-result.md, tasks/RESULT-TITLE-GLYPHS.md |
 | $80:D1DB | tasks/TWO-PLAYER-VS.md |
+| $80:D20A | docs/research/R-0112-census-remainder.md |
 | $80:D37B | docs/research/R-0055-rider-menu.md |
 | $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:D4C5 | docs/research/R-0072-options.md |
+| $80:D5E1 | docs/research/R-0112-census-remainder.md |
 | $80:D729 | docs/research/R-0100-record-screens.md |
 | $80:D777 | docs/research/R-0100-record-screens.md |
 | $80:D9D8 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
@@ -150,11 +166,13 @@ Cited addresses in `unknown` bytes:
 | $80:E824 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E82E | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E842 | docs/research/R-0056-tour-track-now-playing.md, docs/research/R-0095-two-human-stunts.md, docs/research/R-0098-league-tours.md |
+| $80:EA31 | docs/research/R-0112-census-remainder.md |
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:ECD1 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
 | $80:ECF7 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
+| $80:EF37 | docs/research/R-0112-census-remainder.md |
 | $80:EF3D | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:F2EA | docs/research/R-0067-stunt-result.md, docs/research/R-0109-coverage-census.md |
 | $80:F3E0 | docs/research/R-0067-stunt-result.md |
@@ -167,6 +185,7 @@ Cited addresses in `unknown` bytes:
 | $80:F4A3 | docs/research/R-0067-stunt-result.md |
 | $80:F4B4 | docs/research/R-0067-stunt-result.md |
 | $80:F4B5 | docs/research/R-0067-stunt-result.md, docs/research/R-0095-two-human-stunts.md |
+| $80:F55B | docs/research/R-0112-census-remainder.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:F648 | docs/research/R-0105-cartridge-option-words.md, tasks/CARTRIDGE-OPTION-BITS.md |
 | $80:F7E7 | docs/research/R-0067-stunt-result.md |
@@ -177,30 +196,40 @@ Cited addresses in `unknown` bytes:
 | $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |
 | $80:FC6E | docs/research/R-0109-coverage-census.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
+| $80:FFD8 | docs/research/R-0112-census-remainder.md |
 | $81:8000 | tasks/ACCESS-ROUND-READS.md |
 | $81:8001 | tasks/ACCESS-ROUND-READS.md |
 | $81:834C | docs/research/R-0051-loop-and-tile-pairs.md, docs/research/R-0107-race-listing-branches.md, tasks/TILE-PAIRS-8-12-26.md |
-| $81:84AD | docs/research/R-0107-race-listing-branches.md |
+| $81:84AD | docs/research/R-0107-race-listing-branches.md, docs/research/R-0112-census-remainder.md |
+| $81:946A | docs/research/R-0112-census-remainder.md |
 | $81:962C | docs/research/R-0109-coverage-census.md |
+| $81:9693 | docs/research/R-0112-census-remainder.md |
+| $81:9963 | docs/research/R-0112-census-remainder.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
-| $81:A7A7 | docs/research/R-0109-coverage-census.md |
-| $81:B3F0 | docs/research/R-0109-coverage-census.md |
-| $81:B704 | docs/research/R-0109-coverage-census.md |
+| $81:A7A7 | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |
+| $81:B3F0 | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |
+| $81:B5F4 | docs/research/R-0112-census-remainder.md |
+| $81:B704 | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |
+| $81:B768 | docs/research/R-0112-census-remainder.md |
 | $81:B795 | docs/research/R-0109-coverage-census.md |
-| $81:B7ED | docs/research/R-0109-coverage-census.md |
+| $81:B7BA | docs/research/R-0112-census-remainder.md |
+| $81:B7ED | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |
 | $81:BA4B | docs/research/R-0008-track-decode.md, tasks/M1-03.md |
 | $81:C441 | docs/research/R-0076-first-race-audio.md |
 | $81:C493 | docs/research/R-0011-motion.md |
 | $81:C50A | docs/research/R-0011-motion.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0098-league-tours.md |
-| $81:CB24 | docs/research/R-0109-coverage-census.md |
+| $81:C691 | docs/research/R-0112-census-remainder.md |
+| $81:C692 | docs/research/R-0112-census-remainder.md |
+| $81:CB24 | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |
 | $81:CC17 | docs/research/R-0048-race-guards.md |
 | $81:F358 | docs/research/R-0109-coverage-census.md |
-| $82:816C | docs/research/R-0109-coverage-census.md |
+| $82:816C | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |
 | $82:8280 | docs/research/R-0098-league-tours.md |
 | $82:8286 | docs/research/R-0102-menu-frame-overruns.md |
 | $82:833B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
 | $82:834B | docs/research/R-0036-zoom-zoo-rider-objects.md |
 | $82:835B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
+| $82:97ED | docs/research/R-0112-census-remainder.md |
 | $82:9DB6 | docs/research/R-0011-motion.md, docs/research/R-0085-player-hints-and-voices.md |
 | $82:9E47 | docs/research/R-0109-coverage-census.md |
 | $82:9E4A | docs/research/R-0109-coverage-census.md |
@@ -209,12 +238,14 @@ Cited addresses in `unknown` bytes:
 | $82:9F2D | docs/research/R-0109-coverage-census.md |
 | $82:9F2F | docs/research/R-0109-coverage-census.md |
 | $82:A2DB | docs/research/R-0030-zoom-zoo-native-trial.md |
-| $82:B225 | docs/research/R-0109-coverage-census.md |
-| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0089-coverage-gaps.md, docs/research/R-0093-data-coverage.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
+| $82:AE7E | docs/research/R-0112-census-remainder.md |
+| $82:B225 | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |
+| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0089-coverage-gaps.md, docs/research/R-0093-data-coverage.md, docs/research/R-0112-census-remainder.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
 | $82:B549 | docs/research/R-0109-coverage-census.md |
-| $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0093-data-coverage.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/M4-03.md, tasks/NEXT_SESSION.md |
+| $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0093-data-coverage.md, docs/research/R-0112-census-remainder.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/M4-03.md, tasks/NEXT_SESSION.md |
 | $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
+| $82:E19D | docs/research/R-0112-census-remainder.md |
 | $82:E35C | docs/research/R-0109-coverage-census.md |
 | $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md, docs/research/R-0090-save-files.md, docs/research/R-0109-coverage-census.md, tasks/NEXT_SESSION.md, tasks/SAVE-FILES.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |
@@ -223,16 +254,18 @@ Cited addresses in `unknown` bytes:
 | $83:8330 | docs/research/R-0109-coverage-census.md |
 | $83:83F8 | docs/research/R-0109-coverage-census.md |
 | $83:8472 | docs/research/R-0105-cartridge-option-words.md |
-| $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
+| $83:8535 | docs/research/R-0045-static-code-map.md, docs/research/R-0112-census-remainder.md, tasks/STATIC-CODE-MAP.md |
 | $83:8537 | docs/research/R-0097-menu-input.md, docs/research/R-0101-name-check.md, tasks/NAME-CHECK.md |
-| $83:87E9 | docs/research/R-0057-one-run-result.md |
+| $83:87E9 | docs/research/R-0057-one-run-result.md, docs/research/R-0112-census-remainder.md |
 | $83:88F7 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0067-stunt-result.md |
 | $83:88FD | docs/research/R-0057-one-run-result.md, docs/research/R-0059-tour-completion.md, docs/research/R-0062-gold-endings.md, tasks/FRONT-END-ENDINGS.md, tasks/FRONT-END-TOUR-END.md |
 | $83:8971 | docs/research/R-0109-coverage-census.md |
+| $83:89D9 | docs/research/R-0112-census-remainder.md |
 | $83:89EF | docs/research/R-0090-save-files.md, docs/research/R-0111-save-image-exact.md |
 | $83:8A59 | docs/research/R-0109-coverage-census.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
+| $83:91CC | docs/research/R-0112-census-remainder.md |
 | $83:9920 | docs/research/R-0109-coverage-census.md |
 | $83:9AF9 | docs/research/R-0055-rider-menu.md |
 | $83:9B01 | docs/research/R-0055-rider-menu.md |
@@ -248,6 +281,7 @@ Cited addresses in `unknown` bytes:
 | $83:A254 | docs/research/R-0056-tour-track-now-playing.md, docs/research/R-0111-save-image-exact.md |
 | $83:A43F | docs/research/R-0109-coverage-census.md |
 | $83:A4A8 | docs/research/R-0109-coverage-census.md |
+| $83:A4D1 | docs/research/R-0112-census-remainder.md |
 | $83:A9DD | docs/research/R-0109-coverage-census.md |
 | $83:AA21 | docs/research/R-0109-coverage-census.md |
 | $83:AE01 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
@@ -268,7 +302,9 @@ Cited addresses in `unknown` bytes:
 | $83:C8B3 | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
 | $83:D3BC | docs/research/R-0052-hunter-effects.md, tasks/HUNTER-EFFECTS.md |
 | $83:E55C | docs/research/R-0040-dragster-window-effects.md, tasks/DRAGSTER-WINDOW-EFFECTS-review.md, tasks/DRAGSTER-WINDOW-EFFECTS.md |
+| $83:EC14 | docs/research/R-0112-census-remainder.md |
 | $83:EC2E | docs/research/R-0036-zoom-zoo-rider-objects.md |
+| $83:EDAB | docs/research/R-0112-census-remainder.md |
 | $83:F516 | docs/research/R-0078-pause-menu-picture.md, docs/research/R-0079-two-pad-pause.md, docs/research/R-0109-coverage-census.md, tasks/SPLIT-PAUSE-MENU.md |
 | $83:F616 | docs/research/R-0078-pause-menu-picture.md, tasks/CLASSIC-PAUSE-MENU.md |
 | $83:F636 | docs/research/R-0078-pause-menu-picture.md, tasks/CLASSIC-PAUSE-MENU.md |
@@ -276,9 +312,9 @@ Cited addresses in `unknown` bytes:
 | $83:FB66 | docs/research/R-0094-name-cheats.md |
 | $83:FB70 | docs/research/R-0094-name-cheats.md |
 | $83:FB80 | docs/research/R-0094-name-cheats.md |
-| $83:FBF5 | docs/research/R-0077-one-player-audio.md, docs/research/R-0099-podium-audio.md, tasks/AUDIO-ONE-PLAYER.md, tasks/PODIUM-AUDIO.md |
-| $83:FC35 | docs/research/R-0096-demo-audio.md, tasks/DEMO-AUDIO.md, tasks/NEXT_SESSION.md |
-| $83:FC75 | docs/research/R-0076-first-race-audio.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-FIRST-RACE.md, tasks/AUDIO-ONE-PLAYER.md |
-| $83:FCF5 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-TITLE-MENU.md |
-| $83:FD35 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
+| $83:FBF5 | docs/research/R-0077-one-player-audio.md, docs/research/R-0099-podium-audio.md, docs/research/R-0112-census-remainder.md, tasks/AUDIO-ONE-PLAYER.md, tasks/PODIUM-AUDIO.md |
+| $83:FC35 | docs/research/R-0096-demo-audio.md, docs/research/R-0112-census-remainder.md, tasks/DEMO-AUDIO.md, tasks/NEXT_SESSION.md |
+| $83:FC75 | docs/research/R-0076-first-race-audio.md, docs/research/R-0077-one-player-audio.md, docs/research/R-0112-census-remainder.md, tasks/AUDIO-FIRST-RACE.md, tasks/AUDIO-ONE-PLAYER.md |
+| $83:FCF5 | docs/research/R-0076-first-race-audio.md, docs/research/R-0112-census-remainder.md, tasks/AUDIO-TITLE-MENU.md |
+| $83:FD35 | docs/research/R-0077-one-player-audio.md, docs/research/R-0112-census-remainder.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FD75 | docs/research/R-0109-coverage-census.md |

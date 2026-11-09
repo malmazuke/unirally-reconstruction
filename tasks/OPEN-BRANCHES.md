@@ -12,3 +12,13 @@ descriptor facing away (R-0108), a stunt score of 1000 (R-0107), track 13's cell
 ejection, the 9:5x warning, the cheat page reveal, the slow checkpoint, BRONSEN's praise, R-0077).
 Outcome: for each, a route of real inputs captured on the original and compared with native, or a
 recorded argument that it is unreachable; native changed only where it differs.
+
+Added by [CENSUS-REMAINDER](CENSUS-REMAINDER.md) ([R-0112](../docs/research/R-0112-census-remainder.md),
+`local/evidence/census-remainder/arms.md`), the never-run arms whose feature is named: the other end
+of the sprite-tile queue (`$82:B8E3-BF76` and `$82:C53E-CFC7` never stopped at their first 16 and
+21 slots: a frame queuing fewer tiles than any capture); two views in HUNTER's effects (`$83:CEF3`,
+`$83:D1D4`, `$83:D343`; 2P or VS on the locked tours' tracks, above); a rider pose of 4096 or more
+(`$81:9E2B`, which would read bank `$A2`); the track menu's signed table offsets (`$80:BA7C`,
+`$80:BB1E`, `$80:BB72`); and the HUD numbers of 10 and more at `$81:D218`, `$81:D692`, `$81:DE90`,
+`$81:DFC1`, `$81:EC6F` (with R-0043's fields, above). The other 187 of the 278 small arms left R-0112 groups by
+guard and leaves open.

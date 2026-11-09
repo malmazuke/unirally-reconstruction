@@ -19583,19 +19583,19 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2538,
+  "cited_addresses": 2609,
   "cited_by_class": {
    "data": 12,
-   "inferred": 45,
-   "observed": 2254,
-   "unknown": 227
+   "inferred": 65,
+   "observed": 2269,
+   "unknown": 263
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1777,
-   "mid": 31,
-   "sub": 491,
-   "unk": 227
+   "loc": 1808,
+   "mid": 33,
+   "sub": 493,
+   "unk": 263
   },
   "conflicts": 0,
   "data": 70,
