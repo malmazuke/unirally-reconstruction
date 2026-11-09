@@ -7,7 +7,7 @@
   (R-0109, queue item 4). Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`):
   coordinator and integrator; a worker subagent captures and implements, a fresh subagent reviews.
   Run under [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge against
-  the 6-hour target, new evidence under 1 GB. Usage at the claim: 5-hour 0%, weekly 29%.
+  the 6-hour target, new evidence under 1 GB. Usage at the claim: 5-hour 1%, weekly 29%.
 - Branch `task/open-branches` in `.worktrees/open-branches`; evidence in main
   `local/evidence/open-branches/`.
 - Task provider: Anthropic.
