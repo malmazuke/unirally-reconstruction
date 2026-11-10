@@ -1029,13 +1029,9 @@ namespace {
 
 // The idle demos take the race tracks below HUNTER's in turn (R-0087): `$80:949C-94B8` advances
 // `$77:10C8`, from 0 again at 40, and again while the track is a stunt event (race mode 2, every
-// tour's third track). `$83:C912-C994` flips `$77:1115` between a split race and a one-view one; the
-// rider is the track plus the race counter `$77:10B1` plus the menu's palette-cycle phase `$00C9`
-// (saved by `$83:9894` as `$77:0F34`), modulo 16. A split race's opponent is the track less
-// both, or 13 more when that is the rider; a one-view race keeps the mode's opponent 1
-// (`$80:9491`).
+// tour's third track). `$83:C912-C994` flips `$77:1115` between a split race and a one-view one.
 void choose_idle_demo(FrontEndState& state, const FrontEndContent& content) {
-    constexpr unsigned demo_tracks = 40, stunt_place = 2, riders = 16;
+    constexpr unsigned demo_tracks = 40, stunt_place = 2;
     auto& records = state.records;
     // `$80:949C-94A7`: one more, and 0 from 40 up (`CMP #$28`, `BCC`), not a modulo.
     do {
@@ -1044,15 +1040,26 @@ void choose_idle_demo(FrontEndState& state, const FrontEndContent& content) {
     } while (records.demo_track % front_end_screens::tracks_per_tour == stunt_place);
     // `$83:C8EF-C8FB` and `$83:C91C-C92A` store a counter outside its range back as 0.
     if (records.race_song_counter >= race_song_count) records.race_song_counter = 0;
-    const unsigned counter = records.race_song_counter;
     // The race's setup stores the flipped `$77:1115` eight frames on (demo_title_frame).
-    const bool split = records.demo_split != 1;
-    const unsigned track = records.demo_track;
-    const unsigned phase = static_cast<std::uint8_t>(state.cycle.phase);
+    state.demo_split_race = records.demo_split != 1;
     state.tour_menu.track = records.demo_track;
     store_saved_mode(state, SavedMode::demo, false); // $80:9496-9498
     store_track_words(state, content);               // $80:94AD
-    state.demo_split_race = split;
+}
+
+// The demo's riders, at its race's setup (`$83:C94A-C994`): the rider is the track plus the race
+// counter `$77:10B1` plus `$77:0F34`, modulo 16. `$77:0F34` is the palette cycle's phase `$00C9`
+// as `$83:9894` copies the direct page to `$77:0E6B` on the setup frame, after that frame's
+// interrupt has stepped the cycle: 449 steps (450 in a held title) after the title's restart of it
+// (demo_title_start_frame), so 3 (R-0114: `demo-cold` frames 1358 and 4406). A split race's
+// opponent is the track less both, or 13 more when that is the rider; a one-view race keeps the
+// mode's opponent 1 (`$80:9491`).
+void pair_idle_demo_riders(FrontEndState& state) {
+    constexpr unsigned riders = 16;
+    const auto& records = state.records;
+    const unsigned counter = records.race_song_counter;
+    const unsigned track = records.demo_track;
+    const unsigned phase = static_cast<std::uint8_t>(state.cycle.phase);
     state.rider_menu.rider = static_cast<std::uint8_t>((track + counter + phase) % riders);
     state.now_playing.opponent = 1;
     if (state.demo_split_race) {
@@ -1078,6 +1085,7 @@ std::uint32_t idle_demo_loading_frames(ClassicRaceTrack track) {
 // `$83:C8E0`'s first work. True when the first rider's name shows the "credits" picture instead.
 bool set_up_demo_race(FrontEndState& state, const FrontEndContent& content) {
     constexpr std::uint8_t demo_race_option_byte = 0x0a, demo_rider = 3, demo_second = 1;
+    pair_idle_demo_riders(state);
     state.demo_option_byte = demo_race_option_byte;
     store_race_setup(state, content, demo_rider, demo_second);
     clear_hunter_races(state);
@@ -1092,14 +1100,32 @@ bool set_up_demo_race(FrontEndState& state, const FrontEndContent& content) {
     return false;
 }
 
-void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
+// The idle demo title's first frames (`$80:93FB`, the main loop's entry 5 once `$80:AC2E-AC36` has
+// set `$9B` when the menu's idle count `$89` ran out). `JSR $9885` fades the menu out
+// (`$80:9885-98A3`: seven frame waits, which turn the arrow, each copying the object buffer at
+// `$80:9318`, brightness 13 down to 1 and then the forced blank). `JSR $D20E` waits a frame and
+// `$80:D219 JSR $A16A` restarts the screen state, the palette cycle among it (`$80:A1ED-A1EF`
+// clear `$00C8/$00C9`), before the title's loads. True while the menu is still fading out.
+// R-0114: these were the "long title starts" (R-0088) and the warm power-on's late blanking (R-0090).
+bool demo_title_start_frame(FrontEndState& state, const FrontEndContent& content) {
+    constexpr std::uint32_t first_fade_frame = 1, demo_title_load_frame = fade_frames + 2;
     const auto frame = state.script_frame;
-    demo_title_sounds(state);
-    if (frame == 1) {
-        load_title(state, content);
+    if (within(frame, first_fade_frame, fade_frames)) {
+        fade(state, frame, first_fade_frame, false);
+        return true;
+    }
+    if (frame == demo_title_load_frame) {
+        load_title(state, content); // `$80:A16A` restarts the palette cycle
         clear_oam_buffer(state);
         copy_oam(state);
     }
+    return false;
+}
+
+void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
+    const auto frame = state.script_frame;
+    demo_title_sounds(state);
+    if (demo_title_start_frame(state, content)) return;
     state.line_registers.clear();
     state.registers.bg[0].vofs = 0;
     if (frame < 134) {
@@ -1334,6 +1360,9 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
         state.demo_title_short = false;
         if (!state.demo_title_was_short) {
             held_demo_title_sounds(state);
+            // The title's interrupt still runs on the held frame: the palette cycle steps (R-0114,
+            // `demo-cold` frame 4080).
+            if (state.cycle.running) run_nmi_hook(state, content);
             ++state.frame;
             return;
         }

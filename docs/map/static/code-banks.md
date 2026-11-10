@@ -49,7 +49,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 
 ## Cited addresses
 
-2651 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1849, mid 33, sub 493, unk 264 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 70, observed 2305, unknown 264.
+2666 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1863, mid 33, sub 494, unk 264 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2316, unknown 264.
 
 Cited addresses in `unknown` bytes:
 
@@ -76,7 +76,7 @@ Cited addresses in `unknown` bytes:
 | $80:850B | tasks/NATIVE-READABILITY.md |
 | $80:859B | docs/research/R-0112-census-remainder.md |
 | $80:85A3 | docs/research/R-0112-census-remainder.md |
-| $80:88B2 | tasks/COVERAGE-ROADMAP.md |
+| $80:88B2 | docs/research/R-0114-sound-processor-timing.md, tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0075-title-menu-audio.md |
 | $80:910F | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:918F | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
