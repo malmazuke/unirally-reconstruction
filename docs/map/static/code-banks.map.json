@@ -911,6 +911,7 @@
     "src/core/demo_sound.cpp:demo_title_sounds",
     "src/core/front_end.cpp:choose_idle_demo",
     "src/core/front_end.cpp:demo_return_frame",
+    "src/core/front_end.cpp:demo_title_start_frame",
     "src/core/front_end.cpp:pair_idle_demo_riders",
     "src/core/front_end.cpp:set_up_demo_race",
     "src/core/front_end.hpp:FrontEndState::demo_option_byte",
@@ -1204,9 +1205,6 @@
    "end": "$80:9884",
    "mode_at_entry": [
     "NmX"
-   ],
-   "native": [
-    "src/core/front_end.cpp:demo_title_start_frame"
    ],
    "observed_entries": {},
    "start": "$80:9881",
@@ -1957,6 +1955,7 @@
     "src/core/audio_cpu_menu_input.cpp:test_menu_code",
     "src/core/audio_cpu_menu_input.cpp:update_menu_targets",
     "src/core/cartridge_ram.cpp:cartridge_image",
+    "src/core/front_end.cpp:demo_title_start_frame",
     "src/core/front_end.cpp:first_idle, idle_after_move",
     "src/core/front_end.cpp:run_main_menu",
     "src/core/front_end.cpp:start_main_menu",
@@ -4047,6 +4046,7 @@
     "src/core/audio_cpu_menu.cpp:native_audio_menu_first_palette",
     "src/core/audio_cpu_menu.cpp:native_audio_menu_oam",
     "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:demo_title_start_frame",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
     "src/core/front_end.cpp:waits_for_frame",
@@ -19594,16 +19594,16 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2660,
+  "cited_addresses": 2666,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2310,
+   "observed": 2316,
    "unknown": 264
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1857,
+   "loc": 1863,
    "mid": 33,
    "sub": 494,
    "unk": 264
@@ -19625,9 +19625,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 94637,
-  "routine_bytes_cited_by_native_code": 74420,
+  "routine_bytes_cited_by_native_code": 74416,
   "routines": 762,
-  "routines_cited_by_native_code": 588,
+  "routines_cited_by_native_code": 587,
   "unknown": 31054,
   "unknown_share": 0.2369
  }

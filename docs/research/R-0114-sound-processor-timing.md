@@ -7,7 +7,7 @@ Status: research result and native change ([SOUND-PROCESSOR-TIMING](../../tasks/
 item 5: the front end's waits that the records attribute to the sound processor (R-0077, R-0087,
 R-0088, R-0090, R-0096, R-0098, R-0099, R-0102), taken from the native driver's state where that is
 better than the measured lengths. One native change, and it is not a sound wait: the menu's fade-out
-before the idle demo's title (`$80:9881-98A3`), which two of the listed cases were.
+before the idle demo's title (`$80:93FB`, `$80:9885-98A3`), which two of the listed cases were.
 
 Tags: **[L]** read from the listing or a disassembly of the ROM; **[C]** a run of the original made for
 this task (bsnes, a PC trace or work RAM per frame); **[M]** measured from the existing audio captures'
@@ -45,8 +45,10 @@ CPU port writes against an anchored native run; **[R]** stated by an accepted re
    102 master clocks of the original's, absolute, in all 8 such sessions of four captures (`chain`);
    the boot sessions are equal to the clock. A native request up to 15,872 clocks early still gets
    the original's reply, because the driver answers on its own grid. [M]
-3. **After the first race it is not.** Native's reply error (absolute, against the original's) is
-   -94,980 to +72,880 master clocks over the 189 later sessions. In 38 of 46 demo-title sessions and
+3. **After the first race it is not.** Over the 189 later sessions native's reply-wait error (from each
+   side's own request) is -94,980 to +72,880 master clocks; its absolute error (request error plus
+   reply-wait error, as `chain` and `carry.py` count it) is -96,272 to +233,772, the largest where a
+   race's request is 172,018 clocks off its anchor (`pa-odd-tours` session 9, race-66). In 38 of 46 demo-title sessions and
    25 of 42 race sessions it equals, within 1,000 clocks, the previous session's end error: the driver
    carries its start's error on its timer-2 grid. After a race it does not (6 of 93 title sessions):
    the way back's FF arrives while the race's fade is lowering the master volume, and the fade's
@@ -60,27 +62,33 @@ CPU port writes against an anchored native run; **[R]** stated by an accepted re
    shorter than the original's (R-0096's commands 82,000-97,000 clocks early). The front end's frames
    do not use that length, so this changes no picture; it is a follow-up for the audio. [C, M]
 5. **The two long title starts are the menu's fade-out.** When the menu's idle count `$89` runs out
-   (480 frames, one a frame), `$80:9881` sets `$00` to 15 and `$80:988C-989C` loops seven times: a frame
-   wait (`$80:FADF`, which turns the arrow), the object buffer's DMA (`$80:9318`), brightness lowered by
-   2 and written to `$2100`; after the seventh (1) `$80:989E` forces blank at once. So the menu shows at
-   13, 11, 9, 7, 5 and 3 on the title's frames 1-6 and the title's loads start on frame 8. Native
+   (480 frames, one a frame), `$80:AC2E-AC36` sets `$9B` to 5 and the main loop's dispatch (`$80:889F`,
+   table `$80:88B2`) enters `$80:93FB`, which calls the fade (`$80:93FD JSR $9885`; `$80:9881` is the
+   long entry the credits picture uses, `$83:FB3B`). `$80:9885` sets `$00` to 15 and `$80:988C-989C`
+   loops seven times: a frame wait (`$80:FADF`, which turns the arrow), the object buffer's DMA
+   (`$80:9318`), brightness lowered by 2 and written to `$2100`; after the seventh (1) `$80:989E` forces
+   blank at once. So the menu shows at 13, 11, 9, 7, 5 and 3 on the title's frames 1-6, frame 7 is
+   blank, and after `$80:D20E`'s frame wait the title's work starts on frame 9 (finding 6). Native
    blanked from frame 1: six pictures differed (57,057 pixels each) at **every** title start, not only
    cycles 10 and 17 (R-0088's two were the ones among the retained pictures) and the warm power-on's
    first (R-0090's "blanking 6 frames later"). The idle count, the fade and the 48 frames of the
    title's decompression are the same length in cycle 10 and cycle 11 (traced: `$89` from 480 at 27,917
    and 30,965; decompression 28,407-28,454 and 31,455-31,502); no sound wait is involved. [L, C]
-6. **The palette cycle through the title.** `$00C8/$00C9` step on through the fade and the whole title
-   (no reset in `demo-cold` frames 895-1358), and `$83:9894` copies the direct page to `$77:0E6B` on the
-   race's setup frame (1358, after that frame's interrupt), so the demo's pairing reads `$00C9` there
-   (`$77:0F34` = 3). Native reset the cycle at the title's first frame and read the phase at the choice
-   (frame 451), 450 steps later, which gives 3 by construction. With the fade shown, that reset puts the
-   wrong colours on the fading menu (19,520 pixels), so native now keeps the menu's cycle through the
-   fade, restarts it with the title's loads (frame 8) and pairs at the setup frame, again 450 steps on.
-   Keeping the cycle through the whole title instead is not exact: in the second title of `demo-cold`
-   the original's cycle is 2 to 4 steps behind a continuous one (frames 4,080 and 4,402: its interrupt
-   misses steps native does not model), and in the all-gold warm power-on that moved the first demo's
-   pairing (1,539 race pictures differed). The restart is a native stand-in, not the original's
-   (which has none); it gives the original's 3 in every captured title. [C]
+6. **The palette cycle through the title.** `$00C8/$00C9` step on through the fade. After it `$80:93FB`
+   calls `$80:D20E`, which waits a frame and then restarts the screen state (`$80:D219 JSR $A16A`;
+   `$80:A1ED-A1EF` clear `$00C8/$00C9`) on the title's frame 9: `demo-cold` frames 909 and 3,956 (in the
+   first title a continuous count is also (0,0) there, so a trace of that title alone shows no break;
+   review round 1). The interrupt steps the cycle on every frame after it, the held frame 133 included
+   (4,080), and `$83:9894` copies the direct page to `$77:0E6B` on the race's setup frame, after that
+   frame's step, so the pairing reads `$00C9` 449 steps after the restart, 450 in a held title: 3 both
+   ways (`$77:0F34`, frames 1,358 and 4,406). Native reset the cycle on the title's first frame and read
+   the phase at the choice (frame 451), 450 steps later, which also gives 3, but the reset put the wrong
+   colours on the fading menu (19,520 pixels). Native now keeps the menu's cycle through the fade,
+   restarts it on frame 9, steps it on the held frame and pairs at the setup frame: native's delay and
+   phase equal the original's `$00C8/$00C9` on every frame from the menu's last to the setup frame in the
+   first, the held second and the short thirteenth titles (1,440 frames, `cycle`). The first fix of the
+   fade restarted on frame 8 and skipped the held frame's step, two errors that cancelled at the setup
+   frame (review round 1). [L, C]
 
 ## The listed cases
 
@@ -136,11 +144,12 @@ title session's origin):
 
 ## Native change
 
-`src/core/front_end.cpp`: the idle demo's title shows the menu's fade-out on its frames 1-6
-(`demo_title_start_frame`: brightness 15 - 2 x frame, the object buffer copied each frame, the palette
-cycle running on), forces blank on 7 and loads the title on 8 (where the cycle's count restarts); the
-demo's riders are paired at the race's setup frame (`pair_idle_demo_riders`, from `set_up_demo_race`).
-The track, view and counter are still chosen on frame 451.
+`src/core/front_end.cpp`: the idle demo's title shows the menu's fade-out on its frames 1-7
+(`demo_title_start_frame`, the file's `fade` as for `$80:9885` elsewhere: 13 down to 3, blank on 7, the
+object buffer copied each frame, the palette cycle running on) and restarts the screen state and loads
+the title on frame 9 (`$80:D219`); the held frame 133 steps the palette cycle; the demo's riders are
+paired at the race's setup frame (`pair_idle_demo_riders`, from `set_up_demo_race`). The track, view
+and counter are still chosen on frame 451.
 
 ## Limits
 
@@ -153,11 +162,9 @@ The track, view and counter are still chosen on frame 451.
 - Finding 4's interrupt work is measured on the demo title only; other cued sessions whose screen has
   NMIs on (the award's, an ending's, the podium's) were not traced. Their lengths are within 6,134
   clocks of the original's.
-- Native's palette cycle through a title restarts at its loads, which the original's does not
-  (finding 6); the title's pictures do not show colours 108-111 (every picture of the four cold titles
-  compared is equal), and the setup frame's phase is the original's 3 in all 34 cycles of the cold lap
-  and the warm runs. A title whose original phase at the setup frame is not 3 is not captured; the
-  interrupt steps the original misses are not traced.
+- The palette cycle is compared frame by frame over three cold titles (first, held, short); the other
+  31 cycles of the lap are checked through their pairing (race words) and retained pictures, and the
+  warm power-ons through every picture.
 - The warm runs' remaining differences (league-two-events 6,098, the all-gold race) were not traced.
 
 ## Reproduction

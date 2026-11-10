@@ -1050,10 +1050,10 @@ void choose_idle_demo(FrontEndState& state, const FrontEndContent& content) {
 // The demo's riders, at its race's setup (`$83:C94A-C994`): the rider is the track plus the race
 // counter `$77:10B1` plus `$77:0F34`, modulo 16. `$77:0F34` is the palette cycle's phase `$00C9`
 // as `$83:9894` copies the direct page to `$77:0E6B` on the setup frame, after that frame's
-// interrupt has stepped the cycle (R-0114: `demo-cold` frame 1358, `$00C9` 3; native restarts the
-// count with the title's loads, demo_title_start_frame). A split race's opponent is the track less
-// both, or 13 more when that is the rider; a one-view race keeps the mode's opponent 1
-// (`$80:9491`).
+// interrupt has stepped the cycle: 449 steps (450 in a held title) after the title's restart of it
+// (demo_title_start_frame), so 3 (R-0114: `demo-cold` frames 1358 and 4406). A split race's
+// opponent is the track less both, or 13 more when that is the rider; a one-view race keeps the
+// mode's opponent 1 (`$80:9491`).
 void pair_idle_demo_riders(FrontEndState& state) {
     constexpr unsigned riders = 16;
     const auto& records = state.records;
@@ -1100,27 +1100,22 @@ bool set_up_demo_race(FrontEndState& state, const FrontEndContent& content) {
     return false;
 }
 
-// The idle demo title's first frames. True while the menu is still fading out.
+// The idle demo title's first frames (`$80:93FB`, the main loop's entry 5 once `$80:AC2E-AC36` has
+// set `$9B` when the menu's idle count `$89` ran out). `JSR $9885` fades the menu out
+// (`$80:9885-98A3`: seven frame waits, which turn the arrow, each copying the object buffer at
+// `$80:9318`, brightness 13 down to 1 and then the forced blank). `JSR $D20E` waits a frame and
+// `$80:D219 JSR $A16A` restarts the screen state, the palette cycle among it (`$80:A1ED-A1EF`
+// clear `$00C8/$00C9`), before the title's loads. True while the menu is still fading out.
+// R-0114: these were the "long title starts" (R-0088) and the warm power-on's late blanking (R-0090).
 bool demo_title_start_frame(FrontEndState& state, const FrontEndContent& content) {
-    // `$80:9881-98A3`, when the menu's idle count runs out: the menu fades out, two brightness
-    // levels a frame wait from 13 to 3 (`$80:988C-989C`, copying the object buffer each time,
-    // `$80:9318`), then the seventh wait's 1 gives way at once to the forced blank. R-0114: the
-    // pictures of `demo-cold` frames 901-906 and every later title start (R-0088's cycles 10 and
-    // 17, R-0090's warm power-on), not a wait for the sound processor.
-    constexpr unsigned fade_frames = 6, title_load_frame = fade_frames + 2;
+    constexpr std::uint32_t first_fade_frame = 1, demo_title_load_frame = fade_frames + 2;
     const auto frame = state.script_frame;
-    if (frame <= fade_frames) {
-        state.registers.brightness = static_cast<std::uint8_t>(15U - 2U * frame);
-        copy_oam(state); // the frame wait has turned the arrow
+    if (within(frame, first_fade_frame, fade_frames)) {
+        fade(state, frame, first_fade_frame, false);
         return true;
     }
-    if (frame == title_load_frame) {
-        // The palette cycle runs on through the fade (its colours show on the fading menu). The
-        // title's loads restart its count (`$80:A16A`): the original's `$00C8/$00C9` step on through
-        // the title, but its interrupt misses steps in some titles that native does not model
-        // (R-0114: 2-4 in `demo-cold`'s second), and 450 steps from the restart give the phase every
-        // captured title's setup frame copies, 3 (`pair_idle_demo_riders`).
-        load_title(state, content);
+    if (frame == demo_title_load_frame) {
+        load_title(state, content); // `$80:A16A` restarts the palette cycle
         clear_oam_buffer(state);
         copy_oam(state);
     }
@@ -1365,6 +1360,9 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
         state.demo_title_short = false;
         if (!state.demo_title_was_short) {
             held_demo_title_sounds(state);
+            // The title's interrupt still runs on the held frame: the palette cycle steps (R-0114,
+            // `demo-cold` frame 4080).
+            if (state.cycle.running) run_nmi_hook(state, content);
             ++state.frame;
             return;
         }

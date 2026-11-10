@@ -761,6 +761,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:93FB",
+   "native": [
+    "src/core/front_end.cpp:demo_title_start_frame"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:942D",
    "native": [
     "src/core/presentation.cpp:render_classic_race"
@@ -1025,35 +1032,19 @@
    "region": "rom"
   },
   {
-   "address": "$80:9881",
-   "native": [
-    "src/core/front_end.cpp:demo_title_start_frame"
-   ],
-   "range_ends": [
-    "$80:98A3"
-   ],
-   "region": "rom"
-  },
-  {
    "address": "$80:9885",
    "native": [
     "src/core/audio_cpu_scene.cpp:fade",
     "src/core/credits_name.cpp:credits_picture_frame",
     "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames",
+    "src/core/front_end.cpp:demo_title_start_frame",
     "src/core/front_end.cpp:fade_frames",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/now_playing.cpp:(file)",
     "src/core/now_playing.cpp:race_fade_frame"
    ],
-   "region": "rom"
-  },
-  {
-   "address": "$80:988C",
-   "native": [
-    "src/core/front_end.cpp:demo_title_start_frame"
-   ],
    "range_ends": [
-    "$80:989C"
+    "$80:98A3"
    ],
    "region": "rom"
   },
@@ -1786,6 +1777,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:A1ED",
+   "native": [
+    "src/core/front_end.cpp:demo_title_start_frame"
+   ],
+   "range_ends": [
+    "$80:A1EF"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:A1F2",
    "native": [
     "src/core/front_end.hpp:KeyboardEditor"
@@ -2406,6 +2407,16 @@
    ],
    "range_ends": [
     "$80:AC14"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:AC2E",
+   "native": [
+    "src/core/front_end.cpp:demo_title_start_frame"
+   ],
+   "range_ends": [
+    "$80:AC36"
    ],
    "region": "rom"
   },
@@ -5088,6 +5099,13 @@
     "src/core/front_end_screens.hpp:upload_last_frame, menu_screen_frame, restore_frame",
     "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame",
     "src/core/race_result.cpp:restore_menus_after_race"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D219",
+   "native": [
+    "src/core/front_end.cpp:demo_title_start_frame"
    ],
    "region": "rom"
   },
@@ -21499,9 +21517,12 @@
   "src/core/front_end.cpp:demo_title_start_frame": {
    "rom": [
     "$80:9318",
-    "$80:9881",
-    "$80:988C",
-    "$80:A16A"
+    "$80:93FB",
+    "$80:9885",
+    "$80:A16A",
+    "$80:A1ED",
+    "$80:AC2E",
+    "$80:D219"
    ],
    "wram": [
     "$00C8",
@@ -31364,10 +31385,10 @@
   }
  },
  "totals": {
-  "addresses": 2226,
+  "addresses": 2228,
   "io_addresses": 12,
   "native_symbols": 1616,
-  "rom_addresses": 1763,
+  "rom_addresses": 1765,
   "sram_addresses": 71,
   "wram_addresses": 380
  }
