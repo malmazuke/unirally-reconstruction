@@ -35,7 +35,7 @@ guard and leaves open.
 
 ## Results
 
-Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 9 November 2026 23:42 to 10 November 2026 00:58
+Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 9 November 2026 23:42 to 10 November 2026 00:52
 UTC (clock). [R-0113](../docs/research/R-0113-open-branches.md) has the table, the arguments and
 the limits.
 
@@ -91,6 +91,6 @@ erase checks fail with `options_menu.cpp` at main), `gcc.out`, `regen.sh`, `make
 
 ## Handoff
 
-Commits on `task/open-branches`: `2d1b49c9` (the native change and the regenerated map) and the records
-commit after it. Not done: the items queued in OPEN-BRANCHES-REMAINDER; no independent review yet
+Commits on `task/open-branches`: `2d1b49c9` (the native change and the regenerated map), `908fbf3e` and
+`3b180c5a` (the records). Not done: the items queued in OPEN-BRANCHES-REMAINDER; no independent review yet
 (tier 1). The coordinator pushes and opens the pull request.
