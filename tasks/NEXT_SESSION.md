@@ -27,6 +27,26 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](./GATES-AGAINST-MAIN.md) holds the detail.
 
+**10 November 2026: OPEN-BRANCHES is accepted (tier 1, #101) and integrated by merge commit.**
+R-0113 takes the 22 branches and sounds no capture of the original had run (R-0109 item 4) and
+settles 14:
+- **Captured and equal to the original (9 checks):** a race tie (VS DRAGSTER, both totals 3426),
+  2P on track 44 with HUNTER's two-view effects, VS on track 42 in two views, NEXT TRACK's wrap
+  after track 44, the 32nd demo race's wrap to track 0, the corkscrew ejection and the 9:5x warning
+  (every sound command), and DEFINE PLAYER's erase of a league member on three routes.
+- **Native change:** that erase now takes the rider out of every league they belong to, as
+  `$83:9B60-9B82` and `$83:9C47-9D7F` do (standings row, pairing place, totals, best-time holder,
+  pair cursor; `src/core/options_menu.cpp`). Before, the save image differed from the original's
+  in 6, 14 and 55 bytes on the three routes; now in none outside R-0111's residual.
+- **Argued unreachable (5):** lap fields of 10 and more, `$77:0749 = $FF`, HUNTER's `$83:D1D4`,
+  the VS count's tie arm and the track menu's signed offsets.
+- **Open (8)** and four pre-existing picture and timing differences (main's native gives the
+  same pictures) are queued as OPEN-BRANCHES-REMAINDER.
+- **Time:** about 4 h 40 min from claim to merge; review two rounds (3 should-fixes and 4 notes, then
+  approve); gates 99 steps same as main and every task check passing, after reruns for two temp-path
+  traps (the TMPDIR must be resolved and short).
+[R-0113](../docs/research/R-0113-open-branches.md) and [OPEN-BRANCHES](./OPEN-BRANCHES.md) hold the detail.
+
 **9 November 2026: CENSUS-REMAINDER is accepted (tier 3, #100) and integrated by merge commit.**
 R-0112 reads the bytes R-0109 left unexplained, with access records for all 919 corpus runs (533 +
 32 new, 2.80 M frames, all `status=passed`):

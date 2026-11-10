@@ -1,6 +1,16 @@
 # OPEN-BRANCHES - the reachable branches no capture of the original has run
 
-- Status: **queued** 8 November 2026 by [COVERAGE-CENSUS](COVERAGE-CENSUS.md) (R-0109, queue item 4).
+## Assignment
+
+- Status: **claimed** 9 November 2026 23:41 UTC on main `19ecb59f`, on the user's instruction
+  ("Start OPEN-BRANCHES"). Queued 8 November 2026 by [COVERAGE-CENSUS](COVERAGE-CENSUS.md)
+  (R-0109, queue item 4). Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`):
+  coordinator and integrator; a worker subagent captures and implements, a fresh subagent reviews.
+  Run under [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim to merge against
+  the 6-hour target, new evidence under 1 GB. Usage at the claim: 5-hour 1%, weekly 29%.
+- Branch `task/open-branches` in `.worktrees/open-branches`; evidence in main
+  `local/evidence/open-branches/`.
+- Task provider: Anthropic.
 - Milestone: M4. Review tier: **1** (race and front-end state).
 
 R-0109's code whose reachability is open and the branches the records list as never captured: the
@@ -22,3 +32,107 @@ of the sprite-tile queue (`$82:B8E3-BF76` and `$82:C53E-CFC7` never stopped at t
 `$80:BB1E`, `$80:BB72`); and the HUD numbers of 10 and more at `$81:D218`, `$81:D692`, `$81:DE90`,
 `$81:DFC1`, `$81:EC6F` (with R-0043's fields, above). The other 187 of the 278 small arms left R-0112 groups by
 guard and leaves open.
+
+## Results
+
+Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 9 November 2026 23:42 to 10 November 2026 00:52
+UTC (clock). [R-0113](../docs/research/R-0113-open-branches.md) has the table, the arguments and
+the limits.
+
+| Item | Verdict |
+| --- | --- |
+| HUD fields and numbers of 10 and more | unreachable: laps are at most 8 (`$83:A254`, `$83:8472`) |
+| `$77:0749 = $FF` (`$80:9075`) | unreachable: NOW PLAYING replaces `$017F = $FF` before the race setup copies it |
+| `$83:9B49`'s arm, `$83:9C47` | captured (`erase-colin`, `league-erase`, and review round 1's `multi-league` for the reaches past a slot); **native changed**: DEFINE PLAYER's erase takes the rider out of their leagues |
+| 2P and VS on the locked tours' tracks | captured: 2P track 44 (`twop-hunter-next`), VS track 42 in two views (`vs-neon`) |
+| HUNTER's two views `$83:CEF3`, `$83:D343` | captured (`twop-hunter-next`) |
+| HUNTER's two views `$83:D1D4` | unreachable (`$12D1` only in one view, cleared between races: `neon-then-43`) |
+| A race tie | captured (`vs-dragster-tie`, totals 3426/3426); the VS count's tie arm `$83:9296` unreachable |
+| NEXT TRACK's wrap after 44 | captured (`twop-hunter-next`) |
+| Demo cycles past the twentieth title | captured: the wrap to track 0 in the 32nd race (`demo-wrap`) |
+| Corkscrew ejection sound, 9:5x warning | captured (`corkscrew-t14`, `clock-warning`): every sound command equal |
+| Track menu's signed offsets | unreachable: the routine's only table `$80:EA35` has no byte with bit 7 |
+| Sprite-tile queue ends, pose of 4096+, loop facing away, stunt score 1000, track 13's cell, cheat page reveal, slow-checkpoint clear, BRONSEN's praise | open, queued as [OPEN-BRANCHES-REMAINDER](OPEN-BRANCHES-REMAINDER.md) |
+
+Not matched and recorded: `erase-colin`'s frame 6102 (the warning arrow one animation step late in the
+original, 608 pixels; most likely the removal's CPU time); `clock-warning`'s result screen after the
+clock limit, 2 frames later in the original; `league-erase`'s pictures from 15900 and `demo-wrap`'s way
+back from 98340, not traced. All in the follow-up.
+
+## Decisions (worker)
+
+- Routes were checked on the original with a PC trace of the branch (`orig.py --watch`, the core's
+  instruction ring), not with coverage captures; so no ninth static-map input, and the map regenerated
+  with its eight (`regen.sh`) only for the `src/core` edit.
+- `$83:9C47` is implemented on the cartridge RAM image (`LeagueTables`), not on the records' fields:
+  the routine reaches past a slot in four places and the image keeps them exactly; changed bytes go back
+  through `store_record_byte` (review round 1: `store_record_word` before), so `$10F5-10F8` are kept too.
+- Images are compared outside R-0111's residual bytes; pictures a record already explains are counted
+  apart (R-0088's sprite differences by pixel count, R-0103's two-view NEON race pictures left out with
+  the race rows compared instead).
+- Sound commands, not PCM: the original's `JSL $82:8000` calls against native's cue log, leaving out the
+  session commands 1, 7, 8.
+- The items that need a search or a data bound of their own were left open rather than half done.
+
+## Evidence
+
+Main `local/evidence/open-branches/` (17 MB): `manifests/` (the routes), `runs/` (each original run's
+pads, PC-trace hits, digests and images), `rows/` (`race_compare2p.py` with two marked changes, probes
+as `.zst`), `orig.py`, `compare.py`, `sounds.py`, `check.sh`, `checks.list`, `reverted.out` (the three
+erase checks fail with main's runner), `missing.out` (a check with its images missing fails), `gcc.out`,
+`regen.sh`, `make_unlocked.py`, `make_image.py` and `multi-league.bin` (review round 1's route),
+`menu.py`, `imgdiff.py`, `rom.py`; `review-1/` (the reviewer's files).
+
+- `checks.list`: nine lines, all pass on the candidate; the first eight took about 50 s together (10, 3,
+  13, 8, 4, 1, 6, 4 s), `multi-league` about 3 s. Each names the pictures, images and sound commands it
+  compares and fails on fewer.
+- Builds: `lab-release`, `lab-debug`, `app-debug` passed; `ctest` 41/41 on `lab-debug` and `app-debug`.
+- Linux GCC 13.3 (`ubuntu:24.04`, CI's flags): `options_menu.cpp` and `cartridge_ram.cpp` compile plain
+  and with `-fsanitize=address,undefined`. clang-tidy and clang-format clean.
+- `regen.sh` (eight inputs) and `coverage native-symbols --check`: passed; the tooling tests pass.
+
+## Review round 1 fixes (worker)
+
+Review: approve with should-fixes (PR #101, `review-1/review.md`). Fixed on 10 November 2026 (01:04 to
+01:11 UTC):
+1. Checks that compare nothing: `compare.py --pictures N --images F...` and `sounds.py --commands N`;
+   `check.sh` gives every route its counts. `league-erase` with its four images missing now fails
+   (`missing.out`).
+2. The comment in `options_menu.cpp` and R-0113 now say where slot 5's reaches land (`$0618`,
+   `$0678-0679`, `$067E` = `league_tracks[0]`, the borrow) and that a rider in no pairing place writes
+   0x10 into the next slot's first pairing. Code unchanged in behaviour.
+3. `multi-league` is the ninth check (moved from `review-1/`, the original rerun here with the same hit
+   counts and images: `$83:9B70` 4, `$83:9C8B` 1, `$83:9D62` 2, `$83:9D77` 4); with main's runner it
+   fails on 55 bytes (`reverted.out`). R-0113's Limits and OPEN-BRANCHES-REMAINDER narrowed.
+Also: the write-back stores bytes (`store_record_byte`, now declared in `cartridge_ram.hpp`) and the
+helper is named `WordImage` (note 7); R-0113 records the four differences as pre-existing, the phase
+lead and that `multi-league` weakens the CPU-time guess (notes 4-5).
+
+## Handoff
+
+Commits on `task/open-branches`: `2d1b49c9` (the native change and the regenerated map), `908fbf3e` and
+`3b180c5a` (the records). Not done: the items queued in OPEN-BRANCHES-REMAINDER; no independent review yet
+(tier 1). The coordinator pushes and opens the pull request.
+
+## Closeout (coordinator)
+
+- Review: tier 1, two rounds on PR #101. Round 1 (`fce45012`): approve with should-fixes, 3
+  should-fixes (a check could pass comparing nothing; slot 5's reaches misnamed; the records said no
+  capture runs the reaches past a slot) and 4 notes, all fixed or recorded in `eef52f43` and
+  `8dd0fb60`. Round 2 (`8dd0fb60`): approve, all 9 checks rerun by the reviewer.
+- Gates (D-0012) on `8dd0fb60`, three runs:
+  - `gates-1` (the selection, 2 h 25 min): build, app-hidden, both app audio steps and 99 steps
+    same-as-main passed; all nine task checks pass. Failed: `synthetic` and `tooling` (TMPDIR through
+    the worktree's `local` symlink; `test_replace_pack_moves_an_incompatible_pack_aside` compares the
+    resolved path) and four steps broken on both sides by "Argument list too long" (the TMPDIR was
+    too long for the rv-warn steps' 6,700 picture arguments).
+  - `gates-2` (`--only` those six, a resolved 58-character TMPDIR, 19 min): `synthetic`, `tooling`
+    passed; `mi-rv-warn`, `lt-podium-back`, `lt-five-w0` same-as-main; `rs-mi-review-rv-warn`
+    "changed" only because its main twin (run from `.worktrees/gates-base`) hit the same limit.
+  - `gates-3` (`--only rs-mi-review-rv-warn`, TMPDIR `/private/tmp/obg`, 6 min): same-as-main,
+    `status=passed`.
+  No step differs from main because of the change.
+- Time: claim `c3f98ab1` 23:41 UTC on 9 November 2026 to merge about 04:20 UTC on 10 November, about 4 h 40 min; worker 1 h
+  10 min plus 7 min of review fixes; gates 2 h 25 min + 19 + 6 min.
+- Evidence: main `local/evidence/open-branches/`, 17 MB. Worktrees `open-branches` and
+  `open-branches-review` and the branch removed after the merge.

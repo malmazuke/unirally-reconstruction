@@ -15684,7 +15684,9 @@
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today",
     "src/core/menu_overruns.cpp:percentage_clocks",
-    "src/core/options_menu.cpp:clear_defined_player"
+    "src/core/options_menu.cpp:clear_defined_player",
+    "src/core/options_menu.cpp:remove_from_leagues",
+    "src/core/options_menu.cpp:remove_league_member"
    ],
    "observed_entries": {},
    "start": "$83:9B49",
@@ -15704,7 +15706,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/menu_overruns.cpp:percentage_clocks"
+    "src/core/menu_overruns.cpp:percentage_clocks",
+    "src/core/options_menu.cpp:remove_league_member"
    ],
    "observed_entries": {},
    "start": "$83:9C47",
@@ -19583,19 +19586,19 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2609,
+  "cited_addresses": 2651,
   "cited_by_class": {
    "data": 12,
-   "inferred": 65,
-   "observed": 2269,
-   "unknown": 263
+   "inferred": 70,
+   "observed": 2305,
+   "unknown": 264
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1808,
+   "loc": 1849,
    "mid": 33,
    "sub": 493,
-   "unk": 263
+   "unk": 264
   },
   "conflicts": 0,
   "data": 70,
