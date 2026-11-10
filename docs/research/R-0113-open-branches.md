@@ -19,7 +19,8 @@ A, X and Y); **[R]** stated by an accepted record.
   `$10C0-10FF` set to `$FF`, written before frame 0; presses from 404 on 3 frames earlier), and one
   corpus run reused (COVERAGE-CENSUS run 280). Each route was first built on native's
   `front_end_runner` where that helps, then run on the original with a PC trace showing the branch.
-- **Compared** (`compare.py`, `rows/race_compare2p.py`, `sounds.py`): every picture of a window
+- **Compared** (each check names the counts of pictures, images and sound commands it compares, and
+  fails on fewer; `compare.py`, `rows/race_compare2p.py`, `sounds.py`): every picture of a window
   against native's (video digests), the cartridge RAM after chosen frames outside R-0111's residual
   bytes (`save-image-exact/residual.txt`, the bytes no later boot reads before they are rewritten),
   for two-pad races every race row, its trailer and a stunt event's tallies (RACE-BRANCH-REMAINDER's
@@ -34,7 +35,7 @@ A, X and Y); **[R]** stated by an accepted record.
 | --- | --- | --- | --- |
 | HUD lap fields of 10 and more (`$81:D255`, `$81:D6C0`, `$81:DEBB`, `$81:DFEC`, `$81:EC9A`; arms `$81:D218`, `$81:D692`, `$81:DE90`, `$81:DFC1`, `$81:EC6F`) | **Unreachable** [L, S] | laps are at most 8 (below) | - |
 | `$77:0749 = $FF` (`$80:9075-9090`, R-0058) | **Unreachable** [L] | `$FF` reaches `$017F` only until NOW PLAYING replaces it (below) | - |
-| `$83:9B49`'s arm (`$83:9B70-9B78`) and `$83:9C47-9D7F` | **Captured; native changed** | `erase-colin`, `league-erase`: DEFINE PLAYER erases a league member | images equal after the change (6 and 14 bytes differ before it); pictures 1,399/1,400 and one at 608 pixels (below) [C] |
+| `$83:9B49`'s arm (`$83:9B70-9B78`) and `$83:9C47-9D7F` | **Captured; native changed** | `erase-colin`, `league-erase`: DEFINE PLAYER erases a league member; `multi-league` (review round 1's route): the reaches past a slot | images equal after the change (6, 14 and 55 bytes differ before it); pictures 1,399/1,400 and one at 608 pixels, and 500/500 (below) [C] |
 | HUNTER's effects in two views: `$83:CEF3`, `$83:D343` | **Captured** | `twop-hunter-next`: 2P, track 44, a tag at 2626 | 4,609/4,609 pictures; images equal [C] |
 | HUNTER's effects in two views: `$83:D1D4` | **Unreachable** [L, C] | NEON's lighting flag is never set in two views and does not outlive its race (below) | - |
 | 2P and VS on the locked tours' tracks | **Captured** | `twop-hunter-next` (2P, track 44), `vs-neon` (VS, track 42, two views: `$82:D9AC`, inferred before) | `vs-neon`: 2,780/2,780 race rows, trailers and tallies; 1,319/1,319 pictures outside the race; the race's pictures carry R-0103's two-view NEON residual [C] |
@@ -104,16 +105,37 @@ A, X and Y); **[R]** stated by an accepted record.
   - `league-erase` (the same league after its first round, 16,000 frames of league-three, then TONY,
     pairing place 0 and best-time holder, erased at 18980): images equal at 16000, 18979, 19200 and
     19799 with the change, 14 bytes differ without it [C] (`reverted.out`).
+  - `multi-league` (review round 1's route, `review-1/`, moved here: `make_image.py`, `multi-league.bin`,
+    `manifests/multi-league.json`): a warm boot from `league-erase`'s image at 18979 with COLIN put in
+    five slots: slot 0 with cursor 2; slot 1 full (eight members), COLIN at place 7, so the scan reads
+    slot 2's first pairing `05` and moves it in, the odd-slot holder word `$0688` 7 and the cursor word
+    `$0679` 0x0100 (a borrow); slot 3 with COLIN in no pairing place (place 8), cursor 9; slot 5 with
+    COLIN at place 0, holder word `$0690` 7 and slot 0's league track `$067E` 1 above its cursor 0.
+    The image is hand-made, so the route checks the routine, not reachability. Erased at 1697, the
+    original runs `$83:9B70` 4 times, `$83:9C47` 4, `$83:9C8B` (no place) 1, `$83:9D62` (holder) 2 and
+    `$83:9D77` (cursor) 4 [C]; with the change native gives 500/500 pictures (1500-1999, the confirm
+    frame included) and both images (1696, 1999) equal, without it 55 bytes differ at 1999 [C]
+    (`reverted.out`); `$067D/$067E` go from `00/01` to `FF/00` on both.
 - **Implementation** (`options_menu.cpp`, `remove_from_leagues`, `remove_league_member`): on the
-  cartridge RAM image, because the routine reaches past a slot: its pairing scan reads one byte past the
-  slot's eight, a rider in no pairing place clears the next slot's first total, the holder test reads
-  `$0686 + 2k` (slot `k/2`'s holder for an even slot, slot `(k+1)/2`'s best time for an odd one), and
-  the cursor is compared and decremented as a word with the next slot's cursor above it [L]. Changed
-  bytes go back through `store_record_word`.
+  cartridge RAM image, because the routine reaches past the slot's own tables [L], and slot 5's
+  reaches land in other slots' fields:
+  - the pairing scan reads one byte past the slot's eight, `$05E8 + 8k + 8`: the next slot's first
+    pairing, for slot 5 the low byte of slot 0's first event total `$0618`; a full run moves it in and
+    writes 0x10 over it;
+  - a rider in no pairing place writes 0x10 to that byte (`$83:9D0F`) and clears the total word
+    `$0618 + 16k + 16`: the next slot's first total, for slot 5 the pair cursors of slots 0 and 1
+    (`$0678-0679`);
+  - the holder test reads `$0686 + 2k` (slot `k/2`'s holder for an even slot, slot `(k+1)/2`'s best
+    time for an odd one);
+  - the cursor is compared and decremented as a word with the byte above it: the next slot's cursor,
+    for slot 5 slot 0's league track `$067E` (`league_tracks[0]`). With that byte nonzero a slot-5
+    cursor always steps back, and a cursor of 0 borrows from it.
+  Changed bytes go back through `store_record_byte`.
 - **Not matched.** Frame 6102 of `erase-colin`, the picture after the press: the warning's arrow is one
-  animation step behind in the original (608 pixels) [C]. The removal's CPU time most likely pushes
-  that frame's OAM work past its end (a hypothesis; no cycle count was made); it is CPU-CYCLE-TIMING's
-  kind of difference.
+  animation step behind in the original (608 pixels) [C]. It is not this change's: main's native gives
+  the same picture (review round 1). That the removal's CPU time pushes the frame's OAM work past its
+  end is a hypothesis, and a weak one: on `multi-league` the original runs `$83:9C47` four times on
+  the press frame and every following picture is equal [C]. No cycle count was made.
 
 ### Open, with what was read
 
@@ -134,17 +156,23 @@ A, X and Y); **[R]** stated by an accepted record.
   `$82:962D`'s table and data bank were not resolved, so no bound is given.
 - **The clock-limit result.** After `clock-warning`'s race ends at the limit (the player never
   finished), native's result screen fades in 2 frames before the original's (31918 on), and its first
-  command (2, 6) comes at 31924 against 31926 [C]. Not traced.
+  command (2, 6) comes at 31924 against 31926 [C]. Not traced; main's native gives the same pictures
+  (review round 1).
 - **Pictures not compared:** `vs-neon`'s race (every picture differs; at 2400 by 859 pixels, R-0103's
   two-view NEON edge lines); `league-erase` from 15900 (most pictures differ by 1-2% of their pixels,
-  the checkered background, before the erase too; not traced); `demo-wrap` from 98340 (the return
-  after the race: frames 98346-98351 show the menu fading in the original and black in native; not
-  traced).
+  the checkered background, before the erase too; from 16302 the equal pictures come every other
+  frame, which suggests the background animation one frame out of phase; not traced); `demo-wrap` from
+  98340 (the return after the race: frames 98346-98351 show the menu fading in the original and black
+  in native; not traced). Review round 1 ran main's native on `league-erase`, `clock-warning`,
+  `demo-wrap` and `erase-colin` without skips: the same frames differ, and every native picture is
+  byte-identical to this change's, so all four differences are pre-existing.
 
 ## Limits
 
-- `$83:9C47`'s reaches past a slot (a full slot of eight, a rider in no pairing place, an odd slot's
-  holder test, a cursor word with a borrow) are implemented from the listing; no capture runs them.
+- `$83:9C47`'s reaches past a slot run on `multi-league` (a hand-made image): a full slot, a rider in
+  no pairing place, odd-slot holder words, a cursor borrow and slot 5's cursor over `$067E`. Not run:
+  a full slot 5, whose scan reads `$0618`, and a slot-5 rider in no pairing place, which clears
+  `$0678-0679`.
   The holder test compares the word `$00CA-00CB` with the rider; `$00CB` is taken as 0 (both captures
   agree, not proved).
 - Sound commands are compared, not PCM; audio past `demo-long`'s twentieth title is not compared.
@@ -166,7 +194,7 @@ From a checkout of main (`local/` linked to the main checkout's), `E=local/evide
 python3 $E/make_unlocked.py $E/unlocked.bin
 python3 $E/orig.py $E/manifests/NAME.json $E/runs/NAME.json [--image $E/unlocked.bin] --watch PC... --digests LO HI --sram F...
 python3 $E/rows/probe.py $E/rows/NAME.json $E/rows/probe-NAME --frames N --dump-from F --wram-bytes 0x4000 [--image ...]
-zsh $E/check.sh NAME OUT     # each line of checks.list, about 1 min for all eight
+zsh $E/check.sh NAME OUT     # each line of checks.list, about 1 min for all nine
 bash $E/regen.sh; python3 tools/project.py coverage native-symbols --check
 ```
 

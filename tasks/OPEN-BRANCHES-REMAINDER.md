@@ -9,8 +9,10 @@ whether a clipped or hidden rider queues fewer than 16; R-0113 saw 20 to 70 tile
 pose of 4096 or more (the override tables `$82:962D` and `$82:A45E` to bound), the loop descriptor facing
 away (R-0108), a stunt score of 1000 and track 13's cell past its flag table (R-0107), and the sounds of
 the cheat page's reveal, the slow-checkpoint clear and BRONSEN's praise (R-0076, R-0077); and the
-differences R-0113 observed but did not trace: the result screen 2 frames later in the original after a
-race ends at the 9:59.9 clock limit (`clock-warning`), the DEFINE PLAYER confirm frame's arrow one step
-late after a league removal (608 pixels, likely CPU time), league-three's pictures from 15900 (1-2% of
-pixels), the idle demo's way back after its 32nd race (frames 98346-98351), and `$83:9C47`'s reaches past
-a slot, implemented from the listing and never run by a capture.
+differences R-0113 observed but did not trace, all present on main too: the result screen 2 frames
+later in the original after a race ends at the 9:59.9 clock limit (`clock-warning`), the DEFINE PLAYER
+confirm frame's arrow one step late (608 pixels; CPU time is a weak hypothesis, since `multi-league` runs
+`$83:9C47` four times with no arrow difference), league-three's pictures from 15900 (1-2% of pixels,
+likely the background animation a frame out of phase), the idle demo's way back after its 32nd race
+(frames 98346-98351); and the two `$83:9C47` reaches past a slot no capture runs: a full slot 5, whose
+pairing scan reads `$0618`, and a slot-5 rider in no pairing place, which clears `$0678-0679`.

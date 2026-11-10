@@ -43,7 +43,7 @@ the limits.
 | --- | --- |
 | HUD fields and numbers of 10 and more | unreachable: laps are at most 8 (`$83:A254`, `$83:8472`) |
 | `$77:0749 = $FF` (`$80:9075`) | unreachable: NOW PLAYING replaces `$017F = $FF` before the race setup copies it |
-| `$83:9B49`'s arm, `$83:9C47` | captured (`erase-colin`, `league-erase`); **native changed**: DEFINE PLAYER's erase takes the rider out of their leagues |
+| `$83:9B49`'s arm, `$83:9C47` | captured (`erase-colin`, `league-erase`, and review round 1's `multi-league` for the reaches past a slot); **native changed**: DEFINE PLAYER's erase takes the rider out of their leagues |
 | 2P and VS on the locked tours' tracks | captured: 2P track 44 (`twop-hunter-next`), VS track 42 in two views (`vs-neon`) |
 | HUNTER's two views `$83:CEF3`, `$83:D343` | captured (`twop-hunter-next`) |
 | HUNTER's two views `$83:D1D4` | unreachable (`$12D1` only in one view, cleared between races: `neon-then-43`) |
@@ -66,7 +66,7 @@ back from 98340, not traced. All in the follow-up.
   with its eight (`regen.sh`) only for the `src/core` edit.
 - `$83:9C47` is implemented on the cartridge RAM image (`LeagueTables`), not on the records' fields:
   the routine reaches past a slot in four places and the image keeps them exactly; changed bytes go back
-  through `store_record_word`, so `$10F5-10F8` are kept too.
+  through `store_record_byte` (review round 1: `store_record_word` before), so `$10F5-10F8` are kept too.
 - Images are compared outside R-0111's residual bytes; pictures a record already explains are counted
   apart (R-0088's sprite differences by pixel count, R-0103's two-view NEON race pictures left out with
   the race rows compared instead).
@@ -76,18 +76,37 @@ back from 98340, not traced. All in the follow-up.
 
 ## Evidence
 
-Main `local/evidence/open-branches/` (5 MB): `manifests/` (the routes), `runs/` (each original run's
+Main `local/evidence/open-branches/` (6 MB): `manifests/` (the routes), `runs/` (each original run's
 pads, PC-trace hits, digests and images), `rows/` (`race_compare2p.py` with two marked changes, probes
-as `.zst`), `orig.py`, `compare.py`, `sounds.py`, `check.sh`, `checks.list`, `reverted.out` (the two
-erase checks fail with `options_menu.cpp` at main), `gcc.out`, `regen.sh`, `make_unlocked.py`,
-`menu.py`, `imgdiff.py`, `rom.py`.
+as `.zst`), `orig.py`, `compare.py`, `sounds.py`, `check.sh`, `checks.list`, `reverted.out` (the three
+erase checks fail with main's runner), `missing.out` (a check with its images missing fails), `gcc.out`,
+`regen.sh`, `make_unlocked.py`, `make_image.py` and `multi-league.bin` (review round 1's route),
+`menu.py`, `imgdiff.py`, `rom.py`; `review-1/` (the reviewer's files).
 
-- `checks.list`: eight lines, all pass on the candidate, about 50 s together (10, 3, 13, 8, 4, 1, 6,
-  4 s, run one after another).
+- `checks.list`: nine lines, all pass on the candidate; the first eight took about 50 s together (10, 3,
+  13, 8, 4, 1, 6, 4 s), `multi-league` about 3 s. Each names the pictures, images and sound commands it
+  compares and fails on fewer.
 - Builds: `lab-release`, `lab-debug`, `app-debug` passed; `ctest` 41/41 on `lab-debug` and `app-debug`.
-- Linux GCC 13.3 (`ubuntu:24.04`, CI's flags): `options_menu.cpp` compiles plain and with
-  `-fsanitize=address,undefined`.
+- Linux GCC 13.3 (`ubuntu:24.04`, CI's flags): `options_menu.cpp` and `cartridge_ram.cpp` compile plain
+  and with `-fsanitize=address,undefined`. clang-tidy and clang-format clean.
 - `regen.sh` (eight inputs) and `coverage native-symbols --check`: passed; the tooling tests pass.
+
+## Review round 1 fixes (worker)
+
+Review: approve with should-fixes (PR #101, `review-1/review.md`). Fixed on 10 November 2026 (01:04 to
+01:11 UTC):
+1. Checks that compare nothing: `compare.py --pictures N --images F...` and `sounds.py --commands N`;
+   `check.sh` gives every route its counts. `league-erase` with its four images missing now fails
+   (`missing.out`).
+2. The comment in `options_menu.cpp` and R-0113 now say where slot 5's reaches land (`$0618`,
+   `$0678-0679`, `$067E` = `league_tracks[0]`, the borrow) and that a rider in no pairing place writes
+   0x10 into the next slot's first pairing. Code unchanged in behaviour.
+3. `multi-league` is the ninth check (moved from `review-1/`, the original rerun here with the same hit
+   counts and images: `$83:9B70` 4, `$83:9C8B` 1, `$83:9D62` 2, `$83:9D77` 4); with main's runner it
+   fails on 55 bytes (`reverted.out`). R-0113's Limits and OPEN-BRANCHES-REMAINDER narrowed.
+Also: the write-back stores bytes (`store_record_byte`, now declared in `cartridge_ram.hpp`) and the
+helper is named `WordImage` (note 7); R-0113 records the four differences as pre-existing, the phase
+lead and that `multi-league` weakens the CPU-time guess (notes 4-5).
 
 ## Handoff
 
