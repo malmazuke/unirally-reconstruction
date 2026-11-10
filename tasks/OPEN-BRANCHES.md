@@ -33,6 +33,64 @@ of the sprite-tile queue (`$82:B8E3-BF76` and `$82:C53E-CFC7` never stopped at t
 `$81:DFC1`, `$81:EC6F` (with R-0043's fields, above). The other 187 of the 278 small arms left R-0112 groups by
 guard and leaves open.
 
+## Results
+
+Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 9 November 2026 23:42 to 10 November 2026 about
+01:20 UTC (clock). [R-0113](../docs/research/R-0113-open-branches.md) has the table, the arguments and
+the limits.
+
+| Item | Verdict |
+| --- | --- |
+| HUD fields and numbers of 10 and more | unreachable: laps are at most 8 (`$83:A254`, `$83:8472`) |
+| `$77:0749 = $FF` (`$80:9075`) | unreachable: NOW PLAYING replaces `$017F = $FF` before the race setup copies it |
+| `$83:9B49`'s arm, `$83:9C47` | captured (`erase-colin`, `league-erase`); **native changed**: DEFINE PLAYER's erase takes the rider out of their leagues |
+| 2P and VS on the locked tours' tracks | captured: 2P track 44 (`twop-hunter-next`), VS track 42 in two views (`vs-neon`) |
+| HUNTER's two views `$83:CEF3`, `$83:D343` | captured (`twop-hunter-next`) |
+| HUNTER's two views `$83:D1D4` | unreachable (`$12D1` only in one view, cleared between races: `neon-then-43`) |
+| A race tie | captured (`vs-dragster-tie`, totals 3426/3426); the VS count's tie arm `$83:9296` unreachable |
+| NEXT TRACK's wrap after 44 | captured (`twop-hunter-next`) |
+| Demo cycles past the twentieth title | captured: the wrap to track 0 in the 32nd race (`demo-wrap`) |
+| Corkscrew ejection sound, 9:5x warning | captured (`corkscrew-t14`, `clock-warning`): every sound command equal |
+| Track menu's signed offsets | unreachable: the routine's only table `$80:EA35` has no byte with bit 7 |
+| Sprite-tile queue ends, pose of 4096+, loop facing away, stunt score 1000, track 13's cell, cheat page reveal, slow-checkpoint clear, BRONSEN's praise | open, queued as [OPEN-BRANCHES-REMAINDER](OPEN-BRANCHES-REMAINDER.md) |
+
+Not matched and recorded: `erase-colin`'s frame 6102 (the warning arrow one animation step late in the
+original, 608 pixels; most likely the removal's CPU time); `clock-warning`'s result screen after the
+clock limit, 2 frames later in the original; `league-erase`'s pictures from 15900 and `demo-wrap`'s way
+back from 98340, not traced. All in the follow-up.
+
+## Decisions (worker)
+
+- Routes were checked on the original with a PC trace of the branch (`orig.py --watch`, the core's
+  instruction ring), not with coverage captures; so no ninth static-map input, and the map regenerated
+  with its eight (`regen.sh`) only for the `src/core` edit.
+- `$83:9C47` is implemented on the cartridge RAM image (`LeagueTables`), not on the records' fields:
+  the routine reaches past a slot in four places and the image keeps them exactly; changed bytes go back
+  through `store_record_word`, so `$10F5-10F8` are kept too.
+- Images are compared outside R-0111's residual bytes; pictures a record already explains are counted
+  apart (R-0088's sprite differences by pixel count, R-0103's two-view NEON race pictures left out with
+  the race rows compared instead).
+- Sound commands, not PCM: the original's `JSL $82:8000` calls against native's cue log, leaving out the
+  session commands 1, 7, 8.
+- The items that need a search or a data bound of their own were left open rather than half done.
+
+## Evidence
+
+Main `local/evidence/open-branches/` (5 MB): `manifests/` (the routes), `runs/` (each original run's
+pads, PC-trace hits, digests and images), `rows/` (`race_compare2p.py` with two marked changes, probes
+as `.zst`), `orig.py`, `compare.py`, `sounds.py`, `check.sh`, `checks.list`, `reverted.out` (the two
+erase checks fail with `options_menu.cpp` at main), `gcc.out`, `regen.sh`, `make_unlocked.py`,
+`menu.py`, `imgdiff.py`, `rom.py`.
+
+- `checks.list`: eight lines, all pass on the candidate, about 1 min together (11, 4, 12, 10, 3, 1, 7,
+  4 s).
+- Builds: `lab-release`, `lab-debug`, `app-debug` passed; `ctest` 41/41 on `lab-debug` and `app-debug`.
+- Linux GCC 13.3 (`ubuntu:24.04`, CI's flags): `options_menu.cpp` compiles plain and with
+  `-fsanitize=address,undefined`.
+- `regen.sh` (eight inputs) and `coverage native-symbols --check`: passed; the tooling tests pass.
+
 ## Handoff
 
-Not started.
+Commits on `task/open-branches`: `2d1b49c9` (the native change and the regenerated map) and the records
+commit after it. Not done: the items queued in OPEN-BRANCHES-REMAINDER; no independent review yet
+(tier 1). The coordinator pushes and opens the pull request.
