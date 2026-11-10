@@ -1,11 +1,14 @@
 // The two five-choice menus under OPTIONS (R-0072). Both print their text into the hidden
 // half of BG2 at the choice frame, then slide it into view over 39 more pictures.
+#include "cartridge_ram.hpp"
 #include "front_end_screens.hpp"
 #include "menu_overruns.hpp"
 #include "name_check.hpp"
 
 #include <algorithm>
 #include <array>
+#include <bit>
+#include <cstddef>
 #include <numeric>
 #include <span>
 #include <stdexcept>
@@ -376,10 +379,110 @@ void define_player_warning_entry_frame(FrontEndState& state, const FrontEndConte
 
 namespace {
 
+// The cartridge RAM image with the original's word access (little-endian, as `LDA $77xxxx`
+// reads it in 16-bit mode).
+struct LeagueTables {
+    CartridgeImage bytes;
+    [[nodiscard]] std::uint16_t word(std::size_t at) const {
+        return static_cast<std::uint16_t>(bytes.at(at) | unsigned(bytes.at(at + 1)) << 8U);
+    }
+    void set_word(std::size_t at, std::uint16_t value) {
+        bytes.at(at) = static_cast<std::uint8_t>(value);
+        bytes.at(at + 1) = static_cast<std::uint8_t>(value >> 8U);
+    }
+};
+
+// The league tables' layout in cartridge RAM, eight rows a slot (cartridge_ram.cpp).
+constexpr std::size_t league_member_masks = 0x02b2, league_standings = 0x02c0, standings_row = 4,
+                      standings_slot = 32;
+constexpr std::size_t league_pairings = 0x05e8, pairings_slot = 8;
+constexpr std::size_t league_event_totals = 0x0618, totals_row = 2, totals_slot = 16;
+constexpr std::size_t league_pair_cursors = 0x0678, league_best_holders = 0x0686;
+// `$77:10F5`/`$77:10F7`: the removal's pairing place and the count after it, kept as words.
+constexpr std::size_t removal_place = 0x10f5, removal_following = 0x10f7;
+constexpr std::uint8_t no_pairing = someone;
+
+// $83:9C47-9D7F (R-0113): takes `rider` out of league `slot`'s tables after $83:9B70 cleared
+// their bit, leaving `members`. The standings rows follow the riders' order, so the rider's row
+// is the count of members numbered below them; the pairings and the event totals follow the
+// pairing order. Each table closes the gap and clears its last place.
+//
+// The routine works on the cartridge layout and reaches past a slot in four places, which the
+// byte image keeps exactly: the pairing scan counts on to the byte after the slot's eight (the
+// next slot's first pairing, and for a full slot that byte moves in and is overwritten with
+// 0x10); a rider found in no pairing place (place 8) clears the next slot's first total; the
+// best-holder test reads the word `$0686 + 2 * slot`, which is slot `slot / 2`'s holder for an
+// even slot and slot `(slot + 1) / 2`'s best time for an odd one (the slots are 4 bytes apart);
+// and the pair cursor is compared and decremented as a word with the next slot's cursor above it.
+// The holder test compares a word with `$00CA`, the rider with `$00CB` 0.
+void remove_league_member(LeagueTables& tables, unsigned slot, unsigned rider,
+                          std::uint16_t members) {
+    const unsigned bit = 0x8000U >> rider;
+    // $83:9C58-9C70: members numbered below the rider (higher bits) and above (lower bits).
+    const auto below =
+        static_cast<unsigned>(std::popcount(unsigned(members) & ~((bit << 1U) - 1U) & 0xffffU));
+    const auto above = static_cast<unsigned>(std::popcount(unsigned(members) & (bit - 1U)));
+    // $83:9C72-9C99: the rider's pairing place, then the places after it up to the first 0x10,
+    // reading as far as the byte after the slot's eight.
+    const std::size_t pairings = league_pairings + pairings_slot * slot;
+    unsigned place = 0, following = 0;
+    while (place < pairings_slot && tables.bytes.at(pairings + place) != rider) ++place;
+    if (place < pairings_slot)
+        for (auto at = pairings + place + 1;
+             at <= pairings + pairings_slot && tables.bytes.at(at) != no_pairing; ++at)
+            ++following;
+    tables.set_word(removal_place, static_cast<std::uint16_t>(place)); // $83:9C9B-9CA5
+    tables.set_word(removal_following, static_cast<std::uint16_t>(following));
+    // $83:9CA9-9CDD: the standings rows (games played, score) from the rider's row on.
+    auto row = league_standings + standings_slot * slot + standings_row * below;
+    for (unsigned k = 0; k < above; ++k, row += standings_row) {
+        tables.set_word(row, tables.word(row + standings_row));
+        tables.set_word(row + 2, tables.word(row + standings_row + 2));
+    }
+    tables.set_word(row, 0);
+    tables.set_word(row + 2, 0);
+    // $83:9CE1-9D0F: the pairings from the rider's place, 0x10 in the last.
+    auto pairing = pairings + place;
+    for (unsigned k = 0; k < following; ++k, ++pairing)
+        tables.bytes.at(pairing) = tables.bytes.at(pairing + 1);
+    tables.bytes.at(pairing) = no_pairing;
+    // $83:9D15-9D44: the event totals, in pairing order, likewise.
+    auto total = league_event_totals + totals_slot * slot + totals_row * place;
+    for (unsigned k = 0; k < following; ++k, total += totals_row)
+        tables.set_word(total, tables.word(total + totals_row));
+    tables.set_word(total, 0);
+    // $83:9D54-9D65: the best time's holder, if it was the rider, becomes no one.
+    const auto holder = league_best_holders + 2 * slot;
+    if (tables.word(holder) == rider) tables.set_word(holder, no_pairing);
+    // $83:9D69-9D78: a pair cursor past the rider's place steps back one.
+    const auto cursor = league_pair_cursors + slot;
+    if (tables.word(cursor) > place)
+        tables.set_word(cursor, static_cast<std::uint16_t>(tables.word(cursor) - 1U));
+}
+
+// $83:9B60-9B82: each of the six league slots with the rider as a member loses them.
+void remove_from_leagues(FrontEndState& state, unsigned rider) {
+    const unsigned bit = 0x8000U >> rider;
+    LeagueTables tables{cartridge_image(state)};
+    const auto before = tables.bytes;
+    for (unsigned slot = 0; slot < state.records.league_members.size(); ++slot) {
+        const std::size_t mask = league_member_masks + 2 * slot;
+        const auto members = tables.word(mask);
+        if ((members & bit) == 0) continue;
+        tables.set_word(mask, static_cast<std::uint16_t>(members & ~bit));
+        remove_league_member(tables, slot, rider, tables.word(mask));
+    }
+    // Back into the records' fields (and the bytes native keeps no field for, `$10F5-10F8`); the
+    // routine writes nowhere near the image's last byte.
+    for (std::size_t at = 0; at + 1 < before.size(); ++at)
+        if (tables.bytes[at] != before[at]) store_record_word(state, at, tables.word(at));
+}
+
 void clear_defined_player(FrontEndState& state) {
     // The SRAM removal is visible on the same picture as SELECT+Y+A. A name
     // record's first eight characters clear; its remaining bytes stay intact.
     const auto rider = state.options_rider;
+    remove_from_leagues(state, rider & 0x0fU);
     auto& records = state.records;
     std::fill_n(records.rider_names.begin() + static_cast<std::size_t>(rider) * 16, 8,
                 std::uint8_t{'_'});

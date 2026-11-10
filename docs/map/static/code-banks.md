@@ -196,7 +196,7 @@ Cited addresses in `unknown` bytes:
 | $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |
 | $80:FC6E | docs/research/R-0109-coverage-census.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
-| $80:FFD8 | docs/research/R-0112-census-remainder.md |
+| $80:FFD8 | docs/research/R-0112-census-remainder.md, tasks/CENSUS-REMAINDER.md |
 | $81:8000 | tasks/ACCESS-ROUND-READS.md |
 | $81:8001 | tasks/ACCESS-ROUND-READS.md |
 | $81:834C | docs/research/R-0051-loop-and-tile-pairs.md, docs/research/R-0107-race-listing-branches.md, tasks/TILE-PAIRS-8-12-26.md |
@@ -218,9 +218,9 @@ Cited addresses in `unknown` bytes:
 | $81:C441 | docs/research/R-0076-first-race-audio.md |
 | $81:C493 | docs/research/R-0011-motion.md |
 | $81:C50A | docs/research/R-0011-motion.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0098-league-tours.md |
-| $81:C691 | docs/research/R-0112-census-remainder.md |
+| $81:C691 | docs/research/R-0112-census-remainder.md, tasks/CENSUS-REMAINDER.md |
 | $81:C692 | docs/research/R-0112-census-remainder.md |
-| $81:CB24 | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |
+| $81:CB24 | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md, tasks/NEXT_SESSION.md |
 | $81:CC17 | docs/research/R-0048-race-guards.md |
 | $81:F358 | docs/research/R-0109-coverage-census.md |
 | $82:816C | docs/research/R-0109-coverage-census.md, docs/research/R-0112-census-remainder.md |

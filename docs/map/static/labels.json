@@ -14037,7 +14037,8 @@
   "comment": "unknown",
   "label": "unk_80FFD8",
   "source_records": [
-   "docs/research/R-0112-census-remainder.md"
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/CENSUS-REMAINDER.md"
   ]
  },
  {
@@ -18822,7 +18823,8 @@
   "comment": "instruction start",
   "label": "loc_81C68F",
   "source_records": [
-   "docs/research/R-0112-census-remainder.md"
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/CENSUS-REMAINDER.md"
   ]
  },
  {
@@ -18831,7 +18833,8 @@
   "comment": "unknown",
   "label": "unk_81C691",
   "source_records": [
-   "docs/research/R-0112-census-remainder.md"
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/CENSUS-REMAINDER.md"
   ]
  },
  {
@@ -19470,7 +19473,8 @@
   "label": "unk_81CB24",
   "source_records": [
    "docs/research/R-0109-coverage-census.md",
-   "docs/research/R-0112-census-remainder.md"
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {
@@ -26689,7 +26693,8 @@
   "comment": "instruction start",
   "label": "loc_838AFA",
   "source_records": [
-   "docs/research/R-0112-census-remainder.md"
+   "docs/research/R-0112-census-remainder.md",
+   "tasks/CENSUS-REMAINDER.md"
   ]
  },
  {
@@ -28199,7 +28204,9 @@
   "comment": "instruction start",
   "label": "loc_839B70",
   "native": [
-   "src/core/menu_overruns.cpp:percentage_clocks"
+   "src/core/menu_overruns.cpp:percentage_clocks",
+   "src/core/options_menu.cpp:remove_from_leagues",
+   "src/core/options_menu.cpp:remove_league_member"
   ],
   "source_records": [
    "docs/research/R-0109-coverage-census.md"
@@ -28261,7 +28268,8 @@
   "comment": "routine start",
   "label": "sub_839C47",
   "native": [
-   "src/core/menu_overruns.cpp:percentage_clocks"
+   "src/core/menu_overruns.cpp:percentage_clocks",
+   "src/core/options_menu.cpp:remove_league_member"
   ],
   "source_records": [
    "docs/research/R-0109-coverage-census.md",

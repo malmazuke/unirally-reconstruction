@@ -12553,6 +12553,23 @@
    "region": "rom"
   },
   {
+   "address": "$83:9B60",
+   "native": [
+    "src/core/options_menu.cpp:remove_from_leagues"
+   ],
+   "range_ends": [
+    "$83:9B82"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9B70",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:9BB5",
    "native": [
     "src/core/options_menu.cpp:clear_defined_player"
@@ -12566,6 +12583,96 @@
    ],
    "range_ends": [
     "$83:9BF9"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9C47",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9D7F"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9C58",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9C70"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9C72",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9C99"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9C9B",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9CA5"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9CA9",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9CDD"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9CE1",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9D0F"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9D15",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9D44"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9D54",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9D65"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9D69",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$83:9D78"
    ],
    "region": "rom"
   },
@@ -16510,8 +16617,16 @@
     "src/core/front_end_runner.cpp:Options::rider_word",
     "src/core/now_playing.cpp:note_named_riders",
     "src/core/options_menu.cpp:enter_define_player_warning",
+    "src/core/options_menu.cpp:remove_league_member",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/tour_menu.cpp:show_medal_entries"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00CB",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
    ],
    "region": "wram"
   },
@@ -17190,6 +17305,13 @@
    "address": "$0618",
    "native": [
     "src/core/cartridge_ram.cpp:store_record_byte"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0686",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
    ],
    "region": "wram"
   },
@@ -18373,6 +18495,16 @@
    "address": "$10CB",
    "native": [
     "src/core/front_end.hpp:TourEnding"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$10F5",
+   "native": [
+    "src/core/options_menu.cpp:remove_from_leagues"
+   ],
+   "range_ends": [
+    "$10F8"
    ],
    "region": "wram"
   },
@@ -19734,6 +19866,20 @@
    "address": "$77:10F3",
    "native": [
     "src/core/league_menu.cpp:print_award_rows"
+   ],
+   "region": "sram"
+  },
+  {
+   "address": "$77:10F5",
+   "native": [
+    "src/core/options_menu.cpp:removal_place, removal_following"
+   ],
+   "region": "sram"
+  },
+  {
+   "address": "$77:10F7",
+   "native": [
+    "src/core/options_menu.cpp:removal_place, removal_following"
    ],
    "region": "sram"
   },
@@ -25099,6 +25245,39 @@
   "src/core/options_menu.cpp:refuse_name": {
    "rom": [
     "$80:A4B8"
+   ]
+  },
+  "src/core/options_menu.cpp:removal_place, removal_following": {
+   "sram": [
+    "$77:10F5",
+    "$77:10F7"
+   ]
+  },
+  "src/core/options_menu.cpp:remove_from_leagues": {
+   "rom": [
+    "$83:9B60"
+   ],
+   "wram": [
+    "$10F5"
+   ]
+  },
+  "src/core/options_menu.cpp:remove_league_member": {
+   "rom": [
+    "$83:9B70",
+    "$83:9C47",
+    "$83:9C58",
+    "$83:9C72",
+    "$83:9C9B",
+    "$83:9CA9",
+    "$83:9CE1",
+    "$83:9D15",
+    "$83:9D54",
+    "$83:9D69"
+   ],
+   "wram": [
+    "$00CA",
+    "$00CB",
+    "$0686"
    ]
   },
   "src/core/options_menu.cpp:rename_commit_frame": {
@@ -31101,11 +31280,11 @@
   }
  },
  "totals": {
-  "addresses": 2204,
+  "addresses": 2220,
   "io_addresses": 12,
-  "native_symbols": 1611,
-  "rom_addresses": 1749,
-  "sram_addresses": 69,
-  "wram_addresses": 374
+  "native_symbols": 1614,
+  "rom_addresses": 1760,
+  "sram_addresses": 71,
+  "wram_addresses": 377
  }
 }

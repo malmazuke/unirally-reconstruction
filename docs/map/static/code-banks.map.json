@@ -15684,7 +15684,9 @@
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today",
     "src/core/menu_overruns.cpp:percentage_clocks",
-    "src/core/options_menu.cpp:clear_defined_player"
+    "src/core/options_menu.cpp:clear_defined_player",
+    "src/core/options_menu.cpp:remove_from_leagues",
+    "src/core/options_menu.cpp:remove_league_member"
    ],
    "observed_entries": {},
    "start": "$83:9B49",
@@ -15704,7 +15706,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/menu_overruns.cpp:percentage_clocks"
+    "src/core/menu_overruns.cpp:percentage_clocks",
+    "src/core/options_menu.cpp:remove_league_member"
    ],
    "observed_entries": {},
    "start": "$83:9C47",
