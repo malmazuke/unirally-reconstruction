@@ -48,6 +48,8 @@ void store_race_mode_from_option_byte(FrontEndState& state);
 // The bytes the image derives from front-end state (`$0742` bits 1, 9 and 10, the pending
 // reveals) are not patched.
 void store_record_word(FrontEndState& state, std::size_t offset, std::uint16_t value);
+// The same for one byte.
+void store_record_byte(FrontEndState& state, std::size_t offset, std::uint8_t byte);
 
 // A race update's increments of cartridge RAM bytes past rider 1's tallies
 // (`ZoomZooState::cartridge_increments`, an overrun of the original; R-0098): each adds 1 to one

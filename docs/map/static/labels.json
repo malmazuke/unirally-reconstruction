@@ -1383,7 +1383,9 @@
    "src/core/race_result.cpp:start_result"
   ],
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -1815,6 +1817,19 @@
   ]
  },
  {
+  "address": "$80:94A5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8094A5",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.hpp:OnePlayerRecords::demo_track"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$80:94AD",
   "class": "observed",
   "comment": "instruction start",
@@ -1852,6 +1867,19 @@
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:94C7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8094C7",
+  "native": [
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndState::demo_option_byte"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -2509,6 +2537,24 @@
   ],
   "source_records": [
    "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$80:9A01",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809A01",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/front_end_screens.hpp:store_race_setup",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:store_race_words"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -4848,6 +4894,18 @@
   ]
  },
  {
+  "address": "$80:AE9F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80AE9F",
+  "native": [
+   "src/core/local_modes.cpp:choose_next_track"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$80:AEAD",
   "class": "observed",
   "comment": "instruction start",
@@ -5405,6 +5463,7 @@
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
    "docs/research/R-0111-save-image-exact.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -5448,6 +5507,18 @@
   ]
  },
  {
+  "address": "$80:B25D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B25D",
+  "native": [
+   "src/core/now_playing.cpp:print_now_playing"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$80:B297",
   "class": "observed",
   "comment": "instruction start",
@@ -5459,6 +5530,7 @@
   ],
   "source_records": [
    "docs/research/R-0084-two-human-restart.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/TWO-HUMAN-RESTART.md"
   ]
  },
@@ -5577,6 +5649,21 @@
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0066-stunt-event-race.md",
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:B369",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B369",
+  "native": [
+   "src/core/now_playing.cpp:opponent_for",
+   "src/core/now_playing.cpp:print_now_playing",
+   "src/core/race_setup.cpp:classic_race_scenario",
+   "src/core/race_setup.cpp:neon_track"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -6523,7 +6610,8 @@
    "src/core/track_menu.cpp:row_spacing, wrap_top_y"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -6533,6 +6621,7 @@
   "label": "loc_80BA7C",
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -6595,6 +6684,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -6620,6 +6710,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -7002,6 +7093,15 @@
   ]
  },
  {
+  "address": "$80:BC56",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BC56",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$80:BC59",
   "class": "observed",
   "comment": "instruction start",
@@ -7273,6 +7373,15 @@
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$80:BD7D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD7D",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -7549,6 +7658,20 @@
   ]
  },
  {
+  "address": "$80:BEB8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BEB8",
+  "native": [
+   "src/core/front_end_screens.hpp:store_race_words",
+   "src/core/league_completion.cpp:(file)",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$80:BEC6",
   "class": "observed",
   "comment": "instruction start",
@@ -7595,6 +7718,18 @@
   ]
  },
  {
+  "address": "$80:BEE4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BEE4",
+  "native": [
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$80:BEEC",
   "class": "observed",
   "comment": "instruction start",
@@ -7630,6 +7765,15 @@
   ],
   "source_records": [
    "docs/research/R-0098-league-tours.md"
+  ]
+ },
+ {
+  "address": "$80:BF0F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF0F",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -7908,6 +8052,15 @@
   ]
  },
  {
+  "address": "$80:C00A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C00A",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$80:C00D",
   "class": "observed",
   "comment": "instruction start",
@@ -7925,7 +8078,8 @@
    "src/core/front_end_screens.hpp:versus_tie"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -7940,7 +8094,8 @@
    "src/core/local_modes.cpp:enter_vs_rematch"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -7964,7 +8119,8 @@
    "src/core/race_result.cpp:count_versus_result"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -11869,7 +12025,17 @@
    "src/core/track_menu.cpp:last_item"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
+  "address": "$80:E9A8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E9A8",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -11894,6 +12060,24 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:E9CE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E9CE",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
+  "address": "$80:E9DF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E9DF",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -11976,6 +12160,16 @@
   "label": "unk_80EA31",
   "source_records": [
    "docs/research/R-0112-census-remainder.md"
+  ]
+ },
+ {
+  "address": "$80:EA35",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EA35",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -14076,6 +14270,18 @@
   ]
  },
  {
+  "address": "$81:8055",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818055",
+  "native": [
+   "src/core/race_progress.cpp:update_checkpoints"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$81:80C1",
   "class": "observed",
   "comment": "instruction start",
@@ -14143,6 +14349,18 @@
   ]
  },
  {
+  "address": "$81:8194",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818194",
+  "native": [
+   "src/core/race_progress.cpp:update_checkpoints"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$81:81AE",
   "class": "observed",
   "comment": "instruction start",
@@ -14189,6 +14407,18 @@
   ],
   "source_records": [
    "docs/research/R-0013-native-finish-reference-freeze.md"
+  ]
+ },
+ {
+  "address": "$81:8238",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818238",
+  "native": [
+   "src/core/race_progress.cpp:update_checkpoints"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -14498,9 +14728,23 @@
    "docs/research/R-0107-race-listing-branches.md",
    "docs/research/R-0108-race-branch-remainder.md",
    "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/NEXT_SESSION.md",
    "tasks/RACE-BRANCH-REMAINDER.md",
    "tasks/RACE-LISTING-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$81:83CD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8183CD",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -14545,6 +14789,7 @@
    "docs/research/R-0107-race-listing-branches.md",
    "docs/research/R-0108-race-branch-remainder.md",
    "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/NEXT_SESSION.md",
    "tasks/RACE-BRANCH-REMAINDER.md",
    "tasks/RACE-LISTING-BRANCHES.md"
@@ -14574,6 +14819,19 @@
   ],
   "source_records": [
    "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
+  "address": "$81:841B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81841B",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -15138,6 +15396,19 @@
   ]
  },
  {
+  "address": "$81:87D6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8187D6",
+  "native": [
+   "src/core/special_tiles.cpp:update_corkscrew_tile",
+   "src/core/zoom_zoo_movement.hpp:update_corkscrew_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$81:8888",
   "class": "observed",
   "comment": "instruction start",
@@ -15148,6 +15419,19 @@
   ],
   "source_records": [
    "docs/research/R-0108-race-branch-remainder.md"
+  ]
+ },
+ {
+  "address": "$81:890E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81890E",
+  "native": [
+   "src/core/special_tiles.cpp:update_corkscrew_tile",
+   "src/core/zoom_zoo_movement.hpp:update_corkscrew_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -17268,7 +17552,8 @@
    "docs/research/R-0010-native-movement.md",
    "docs/research/R-0011-contact.md",
    "docs/research/R-0093-data-coverage.md",
-   "docs/research/R-0112-census-remainder.md"
+   "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -17294,6 +17579,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -19563,6 +19849,18 @@
   ]
  },
  {
+  "address": "$81:D1F9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81D1F9",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_hud"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$81:D218",
   "class": "inferred",
   "comment": "instruction start",
@@ -19572,6 +19870,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -19584,7 +19883,8 @@
    "src/core/race_hud.cpp:draw_split_hud"
   ],
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -19628,6 +19928,7 @@
   ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
   ]
  },
@@ -19641,6 +19942,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -19665,7 +19967,8 @@
    "src/core/race_hud.cpp:classic_hud_left_field"
   ],
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -20017,6 +20320,7 @@
   "label": "loc_81DE90",
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -20026,7 +20330,8 @@
   "comment": "instruction start",
   "label": "loc_81DEBB",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -20036,6 +20341,7 @@
   "label": "loc_81DFC1",
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -20045,7 +20351,8 @@
   "comment": "instruction start",
   "label": "loc_81DFEC",
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -20482,6 +20789,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -20506,7 +20814,8 @@
    "src/core/race_hud.cpp:classic_hud_left_field"
   ],
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -20939,8 +21248,10 @@
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0091-mode-audio.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/AUDIO-DECISION.md",
-   "tasks/AUDIO-TITLE-MENU.md"
+   "tasks/AUDIO-TITLE-MENU.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -22174,6 +22485,21 @@
   ]
  },
  {
+  "address": "$82:962D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82962D",
+  "native": [
+   "src/core/trick_roll.cpp:(file)",
+   "src/core/trick_roll.cpp:update_z_flip",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md",
+   "tasks/OPEN-BRANCHES-REMAINDER.md"
+  ]
+ },
+ {
   "address": "$82:9630",
   "class": "observed",
   "comment": "instruction start",
@@ -22908,7 +23234,8 @@
   "comment": "unknown",
   "label": "unk_82A2DB",
   "source_records": [
-   "docs/research/R-0030-zoom-zoo-native-trial.md"
+   "docs/research/R-0030-zoom-zoo-native-trial.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -22982,6 +23309,19 @@
   ],
   "source_records": [
    "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:A45E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A45E",
+  "native": [
+   "src/core/race_update.cpp:update_reflection_transition"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md",
+   "tasks/OPEN-BRANCHES-REMAINDER.md"
   ]
  },
  {
@@ -24474,7 +24814,8 @@
   "comment": "routine start",
   "label": "sub_82C53D",
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -25128,6 +25469,36 @@
   ]
  },
  {
+  "address": "$82:D9A7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D9A7",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:neon_lighting_on",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
+  "address": "$82:D9AC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82D9AC",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:neon_lighting_on",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$82:DA75",
   "class": "observed",
   "comment": "instruction start",
@@ -25199,6 +25570,22 @@
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$82:DBAF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DBAF",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:neon_track",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::laps",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -25288,6 +25675,20 @@
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$82:DC3A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DC3A",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content",
+   "src/core/race_setup.cpp:neon_lighting_on"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -25962,7 +26363,9 @@
   "comment": "unknown",
   "label": "unk_838472",
   "source_records": [
-   "docs/research/R-0105-cartridge-option-words.md"
+   "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0113-open-branches.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -27225,7 +27628,8 @@
    "src/core/race_result.cpp:count_versus_result"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -27238,7 +27642,22 @@
    "src/core/race_result.cpp:count_versus_result"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
+  "address": "$83:9296",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_839296",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today",
+   "src/core/race_result.cpp:count_versus_result"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -27415,6 +27834,15 @@
   ]
  },
  {
+  "address": "$83:9493",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839493",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$83:94A5",
   "class": "observed",
   "comment": "routine start",
@@ -27588,6 +28016,7 @@
    "docs/research/R-0073-league.md",
    "docs/research/R-0090-save-files.md",
    "docs/research/R-0105-cartridge-option-words.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/CARTRIDGE-OPTION-BITS.md",
    "tasks/NEXT_SESSION.md"
   ]
@@ -27639,6 +28068,15 @@
   "label": "loc_8395DB",
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$83:95F4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8395F4",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -27943,6 +28381,18 @@
   ]
  },
  {
+  "address": "$83:990D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83990D",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$83:9910",
   "class": "observed",
   "comment": "instruction start",
@@ -28018,6 +28468,18 @@
   ]
  },
  {
+  "address": "$83:999D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83999D",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$83:99A8",
   "class": "observed",
   "comment": "instruction start",
@@ -28053,7 +28515,20 @@
    "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
+  "address": "$83:99EE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8399EE",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -28195,7 +28670,34 @@
   ],
   "source_records": [
    "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
+  ]
+ },
+ {
+  "address": "$83:9B60",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839B60",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks",
+   "src/core/options_menu.cpp:remove_from_leagues"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
+  "address": "$83:9B68",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839B68",
+  "native": [
+   "src/core/menu_overruns.cpp:percentage_clocks",
+   "src/core/options_menu.cpp:remove_from_leagues"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -28209,7 +28711,8 @@
    "src/core/options_menu.cpp:remove_league_member"
   ],
   "source_records": [
-   "docs/research/R-0109-coverage-census.md"
+   "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {
@@ -28273,6 +28776,8 @@
   ],
   "source_records": [
    "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md",
+   "tasks/OPEN-BRANCHES-REMAINDER.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -28509,7 +29014,9 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0111-save-image-exact.md"
+   "docs/research/R-0111-save-image-exact.md",
+   "docs/research/R-0113-open-branches.md",
+   "tasks/OPEN-BRANCHES.md"
   ]
  },
  {
@@ -30188,6 +30695,21 @@
   ]
  },
  {
+  "address": "$83:C994",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C994",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:set_up_demo_race",
+   "src/core/front_end_screens.hpp:store_demo_race_setup"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$83:C99E",
   "class": "observed",
   "comment": "instruction start",
@@ -30995,6 +31517,38 @@
   ]
  },
  {
+  "address": "$83:CED0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CED0",
+  "native": [
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
+  "address": "$83:CED6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CED6",
+  "native": [
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$83:CED9",
   "class": "observed",
   "comment": "instruction start",
@@ -31064,6 +31618,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -31159,6 +31714,7 @@
    "docs/research/R-0068-stunt-hud.md",
    "docs/research/R-0089-coverage-gaps.md",
    "docs/research/R-0109-coverage-census.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -31192,6 +31748,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -31375,6 +31932,7 @@
   ],
   "source_records": [
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md",
    "tasks/OPEN-BRANCHES.md"
   ]
  },
@@ -33775,6 +34333,15 @@
   ]
  },
  {
+  "address": "$83:EF50",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EF50",
+  "source_records": [
+   "docs/research/R-0113-open-branches.md"
+  ]
+ },
+ {
   "address": "$83:EF54",
   "class": "observed",
   "comment": "routine start",
@@ -33930,7 +34497,8 @@
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
    "docs/research/R-0109-coverage-census.md",
-   "docs/research/R-0112-census-remainder.md"
+   "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0113-open-branches.md"
   ]
  },
  {

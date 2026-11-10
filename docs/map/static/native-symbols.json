@@ -17295,6 +17295,13 @@
    "region": "wram"
   },
   {
+   "address": "$05E8",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0616",
    "native": [
     "src/core/cartridge_ram.cpp:store_record_byte"
@@ -17304,7 +17311,25 @@
   {
    "address": "$0618",
    "native": [
-    "src/core/cartridge_ram.cpp:store_record_byte"
+    "src/core/cartridge_ram.cpp:store_record_byte",
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0678",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
+   ],
+   "range_ends": [
+    "$0679"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$067E",
+   "native": [
+    "src/core/options_menu.cpp:remove_league_member"
    ],
    "region": "wram"
   },
@@ -25277,6 +25302,10 @@
    "wram": [
     "$00CA",
     "$00CB",
+    "$05E8",
+    "$0618",
+    "$0678",
+    "$067E",
     "$0686"
    ]
   },
@@ -31280,11 +31309,11 @@
   }
  },
  "totals": {
-  "addresses": 2220,
+  "addresses": 2223,
   "io_addresses": 12,
   "native_symbols": 1614,
   "rom_addresses": 1760,
   "sram_addresses": 71,
-  "wram_addresses": 377
+  "wram_addresses": 380
  }
 }

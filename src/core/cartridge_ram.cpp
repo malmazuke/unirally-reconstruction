@@ -261,8 +261,6 @@ void store_race_mode_from_option_byte(FrontEndState& state) {
     state.cartridge.at(race_mode) = cartridge_image(state).at(option_word);
 }
 
-namespace {
-
 void store_record_byte(FrontEndState& state, std::size_t offset, std::uint8_t byte) {
     // The reference core mirrors the 8 KiB through banks `$77` and `$78`, so an offset past
     // `$77:1FFF` lands on its mirror (review 2: cursors poked to 0xFF put `$80:F88D`'s totals at
@@ -273,7 +271,6 @@ void store_record_byte(FrontEndState& state, std::size_t offset, std::uint8_t by
     transfer_records(patch, state.records);
     state.cartridge.at(offset) = byte;
 }
-} // namespace
 
 void store_record_word(FrontEndState& state, std::size_t offset, std::uint16_t value) {
     store_record_byte(state, offset, static_cast<std::uint8_t>(value));

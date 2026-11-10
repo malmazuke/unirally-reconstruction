@@ -381,7 +381,7 @@ namespace {
 
 // The cartridge RAM image with the original's word access (little-endian, as `LDA $77xxxx`
 // reads it in 16-bit mode).
-struct LeagueTables {
+struct WordImage {
     CartridgeImage bytes;
     [[nodiscard]] std::uint16_t word(std::size_t at) const {
         return static_cast<std::uint16_t>(bytes.at(at) | unsigned(bytes.at(at + 1)) << 8U);
@@ -407,16 +407,21 @@ constexpr std::uint8_t no_pairing = someone;
 // is the count of members numbered below them; the pairings and the event totals follow the
 // pairing order. Each table closes the gap and clears its last place.
 //
-// The routine works on the cartridge layout and reaches past a slot in four places, which the
-// byte image keeps exactly: the pairing scan counts on to the byte after the slot's eight (the
-// next slot's first pairing, and for a full slot that byte moves in and is overwritten with
-// 0x10); a rider found in no pairing place (place 8) clears the next slot's first total; the
-// best-holder test reads the word `$0686 + 2 * slot`, which is slot `slot / 2`'s holder for an
-// even slot and slot `(slot + 1) / 2`'s best time for an odd one (the slots are 4 bytes apart);
-// and the pair cursor is compared and decremented as a word with the next slot's cursor above it.
+// The routine works on the cartridge layout and reaches past the slot's own tables, which the byte
+// image keeps exactly (slot 5's reaches land in other slots' fields):
+// - the pairing scan reads one byte past the slot's eight, `$05E8 + 8 * slot + 8`: the next slot's
+//   first pairing, or for slot 5 the low byte of slot 0's first event total (`$0618`); when the run
+//   of pairings reaches it, that byte moves in and is overwritten with 0x10;
+// - a rider in no pairing place (place 8) writes 0x10 to that same byte and clears the event-total
+//   word after the slot's eight, `$0618 + 16 * slot + 16`: the next slot's first total, or for slot 5
+//   the pair cursors of slots 0 and 1 (`$0678-0679`);
+// - the best-holder test reads the word `$0686 + 2 * slot`, which is slot `slot / 2`'s holder for an
+//   even slot and slot `(slot + 1) / 2`'s best time for an odd one (the slots are 4 bytes apart);
+// - the pair cursor is compared and decremented as a word, `$0678 + slot` with the next byte above it:
+//   the next slot's cursor, or for slot 5 slot 0's league track (`$067E`). With that byte nonzero
+//   the cursor always steps back, and a cursor of 0 borrows from it.
 // The holder test compares a word with `$00CA`, the rider with `$00CB` 0.
-void remove_league_member(LeagueTables& tables, unsigned slot, unsigned rider,
-                          std::uint16_t members) {
+void remove_league_member(WordImage& tables, unsigned slot, unsigned rider, std::uint16_t members) {
     const unsigned bit = 0x8000U >> rider;
     // $83:9C58-9C70: members numbered below the rider (higher bits) and above (lower bits).
     const auto below =
@@ -463,7 +468,7 @@ void remove_league_member(LeagueTables& tables, unsigned slot, unsigned rider,
 // $83:9B60-9B82: each of the six league slots with the rider as a member loses them.
 void remove_from_leagues(FrontEndState& state, unsigned rider) {
     const unsigned bit = 0x8000U >> rider;
-    LeagueTables tables{cartridge_image(state)};
+    WordImage tables{cartridge_image(state)};
     const auto before = tables.bytes;
     for (unsigned slot = 0; slot < state.records.league_members.size(); ++slot) {
         const std::size_t mask = league_member_masks + 2 * slot;
@@ -472,10 +477,9 @@ void remove_from_leagues(FrontEndState& state, unsigned rider) {
         tables.set_word(mask, static_cast<std::uint16_t>(members & ~bit));
         remove_league_member(tables, slot, rider, tables.word(mask));
     }
-    // Back into the records' fields (and the bytes native keeps no field for, `$10F5-10F8`); the
-    // routine writes nowhere near the image's last byte.
-    for (std::size_t at = 0; at + 1 < before.size(); ++at)
-        if (tables.bytes[at] != before[at]) store_record_word(state, at, tables.word(at));
+    // Back into the records' fields (and the bytes native keeps no field for, `$10F5-10F8`).
+    for (std::size_t at = 0; at < before.size(); ++at)
+        if (tables.bytes[at] != before[at]) store_record_byte(state, at, tables.bytes[at]);
 }
 
 void clear_defined_player(FrontEndState& state) {
