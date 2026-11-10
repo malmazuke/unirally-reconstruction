@@ -122,8 +122,10 @@ A, X and Y); **[R]** stated by an accepted record.
   mask, queues the blank tile `$27:8000` when it is clear in both but was used the update before (the
   stored complement `$0C79,X`), and queues nothing otherwise; `$FFFF` ends the queue [L]. The pose
   masks have six columns a row (`rider_object.cpp`: rows 0-4, columns 1-6), so one rider queues at
-  most 30 tiles [L, R]. Whether the two riders' calls share one queue (so 45 or more is possible) and
-  whether a clipped or hidden rider can queue fewer than 16 (21) tiles is not settled here.
+  most 30 tiles from those columns [L, R]. But on `vs-dragster-tie` (two views, the second uploader
+  `$82:C53D`) the writer runs once a frame and its end mark lands at queue offsets 40 to 140, 20 to 70
+  tiles [C]: more than one rider's 30 (a hypothesis: the 14-bit masks carry more than one object); how the slots map to the two
+  uploaders, and whether a frame can queue past either end, is not settled here.
 - **Poses of 4096 and more.** The collision index is `$0F85` x 8 (`$81:9E1B`); `$0F85` copies `$0411`/
   `$0413`, which copy `$0FF3`/`$0FF5`, which come from `$0FA1`, set at `$83:EF50` to `$0F8D` x 64 +
   `$0F81` (+ `$0820` or `$08E0` + `$0FE3` x 64 for a rolling rider), at most 2,463 for 24 wheel phases,

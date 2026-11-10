@@ -5,7 +5,7 @@
 
 What R-0113 leaves open, each to be captured on the original and compared with native, or argued
 unreachable: the rider sprite-tile queue's ends (whether the two riders share one queue past 45 tiles,
-whether a clipped or hidden rider queues fewer than 16; R-0113 reads one rider's bound as 30), a rider
+whether a clipped or hidden rider queues fewer than 16; R-0113 saw 20 to 70 tiles a frame in a two-view race), a rider
 pose of 4096 or more (the override tables `$82:962D` and `$82:A45E` to bound), the loop descriptor facing
 away (R-0108), a stunt score of 1000 and track 13's cell past its flag table (R-0107), and the sounds of
 the cheat page's reveal, the slow-checkpoint clear and BRONSEN's praise (R-0076, R-0077); and the

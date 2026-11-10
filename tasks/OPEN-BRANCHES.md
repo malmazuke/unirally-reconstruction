@@ -35,8 +35,8 @@ guard and leaves open.
 
 ## Results
 
-Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 9 November 2026 23:42 to 10 November 2026 about
-01:20 UTC (clock). [R-0113](../docs/research/R-0113-open-branches.md) has the table, the arguments and
+Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 9 November 2026 23:42 to 10 November 2026 00:58
+UTC (clock). [R-0113](../docs/research/R-0113-open-branches.md) has the table, the arguments and
 the limits.
 
 | Item | Verdict |
@@ -82,8 +82,8 @@ as `.zst`), `orig.py`, `compare.py`, `sounds.py`, `check.sh`, `checks.list`, `re
 erase checks fail with `options_menu.cpp` at main), `gcc.out`, `regen.sh`, `make_unlocked.py`,
 `menu.py`, `imgdiff.py`, `rom.py`.
 
-- `checks.list`: eight lines, all pass on the candidate, about 1 min together (11, 4, 12, 10, 3, 1, 7,
-  4 s).
+- `checks.list`: eight lines, all pass on the candidate, about 50 s together (10, 3, 13, 8, 4, 1, 6,
+  4 s, run one after another).
 - Builds: `lab-release`, `lab-debug`, `app-debug` passed; `ctest` 41/41 on `lab-debug` and `app-debug`.
 - Linux GCC 13.3 (`ubuntu:24.04`, CI's flags): `options_menu.cpp` compiles plain and with
   `-fsanitize=address,undefined`.
