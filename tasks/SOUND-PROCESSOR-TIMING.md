@@ -98,4 +98,16 @@ demo-cycles fail with main's runner), `main-runner/` (main's `front_end_runner`,
 
 ## Handoff
 
-PENDING
+- Commits on `task/sound-processor-timing`: `7a69c311` (the native change in `src/core/front_end.cpp`,
+  the regenerated static map, R-0114, this record, the follow-up and its README row) and this handoff.
+- Done: every listed case measured and given a verdict (Results); two closed by the native change;
+  checks, builds, ctest, GCC, static map as in Evidence. Not done: review, gates, closeout, STATE.md
+  and NEXT_SESSION.md (the coordinator's).
+- Open, queued as [SOUND-PROCESSOR-TIMING-REMAINDER](SOUND-PROCESSOR-TIMING-REMAINDER.md) (tier 1): the
+  demo session's interrupt work in the cued audio model, the waits after a race (need exact race
+  command clocks), the palette cycle's missed steps in later titles, and the warm runs' two untraced
+  differences.
+- For the gates: the change affects every idle demo title's frames 1-8 (pictures, VRAM digests) and
+  moves the demo pairing to the setup frame; cue logs are unchanged (the `sweep` check equals main's
+  `main-sweep`). Checks with pictures of a demo title start will differ from main as expected
+  (`reverted.out`).
