@@ -149,3 +149,30 @@ sanitized OK; `regen.sh` and `native-symbols --check` passed.
   moves the demo pairing to the setup frame; cue logs are unchanged (the `sweep` check equals main's
   `main-sweep`). Checks with pictures of a demo title start will differ from main as expected
   (`reverted.out`).
+
+## Closeout (coordinator)
+
+- Review: tier 1, two rounds on PR #102. Round 1 (`2d3b84e7`): request changes. The must-fix was that
+  the original does restart the palette cycle at every demo title (`$80:A1ED-A1EF`), so the records'
+  "native stand-in" was wrong. There were also 3 should-fixes (native's restart a frame early,
+  cancelled by a missing step on held frame 133; the reply-error ranges; loose check floors) and 2
+  notes. All were fixed in `836c540d`, with a sixth check, `cycle`. Round 2 (`836c540d`): approve, no
+  new findings, all six checks rerun by the reviewer.
+- Gates (D-0012) on `836c540d`, TMPDIR `/private/tmp/sptg`:
+  - `gates-1` (the selection, 2 h 37 min): 100 steps same-as-main and 20 passed. Five task checks
+    pass. Changed: `idle-demo` (991 to 993 equal pictures), and `fe-equivalence` with `fe-classify`
+    (7 of 179 front-end cases). Their state rows differ from the demo title's first frame on (901, or
+    7424 after `two-player-vs/mode-1-quit`), in the palette cycle's delay and phase, the palette, the
+    fade's object buffer and selection, and the title load's screen fields. Every sampled picture is
+    equal, and the `cycle` check holds the new cycle equal to the original's. Failed: the `sweep`
+    check. `sweep.sh` passed its output folder unquoted into `sh -c`, and the gates' report path holds
+    a space. Its sessions went to a stray `/Users/markfeaver/Projects/Unirally/` (63 files, removed),
+    so it compared nothing and failed as built. Fixed in the evidence (`SWEEP_OUT`, quoted) and
+    rerun on a path with spaces: 190 sessions, PASS.
+  - `gates-2` (`--only fe-equivalence,fe-classify,idle-demo,checks-checks-06`, `--expect-changed`
+    the first three, 4.5 min): the three changed (expected), `sweep` 190 sessions PASS, `status=passed`.
+- Time: claim `e9d55044` 10:58 UTC on 10 November 2026 to merge about 16:55 UTC, about 6 h, just
+  inside D-0013's 6-hour target. Worker 1 h 46 min, plus 38 min of review fixes; review 22 + 19 min; gates
+  2 h 37 min + 4.5 min.
+- Evidence: main `local/evidence/sound-processor-timing/`, 13 MB. Worktrees `sound-processor-timing` and
+  `sound-processor-timing-review` and the branch removed after the merge.

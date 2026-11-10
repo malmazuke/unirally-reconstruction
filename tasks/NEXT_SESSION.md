@@ -27,6 +27,29 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](./GATES-AGAINST-MAIN.md) holds the detail.
 
+**10 November 2026: SOUND-PROCESSOR-TIMING is accepted (tier 1, #102) and integrated by merge commit.**
+R-0114 asks whether the front end's waits on the sound processor can come from the native
+driver's state instead of measured lengths (R-0109 item 5):
+- **What the CPU waits on:** at a session's stop request (`$82:807E`, `$82:8097`) the running
+  driver lowers its master volume by 8 on each timer-2 pulse (about 44,200 master clocks) before
+  handing back (SPC `$0487-04B9`). Native's driver gets that reply within 102 clocks while its
+  inputs are exact (8 of 8 sessions). After a race it is off: the reply wait by -94,980 to +72,880
+  clocks, absolute -96,272 to +233,772, because the race's fade commands reach it at D-0010's
+  anchors.
+- **So the measured lengths stay:** over 190 sessions in 21 captures the driver is never better
+  than them for any kind of session (short and held titles, podiums, races, the demo pad exit).
+- **Native change:** two listed cases were not sound waits at all. The idle demo's title now
+  starts with the menu's six-frame fade-out and a blank frame (`$80:93FB`, `$80:9885-98A3`), and
+  the palette cycle restarts on the title's ninth frame, as the original's `$80:A1ED-A1EF` does.
+  All 1,717 pictures over five title starts are now equal (main 1,687), and the cycle equals the
+  original's on 1,440 frames.
+- **Open**, queued as SOUND-PROCESSOR-TIMING-REMAINDER: the demo session's interrupts in the cued
+  audio model, the waits after a race, and two untraced warm-boot differences.
+- **Time:** about 6 h from claim to merge, just inside the 6-hour target. Review two rounds (one
+  must-fix, 3 should-fixes, 2 notes; then approve). Gates: 100 steps same as main and three read
+  as expected changes. One check failed only in the gates, on the report path's space.
+[R-0114](../docs/research/R-0114-sound-processor-timing.md) and [SOUND-PROCESSOR-TIMING](./SOUND-PROCESSOR-TIMING.md) hold the detail.
+
 **10 November 2026: OPEN-BRANCHES is accepted (tier 1, #101) and integrated by merge commit.**
 R-0113 takes the 22 branches and sounds no capture of the original had run (R-0109 item 4) and
 settles 14:
