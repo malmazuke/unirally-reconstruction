@@ -76,7 +76,7 @@ back from 98340, not traced. All in the follow-up.
 
 ## Evidence
 
-Main `local/evidence/open-branches/` (6 MB): `manifests/` (the routes), `runs/` (each original run's
+Main `local/evidence/open-branches/` (17 MB): `manifests/` (the routes), `runs/` (each original run's
 pads, PC-trace hits, digests and images), `rows/` (`race_compare2p.py` with two marked changes, probes
 as `.zst`), `orig.py`, `compare.py`, `sounds.py`, `check.sh`, `checks.list`, `reverted.out` (the three
 erase checks fail with main's runner), `missing.out` (a check with its images missing fails), `gcc.out`,
@@ -113,3 +113,26 @@ lead and that `multi-league` weakens the CPU-time guess (notes 4-5).
 Commits on `task/open-branches`: `2d1b49c9` (the native change and the regenerated map), `908fbf3e` and
 `3b180c5a` (the records). Not done: the items queued in OPEN-BRANCHES-REMAINDER; no independent review yet
 (tier 1). The coordinator pushes and opens the pull request.
+
+## Closeout (coordinator)
+
+- Review: tier 1, two rounds on PR #101. Round 1 (`fce45012`): approve with should-fixes, 3
+  should-fixes (a check could pass comparing nothing; slot 5's reaches misnamed; the records said no
+  capture runs the reaches past a slot) and 4 notes, all fixed or recorded in `eef52f43` and
+  `8dd0fb60`. Round 2 (`8dd0fb60`): approve, all 9 checks rerun by the reviewer.
+- Gates (D-0012) on `8dd0fb60`, three runs:
+  - `gates-1` (the selection, 2 h 25 min): build, app-hidden, both app audio steps and 99 steps
+    same-as-main passed; all nine task checks pass. Failed: `synthetic` and `tooling` (TMPDIR through
+    the worktree's `local` symlink; `test_replace_pack_moves_an_incompatible_pack_aside` compares the
+    resolved path) and four steps broken on both sides by "Argument list too long" (the TMPDIR was
+    too long for the rv-warn steps' 6,700 picture arguments).
+  - `gates-2` (`--only` those six, a resolved 58-character TMPDIR, 19 min): `synthetic`, `tooling`
+    passed; `mi-rv-warn`, `lt-podium-back`, `lt-five-w0` same-as-main; `rs-mi-review-rv-warn`
+    "changed" only because its main twin (run from `.worktrees/gates-base`) hit the same limit.
+  - `gates-3` (`--only rs-mi-review-rv-warn`, TMPDIR `/private/tmp/obg`, 6 min): same-as-main,
+    `status=passed`.
+  No step differs from main because of the change.
+- Time: claim `c3f98ab1` 23:41 UTC on 9 November 2026 to merge about 04:20 UTC on 10 November, about 4 h 40 min; worker 1 h
+  10 min plus 7 min of review fixes; gates 2 h 25 min + 19 + 6 min.
+- Evidence: main `local/evidence/open-branches/`, 17 MB. Worktrees `open-branches` and
+  `open-branches-review` and the branch removed after the merge.
