@@ -135,3 +135,30 @@ changed `src/core` files; `regen.sh` and `native-symbols --check` passed.
   will differ from main as expected (`reverted.out`); no picture and no later frame changes.
   SOUND-PROCESSOR-TIMING-REMAINDER's "waits after a race" item names this task's model as a route;
   R-0115 finding 4 says the race's CPU work cannot be modelled to the clock.
+
+## Closeout (coordinator)
+
+- Review: tier 1, one round on PR #103. Round 1 (`5d213401`): approve with should-fixes. The two
+  should-fixes were tour 8's extra level check, cited at `$83:8DA4` (which runs for every tour)
+  instead of `$80:ED7E`, and the 1463 margin (12 clocks, not 2). There were also 6 notes: the
+  reviewer's three unseen layouts (7 of 8 placed), the narrow validation set, the 29,597 product
+  with M7B = 0, a C++ unit case for a second half with icons, the shared `palette_delay`, and
+  `checks.out` from an uncommitted tree. All were fixed in `b352528d` and `4c745f25`, and checked by
+  the coordinator (citation, unit cases, checks rerun on the clean head). Replies on the PR.
+- Gates (D-0012) on `4c745f25`, TMPDIR `/private/tmp/cctg`:
+  - `gates-1` (the selection, 2 h 34 min): 96 steps same-as-main and 20 passed; the five task checks
+    pass. Changed: `fe-equivalence` with `fe-classify` (9 of 179 front-end cases), and
+    `mi-rv-records`, `rs-rs-track`, `rs-rs-high`, `rs-mi-review-rv-records`, `rs-review-wr-track`.
+    The coordinator diffed the 9 cases' state rows between main's runner and the candidate's: only
+    frames 63 and 86 after each TRACK RECORDS entry differ, in `text` and `track` (`$00CE`), and every
+    later row is equal; every sampled picture is equal. Against the original, the five record steps
+    now differ in fewer fields than main (e.g. `rs-review-wr-track` none, main `text` 4 and `track` 2).
+  - `gates-2` (`--only` the seven, `--expect-changed` the seven, 4 min): `status=passed`.
+- CI on `4c745f25`: macOS and Ubuntu lab jobs pass.
+- Time: claim `cebb5083` 07:21 UTC on 11 November 2026 to merge about 11:30 UTC, about 4 h 10 min,
+  inside D-0013's 6-hour target. Worker 55 min plus 8 min of review fixes; review 11 min; gates
+  2 h 34 min + 4 min.
+- Evidence: main `local/evidence/cpu-cycle-timing/`, 1.5 MB. Worktrees `cpu-cycle-timing` and
+  `cpu-cycle-timing-review` and the branch removed after the merge.
+- SOUND-PROCESSOR-TIMING-REMAINDER's "waits after a race" now points at D-0010 rather than this
+  task's model (R-0115 finding 4).
