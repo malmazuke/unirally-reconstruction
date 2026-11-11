@@ -4375,8 +4375,11 @@
    "native": [
     "src/core/audio_cpu_text.cpp:print_menu_text_work",
     "src/core/front_end_screens.hpp:print_main_menu",
+    "src/core/menu_overruns.cpp:printer_to_letter",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
     "src/core/result_screen.cpp:(file)",
-    "src/core/text_printer.hpp:(file)"
+    "src/core/text_printer.hpp:(file)",
+    "src/core/track_records.cpp:record_dot"
    ],
    "region": "rom"
   },
@@ -4492,6 +4495,7 @@
   {
    "address": "$80:C58F",
    "native": [
+    "src/core/menu_overruns.cpp:printer_to_letter",
     "src/core/result_screen.cpp:write_result_title"
    ],
    "range_ends": [
@@ -6723,18 +6727,122 @@
   {
    "address": "$80:ED1D",
    "native": [
+    "src/core/menu_overruns.cpp:first_half_start, second_half_start",
+    "src/core/menu_overruns.cpp:grid_setup",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
     "src/core/track_records.cpp:(file)",
     "src/core/track_records.cpp:track_records_entry_waits"
+   ],
+   "range_ends": [
+    "$80:ED46"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ED34",
+   "native": [
+    "src/core/track_records.cpp:print_grid_half"
+   ],
+   "range_ends": [
+    "$80:ED44"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ED46",
+   "native": [
+    "src/core/menu_overruns.cpp:tour_head"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ED70",
+   "native": [
+    "src/core/menu_overruns.cpp:second_half_test"
+   ],
+   "range_ends": [
+    "$80:ED7C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ED74",
+   "native": [
+    "src/core/menu_overruns.cpp:hunter_level_check"
+   ],
+   "range_ends": [
+    "$80:ED7C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ED7E",
+   "native": [
+    "src/core/menu_overruns.cpp:hunter_level_check"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EDAC",
+   "native": [
+    "src/core/track_records.cpp:print_grid_half"
+   ],
+   "range_ends": [
+    "$80:EDB1"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EDB1",
+   "native": [
+    "src/core/menu_overruns.cpp:picture_to_track",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks"
    ],
    "region": "rom"
   },
   {
    "address": "$80:EEF2",
    "native": [
+    "src/core/menu_overruns.cpp:dot_without_icon, dot_with_icon",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
     "src/core/track_records.cpp:record_dot"
    ],
    "range_ends": [
     "$80:EF35"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EEF6",
+   "native": [
+    "src/core/track_records.cpp:grid_steps_in_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EEFA",
+   "native": [
+    "src/core/menu_overruns.hpp:GridHalfWork::icons"
+   ],
+   "range_ends": [
+    "$80:EF13"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EF1F",
+   "native": [
+    "src/core/menu_overruns.cpp:between_columns"
+   ],
+   "range_ends": [
+    "$80:EF2F"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EF3D",
+   "native": [
+    "src/core/menu_overruns.hpp:GridHalfWork::icons"
    ],
    "region": "rom"
   },
@@ -10027,6 +10135,7 @@
     "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
     "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+    "src/core/menu_overruns.cpp:first_half_start, second_half_start",
     "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines"
    ],
    "region": "rom"
@@ -12009,6 +12118,25 @@
    "region": "rom"
   },
   {
+   "address": "$83:8DA4",
+   "native": [
+    "src/core/menu_overruns.cpp:hunter_level_check",
+    "src/core/menu_overruns.cpp:tour_head"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:8DE5",
+   "native": [
+    "src/core/menu_overruns.cpp:picture_row",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks"
+   ],
+   "range_ends": [
+    "$83:8DF5"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:8E3A",
    "native": [
     "src/core/audio_cpu_pose.cpp:native_audio_build_pose_work",
@@ -12787,6 +12915,7 @@
    "address": "$83:9F14",
    "native": [
     "src/core/local_modes.cpp:choose_next_track",
+    "src/core/menu_overruns.cpp:hunter_level_check",
     "src/core/tour_menu.cpp:tour_level"
    ],
    "region": "rom"
@@ -16698,6 +16827,7 @@
     "src/core/front_end.hpp:TourMenu::track",
     "src/core/front_end_screens.hpp:store_track_words",
     "src/core/league_menu.cpp:end_award_passes",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
     "src/core/options_menu.cpp:clear_defined_player",
     "src/core/race_result.cpp:store_race_words",
     "src/core/track_records.cpp:print_grid_half"
@@ -24558,6 +24688,11 @@
     "$80:C24C"
    ]
   },
+  "src/core/menu_overruns.cpp:between_columns": {
+   "rom": [
+    "$80:EF1F"
+   ]
+  },
   "src/core/menu_overruns.cpp:count_percentage": {
    "rom": [
     "$80:971D",
@@ -24574,6 +24709,22 @@
     "$77:0230"
    ]
   },
+  "src/core/menu_overruns.cpp:dot_without_icon, dot_with_icon": {
+   "rom": [
+    "$80:EEF2"
+   ]
+  },
+  "src/core/menu_overruns.cpp:first_half_start, second_half_start": {
+   "rom": [
+    "$80:ED1D",
+    "$82:8035"
+   ]
+  },
+  "src/core/menu_overruns.cpp:grid_setup": {
+   "rom": [
+    "$80:ED1D"
+   ]
+  },
   "src/core/menu_overruns.cpp:halving_clocks": {
    "rom": [
     "$83:9D85"
@@ -24582,6 +24733,14 @@
   "src/core/menu_overruns.cpp:higher_digit_unit_clocks": {
    "rom": [
     "$83:8C31"
+   ]
+  },
+  "src/core/menu_overruns.cpp:hunter_level_check": {
+   "rom": [
+    "$80:ED74",
+    "$80:ED7E",
+    "$83:8DA4",
+    "$83:9F14"
    ]
   },
   "src/core/menu_overruns.cpp:leading_zero_clocks": {
@@ -24613,6 +24772,22 @@
     "$83:9878"
    ]
   },
+  "src/core/menu_overruns.cpp:picture_row": {
+   "rom": [
+    "$83:8DE5"
+   ]
+  },
+  "src/core/menu_overruns.cpp:picture_to_track": {
+   "rom": [
+    "$80:EDB1"
+   ]
+  },
+  "src/core/menu_overruns.cpp:printer_to_letter": {
+   "rom": [
+    "$80:C3BC",
+    "$80:C58F"
+   ]
+  },
   "src/core/menu_overruns.cpp:quotient_bit_clocks": {
    "rom": [
     "$80:973B"
@@ -24624,6 +24799,11 @@
    ],
    "rom": [
     "$80:C786"
+   ]
+  },
+  "src/core/menu_overruns.cpp:second_half_test": {
+   "rom": [
+    "$80:ED70"
    ]
   },
   "src/core/menu_overruns.cpp:sort_store_clocks": {
@@ -24658,9 +24838,21 @@
     "$80:FAE3"
    ]
   },
+  "src/core/menu_overruns.cpp:tour_head": {
+   "rom": [
+    "$80:ED46",
+    "$83:8DA4"
+   ]
+  },
   "src/core/menu_overruns.cpp:unit_digit_unit_clocks": {
    "rom": [
     "$83:8C3B"
+   ]
+  },
+  "src/core/menu_overruns.hpp:GridHalfWork::icons": {
+   "rom": [
+    "$80:EEFA",
+    "$80:EF3D"
    ]
   },
   "src/core/menu_overruns.hpp:LeagueExitFrames": {
@@ -24705,6 +24897,18 @@
   "src/core/menu_overruns.hpp:StandingsWork::sort_stores": {
    "rom": [
     "$80:EFE9"
+   ]
+  },
+  "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks": {
+   "rom": [
+    "$80:C3BC",
+    "$80:ED1D",
+    "$80:EDB1",
+    "$80:EEF2",
+    "$83:8DE5"
+   ],
+   "wram": [
+    "$00CE"
    ]
   },
   "src/core/menu_overruns.hpp:records_statistics_frames_late": {
@@ -30177,6 +30381,11 @@
     "$80:EBE2"
    ]
   },
+  "src/core/track_records.cpp:grid_steps_in_frame": {
+   "rom": [
+    "$80:EEF6"
+   ]
+  },
   "src/core/track_records.cpp:hofs_table, hofs_title_lines, hofs_edge_high, hofs_upper_lines, grid_offset, hofs_lower_lines, lower_grid_offset": {
    "wram": [
     "$0C83"
@@ -30221,6 +30430,10 @@
    ]
   },
   "src/core/track_records.cpp:print_grid_half": {
+   "rom": [
+    "$80:ED34",
+    "$80:EDAC"
+   ],
    "wram": [
     "$00CE"
    ]
@@ -30237,6 +30450,7 @@
   },
   "src/core/track_records.cpp:record_dot": {
    "rom": [
+    "$80:C3BC",
     "$80:EEF2"
    ]
   },
@@ -31385,10 +31599,10 @@
   }
  },
  "totals": {
-  "addresses": 2228,
+  "addresses": 2241,
   "io_addresses": 12,
-  "native_symbols": 1616,
-  "rom_addresses": 1765,
+  "native_symbols": 1629,
+  "rom_addresses": 1778,
   "sram_addresses": 71,
   "wram_addresses": 380
  }

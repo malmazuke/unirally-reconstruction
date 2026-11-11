@@ -410,12 +410,6 @@ StandingsWork standings_work(const FrontEndState& state,
     return work;
 }
 
-// The palette cycle's delay as this frame's NMI left it, while the cycle runs (R-0102).
-PaletteDelay palette_delay(const FrontEndState& state) {
-    if (!state.cycle.running) return std::nullopt;
-    return static_cast<std::uint8_t>(state.cycle.delay);
-}
-
 // `$80:A547` and the standings' entry, after whatever frames the print's cost gives (R-0102).
 void show_league_table(FrontEndState& state, const FrontEndContent& content, bool slides_back,
                        std::uint8_t frames_late) {

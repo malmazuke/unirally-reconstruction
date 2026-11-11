@@ -201,11 +201,11 @@ bool tour_open(const FrontEndState& state, const FrontEndContent& content, unsig
 }
 
 void draw_tour_picture(FrontEndState& state, const FrontEndContent& content, unsigned tour,
-                       unsigned place) {
+                       unsigned place, unsigned rows) {
     const unsigned picture = tour_open(state, content, tour) ? tour : locked_picture;
     const auto palette = static_cast<unsigned>(content.tour_badge_pictures[picture]);
     const unsigned first_tile = word_at(content.tour_badge_pictures, tours + picture * 2);
-    for (unsigned row = 0; row < badge_size; ++row)
+    for (unsigned row = 0; row < badge_size && row < rows; ++row)
         for (unsigned column = 0; column < badge_size; ++column)
             state.text.words[(place + row * 32 + column) & 1023U] = static_cast<std::uint16_t>(
                 (first_tile + row * badge_row_tiles + column) | (palette << 10U) | badge_priority);

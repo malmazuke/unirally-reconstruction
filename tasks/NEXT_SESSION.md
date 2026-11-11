@@ -27,6 +27,26 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](./GATES-AGAINST-MAIN.md) holds the detail.
 
+**11 November 2026: CPU-CYCLE-TIMING is accepted (tier 1, #103) and integrated by merge commit.**
+R-0115 asks whether native can place the race and menu effects that depend on the CPU's cycle
+count (R-0109 item 6):
+- **The multiply hit by HDMA cannot be placed.** In DOWNER's two-view races and track 41's landing
+  against ANTI-UNI, the split's HDMA write lands between `$81:B67C`'s two M7A stores. A hit needs
+  the race update's clock to about 15 clocks after 150,000-270,000 clocks of work, and the race's
+  frame start depends on the previous frame's exact clock (`$82:D4A0-D4A2`): only a cycle-by-cycle
+  65816 would place it. No change.
+- **Native change:** TRACK RECORDS' grid halves now stop where the original's print stands at the
+  frame's end, from a cost model of the print counted from native's state (`menu_overruns.cpp`,
+  `track_records.cpp`). 15 of 16 traced prints are placed, and 7 of 8 on three layouts the
+  reviewer built; the misses are inside a menu frame's start spread of about 500 clocks (where
+  vblank finds the frame wait's sound poll), which native cannot know.
+- **Open**, queued as CPU-CYCLE-TIMING-REMAINDER (tier 2): HIGH SCORES' leaders and VS CHAMPIONS'
+  header (measured, not modelled) and W2b's menus after its second race.
+- **Time:** about 4 h 10 min from claim to merge. Review one round (2 should-fixes, 6 notes, all
+  fixed). Gates: 96 steps same as main; 7 read as expected changes, all TRACK RECORDS frames 63 and
+  86 after entry (text and `$00CE` only, pictures equal).
+[R-0115](../docs/research/R-0115-cpu-cycle-timing.md) and [CPU-CYCLE-TIMING](./CPU-CYCLE-TIMING.md) hold the detail.
+
 **10 November 2026: SOUND-PROCESSOR-TIMING is accepted (tier 1, #102) and integrated by merge commit.**
 R-0114 asks whether the front end's waits on the sound processor can come from the native
 driver's state instead of measured lengths (R-0109 item 5):

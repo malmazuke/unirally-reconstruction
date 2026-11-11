@@ -3399,9 +3399,12 @@
    "native": [
     "src/core/audio_cpu_text.cpp:print_menu_text_work",
     "src/core/front_end_screens.hpp:print_main_menu",
+    "src/core/menu_overruns.cpp:printer_to_letter",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
     "src/core/result_screen.cpp:(file)",
     "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control",
-    "src/core/text_printer.hpp:(file)"
+    "src/core/text_printer.hpp:(file)",
+    "src/core/track_records.cpp:record_dot"
    ],
    "observed_entries": {},
    "start": "$80:C3BC",
@@ -4681,7 +4684,15 @@
     "NmX"
    ],
    "native": [
+    "src/core/menu_overruns.cpp:first_half_start, second_half_start",
+    "src/core/menu_overruns.cpp:grid_setup",
+    "src/core/menu_overruns.cpp:hunter_level_check",
+    "src/core/menu_overruns.cpp:picture_to_track",
+    "src/core/menu_overruns.cpp:second_half_test",
+    "src/core/menu_overruns.cpp:tour_head",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
     "src/core/track_records.cpp:(file)",
+    "src/core/track_records.cpp:print_grid_half",
     "src/core/track_records.cpp:track_records_entry_waits"
    ],
    "observed_entries": {},
@@ -4716,6 +4727,11 @@
     "NmX"
    ],
    "native": [
+    "src/core/menu_overruns.cpp:between_columns",
+    "src/core/menu_overruns.cpp:dot_without_icon, dot_with_icon",
+    "src/core/menu_overruns.hpp:GridHalfWork::icons",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
+    "src/core/track_records.cpp:grid_steps_in_frame",
     "src/core/track_records.cpp:record_dot"
    ],
    "observed_entries": {},
@@ -10268,6 +10284,7 @@
     "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
     "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+    "src/core/menu_overruns.cpp:first_half_start, second_half_start",
     "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines"
    ],
    "observed_entries": {},
@@ -14431,6 +14448,10 @@
    ],
    "native": [
     "src/core/front_end_screens.hpp:draw_tour_picture",
+    "src/core/menu_overruns.cpp:hunter_level_check",
+    "src/core/menu_overruns.cpp:picture_row",
+    "src/core/menu_overruns.cpp:tour_head",
+    "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
     "src/core/tour_menu.cpp:badge_size, badge_row_tiles, locked_picture"
    ],
    "observed_entries": {},
@@ -15967,6 +15988,7 @@
    ],
    "native": [
     "src/core/local_modes.cpp:choose_next_track",
+    "src/core/menu_overruns.cpp:hunter_level_check",
     "src/core/tour_menu.cpp:tour_level"
    ],
    "observed_entries": {},
@@ -19594,19 +19616,19 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2666,
+  "cited_addresses": 2685,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2316,
-   "unknown": 264
+   "observed": 2334,
+   "unknown": 265
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1863,
+   "loc": 1880,
    "mid": 33,
-   "sub": 494,
-   "unk": 264
+   "sub": 495,
+   "unk": 265
   },
   "conflicts": 0,
   "data": 70,

@@ -1679,6 +1679,7 @@
    "docs/research/R-0096-demo-audio.md",
    "docs/research/R-0114-sound-processor-timing.md",
    "tasks/COVERAGE-ROADMAP.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SOUND-PROCESSOR-TIMING.md",
    "tasks/SPLIT-SCREEN-RACE.md"
   ]
@@ -1689,7 +1690,8 @@
   "comment": "instruction start",
   "label": "loc_8093FD",
   "source_records": [
-   "docs/research/R-0114-sound-processor-timing.md"
+   "docs/research/R-0114-sound-processor-timing.md",
+   "tasks/SOUND-PROCESSOR-TIMING.md"
   ]
  },
  {
@@ -2101,6 +2103,8 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING-REMAINDER.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -2271,7 +2275,8 @@
   "comment": "routine start",
   "label": "sub_809881",
   "source_records": [
-   "docs/research/R-0114-sound-processor-timing.md"
+   "docs/research/R-0114-sound-processor-timing.md",
+   "tasks/SOUND-PROCESSOR-TIMING.md"
   ]
  },
  {
@@ -2293,6 +2298,7 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0114-sound-processor-timing.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SOUND-PROCESSOR-TIMING.md"
   ]
  },
@@ -3646,6 +3652,7 @@
   ],
   "source_records": [
    "docs/research/R-0114-sound-processor-timing.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SOUND-PROCESSOR-TIMING.md"
   ]
  },
@@ -8667,13 +8674,17 @@
   "native": [
    "src/core/audio_cpu_text.cpp:print_menu_text_work",
    "src/core/front_end_screens.hpp:print_main_menu",
+   "src/core/menu_overruns.cpp:printer_to_letter",
+   "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
    "src/core/result_screen.cpp:(file)",
-   "src/core/text_printer.hpp:(file)"
+   "src/core/text_printer.hpp:(file)",
+   "src/core/track_records.cpp:record_dot"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
    "tasks/FRONT-END-MAIN-MENU.md",
    "tasks/RESULT-TITLE-GLYPHS.md"
   ]
@@ -8861,6 +8872,40 @@
   ]
  },
  {
+  "address": "$80:C58F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C58F",
+  "native": [
+   "src/core/audio_cpu_text.cpp:small_glyph_print_work",
+   "src/core/menu_overruns.cpp:printer_to_letter",
+   "src/core/result_screen.cpp:small_glyph_tile",
+   "src/core/result_screen.cpp:write_result_title",
+   "src/core/text_printer.cpp:print_small",
+   "src/core/text_printer.cpp:small_tile_base, small_lower_row"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$80:C596",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C596",
+  "native": [
+   "src/core/audio_cpu_text.cpp:small_glyph_print_work",
+   "src/core/menu_overruns.cpp:printer_to_letter",
+   "src/core/result_screen.cpp:small_glyph_tile",
+   "src/core/result_screen.cpp:write_result_title",
+   "src/core/text_printer.cpp:print_small",
+   "src/core/text_printer.cpp:small_tile_base, small_lower_row"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
   "address": "$80:C5CB",
   "class": "unknown",
   "comment": "unknown",
@@ -9005,6 +9050,8 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0102-menu-frame-overruns.md",
    "docs/research/R-0111-save-image-exact.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING-REMAINDER.md",
    "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
@@ -9989,7 +10036,8 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0075-title-menu-audio.md",
-   "docs/research/R-0114-sound-processor-timing.md"
+   "docs/research/R-0114-sound-processor-timing.md",
+   "tasks/SOUND-PROCESSOR-TIMING.md"
   ]
  },
  {
@@ -10555,7 +10603,9 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING-REMAINDER.md"
   ]
  },
  {
@@ -12537,11 +12587,77 @@
   "comment": "routine start",
   "label": "sub_80ED1D",
   "native": [
+   "src/core/menu_overruns.cpp:first_half_start, second_half_start",
+   "src/core/menu_overruns.cpp:grid_setup",
+   "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
    "src/core/track_records.cpp:(file)",
    "src/core/track_records.cpp:track_records_entry_waits"
   ],
   "source_records": [
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$80:ED34",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ED34",
+  "native": [
+   "src/core/menu_overruns.cpp:first_half_start, second_half_start",
+   "src/core/menu_overruns.cpp:grid_setup",
+   "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
+   "src/core/track_records.cpp:(file)",
+   "src/core/track_records.cpp:print_grid_half",
+   "src/core/track_records.cpp:track_records_entry_waits"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$80:ED70",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ED70",
+  "native": [
+   "src/core/menu_overruns.cpp:second_half_test"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$80:ED7E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ED7E",
+  "native": [
+   "src/core/menu_overruns.cpp:hunter_level_check"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$80:EDAC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EDAC",
+  "native": [
+   "src/core/track_records.cpp:print_grid_half"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$80:EEDF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EEDF",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
   ]
  },
  {
@@ -12550,10 +12666,28 @@
   "comment": "routine start",
   "label": "sub_80EEF2",
   "native": [
+   "src/core/menu_overruns.cpp:dot_without_icon, dot_with_icon",
+   "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
    "src/core/track_records.cpp:record_dot"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$80:EEFA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EEFA",
+  "native": [
+   "src/core/menu_overruns.cpp:dot_without_icon, dot_with_icon",
+   "src/core/menu_overruns.hpp:GridHalfWork::icons",
+   "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
+   "src/core/track_records.cpp:record_dot"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
   ]
  },
  {
@@ -12570,6 +12704,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80EF3D",
+  "native": [
+   "src/core/menu_overruns.hpp:GridHalfWork::icons"
+  ],
   "source_records": [
    "docs/research/R-0072-options.md",
    "tasks/OPTIONS.md"
@@ -14151,6 +14288,7 @@
    "docs/research/R-0100-record-screens.md",
    "docs/research/R-0102-menu-frame-overruns.md",
    "docs/research/R-0114-sound-processor-timing.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
    "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
@@ -17217,7 +17355,35 @@
   "comment": "instruction start",
   "label": "loc_819585",
   "source_records": [
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$81:95A2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8195A2",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$81:95C3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8195C3",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$81:95E0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8195E0",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
   ]
  },
  {
@@ -18230,8 +18396,46 @@
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING-REMAINDER.md",
    "tasks/CPU-CYCLE-TIMING.md",
    "tasks/LEAGUE-TOURS.md"
+  ]
+ },
+ {
+  "address": "$81:B680",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81B680",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$81:B682",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B682",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$81:B686",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B686",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$81:B689",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B689",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
   ]
  },
  {
@@ -21398,6 +21602,7 @@
    "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
    "src/core/audio_cue.hpp:AudioDispatchSite",
    "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+   "src/core/menu_overruns.cpp:first_half_start, second_half_start",
    "src/core/menu_overruns.cpp:line_clocks, refresh_clocks, frame_lines"
   ],
   "source_records": [
@@ -21406,6 +21611,7 @@
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0102-menu-frame-overruns.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
    "tasks/PODIUM-RETURN-TIMING.md"
   ]
  },
@@ -21493,6 +21699,7 @@
    "docs/research/R-0114-sound-processor-timing.md",
    "tasks/AUDIO-ONE-PLAYER.md",
    "tasks/DEMO-AUDIO.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SOUND-PROCESSOR-TIMING.md"
   ]
  },
@@ -21540,6 +21747,7 @@
    "docs/research/R-0087-idle-demo-rotation.md",
    "docs/research/R-0114-sound-processor-timing.md",
    "tasks/IDLE-DEMO-ROTATION.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SOUND-PROCESSOR-TIMING.md"
   ]
  },
@@ -25158,6 +25366,16 @@
   ]
  },
  {
+  "address": "$82:D4A0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D4A0",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING.md"
+  ]
+ },
+ {
   "address": "$82:D4B8",
   "class": "observed",
   "comment": "instruction start",
@@ -27327,7 +27545,8 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0115-cpu-cycle-timing.md"
   ]
  },
  {
@@ -27469,7 +27688,43 @@
    "src/core/tour_menu.cpp:badge_size, badge_row_tiles, locked_picture"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$83:8DA0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838DA0",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$83:8DA4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838DA4",
+  "native": [
+   "src/core/menu_overruns.cpp:hunter_level_check",
+   "src/core/menu_overruns.cpp:tour_head"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
+  "address": "$83:8DE5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838DE5",
+  "native": [
+   "src/core/menu_overruns.cpp:picture_row",
+   "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
   ]
  },
  {
@@ -27477,6 +27732,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_838DE9",
+  "native": [
+   "src/core/menu_overruns.cpp:picture_row",
+   "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks"
+  ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
   ]
@@ -27663,6 +27922,7 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0102-menu-frame-overruns.md",
    "docs/research/R-0111-save-image-exact.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
    "tasks/FIFTH-WIN-COMPLETION.md"
   ]
  },
@@ -29020,6 +29280,8 @@
    "docs/research/R-0100-record-screens.md",
    "docs/research/R-0102-menu-frame-overruns.md",
    "docs/research/R-0111-save-image-exact.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING-REMAINDER.md",
    "tasks/MENU-INPUT.md",
    "tasks/PODIUM-RETURN-TIMING.md"
   ]
@@ -29127,11 +29389,13 @@
   "label": "sub_839F14",
   "native": [
    "src/core/local_modes.cpp:choose_next_track",
+   "src/core/menu_overruns.cpp:hunter_level_check",
    "src/core/tour_menu.cpp:tour_level"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0115-cpu-cycle-timing.md",
    "tasks/TWO-HUMAN-STUNTS.md"
   ]
  },

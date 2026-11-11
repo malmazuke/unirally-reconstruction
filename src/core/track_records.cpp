@@ -4,7 +4,9 @@
 // three records of the track under the arrow printed below it, and the wipe back out
 // (`$80:9F7A`) to the RECORDS menu.
 #include "front_end_screens.hpp"
+#include "menu_overruns.hpp"
 
+#include <algorithm>
 #include <array>
 #include <stdexcept>
 #include <vector>
@@ -172,6 +174,7 @@ void set_grid_scroll(TrackRecordsGrid& grid, std::uint16_t scroll) {
 
 constexpr unsigned stunt_column = 2, record_ranks = 3;
 constexpr unsigned first_records_row = 22, grid_column = 16, tour_rows = 6;
+constexpr unsigned first_half_tours = 5, second_half_tours = 4;
 
 void grid_line(FrontEndState& state, const FrontEndContent& content, unsigned y, const char* word,
                unsigned length) {
@@ -187,7 +190,10 @@ void grid_line(FrontEndState& state, const FrontEndContent& content, unsigned y,
 
 // $80:EEF2-EF35: a record's dot, the holder's eight-glyph icon in its palette, or an empty dot
 // for no record. The same rank changes from blue to red when only its holder changes (R-0072).
-void record_dot(FrontEndState& state, unsigned y, unsigned x, unsigned holder, bool placed) {
+// The printer (`$80:C3BC`) writes a character's top and bottom words, so the dot is written a
+// column at a time, the left and then, flipped, the right; `columns` 1 stops after the left.
+void record_dot(FrontEndState& state, unsigned y, unsigned x, unsigned holder, bool placed,
+                unsigned columns) {
     constexpr std::array<std::uint8_t, 16> holder_palettes{4, 3, 0, 2, 3, 3, 4, 0,
                                                            3, 0, 4, 0, 2, 1, 0, 5};
     constexpr std::uint16_t empty_top = 0x3cd9, empty_bottom = 0x3d15, flipped = 0x4000;
@@ -201,37 +207,69 @@ void record_dot(FrontEndState& state, unsigned y, unsigned x, unsigned holder, b
         placed ? static_cast<std::uint16_t>(top + 0x3cU) : empty_bottom;
     auto& words = state.text.words;
     words[y * 32 + x] = dot_top;
-    words[y * 32 + x + 1] = dot_top | flipped;
     words[(y + 1) * 32 + x] = dot_bottom;
+    if (columns < 2) return;
+    words[y * 32 + x + 1] = dot_top | flipped;
     words[(y + 1) * 32 + x + 1] = dot_bottom | flipped;
 }
 
-// One half of the grid into the text map: tours 0-4 from row 2, or 5-8 from row 0, each a badge,
-// its medals' names and a dot for each track's three records. `$00CE`, the chosen track, is left
-// on the half's last tour's track 5 (25 or 45).
-void print_grid_half(FrontEndState& state, const FrontEndContent& content, bool second) {
-    constexpr unsigned first_half_tours = 5, second_half_tours = 4;
+// The grid's tours of one half: tours 0-4 from row 2, or 5-8 from row 0, each a badge, its
+// medals' names and a dot for each track's three records. `$00CE`, the chosen track, starts at 0 or
+// 25 (`$80:ED34-ED44`) and goes up by 5 after each tour's picture (`$80:EDAC-EDB1`), so the half
+// leaves it on its last tour's track 5 (25 or 45). The print stops after `steps` of its writes
+// (`GridHalfWork`'s order) when its frame ends first (R-0115).
+void print_grid_half(FrontEndState& state, const FrontEndContent& content, bool second,
+                     unsigned steps = ~0U) {
     constexpr std::array<const char*, record_ranks> medals{"gold", "silver", "bronze"};
-    constexpr std::array<unsigned, record_ranks> medal_lengths{4, 6, 6};
     const unsigned first_tour = second ? first_half_tours : 0;
     const unsigned count = second ? second_half_tours : first_half_tours;
     const unsigned starting_row = second ? 0 : 2;
+    state.tour_menu.track = static_cast<std::uint8_t>(first_tour * tracks_per_tour); // $80:ED34
+    unsigned done = 0;
+    const auto take = [&done, steps](unsigned wanted) {
+        const unsigned taken = std::min(wanted, steps - std::min(steps, done));
+        done += taken;
+        return taken;
+    };
     for (unsigned i = 0; i < count; ++i) {
         const unsigned tour = first_tour + i, row = starting_row + i * tour_rows;
-        draw_tour_picture(state, content, tour, row * 32 + 2);
+        draw_tour_picture(state, content, tour, row * 32 + 2, take(grid_picture_rows));
+        if (take(1) == 0) return;
+        state.tour_menu.track = static_cast<std::uint8_t>((tour + 1) * tracks_per_tour);
         for (unsigned rank = 0; rank < record_ranks; ++rank) {
             const unsigned y = row + 2 * rank;
-            grid_line(state, content, y, medals[rank], medal_lengths[rank]);
+            const unsigned letters = take(grid_medal_letters[rank]);
+            if (letters == 0) return;
+            grid_line(state, content, y, medals[rank], letters);
             for (unsigned track = 0; track < tracks_per_tour; ++track) {
                 const unsigned index = tour * tracks_per_tour + track;
                 const bool placed =
                     state.records.record_times[rank][index] != (track == stunt_column ? 0 : 0xea60);
+                const unsigned columns = take(2);
+                if (columns == 0) return;
                 record_dot(state, y, grid_column + 3 * track,
-                           state.records.record_holders[rank][index], placed);
+                           state.records.record_holders[rank][index], placed, columns);
             }
         }
     }
-    state.tour_menu.track = static_cast<std::uint8_t>((first_tour + count) * tracks_per_tour);
+}
+
+// The steps of a half's print done in the frame it starts in: the holders with an icon decide
+// each dot's path (`$80:EEF6`), the palette cycle's step in that frame's NMI moves the start.
+unsigned grid_steps_in_frame(const FrontEndState& state, bool second) {
+    GridHalfWork work;
+    work.second_half = second;
+    const unsigned first_tour = second ? first_half_tours : 0;
+    const unsigned count = second ? second_half_tours : first_half_tours;
+    constexpr unsigned holders_with_icons = 16;
+    for (unsigned i = 0; i < count; ++i)
+        for (unsigned rank = 0; rank < record_ranks; ++rank)
+            for (unsigned track = 0; track < tracks_per_tour; ++track)
+                work.icons[i][rank][track] =
+                    state.records.record_holders[rank][(first_tour + i) * tracks_per_tour + track]
+                    < holders_with_icons;
+    work.palette_delay = palette_delay(state);
+    return grid_half_steps_in_frame(work);
 }
 
 // ---- The records under the grid ($80:D682-D6D3) ----
@@ -464,6 +502,9 @@ void entry_grid_frames(FrontEndState& state, const FrontEndContent& content, std
     case entry_frame::first_half:
         load_text(state, hidden + 0x800U);
         copy_oam(state);
+        print_grid_half(state, content, false, grid_steps_in_frame(state, false));
+        return;
+    case entry_frame::first_half + 1: // the print runs on with no frame wait (R-0115)
         print_grid_half(state, content, false);
         return;
     case entry_frame::first_half_upload:
@@ -572,7 +613,10 @@ void track_records_entry_frame(FrontEndState& state, const FrontEndContent& cont
     } else if (frame <= entry_frame::scroll_last) {
         copy_oam(state);
         set_grid_scroll(grid, static_cast<std::uint16_t>(grid.scroll + grid_scroll_step));
-        if (frame == entry_frame::scroll_last) print_grid_half(state, content, true);
+        if (frame == entry_frame::scroll_last)
+            print_grid_half(state, content, true, grid_steps_in_frame(state, true));
+    } else if (frame == entry_frame::scroll_last + 1) {
+        print_grid_half(state, content, true); // the rest of the half (R-0115)
     } else if (frame == entry_frame::second_half_upload) {
         show_records(state, content);
     }

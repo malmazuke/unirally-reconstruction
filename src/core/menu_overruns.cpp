@@ -2,6 +2,7 @@
 
 #include <array>
 #include <bit>
+#include <utility>
 
 namespace unirally::front_end_screens {
 
@@ -159,7 +160,105 @@ std::uint32_t standings_read_clocks(std::uint32_t start, const StandingsWork& st
     return with_palette_steps(start, wait - start, delay) + frame_wait_poll_clocks;
 }
 
+// --- TRACK RECORDS' grid halves ---
+
+// The elapsed clock after `cpu` master clocks of CPU work from `clock` (both from vblank's start):
+// each line the work RAM's refresh stops the CPU for 40 clocks at dot 538 and, on the visible
+// lines (0-224, vblank starting at line 225), the grid's two HDMA channels for about 24 at dot
+// 1,104 (fitted on the traces, R-0115).
+constexpr std::uint32_t refresh_dot = 538, hdma_dot = 1104, grid_hdma_clocks = 24;
+constexpr std::uint32_t vblank_line = 225;
+
+std::uint32_t grid_clock_after(std::uint32_t clock, std::uint32_t cpu) {
+    while (true) {
+        const auto line_start = clock / line_clocks * line_clocks;
+        const bool visible = (vblank_line + clock / line_clocks) % frame_lines < vblank_line;
+        const std::array<std::pair<std::uint32_t, std::uint32_t>, 2> stops{
+            {{refresh_dot, refresh_clocks}, {hdma_dot, visible ? grid_hdma_clocks : 0U}}};
+        for (const auto& [dot, stopped] : stops) {
+            if (clock >= line_start + dot) continue;
+            if (clock + cpu <= line_start + dot) return clock + cpu;
+            cpu -= line_start + dot - clock;
+            clock = line_start + dot + stopped;
+        }
+        const auto next_line = line_start + line_clocks;
+        if (clock + cpu <= next_line) return clock + cpu;
+        cpu -= next_line - clock;
+        clock = next_line;
+    }
+}
+
+// CPU master clocks between the print's writes, each the mean of the traced prints' steps with
+// the refresh and HDMA taken out (`grid_model.py --fit`). The half starts (`$80:ED1D`)
+// 25,856-26,358 clocks into frame 63 (seven traced prints) and 8,826-9,386 into frame 86 (eight)
+// when that frame's NMI does not step the palette cycle: the spread is how much of the frame
+// wait's sound poll (`JSL $82:8035`) is left when vblank comes, which the model cannot know, so it
+// takes the mean.
+constexpr std::uint32_t first_half_start = 26110, second_half_start = 9164;
+constexpr std::uint32_t grid_setup = 452; // $80:ED1D-ED46
+constexpr std::uint32_t tour_head = 3900; // $80:ED46 to the picture's first row, $83:8DA4 included
+constexpr std::uint32_t second_half_test = 60; // $80:ED70-ED7C
+// Every tour's picture calls the level check (`$83:8DA4 JSL $83:9F14`, in `tour_head`); in the
+// second half tour 8 (`$95` = 9, `$80:ED74-ED7C`) calls it once more at `$80:ED7E`.
+constexpr std::uint32_t hunter_level_check = 2140;
+constexpr unsigned hunter_tour = 8;
+constexpr std::uint32_t picture_row = 554;        // $83:8DE5-8DF5, a row of five words
+constexpr std::uint32_t picture_to_track = 1412;  // to `$80:EDB1` STA $CE
+constexpr std::uint32_t track_to_medal = 1341;    // to the medal's `JSR $C3BC`
+constexpr std::uint32_t printer_to_letter = 1669; // `$80:C3BC` to a letter's store (`$80:C58F`)
+constexpr std::uint32_t next_letter = 1059;       // a medal's next letter
+constexpr std::uint32_t letter_to_return = 703;   // the store to the printer's `RTS`
+constexpr std::uint32_t medal_to_dot = 244;
+constexpr std::uint32_t dot_without_icon = 241, dot_with_icon = 576; // $80:EEF2 to the printer
+constexpr std::uint32_t between_columns = 298;                       // $80:EF1F-EF2F
+constexpr std::uint32_t next_dot = 315, next_rank = 1886, next_tour = 413;
+
 } // namespace
+
+unsigned grid_half_steps_in_frame(const GridHalfWork& work) {
+    const unsigned tours = work.second_half ? 4 : 5, first_tour = work.second_half ? 5 : 0;
+    auto clock = after_first_nmi(work.second_half ? second_half_start : first_half_start,
+                                 work.palette_delay);
+    unsigned steps = 0;
+    // Each write: the CPU work before it, then the write if the frame has not ended.
+    const auto write_after = [&clock, &steps](std::uint32_t cpu) {
+        clock = grid_clock_after(clock, cpu);
+        if (clock >= frame_clocks) return false;
+        ++steps;
+        return true;
+    };
+    clock = grid_clock_after(clock, grid_setup);
+    for (unsigned i = 0; i < tours; ++i) {
+        const unsigned tour = first_tour + i;
+        auto before = tour_head + (work.second_half ? second_half_test : 0U)
+                    + (tour == hunter_tour ? hunter_level_check : 0U);
+        for (unsigned row = 0; row < grid_picture_rows; ++row) {
+            if (!write_after(before)) return steps;
+            before = picture_row; // the next row's
+        }
+        if (!write_after(picture_to_track)) return steps;
+        before = track_to_medal;
+        for (unsigned rank = 0; rank < grid_ranks; ++rank) {
+            before += printer_to_letter;
+            for (unsigned letter = 0; letter < grid_medal_letters[rank]; ++letter) {
+                if (!write_after(before)) return steps;
+                before = next_letter; // the next letter's
+            }
+            before = letter_to_return + medal_to_dot;
+            for (unsigned track = 0; track < grid_tracks; ++track) {
+                before += (work.icons[i][rank][track] ? dot_with_icon : dot_without_icon)
+                        + printer_to_letter;
+                if (!write_after(before)) return steps;
+                if (!write_after(letter_to_return + between_columns + printer_to_letter))
+                    return steps;
+                before = letter_to_return + (track + 1 < grid_tracks ? next_dot : 0U);
+            }
+            if (rank + 1 < grid_ranks) before += next_rank; // to the next medal's printer call
+        }
+        clock = grid_clock_after(clock, before + next_tour); // the last write's tail, the next tour
+    }
+    return steps;
+}
 
 std::uint8_t records_statistics_frames_late(const OnePlayerRecords& records) {
     const auto counts = count_statistics(records);

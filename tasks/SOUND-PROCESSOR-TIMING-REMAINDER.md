@@ -17,7 +17,8 @@ podium's way back and music pass and a race's loading a frame off stay on measur
   podium's sessions for the same. Measured gain: the commands after the first demo title's session
   reach the driver at the original's clock (R-0096's 82,000-97,000 clocks early).
 - **The waits after a race.** Exact only with the race's fade commands at their exact clocks, which
-  needs the race's CPU work (CPU-CYCLE-TIMING's model, or D-0010 revisited). Until then, re-measure
+  needs the race's CPU work (D-0010 revisited; CPU-CYCLE-TIMING's R-0115 finding 4 shows a cost
+  model cannot place the race's work to the clock). Until then, re-measure
   with `sweep.sh` and `summary.py` whenever anchors or the driver change: a predictor goes into the
   front end only if it gives the original's frames in more sessions than the measured lengths.
 - **The warm runs' remaining differences**: league-two-events frame 6,098 (787 pixels, all three
