@@ -94,9 +94,9 @@ race), `check.sh`, `checks.list`, `run_checks.sh`, `expect-grid.json`, `checks.o
 
 ## Handoff
 
-- Commits on `task/cpu-cycle-timing`: the native change (`src/core/menu_overruns.*`,
+- Commits on `task/cpu-cycle-timing`: `37ad1044`, the native change (`src/core/menu_overruns.*`,
   `track_records.cpp`, `tour_menu.cpp`, `front_end_screens.hpp`, `tests/native/front_end_tests.cpp`),
-  the regenerated static map and symbols, R-0115, this record, the follow-up and its README row.
+  the regenerated static map and symbols, R-0115, this record, the follow-up and its README row; then this handoff.
 - Done: every listed case measured and given a verdict (Results); the grid prints changed; checks,
   builds, ctest, GCC and the static map as in Evidence. Not done: review, gates, closeout, STATE.md
   and NEXT_SESSION.md (the coordinator's).
