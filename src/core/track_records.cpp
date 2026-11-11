@@ -268,7 +268,7 @@ unsigned grid_steps_in_frame(const FrontEndState& state, bool second) {
                 work.icons[i][rank][track] =
                     state.records.record_holders[rank][(first_tour + i) * tracks_per_tour + track]
                     < holders_with_icons;
-    if (state.cycle.running) work.palette_delay = static_cast<std::uint8_t>(state.cycle.delay);
+    work.palette_delay = palette_delay(state);
     return grid_half_steps_in_frame(work);
 }
 

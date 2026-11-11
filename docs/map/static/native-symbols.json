@@ -6766,6 +6766,23 @@
    "region": "rom"
   },
   {
+   "address": "$80:ED74",
+   "native": [
+    "src/core/menu_overruns.cpp:hunter_level_check"
+   ],
+   "range_ends": [
+    "$80:ED7C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ED7E",
+   "native": [
+    "src/core/menu_overruns.cpp:hunter_level_check"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:EDAC",
    "native": [
     "src/core/track_records.cpp:print_grid_half"
@@ -12103,7 +12120,8 @@
   {
    "address": "$83:8DA4",
    "native": [
-    "src/core/menu_overruns.cpp:hunter_level_check"
+    "src/core/menu_overruns.cpp:hunter_level_check",
+    "src/core/menu_overruns.cpp:tour_head"
    ],
    "region": "rom"
   },
@@ -24719,6 +24737,8 @@
   },
   "src/core/menu_overruns.cpp:hunter_level_check": {
    "rom": [
+    "$80:ED74",
+    "$80:ED7E",
     "$83:8DA4",
     "$83:9F14"
    ]
@@ -24820,7 +24840,8 @@
   },
   "src/core/menu_overruns.cpp:tour_head": {
    "rom": [
-    "$80:ED46"
+    "$80:ED46",
+    "$83:8DA4"
    ]
   },
   "src/core/menu_overruns.cpp:unit_digit_unit_clocks": {
@@ -31578,10 +31599,10 @@
   }
  },
  "totals": {
-  "addresses": 2239,
+  "addresses": 2241,
   "io_addresses": 12,
   "native_symbols": 1629,
-  "rom_addresses": 1776,
+  "rom_addresses": 1778,
   "sram_addresses": 71,
   "wram_addresses": 380
  }

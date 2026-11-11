@@ -4686,6 +4686,7 @@
    "native": [
     "src/core/menu_overruns.cpp:first_half_start, second_half_start",
     "src/core/menu_overruns.cpp:grid_setup",
+    "src/core/menu_overruns.cpp:hunter_level_check",
     "src/core/menu_overruns.cpp:picture_to_track",
     "src/core/menu_overruns.cpp:second_half_test",
     "src/core/menu_overruns.cpp:tour_head",
@@ -14449,6 +14450,7 @@
     "src/core/front_end_screens.hpp:draw_tour_picture",
     "src/core/menu_overruns.cpp:hunter_level_check",
     "src/core/menu_overruns.cpp:picture_row",
+    "src/core/menu_overruns.cpp:tour_head",
     "src/core/menu_overruns.hpp:grid_picture_rows, grid_ranks, grid_tracks",
     "src/core/tour_menu.cpp:badge_size, badge_row_tiles, locked_picture"
    ],
@@ -19614,16 +19616,16 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2683,
+  "cited_addresses": 2685,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2332,
+   "observed": 2334,
    "unknown": 265
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1878,
+   "loc": 1880,
    "mid": 33,
    "sub": 495,
    "unk": 265

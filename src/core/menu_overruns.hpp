@@ -48,6 +48,12 @@ struct StandingsWork {
 // runs about 1,100 clocks longer, which pushes everything after it on (review round 5).
 using PaletteDelay = std::optional<std::uint8_t>;
 
+// The palette cycle's delay as this frame's NMI left it, while the cycle runs (R-0102).
+inline PaletteDelay palette_delay(const FrontEndState& state) {
+    if (!state.cycle.running) return std::nullopt;
+    return static_cast<std::uint8_t>(state.cycle.delay);
+}
+
 struct LeagueExitWork {
     unsigned records_placed{}; // times placed in the track's top three
     bool lap_race{};           // `$80:C868`'s best laps take longer than `$80:C7C4`'s totals

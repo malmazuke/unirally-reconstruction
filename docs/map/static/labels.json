@@ -12628,6 +12628,18 @@
   ]
  },
  {
+  "address": "$80:ED7E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ED7E",
+  "native": [
+   "src/core/menu_overruns.cpp:hunter_level_check"
+  ],
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
   "address": "$80:EDAC",
   "class": "observed",
   "comment": "instruction start",
@@ -25359,7 +25371,8 @@
   "comment": "instruction start",
   "label": "loc_82D4A0",
   "source_records": [
-   "docs/research/R-0115-cpu-cycle-timing.md"
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING.md"
   ]
  },
  {
@@ -27680,12 +27693,22 @@
   ]
  },
  {
+  "address": "$83:8DA0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838DA0",
+  "source_records": [
+   "docs/research/R-0115-cpu-cycle-timing.md"
+  ]
+ },
+ {
   "address": "$83:8DA4",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_838DA4",
   "native": [
-   "src/core/menu_overruns.cpp:hunter_level_check"
+   "src/core/menu_overruns.cpp:hunter_level_check",
+   "src/core/menu_overruns.cpp:tour_head"
   ],
   "source_records": [
    "docs/research/R-0115-cpu-cycle-timing.md"

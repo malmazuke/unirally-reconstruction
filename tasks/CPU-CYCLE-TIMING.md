@@ -55,9 +55,9 @@ frame's exact clock: out of reach of any cost model.
   column, in the original's order, so `track_records.cpp` prints the same sequence and stops after the
   modelled count; frames 64 and 87 print the whole half again, which equals printing the rest.
 - The model's start is the mean of the traced starts, not a value tuned to the knife edge: a start
-  2 clocks earlier would also place `rs-high` 1463, but that print's outcome in the original depends
-  on the sound poll's phase, which the model cannot know (R-0115 finding 2). It is recorded as a
-  residual and kept in the checks' expectations.
+  12 clocks earlier (27,198 for 27,210) would also place `rs-high` 1463, but that print's outcome in
+  the original depends on the sound poll's phase, which the model cannot know (R-0115 finding 2). It
+  is recorded as a residual and kept in the checks' expectations.
 - HDMA is costed per visible line (24 clocks, fitted) because one rate for all lines left the model's
   error swinging by 1,400 clocks between the display and vblank.
 - HIGH SCORES and VS CHAMPIONS were measured but not modelled within the budget: their margins
@@ -81,8 +81,8 @@ race), `check.sh`, `checks.list`, `run_checks.sh`, `expect-grid.json`, `checks.o
   frame: 16 text frames and 8 `$00CE` frames more); `grid-model` passes by construction.
 - Builds `lab-release`, `lab-debug`, `app-debug`; `ctest` 41/41 on each. `front_end_tests` pins the
   model's counts (171, 170 with a palette step, 166 with every icon, 170 for `rs-track` 1163's icons,
-  176 for a second half). Linux GCC 13.3 (`ubuntu:24.04`, CI's warnings as errors):
-  `menu_overruns.cpp`, `track_records.cpp`, `tour_menu.cpp` compile plain and with
+  176 for a second half; since review round 1 also 170, 175 and 174 for second halves with icons). Linux GCC 13.3 (`ubuntu:24.04`, CI's warnings as errors):
+  `menu_overruns.cpp`, `track_records.cpp`, `tour_menu.cpp` (and since review round 1 `league_menu.cpp`) compile plain and with
   `-fsanitize=address,undefined`. clang-format clean on the changed `src/core` files. ASan not run
   locally (macOS 27).
 - `regen.sh` (eight inputs, unchanged) and `coverage native-symbols --check`: passed; the tooling tests
@@ -91,6 +91,33 @@ race), `check.sh`, `checks.list`, `run_checks.sh`, `expect-grid.json`, `checks.o
   `classic_race_presentation_runner`, `presentation_runner`) are byte-identical to the build before the
   change (SHA-256 compared); `front_end_runner` changes only TRACK RECORDS' entry frames 63, 64, 86
   and 87, which no race passes through, and its state after them is as before.
+
+## Review round 1 fixes (worker)
+
+Worker: Claude Opus 5.5 subagent, 11 November 2026, on the review of PR #103 (approve with
+should-fixes; main `local/evidence/cpu-cycle-timing/review-1/`).
+1. should-fix, done. Tour 8's extra 2,140 clocks are the second level check at `$80:ED7E JSL $83:9F14`
+   (under `$80:ED74-ED7C`); `$83:8DA4`'s call runs for every tour (`$83:8DA0`'s `CMP #$08; BEQ` to the
+   next instruction) and is part of the tour head. Fixed in `menu_overruns.cpp` and R-0115 finding 3;
+   the value is unchanged.
+2. should-fix, done. The start that would place `rs-high` 1463 is 12 clocks earlier (27,198 for
+   27,210), checked with `grid_model.py`'s functions; Decisions corrected.
+3. note, done. R-0115's Limits give the reviewer's three withheld layouts: 7 of 8 placed, the miss
+   (`wx-dense` 1163: 165 writes, model 166; 1663 with the same inputs 166) the start's spread.
+4. note, done. R-0115's Limits say the validation set is narrow (no traced second half had icons; the
+   one palette-step print is the miss), so the 1,100-clock step is consistent, not confirmed.
+5. note, done. Finding 4: the 29,597 product's M7B is 0, so it says nothing about the window; the
+   three hits are the window's evidence.
+6. note, done. `front_end_tests`: a second half with every icon (170), nine icons in tour 5 (175) and
+   the same with a palette step (174), the Python model's counts.
+7. note, done. `palette_delay(state)` is now one inline helper in `menu_overruns.hpp`, used by
+   `league_menu.cpp` and `track_records.cpp`; in `grid_half_steps_in_frame` each `before` is set at the
+   end of its loop body and the rank change is added only between ranks. No behaviour change: the unit
+   counts and the checks are as before.
+8. note, done. `checks.out` is rerun on the committed head (below).
+Builds `lab-release`, `lab-debug`, `app-debug`, `ctest` 41/41 on each; GCC 13.3 plain and sanitized
+on `menu_overruns.cpp`, `track_records.cpp`, `tour_menu.cpp`, `league_menu.cpp`; clang-format on the
+changed `src/core` files; `regen.sh` and `native-symbols --check` passed.
 
 ## Handoff
 

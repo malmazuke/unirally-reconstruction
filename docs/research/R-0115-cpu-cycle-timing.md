@@ -60,8 +60,11 @@ instruction's scanline and dot, or work RAM per frame); **[R]** stated by an acc
      (`$83:8DE5-8DF5`); `$80:EDAC-EDB1` adds 5 to `$00CE` (set to 0 or 25 at `$80:ED34-ED44`); then
      for each rank the medal's name through the printer (`$80:EEDF`'s strings) and five record dots
      (`$80:EEF2`: two printer calls, the left column and then the flipped right). A holder below 16
-     takes `$80:EEFA-EF13`'s path (335 clocks more). Tour 8's picture calls the level check
-     (`$83:8DA4 JSL $83:9F14`, 2,140 more); the second half tests the tour at `$80:ED70-ED7C`.
+     takes `$80:EEFA-EF13`'s path (335 clocks more). Every tour's picture calls the level check
+     (`$83:8DA4 JSL $83:9F14`: `$83:8DA0`'s `CMP #$08; BEQ` branches to the next instruction, so both
+     paths reach it), part of each tour's head; the second half tests the tour at `$80:ED70-ED7C`, and
+     for tour 8 (`$95` = 9) calls it once more at `$80:ED7E` (2,140 clocks more; review round 1's trace
+     of `rs-track` 1186: `$80:ED7E` on tour 8 only).
    - A half is 52 writes a tour (5 picture rows, `$00CE`, 16 letters, 30 dot columns): 260 and 208.
      About 124,000 clocks a tour; when its frame ends the original has done 170 or 171 of the first
      half's writes (into tour 3) and 176 of the second's (into tour 8). The rest are done early in the
@@ -95,9 +98,11 @@ instruction's scanline and dot, or work RAM per frame); **[R]** stated by an acc
    - The whole track-41 race (`odd-tours` 27,300-31,300, `multiply-odd-tours.json`): 76 calls in 18
      frames, the four landing products (`$81:9585`, `$81:95A2`, `$81:95C3`, `$81:95E0`) of 19
      landings, all on visible lines 33-89; one hit (30,250). One other product's stores also span dot
-     1,104 (29,597: dots 1,094 and 1,190) but its first write comes after the HDMA, so it is clean: a
-     product is hit only when its first store starts in a window of about 30 clocks of the line's
-     1,364 (1,058 to 1,086 in the hits seen), on a line where a latch-sharing HDMA write comes.
+     1,104 (29,597: dots 1,094 and 1,190), but its M7B is 0, so its product is 0 whatever M7A became
+     and the scan cannot say whether its timing missed the HDMA (review round 1). The window's evidence
+     is the three hits: a product is hit when its first store starts in a window of about 30 clocks of
+     the line's 1,364 (1,058 to 1,086 in the hits seen), on a line where a latch-sharing HDMA write
+     comes.
    - The race's frame starts from a two-instruction wait (`$82:D4A0-D4A2`, about 38 clocks a pass;
      3,802 passes in `odd-tours` 30,249): the NMI comes at whatever point of it vblank finds, which is
      the previous frame's exact clock modulo the loop.
@@ -173,7 +178,8 @@ instruction's scanline and dot, or work RAM per frame); **[R]** stated by an acc
 | `grid-model` (16 traced prints) | 15 of 16 placed | the same (the runner is not used) |
 
 Every picture equal on both. Unit tests (`front_end_tests`): the model's counts for no icons, all
-icons, a palette step and `rs-track` 1163's eight icons.
+icons, a palette step, `rs-track` 1163's eight icons, and a second half with every icon, nine icons
+and nine with a step.
 
 ## Limits
 
@@ -181,8 +187,19 @@ icons, a palette step and `rs-track` 1163's eight icons.
   about 500 clocks; a print whose cut lands closer to the frame's end than that (`rs-high` 1463,
   `rs-ca-vs-lap` 9302) cannot be placed from native's state.
 - The grid model's step costs are means over four prints (checked on sixteen); the HDMA's 24 clocks a
-  visible line are fitted, not counted, and the palette step's 1,100 is R-0102's fitted value (one
-  traced print here has a step). Other records change the dots' paths only; other levels change tour
+  visible line are fitted, not counted. The validation set is narrow: the 16 prints cover four record
+  layouts, the first halves with 0, 8 or 9 icons (all in tour 0) and the second halves with none. The
+  palette step's 1,100 is R-0102's fitted value, and the one traced print here with a step is the
+  miss (`rs-high` 1463, its traced start 27,160 against the model's 27,210): consistent with it, not
+  confirmed by it.
+- Review round 1 traced three record layouts the model had not seen (holder and time writes added to
+  `wr-track`: every record with an icon, icons only in tours 5-8, icons in tours 1-3 ranks 0-1; main
+  `local/evidence/cpu-cycle-timing/review-1/`): the model placed 7 of 8, the second halves with icons
+  (170 writes) among them. The miss, `wx-dense` 1163, did 165 writes in the original and 166 in the
+  model; the same inputs at 1663 did 166 in the original. Only the start differs (+248 and -254
+  against the model's mean) and the model's slack there is 20 clocks: finding 2's spread. With dense
+  records the first half's cut is where that spread decides it, and native cannot be right for both
+  entries. Other records change the dots' paths only; other levels change tour
   8's picture (the level check is the same call). A grid half's letter is written whole: a frame end
   between a letter's two stores (about 80 clocks) would leave its bottom unwritten in the original.
 - The multiply's verdict rests on three hits and one scanned race. Other tracks' HDMA tables (which

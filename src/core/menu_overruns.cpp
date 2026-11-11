@@ -195,10 +195,12 @@ std::uint32_t grid_clock_after(std::uint32_t clock, std::uint32_t cpu) {
 // wait's sound poll (`JSL $82:8035`) is left when vblank comes, which the model cannot know, so it
 // takes the mean.
 constexpr std::uint32_t first_half_start = 26110, second_half_start = 9164;
-constexpr std::uint32_t grid_setup = 452;          // $80:ED1D-ED46
-constexpr std::uint32_t tour_head = 3900;          // $80:ED46 to the picture's first row
-constexpr std::uint32_t second_half_test = 60;     // $80:ED70-ED7C
-constexpr std::uint32_t hunter_level_check = 2140; // $83:8DA4 JSL $83:9F14, tour 8's picture
+constexpr std::uint32_t grid_setup = 452; // $80:ED1D-ED46
+constexpr std::uint32_t tour_head = 3900; // $80:ED46 to the picture's first row, $83:8DA4 included
+constexpr std::uint32_t second_half_test = 60; // $80:ED70-ED7C
+// Every tour's picture calls the level check (`$83:8DA4 JSL $83:9F14`, in `tour_head`); in the
+// second half tour 8 (`$95` = 9, `$80:ED74-ED7C`) calls it once more at `$80:ED7E`.
+constexpr std::uint32_t hunter_level_check = 2140;
 constexpr unsigned hunter_tour = 8;
 constexpr std::uint32_t picture_row = 554;        // $83:8DE5-8DF5, a row of five words
 constexpr std::uint32_t picture_to_track = 1412;  // to `$80:EDB1` STA $CE
@@ -230,15 +232,18 @@ unsigned grid_half_steps_in_frame(const GridHalfWork& work) {
         const unsigned tour = first_tour + i;
         auto before = tour_head + (work.second_half ? second_half_test : 0U)
                     + (tour == hunter_tour ? hunter_level_check : 0U);
-        for (unsigned row = 0; row < grid_picture_rows; ++row, before = picture_row)
+        for (unsigned row = 0; row < grid_picture_rows; ++row) {
             if (!write_after(before)) return steps;
+            before = picture_row; // the next row's
+        }
         if (!write_after(picture_to_track)) return steps;
         before = track_to_medal;
         for (unsigned rank = 0; rank < grid_ranks; ++rank) {
             before += printer_to_letter;
-            for (unsigned letter = 0; letter < grid_medal_letters[rank];
-                 ++letter, before = next_letter)
+            for (unsigned letter = 0; letter < grid_medal_letters[rank]; ++letter) {
                 if (!write_after(before)) return steps;
+                before = next_letter; // the next letter's
+            }
             before = letter_to_return + medal_to_dot;
             for (unsigned track = 0; track < grid_tracks; ++track) {
                 before += (work.icons[i][rank][track] ? dot_with_icon : dot_without_icon)
@@ -248,9 +253,9 @@ unsigned grid_half_steps_in_frame(const GridHalfWork& work) {
                     return steps;
                 before = letter_to_return + (track + 1 < grid_tracks ? next_dot : 0U);
             }
-            before += next_rank;
+            if (rank + 1 < grid_ranks) before += next_rank; // to the next medal's printer call
         }
-        clock = grid_clock_after(clock, before - next_rank + next_tour);
+        clock = grid_clock_after(clock, before + next_tour); // the last write's tail, the next tour
     }
     return steps;
 }

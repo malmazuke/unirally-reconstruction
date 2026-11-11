@@ -2601,6 +2601,20 @@ void menu_overrun_tests() {
   grid = {};
   grid.second_half = true;
   require(grid_half_steps_in_frame(grid) == 176);
+  // A second half with icons (review round 1's withheld layouts: 170 with
+  // every icon, as the original); nine icons in tour 5 move the cut a write
+  // earlier, and a palette step one more.
+  for (auto &tour : grid.icons)
+    for (auto &rank : tour)
+      for (auto &icon : rank)
+        icon = true;
+  require(grid_half_steps_in_frame(grid) == 170);
+  grid.icons = {};
+  for (unsigned k = 0; k < 9; ++k)
+    grid.icons[0][k / 5][k % 5] = true;
+  require(grid_half_steps_in_frame(grid) == 175);
+  grid.palette_delay = 6;
+  require(grid_half_steps_in_frame(grid) == 174);
 }
 
 int main() try {
