@@ -114,14 +114,16 @@ should-fixes; main `local/evidence/cpu-cycle-timing/review-1/`).
    `league_menu.cpp` and `track_records.cpp`; in `grid_half_steps_in_frame` each `before` is set at the
    end of its loop body and the rank change is added only between ranks. No behaviour change: the unit
    counts and the checks are as before.
-8. note, done. `checks.out` is rerun on the committed head (below).
+8. note, done. `checks.out` is rerun on the clean committed head `b352528d` (G `/private/tmp/cct r1/checks
+   out`, with spaces): all five PASS, `grid-rs-track` 54 s, `grid-rs-high` 55 s, `grid-wr-track` 29 s,
+   `grid-rv-records` 50 s, `grid-model` 19 s, the same frames and differing fields as before.
 Builds `lab-release`, `lab-debug`, `app-debug`, `ctest` 41/41 on each; GCC 13.3 plain and sanitized
 on `menu_overruns.cpp`, `track_records.cpp`, `tour_menu.cpp`, `league_menu.cpp`; clang-format on the
 changed `src/core` files; `regen.sh` and `native-symbols --check` passed.
 
 ## Handoff
 
-- Commits on `task/cpu-cycle-timing`: `37ad1044`, the native change (`src/core/menu_overruns.*`,
+- Commits on `task/cpu-cycle-timing`: review round 1's `b352528d` and its checks record; before it `37ad1044`, the native change (`src/core/menu_overruns.*`,
   `track_records.cpp`, `tour_menu.cpp`, `front_end_screens.hpp`, `tests/native/front_end_tests.cpp`),
   the regenerated static map and symbols, R-0115, this record, the follow-up and its README row; then this handoff.
 - Done: every listed case measured and given a verdict (Results); the grid prints changed; checks,
