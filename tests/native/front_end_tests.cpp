@@ -2578,6 +2578,29 @@ void menu_overrun_tests() {
   // frame's end; after an NMI that stepped the cycle (delay 6) it runs over.
   require(standings_print_frames_late({4, 90, 40, 16, 3, 36}, 3) == 0 &&
           standings_print_frames_late({4, 90, 40, 16, 3, 36}, 6) == 1);
+  // TRACK RECORDS' grid halves (R-0115): the writes done when entry frames 63
+  // and 86 end, of 260 and 208. A dot whose holder has an icon takes longer,
+  // and an NMI that stepped the palette cycle (delay 6) starts the print
+  // later. rs-track 1163's first half (eight icons in tour 0) does 170, as the
+  // original does; its second half 176.
+  GridHalfWork grid{};
+  require(grid_half_steps_in_frame(grid) == 171);
+  grid.palette_delay = 6;
+  require(grid_half_steps_in_frame(grid) == 170);
+  grid.palette_delay = 3;
+  require(grid_half_steps_in_frame(grid) == 171);
+  for (auto &tour : grid.icons)
+    for (auto &rank : tour)
+      for (auto &icon : rank)
+        icon = true;
+  require(grid_half_steps_in_frame(grid) == 166);
+  grid.icons = {};
+  for (const unsigned track : {0U, 1U, 3U, 4U})
+    grid.icons[0][0][track] = grid.icons[0][1][track] = true;
+  require(grid_half_steps_in_frame(grid) == 170);
+  grid = {};
+  grid.second_half = true;
+  require(grid_half_steps_in_frame(grid) == 176);
 }
 
 int main() try {

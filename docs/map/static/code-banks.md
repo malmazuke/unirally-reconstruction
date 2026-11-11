@@ -49,7 +49,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 
 ## Cited addresses
 
-2666 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1863, mid 33, sub 494, unk 264 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2316, unknown 264.
+2683 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1878, mid 33, sub 495, unk 265 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2332, unknown 265.
 
 Cited addresses in `unknown` bytes:
 
@@ -173,6 +173,7 @@ Cited addresses in `unknown` bytes:
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:ECD1 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
 | $80:ECF7 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
+| $80:EEDF | docs/research/R-0115-cpu-cycle-timing.md |
 | $80:EF37 | docs/research/R-0112-census-remainder.md |
 | $80:EF3D | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:F2EA | docs/research/R-0067-stunt-result.md, docs/research/R-0109-coverage-census.md |

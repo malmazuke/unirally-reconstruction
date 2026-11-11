@@ -363,9 +363,9 @@ std::uint16_t word_at(std::span<const std::uint8_t> table, std::size_t at);
 // $80:E7A1: the tour at `cursor` is open to the rider.
 bool tour_open(const FrontEndState& state, const FrontEndContent& content, unsigned cursor);
 // $83:8D8F: tour `tour`'s 5 x 5 picture, or the "?" picture if it is locked, at text map word
-// `place`.
+// `place`; `rows` stops it after its first rows (a print cut by its frame's end, R-0115).
 void draw_tour_picture(FrontEndState& state, const FrontEndContent& content, unsigned tour,
-                       unsigned place);
+                       unsigned place, unsigned rows = 5);
 
 // track_menu.cpp: PICK TRACK after a tour is chosen, or back from NOW PLAYING (`$80:BC4D`).
 void enter_track_menu(FrontEndState& state, bool returning);

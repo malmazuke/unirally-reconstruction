@@ -1,9 +1,11 @@
 #pragma once
-// Two menu passes whose CPU work can run past the frame they start in, so the frame wait after
-// them comes a frame later (R-0102). Each is a cost model of the original's routines (master
-// clocks per step counted from the reference core's instruction trace), not a CPU model.
+// Menu passes whose CPU work can run past the frame they start in, so the frame wait after them
+// comes a frame later (R-0102), or the work RAM at that frame's end holds only part of a print
+// (R-0115). Each is a cost model of the original's routines (master clocks per step counted from
+// the reference core's instruction trace), not a CPU model.
 #include "front_end.hpp"
 
+#include <array>
 #include <cstdint>
 #include <optional>
 
@@ -60,5 +62,28 @@ LeagueExitFrames league_exit_frames(const LeagueExitWork& work);
 // wait, 1 for five or more rows (`five`: every such print), 0 for fewer.
 std::uint8_t standings_print_frames_late(const StandingsWork& standings,
                                          PaletteDelay palette_delay);
+
+// TRACK RECORDS' grid halves (`$80:ED1D`, R-0100, R-0115): each half runs on past the frame it
+// starts in (entry frames 63 and 86), so the work RAM at that frame's end holds the grid only as
+// far as the print had come. The print's writes, in the original's order, are its steps: for each
+// tour of the half its picture's five rows (`$83:8DE5-8DF5`), the chosen track `$00CE` (`$80:EDB1`),
+// then for each rank the medal's name a letter at a time and the five tracks' record dots a column
+// at a time (`$80:EEF2`, two calls of the printer `$80:C3BC` each).
+inline constexpr unsigned grid_picture_rows = 5, grid_ranks = 3, grid_tracks = 5;
+// The letters of the medals' names: gold, silver, bronze.
+inline constexpr std::array<unsigned, grid_ranks> grid_medal_letters{4, 6, 6};
+
+struct GridHalfWork {
+    bool second_half{}; // tours 5-8 (frame 86), not 0-4 (frame 63)
+    // By tour of the half, rank and track: the record's holder has an icon (below 16), whose dot
+    // takes `$80:EEFA-EF13`'s longer path (the colour from `$80:EF3D`).
+    std::array<std::array<std::array<bool, grid_tracks>, grid_ranks>, 5> icons{};
+    PaletteDelay palette_delay{};
+};
+
+// The steps of the half's print the original has done when its frame ends (of 52 a tour): a cost
+// model in master clocks fitted on four traced prints and checked on sixteen (R-0115), not a CPU
+// model.
+unsigned grid_half_steps_in_frame(const GridHalfWork& work);
 
 } // namespace unirally::front_end_screens
