@@ -19,6 +19,7 @@
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 // The race picture: the content it draws from, the track's name, and render_classic_race.
 namespace unirally {
@@ -201,6 +202,18 @@ void load_other_track_presentation_content(ClassicRacePresentationContent& conte
     content.bg2_tiles = pack.entry(name + "bg2-tiles");
     content.bg2_map = pack.entry(name + "bg2-map");
     content.palette = pack.entry(name + "palette");
+    // $82:DCBB-DD84: colours 0-95 come from one of three palette sets, chosen by the byte at
+    // `$82:DC12` + scenery (`LDA $82DC12,X`): 0 the set of sceneries 0, 2 and 5, 1 that of 6, 9,
+    // 11, 12 and 13, more that of 1, 3, 4, 7, 8 and 10. With two views on NEON, X still holds the
+    // whole word `$77:0750` (0xC208, 0xC20C in VS; `$0751` keeps the defaults' 0xC2, R-0105) and
+    // the long index carries into bank $83: the byte is `$83:9E1A`'s 0 (2P and a league's pair)
+    // or `$83:9E1E`'s 10 (VS), so the sets of sceneries 0 and 8, not the scenery's own (R-0116).
+    if (track.index == neon_track && !scenario.neon_lighting && scenario.two_humans) {
+        constexpr std::size_t set_bytes = 96U * 2U;
+        content.background_palette_set =
+            pack.entry(scenario.versus ? "scenery.08.palette" : "scenery.00.palette")
+                .first(set_bytes);
+    }
     if (!content.scenario.tour_race) {
         content.result_assets = pack.entry("presentation.result.classic.font-layout.v1");
         content.result_base_vram = pack.entry("presentation.result.classic.base-vram.v1");
@@ -357,9 +370,11 @@ std::array<std::uint8_t, 65536> race_vram(const ClassicRacePresentationContent& 
 // PPU fades the colour math's result.
 std::array<std::uint8_t, 3> race_ink_rgb(const ClassicRacePresentationContent& content,
                                          unsigned brightness, bool opponent = false) {
+    const auto colours =
+        content.background_palette_set.empty() ? content.palette : content.background_palette_set;
     auto ink = classic_race_ink(
-        static_cast<std::uint16_t>(content.palette[2U * bg3_ink_colour]
-                                   | (unsigned(content.palette[2U * bg3_ink_colour + 1U]) << 8U)),
+        static_cast<std::uint16_t>(colours[2U * bg3_ink_colour]
+                                   | (unsigned(colours[2U * bg3_ink_colour + 1U]) << 8U)),
         opponent ? content.opponent_colour_math : content.rider_colour_math);
     if (brightness < 15U) ink = apply_snes_brightness(ink, brightness);
     return colour_word_rgb(ink);
@@ -387,6 +402,8 @@ void apply_neon_colours(std::array<std::uint8_t, 512>& cgram,
 auto race_cgram(const ZoomZooState& state, const ClassicRacePresentationContent& content,
                 unsigned brightness, std::optional<std::uint8_t> neon_green) {
     auto cgram = build_race_cgram(content.palette, false);
+    std::copy(content.background_palette_set.begin(), content.background_palette_set.end(),
+              cgram.begin());
     for (const auto& [palette, at] : {std::pair{content.rider_palette, rider_palette_at},
                                       std::pair{content.opponent_palette, opponent_palette_at}})
         if (palette.size() == sprite_palette_size)
@@ -611,71 +628,118 @@ std::array<std::uint8_t, 3> rider_pixel(const RaceColours& colours, const RaceOb
         colours.brightness < 15U ? apply_snes_brightness(word, colours.brightness) : word);
 }
 
-// R-0036: the riders, opponent first, from the OBJ tiles and OAM the original published in
-// the previous update. Entry 98 (player, tile base 0, palette 3) has priority over entry 99
-// (opponent, base 0x88, palette 4); both use OBJ priority 2 outside a corkscrew. Where a rider
-// covers caption or HUD ink (R-0042) the original adds red to the sprite, red = min(31,
-// sprite_red + 13), green and blue untouched, measured over 35 such pixels on frame 2100 of
-// the M4-16 primary and the same on 2120, 2340 and 2600. The 13 is the red of CGRAM 27, the
-// colour the caption's attribute names, on both race palettes; which PPU configuration adds
-// it is not recovered, so the measured value is kept. The fade (INIDISP) scales the sum, as it
-// scales every colour after the colour math: in the fade-in the sum is as dark as the rest
-// (bowl-lose 1340-1341, a stunt event's score field under the rider, R-0068).
+// $82:B07E-B153 (R-0116): after a two-view race's lower-view entries ($150B opponent, $150F
+// player) are placed, an object at the right edge (x 0xF1-0xFF, ninth bit clear) moves to the
+// hidden place, and one at the left edge (x 0, or -15 to -1) whose top is above the lower view's
+// first line (OAM y below 0x71) moves 16 pixels the other way with its tile number 2 higher
+// (0x02, 0x8A). The two tile columns that brings in are the blank other half of the riders'
+// tiles, so the object's first two columns (before the flip) are not shown; with the flip they
+// are its right-hand 16 pixels.
+enum class LowerViewEdge : std::uint8_t { none, hidden, first_columns_dropped };
+
+LowerViewEdge lower_view_left_edge(const RiderOam& lower) {
+    if (!lower.visible) return LowerViewEdge::none;
+    if (lower.x >= 0xf1) return LowerViewEdge::hidden;
+    if (lower.x >= -15 && lower.x <= 0 && lower.y < 0x71U)
+        return LowerViewEdge::first_columns_dropped;
+    return LowerViewEdge::none;
+}
+
+void drop_first_tile_columns(RiderObjectPixels& pixels) {
+    constexpr std::size_t dropped = 16;
+    for (std::size_t row = 0; row < rider_object_size; ++row)
+        std::fill_n(pixels.begin() + static_cast<std::ptrdiff_t>(row * rider_object_size), dropped,
+                    std::uint8_t{0});
+}
+
+// One object pixel of the riders' layer: the colour index (0 where no rider is opaque) and
+// whether its object has the raised priority.
+struct RiderLayerPixel {
+    std::uint8_t index{};
+    bool raised{};
+};
+using RiderLayer = std::vector<RiderLayerPixel>;
+
+// R-0036: one view's rider object, from the OBJ tiles and OAM the original published in the
+// previous update, into the riders' layer over the ones drawn before it.
+void layer_rider_object(RiderLayer& layer, const ZoomZooState& rider_source,
+                        const ClassicRacePresentationContent& content,
+                        const ClassicRaceHistory* history, bool flip, unsigned viewport,
+                        int rider) {
+    const auto& source = rider_source.movement.riders[static_cast<std::size_t>(rider)];
+    const auto& camera = viewport ? rider_source.race.second_camera : rider_source.race.camera;
+    if (rider_source.split_screen) {
+        const auto dy = static_cast<std::int16_t>(source.motion.y - camera.y);
+        if (dy < -41 || dy >= 112) return;
+    }
+    auto oam = project_rider_oam(source.motion.x, source.motion.y, camera.x, camera.y,
+                                 source.pose.reflected, content.geometry);
+    if (viewport) oam.y = static_cast<std::uint8_t>(oam.y + 112U);
+    const auto lower_edge = viewport ? lower_view_left_edge(oam) : LowerViewEdge::none;
+    if (lower_edge == LowerViewEdge::hidden) return;
+    if (flip) oam.y = static_cast<std::uint8_t>(0xe0U - static_cast<std::uint8_t>(oam.y + 0x40U));
+    oam.vertical_flip = flip || (history && history->hunter_flip_prior);
+    if (!oam.visible) return;
+    const auto overlay =
+        history ? history->overlays.pose[static_cast<std::size_t>(rider)] : std::nullopt;
+    auto pixels = compose_rider_object(content.riders, source.pose.pose_index, overlay, oam.clip);
+    if (lower_edge == LowerViewEdge::first_columns_dropped) drop_first_tile_columns(pixels);
+    // NEON's update gives the player's object palette 7 ($83:D1DC-D1E3, R-0068).
+    const unsigned palette = rider ? 4U : content.scenario.neon_lighting ? 7U : 3U;
+    const unsigned object_palette = 128U + palette * 16U;
+    // R-0047: through the corkscrew the object's priority is toggled to 3 ($1516/$151A bit 4),
+    // above every BG1 tile.
+    const bool raised =
+        rider_source.special_tiles[static_cast<std::size_t>(rider)].raised_priority != 0;
+    draw_rider_object(pixels, oam, [&](int x, int y, std::uint8_t value) {
+        if (rider_source.split_screen && (static_cast<unsigned>(y >= 112) != viewport)) return;
+        const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
+        layer[at] = {static_cast<std::uint8_t>(object_palette + value), raised};
+    });
+}
+
+// The riders, opponent first. Each half gives its followed rider the front OAM slot (on frame
+// 1700 both riders overlap in the lower half; ALICE covers AMY there). As the PPU does, the front
+// object's opaque pixel is the objects' pixel, and its priority alone decides it against BG1: where
+// a rider without the raised priority covers a raised one on a BG1 priority tile, the tile shows
+// (R-0116, both riders through a corkscrew in a two-view race). Entry 98 (player, tile base 0,
+// palette 3) has priority over entry 99 (opponent, base 0x88, palette 4); both use OBJ priority 2
+// outside a corkscrew. Where a rider covers caption or HUD ink (R-0042) the original adds red to
+// the sprite, red = min(31, sprite_red + 13), green and blue untouched, measured over 35 such
+// pixels on frame 2100 of the M4-16 primary and the same on 2120, 2340 and 2600. The 13 is the red
+// of CGRAM 27, the colour the caption's attribute names, on both race palettes; which PPU
+// configuration adds it is not recovered, so the measured value is kept. The fade (INIDISP)
+// scales the sum, as it scales every colour after the colour math: in the fade-in the sum is as
+// dark as the rest (bowl-lose 1340-1341, a stunt event's score field under the rider, R-0068).
 void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
                       const ClassicRacePresentationContent& content,
                       const ClassicRaceHistory* history, const RaceColours& colours, bool flip,
                       const std::array<bool, 256 * 224>& bg1_above_objects,
                       const RaceObjectMath& math) {
+    RiderLayer layer(256U * 224U);
     const unsigned viewports = rider_source.split_screen ? 2U : 1U;
     for (unsigned viewport = 0; viewport < viewports; ++viewport)
         for (int order = 0; order < 2; ++order) {
-            // Each half gives its followed rider the front OAM slot. On frame
-            // 1700 both riders overlap in the lower half; ALICE covers AMY there.
             const int rider = viewport ? order : 1 - order;
             // R-0068: a stunt event's setup sets entry 99's ninth x bit (`$15A3` = 0xE5,
             // $82:D789-D797) and the opponent's object writer, part of its skipped update, never
             // clears it, so the opponent stays at the setup's x 0x60 - 256, off the screen.
             if (rider == 1 && content.scenario.stunt_event && !rider_source.split_screen) continue;
-            const auto& source = rider_source.movement.riders[static_cast<std::size_t>(rider)];
-            const auto& camera =
-                viewport ? rider_source.race.second_camera : rider_source.race.camera;
-            if (rider_source.split_screen) {
-                const auto dy = static_cast<std::int16_t>(source.motion.y - camera.y);
-                if (dy < -41 || dy >= 112) continue;
-            }
-            auto oam = project_rider_oam(source.motion.x, source.motion.y, camera.x, camera.y,
-                                         source.pose.reflected, content.geometry);
-            if (viewport) oam.y = static_cast<std::uint8_t>(oam.y + 112U);
-            if (flip)
-                oam.y = static_cast<std::uint8_t>(0xe0U - static_cast<std::uint8_t>(oam.y + 0x40U));
-            oam.vertical_flip = flip || (history && history->hunter_flip_prior);
-            if (!oam.visible) continue;
-            const auto overlay =
-                history ? history->overlays.pose[static_cast<std::size_t>(rider)] : std::nullopt;
-            const auto pixels =
-                compose_rider_object(content.riders, source.pose.pose_index, overlay, oam.clip);
-            // NEON's update gives the player's object palette 7 ($83:D1DC-D1E3, R-0068).
-            const unsigned palette = rider ? 4U : content.scenario.neon_lighting ? 7U : 3U;
-            const unsigned object_palette = 128U + palette * 16U;
-            // R-0047: through the corkscrew the object's priority is toggled to 3
-            // ($1516/$151A bit 4), above every BG1 tile.
-            const bool raised =
-                rider_source.special_tiles[static_cast<std::size_t>(rider)].raised_priority != 0;
-            draw_rider_object(pixels, oam, [&](int x, int y, std::uint8_t value) {
-                if (rider_source.split_screen && (static_cast<unsigned>(y >= 112) != viewport))
-                    return;
-                const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
-                // NEON: BG3's ink (priority tiles) is in front of the objects, which a race's
-                // colour math shows through (rider_pixel); NEON's leaves BG3 out (R-0068).
-                if (math.neon_vram && math.caption_ink.test(at)) return;
-                // The ink is in front of BG1 too, and its colour math takes the sub screen, the
-                // objects alone ($212D = 0x10): a rider behind a BG1 priority tile still shows
-                // through the ink (R-0083).
-                if (bg1_above_objects[at] && !raised && !math.caption_ink.test(at)) return;
-                const auto index = static_cast<std::uint8_t>(object_palette + value);
-                pixel(frame, x, y, rider_pixel(colours, math, index, x, y));
-            });
+            layer_rider_object(layer, rider_source, content, history, flip, viewport, rider);
         }
+    for (std::size_t at = 0; at < layer.size(); ++at) {
+        const auto [index, raised] = layer[at];
+        if (!index) continue;
+        // NEON: BG3's ink (priority tiles) is in front of the objects, which a race's colour math
+        // shows through (rider_pixel); NEON's leaves BG3 out (R-0068).
+        if (math.neon_vram && math.caption_ink.test(at)) continue;
+        // The ink is in front of BG1 too, and its colour math takes the sub screen, the objects
+        // alone ($212D = 0x10): a rider behind a BG1 priority tile still shows through the ink
+        // (R-0083).
+        if (bg1_above_objects[at] && !raised && !math.caption_ink.test(at)) continue;
+        const int x = static_cast<int>(at % 256U), y = static_cast<int>(at / 256U);
+        pixel(frame, x, y, rider_pixel(colours, math, index, x, y));
+    }
 }
 
 // HUNTER's screen flip in a race with two views, "invisible unis" (R-0094): the update's
@@ -915,9 +979,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     };
     // $80:D241 makes the objects the sub screen ($212D = 0x10) for a race from the menus, so a
     // rider under the HUD's ink shows through its colour math, as under the caption; the idle
-    // demo leaves $212D = 0 (`$80:942D`), so its split HUD and both caption rows are flat ink over
-    // the riders (R-0082, R-0103).
-    const bool hud_over_riders = state.split_screen && state.demo_ai;
+    // demo leaves $212D = 0 (`$80:942D`), so its HUD and caption rows are flat ink over the
+    // riders, in a one-view demo as in a split one (R-0082, R-0103, R-0116).
+    const bool hud_over_riders = state.demo_ai;
     if (!hud_over_riders) draw_hud();
     // The menu's words go in the HUD's layer, under the riders and the window members: on the
     // picture that opens the menu during the countdown the digit's window covers them (R-0078),
