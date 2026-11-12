@@ -210,9 +210,10 @@ void load_other_track_presentation_content(ClassicRacePresentationContent& conte
     // or `$83:9E1E`'s 10 (VS), so the sets of sceneries 0 and 8, not the scenery's own (R-0116).
     if (track.index == neon_track && !scenario.neon_lighting && scenario.two_humans) {
         constexpr std::size_t set_bytes = 96U * 2U;
-        content.background_palette_set =
-            pack.entry(scenario.versus ? "scenery.08.palette" : "scenery.00.palette")
-                .first(set_bytes);
+        const auto set = pack.entry(scenario.versus ? "scenery.08.palette" : "scenery.00.palette");
+        if (set.size() < set_bytes)
+            throw std::invalid_argument("two-view NEON's palette set is short");
+        content.background_palette_set = set.first(set_bytes);
     }
     if (!content.scenario.tour_race) {
         content.result_assets = pack.entry("presentation.result.classic.font-layout.v1");
@@ -402,6 +403,8 @@ void apply_neon_colours(std::array<std::uint8_t, 512>& cgram,
 auto race_cgram(const ZoomZooState& state, const ClassicRacePresentationContent& content,
                 unsigned brightness, std::optional<std::uint8_t> neon_green) {
     auto cgram = build_race_cgram(content.palette, false);
+    // Colour 0 too: the set's first load (X = 0: `$82:DCCC`, `$82:DD0A` or `$82:DD48`) writes
+    // it; the race's palette cycle rewrites it below, so it never shows (R-0116).
     std::copy(content.background_palette_set.begin(), content.background_palette_set.end(),
               cgram.begin());
     for (const auto& [palette, at] : {std::pair{content.rider_palette, rider_palette_at},
@@ -637,7 +640,7 @@ std::array<std::uint8_t, 3> rider_pixel(const RaceColours& colours, const RaceOb
 // are its right-hand 16 pixels.
 enum class LowerViewEdge : std::uint8_t { none, hidden, first_columns_dropped };
 
-LowerViewEdge lower_view_left_edge(const RiderOam& lower) {
+LowerViewEdge lower_view_edge(const RiderOam& lower) {
     if (!lower.visible) return LowerViewEdge::none;
     if (lower.x >= 0xf1) return LowerViewEdge::hidden;
     if (lower.x >= -15 && lower.x <= 0 && lower.y < 0x71U)
@@ -675,7 +678,7 @@ void layer_rider_object(RiderLayer& layer, const ZoomZooState& rider_source,
     auto oam = project_rider_oam(source.motion.x, source.motion.y, camera.x, camera.y,
                                  source.pose.reflected, content.geometry);
     if (viewport) oam.y = static_cast<std::uint8_t>(oam.y + 112U);
-    const auto lower_edge = viewport ? lower_view_left_edge(oam) : LowerViewEdge::none;
+    const auto lower_edge = viewport ? lower_view_edge(oam) : LowerViewEdge::none;
     if (lower_edge == LowerViewEdge::hidden) return;
     if (flip) oam.y = static_cast<std::uint8_t>(0xe0U - static_cast<std::uint8_t>(oam.y + 0x40U));
     oam.vertical_flip = flip || (history && history->hunter_flip_prior);
@@ -995,8 +998,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     if (!invisible_riders(rider_source, previous_update, history))
         draw_race_riders(frame, rider_source, content, history, colours, scroll.flip,
                          bg1_above_objects, math);
-    // The split demo's HUD tile priority covers both riders at the lap-banner overlap; the
-    // menu's cells keep the menu.
+    // An idle demo's HUD and caption ink cover both riders (the split demo's lap-banner overlap,
+    // a one-view demo's caption and timer); the menu's cells keep the menu.
     if (hud_over_riders) {
         const auto under_hud = paused ? std::optional<RgbFrame>(frame) : std::nullopt;
         draw_hud();

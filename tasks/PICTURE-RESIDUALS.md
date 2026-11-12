@@ -115,7 +115,7 @@ Main `local/evidence/picture-residuals/` (40 MB):
     `four-w0` 7 (9500, 23230, 23260, 24200, 31340, 31360, 47120: 2-6 pixels each to 0); w3 and w4 none.
   - `idle-demo` (`cold-102000`): 13 pictures change, each from 1-68 differing pixels to 0. `two-pad`'s
     `zzap`: 6317 from 22 to 0. `checks4`'s `w1-2p-hill`: 2881, 2883, 2887, 2888 from 4 pixels each to 0
-    (5,046 to 5,050 of 5,050; a corkscrew in a two-view race).
+    (5,046 to 5,050 of 5,050; the lower view's right-edge hide at x 255, lines 180-183: review round 1).
   - The race sweep (`race-sweep-3cca204a.json`, 432 runs, 2,538 pictures of `classic_race_presentation_runner`):
     0 differences.
   - The v1 presentation contracts (the gates' `v1-contracts` command, `lab-debug`): winner and loser

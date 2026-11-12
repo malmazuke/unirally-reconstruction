@@ -20,6 +20,9 @@ league windows equal but two kinds, both in two-view races:
   holds (VRAM at the picture's own time, with the line's scroll from the wobble table) and, if it is
   an older row, model BG1's map streaming for two views (`$81:B31C`'s gather, R-0009) or show it
   cannot be done from native's state.
+- **Two-view NEON in VS** (R-0116 finding 5, listing and ROM only): native takes colours 0-95 from the
+  set of sceneries 1, 3, 4, 7, 8 and 10 (`$83:9E1E` = 10 with X = 0xC20C), not scenery 12's own; no
+  capture shows a VS race on track 42. Capture one (VS, NEON chosen) and compare its race pictures.
 - Not a picture residual, seen on the way: `organic-cycle-exit` (LEAGUE) 14400 and 15000 differ in the
   whole picture on main too: native's second race starts later than the original's; find where the
   route parts.

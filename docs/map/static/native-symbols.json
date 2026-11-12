@@ -11555,6 +11555,27 @@
    "region": "rom"
   },
   {
+   "address": "$82:DCCC",
+   "native": [
+    "src/core/presentation.cpp:race_cgram"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DD0A",
+   "native": [
+    "src/core/presentation.cpp:race_cgram"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DD48",
+   "native": [
+    "src/core/presentation.cpp:race_cgram"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:DD90",
    "native": [
     "src/core/presentation.cpp:apply_neon_colours",
@@ -25839,6 +25860,13 @@
     "$83:F964"
    ]
   },
+  "src/core/presentation.cpp:race_cgram": {
+   "rom": [
+    "$82:DCCC",
+    "$82:DD0A",
+    "$82:DD48"
+   ]
+  },
   "src/core/presentation.cpp:race_picture_brightness": {
    "rom": [
     "$80:883F",
@@ -31677,10 +31705,10 @@
   }
  },
  "totals": {
-  "addresses": 2248,
+  "addresses": 2251,
   "io_addresses": 12,
-  "native_symbols": 1631,
-  "rom_addresses": 1783,
+  "native_symbols": 1632,
+  "rom_addresses": 1786,
   "sram_addresses": 71,
   "wram_addresses": 382
  }

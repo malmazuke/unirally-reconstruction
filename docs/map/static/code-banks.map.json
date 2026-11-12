@@ -13639,6 +13639,7 @@
     "src/core/content_pack.cpp:tracks_required",
     "src/core/presentation.cpp:load_other_track_presentation_content",
     "src/core/presentation.cpp:neon_scenery",
+    "src/core/presentation.cpp:race_cgram",
     "src/core/race_setup.cpp:neon_lighting_on"
    ],
    "observed_entries": {},
@@ -19619,19 +19620,19 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2686,
+  "cited_addresses": 2692,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2335,
-   "unknown": 265
+   "observed": 2339,
+   "unknown": 267
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1881,
+   "loc": 1885,
    "mid": 33,
    "sub": 495,
-   "unk": 265
+   "unk": 267
   },
   "conflicts": 0,
   "data": 70,

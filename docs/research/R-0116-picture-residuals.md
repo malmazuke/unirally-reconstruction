@@ -63,7 +63,10 @@ Main's binaries (`base-ce558a3f/`) and the candidate's, pack v41, against the or
    its tile number goes up by 2 (0x02, 0x8A). The tiles that brings in are the blank other half of the
    riders' tiles (R-0103), so the object loses its first two tile columns: with the flip, its right-hand
    16 pixels. `zzap` 6316: `$150F` = 0xEF, tile 2, ninth bit set (x -1 moved to -17), so picture 6317
-   lacks the 22 pixels of the player's seat native drew (R-0083's "Not established"). Native's split
+   lacks the 22 pixels of the player's seat native drew (R-0083's "Not established"). The right edge
+   is captured too: TWO-HUMAN-STUNTS' `w1-2p-hill` 2881, 2883, 2887 and 2888, where main drew 4 pixels
+   of a lower-view rider at x 255 (lines 180-183) and the original, like the candidate, shows the
+   background (review round 1). Native's split
    clip (`dy` from -41) never sets the row clip; the original zeroes `$0C89`/`$0C8B` in a two-view race
    (`$82:AFDA`, `$82:B057`), with no effect in either view.
 4. **The objects' priority** [C]. Both riders through a corkscrew together: each object's priority bit
@@ -110,7 +113,7 @@ Main's binaries (`base-ce558a3f/`) and the candidate's, pack v41, against the or
 
 `presentation.cpp` (`render_classic_race` and its helpers; no state, format, pack or runner change):
 - `hud_over_riders` is every idle demo (`state.demo_ai`), not the split demo only (finding 2).
-- `lower_view_left_edge` and `drop_first_tile_columns`: a lower-view entry at the right edge is not
+- `lower_view_edge` and `drop_first_tile_columns`: a lower-view entry at the right edge is not
   drawn; one at the left edge with its top above the lower view loses its first two tile columns
   (finding 3).
 - `layer_rider_object` builds the riders' layer, the front object over the back one with its priority;
@@ -139,7 +142,7 @@ The league pictures the candidate leaves unequal are the three of finding 6 (8 p
 on main). On main, by window (race pictures differing): `tours-a` w0 7, w1 2, w2 316 (314 NEON), w5 4,
 w6 313 (NEON), w7 6, w8 1; `tours-b` w0 3, w1 3; `odd-tours` w0 314 (313 NEON), w1 3; `five` w0 3, w1 2.
 Outside these checks, TWO-HUMAN-STUNTS' `w1-2p-hill` goes from 5,046 to 5,050 of 5,050 (frames 2881,
-2883, 2887 and 2888, 4 pixels each: finding 4), and LEAGUE-TOURS' review window `four-w0` changes 7
+2883, 2887 and 2888, 4 pixels each at x 255: finding 3's right-edge hide), and LEAGUE-TOURS' review window `four-w0` changes 7
 pictures, each to equal. The gate corpus replay (536 cases) finds pictures alone change, in 44 cases;
 every changed picture of them is closer to the original (the task record lists them), and the race
 sweep's 2,538 pictures are unchanged.
@@ -151,11 +154,16 @@ sweep's 2,538 pictures are unchanged.
 - League windows are compared every tenth frame (the probes keep no more); `five-w1`'s races from
   120,013 are left out: its ANTI-UNI landing on track 41 at 121,431 takes the multiply hit by HDMA
   (R-0098, R-0115) and native's race differs from there.
-- Two-view NEON in VS (finding 5) and the lower view's right-edge hide (finding 3: no capture has a
-  lower-view rider at x 241-255 with opaque pixels in its first column on screen) are read from the
-  listing and the ROM only.
+- Two-view NEON in VS (finding 5) is read from the listing and the ROM only (no VS NEON capture); the
+  lower view's right-edge hide (finding 3) has one capture (`w1-2p-hill` 2881-2888).
 - The priority rule (finding 4) is the PPU's; it also applies to one-view races, where the player is
-  the front object. The gate corpus replay (task record) lists what it moves.
+  the front object. The gate corpus replay compares retained pictures only. The review's every-frame
+  probe (a build counting each picture where the new rule and the old differ, `review-1/priority-probe.out`)
+  over 40 corpus runs, 624,727 frames, finds 5 changed pictures, all in the `five` drive: 4 two-view
+  (7864, 12472, 84176, 90879; 1-10 pixels) and one one-view, 101732 (7 pixels at x 70-71, lines
+  128-131). The reviewer captured the original there (`review-1/original-five-101732/`): the candidate
+  is equal, main 7 pixels off. So the rule reaches one-view pictures, rarely, and the one checked moves
+  toward the original.
 - No unit test: each change needs the private pack's content; the checks compare with the original.
 - `organic-cycle-exit` 14400 and 15000 (organic league captures) differ in the whole picture on main and
   here: native's second race there starts later than the original's (not a picture residual; noted in

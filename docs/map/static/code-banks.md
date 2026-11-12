@@ -49,7 +49,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 
 ## Cited addresses
 
-2686 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1881, mid 33, sub 495, unk 265 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2335, unknown 265.
+2692 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1885, mid 33, sub 495, unk 267 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2339, unknown 267.
 
 Cited addresses in `unknown` bytes:
 
@@ -246,7 +246,7 @@ Cited addresses in `unknown` bytes:
 | $82:B549 | docs/research/R-0109-coverage-census.md |
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0093-data-coverage.md, docs/research/R-0112-census-remainder.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/M4-03.md, tasks/NEXT_SESSION.md |
 | $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
-| $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
+| $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0116-picture-residuals.md, tasks/TRACK-BREADTH.md |
 | $82:E19D | docs/research/R-0112-census-remainder.md |
 | $82:E35C | docs/research/R-0109-coverage-census.md |
 | $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md, docs/research/R-0090-save-files.md, docs/research/R-0109-coverage-census.md, tasks/NEXT_SESSION.md, tasks/SAVE-FILES.md |
@@ -275,6 +275,8 @@ Cited addresses in `unknown` bytes:
 | $83:9B13 | docs/research/R-0055-rider-menu.md |
 | $83:9B27 | docs/research/R-0055-rider-menu.md, docs/research/R-0056-tour-track-now-playing.md, docs/research/R-0109-coverage-census.md |
 | $83:9B31 | docs/research/R-0055-rider-menu.md |
+| $83:9E1A | docs/research/R-0116-picture-residuals.md, tasks/PICTURE-RESIDUALS.md |
+| $83:9E1E | docs/research/R-0116-picture-residuals.md, tasks/PICTURE-RESIDUALS-REMAINDER.md |
 | $83:9F96 | docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md |
 | $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, docs/research/R-0109-coverage-census.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
 | $83:A1B4 | docs/research/R-0056-tour-track-now-playing.md |
