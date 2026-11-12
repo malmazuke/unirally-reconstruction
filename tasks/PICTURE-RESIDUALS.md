@@ -193,8 +193,8 @@ head `f908f38b` with G under the main checkout (a path with a space), `checks-f9
     main. `fe-equivalence` is same-as-main.
   - `gates-2` (`--only` the 16, `--expect-changed` the 16, 45 min): `status=passed`.
 - CI on `9f454033`: macOS and Ubuntu lab jobs pass.
-- Time: claim `1d33d838` 22:50 UTC on 11 November 2026 to merge about 06:00 UTC on 12 November,
-  about 7 h 10 min, over D-0013's 6-hour target by the gates. Worker 2 h 21 min; review and its fixes
+- Time: claim `1d33d838` 22:50 UTC on 11 November 2026 to merge about 06:40 UTC on 12 November,
+  about 7 h 50 min, over D-0013's 6-hour target by the gates. Worker 2 h 21 min; review and its fixes
   1 h 39 min (handoff 01:11 to the checks rerun 02:50 UTC); gates 2 h 38 min + 45 min.
 - Evidence: main `local/evidence/picture-residuals/`, 41 MB. Worktrees `picture-residuals` and
   `picture-residuals-review` and the branch removed after the merge.

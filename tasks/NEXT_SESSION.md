@@ -40,7 +40,7 @@ R-0116 measures again, on main, the pictures earlier records left different from
 - **Open**, queued as PICTURE-RESIDUALS-REMAINDER (tier 2): an upper-view object at the split's left
   edge (3 windows, 8 pixels each), line 113 under wobble mode's mosaic (14 pictures, one row), and a
   VS NEON capture.
-- **Time:** about 7 h 10 min from claim to merge, over D-0013's 6 hours by the gates. Review one
+- **Time:** about 7 h 50 min from claim to merge, over D-0013's 6 hours by the gates. Review one
   round (2 should-fixes, 8 notes; one kept with a reason). Gates: 87 steps same as main; 16 read
   as expected changes (`two-pad`, `idle-demo`, `checks4`, 13 league tours), each with more pictures
   equal to the original and nothing else different.
