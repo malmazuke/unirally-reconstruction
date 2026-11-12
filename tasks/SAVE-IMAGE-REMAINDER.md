@@ -163,3 +163,31 @@ regenerated the static map and native symbols (tooling tests OK); `native-symbol
 (1,797 addresses, 0 without a record). `checks.list` on the committed head with a `$G` containing a
 space: see `checks-r1.log` in the evidence folder.
 
+
+## Closeout (coordinator)
+
+- Review: tier 1, one round on PR #105. Round 1 (`08590c91`): approve with should-fixes. The
+  should-fix was that the personal bests are fixed only in the comparison, while native still starts
+  HUNTER's preloaded races a frame early in play, so 8 routes' saved records can still differ; the
+  record now cites D-0010, says so, queues it (SAVE-IMAGE-REMAINDER-2 item 5) and pins native's start
+  (`check_race_starts.sh`). There were also 6 notes: one `$10A7` constant and why the markers and the
+  endings cannot conflict, an item number, the song counter's naming, `residual.txt`'s wording, a
+  bounds-checked name copy, and the league table's Y/X test without `$80:B74A`'s pad gate (kept with a
+  comment). All were fixed in `3ac99c84`; the coordinator checked the bounds-checked copy, the new
+  check and the clean-head checks rerun. Replies on the PR.
+- Gates (D-0012) on `3ac99c84`, TMPDIR `/private/tmp/sirg`:
+  - `gates-1` (the selection, 2 h 35 min): 101 steps same-as-main and 20 passed; both task checks
+    pass. Changed: `fe-equivalence` with `fe-classify`, one of 179 front-end cases,
+    `league/organic-full-tour`. The coordinator diffed its state rows between main's runner and the
+    candidate's: every row is equal up to 14,766, where the candidate leaves the league table and
+    reaches the podium earlier (16,635 rows, main 17,685), the change this task makes.
+  - `gates-2` (`--only` the two, `--expect-changed` the two, 47 s): `status=passed`.
+- CI on `3ac99c84`: macOS and Ubuntu lab jobs pass.
+- After the merge, SAVE-IMAGE-EXACT's `local/evidence/save-image-exact/expected.json` is replaced
+  by `expected-save-image-exact.json` from this task's evidence (the old one kept beside it as
+  `expected-before-save-image-remainder.json`), so its `check_image.sh` passes on main again.
+- Time: claim `cf15c6b4` 06:24 UTC on 12 November 2026 to merge about 11:15 UTC, about 4 h 50 min,
+  inside D-0013's 6-hour target. Worker 1 h 28 min plus 6 min of review fixes; review 19 min; gates
+  2 h 35 min + 1 min.
+- Evidence: main `local/evidence/save-image-remainder/`, 15 MB. Worktrees `save-image-remainder` and
+  `save-image-remainder-review` and the branch removed after the merge.

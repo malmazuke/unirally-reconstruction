@@ -27,6 +27,26 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**12 November 2026: SAVE-IMAGE-REMAINDER is accepted (tier 1, #105) and integrated by merge commit.**
+R-0117 closes most of the saved image's differences R-0111 left (the cartridge RAM a later boot reads):
+- **Native change:** the endings' counter `$77:10A7` is stored in the image at the original's nine
+  store sites (`$83:B649` on); after DEFINE PLAYER's warning the keyboard buffer's tail keeps the
+  warned rider's name (`$80:C603`, `$80:9B2F`); the league table leaves on any button except Y or X
+  (`$80:A688`, `$80:B74A`), so `organic-full-tour` reaches the podium 659 frames earlier, as the
+  original does. 7 routes become equal; differing write frames drop from 13,986 to 11,879.
+- **The four hunter-effects personal bests** come from native starting HUNTER's preloaded races a
+  frame early (R-0077's loading table, D-0010). The comparison now takes the captures' race starts;
+  in play the difference stays and can reach a save (8 routes), queued.
+- **Unread:** `$016C`/`$022E` (no reachable reader) and `$0744-074B` (rewritten by every race setup
+  before any read), shown with perturbed boots.
+- **Open**, queued as SAVE-IMAGE-REMAINDER-2 (tier 1): the early race start in play, a fuzz route's
+  menu divergence, the league editor's buffer tail, a saved marker step of 14 or more, and marker
+  timing of 1-5 frames on three routes.
+- **Time:** about 4 h 50 min from claim to merge. Review one round (1 should-fix, 6 notes, all
+  addressed). Gates: 101 steps same as main; 2 read as expected changes (`organic-full-tour` only,
+  equal up to the table's exit).
+[R-0117](research/R-0117-save-image-remainder.md) and [SAVE-IMAGE-REMAINDER](../tasks/SAVE-IMAGE-REMAINDER.md) hold the detail.
+
 **12 November 2026: PICTURE-RESIDUALS is accepted (tier 2, #104) and integrated by merge commit.**
 R-0116 measures again, on main, the pictures earlier records left different from the original's
 (R-0109 item 7):
