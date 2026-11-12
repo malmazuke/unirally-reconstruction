@@ -55,10 +55,15 @@ inline void gate_pads(FrontEndState& state, bool pad_one, bool pad_two) {
     state.pad_one_ignored = !pad_one;
     state.pad_two_ignored = !pad_two;
 }
-// `$77:10A7`, the done-track markers' step, is a word of cartridge RAM (`$80:E872`, `$80:EB32`):
-// the image keeps it as the menus store it (R-0100, R-0111).
+// `$77:10A7`, a word of cartridge RAM with two users: the done-track markers' step (`$80:E872`,
+// `$80:EB32`; `TrackMenu::marker_step`) and the gold endings' fall and rise counter
+// (`TourEnding::drop`, `ending::store_drop`). The image keeps it as either last stored it (R-0100,
+// R-0111, R-0117). They cannot conflict within a session: an ending returns to PICK TOUR, and every
+// way out of PICK TOUR passes `$80:BC7B-BC7E` (`JSR $E84E`, the store of 0 at `$80:E872`) before
+// any marker turn (`$80:EB23`, called only from `$80:B97A` and `$80:BAA6`; R-0117 review 1's
+// extended `g045` run: 0x20 to 0). Only a later boot reads an ending's value (SAVE-IMAGE-REMAINDER-2).
+inline constexpr std::size_t marker_step_word = 0x10a7;
 inline void store_marker_step(FrontEndState& state) {
-    constexpr std::size_t marker_step_word = 0x10a7;
     state.cartridge.at(marker_step_word) = state.track_menu.marker_step;
     state.cartridge.at(marker_step_word + 1) = 0;
 }

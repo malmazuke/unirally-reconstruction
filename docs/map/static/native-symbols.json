@@ -1313,6 +1313,7 @@
    "address": "$80:9B2F",
    "native": [
     "src/core/lap_result.cpp:print_stream",
+    "src/core/options_menu.cpp:enter_define_player_warning",
     "src/core/text_printer.cpp:record_name"
    ],
    "region": "rom"
@@ -2367,7 +2368,8 @@
     "src/core/front_end.cpp:start_main_menu",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
-    "src/core/front_end_screens.hpp:start_main_menu"
+    "src/core/front_end_screens.hpp:start_main_menu",
+    "src/core/league_menu.cpp:league_table_frame"
    ],
    "region": "rom"
   },
@@ -3179,6 +3181,7 @@
    "native": [
     "src/core/front_end_screens.hpp:enter_league_slots",
     "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
+    "src/core/league_menu.cpp:league_table_frame",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/options_menu.cpp:keyboard_input",
     "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
@@ -3290,6 +3293,7 @@
   {
    "address": "$80:B97A",
    "native": [
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/options_menu.cpp:league_slots_frame",
     "src/core/options_menu.cpp:options_menu_frame",
     "src/core/options_menu.cpp:records_menu_frame"
@@ -3372,6 +3376,13 @@
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/track_menu.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BAA6",
+   "native": [
+    "src/core/front_end_screens.hpp:marker_step_word"
    ],
    "region": "rom"
   },
@@ -3618,7 +3629,11 @@
   {
    "address": "$80:BC7B",
    "native": [
-    "src/core/front_end.hpp:FrontEndScreen"
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end_screens.hpp:marker_step_word"
+   ],
+   "range_ends": [
+    "$80:BC7E"
    ],
    "region": "rom"
   },
@@ -4209,6 +4224,7 @@
   {
    "address": "$80:C12A",
    "native": [
+    "src/core/front_end.hpp:FrontEndState::warned_name",
     "src/core/options_menu.cpp:enter_define_player_warning"
    ],
    "range_ends": [
@@ -4299,6 +4315,7 @@
     "src/core/front_end_screens.hpp:wait_for_result_press",
     "src/core/high_scores.cpp:(file)",
     "src/core/hunter_ending.cpp:first_page_press",
+    "src/core/league_menu.cpp:league_table_frame",
     "src/core/league_menu.cpp:leave_league_awards",
     "src/core/local_modes.cpp:vs_champions_frame",
     "src/core/local_modes.cpp:vs_rematch_frame",
@@ -4309,6 +4326,9 @@
     "src/core/records_scores.cpp:press_seen_twice",
     "src/core/stunt_result.cpp:after_tally_frame",
     "src/core/wipe_ram.cpp:waited_for_press"
+   ],
+   "range_ends": [
+    "$80:C24B"
    ],
    "region": "rom"
   },
@@ -4522,6 +4542,13 @@
    "native": [
     "src/core/text_printer.cpp:print_name_operand",
     "src/core/text_printer.cpp:print_text"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C603",
+   "native": [
+    "src/core/options_menu.cpp:enter_define_player_warning"
    ],
    "region": "rom"
   },
@@ -6464,7 +6491,7 @@
   {
    "address": "$80:E872",
    "native": [
-    "src/core/front_end_screens.hpp:store_marker_step",
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/track_menu.cpp:enter_track_menu"
    ],
    "region": "rom"
@@ -6618,6 +6645,7 @@
   {
    "address": "$80:EB23",
    "native": [
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/front_end_screens.hpp:turn_markers",
     "src/core/league_completion.cpp:league_continue_entry_frame",
     "src/core/local_modes.cpp:local_continue_frame",
@@ -6632,7 +6660,7 @@
   {
    "address": "$80:EB32",
    "native": [
-    "src/core/front_end_screens.hpp:store_marker_step",
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/track_menu.cpp:turn_markers"
    ],
    "region": "rom"
@@ -13746,9 +13774,23 @@
    "region": "rom"
   },
   {
+   "address": "$83:B649",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:B64D",
    "native": [
     "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B667",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "region": "rom"
   },
@@ -13912,6 +13954,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:B9A3",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:B9A7",
    "native": [
     "src/core/tour_ending_right_column.cpp:end"
@@ -13922,6 +13971,13 @@
    "address": "$83:B9D1",
    "native": [
     "src/core/tour_ending_scripts.hpp:walk_pose"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BA03",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "region": "rom"
   },
@@ -13955,9 +14011,23 @@
    "region": "rom"
   },
   {
+   "address": "$83:BA7E",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:BA87",
    "native": [
     "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BAE7",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "region": "rom"
   },
@@ -13975,6 +14045,13 @@
    "address": "$83:BB2A",
    "native": [
     "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BB32",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "region": "rom"
   },
@@ -14167,6 +14244,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:C030",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:C034",
    "native": [
     "src/core/tour_ending_right_column.cpp:end"
@@ -14200,6 +14284,13 @@
    ],
    "range_ends": [
     "$83:C0C9"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C0D7",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "region": "rom"
   },
@@ -16926,6 +17017,14 @@
    "range_ends": [
     "$00EE",
     "$00FB"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00DE",
+   "native": [
+    "src/core/front_end.hpp:FrontEndState::warned_name",
+    "src/core/options_menu.cpp:enter_define_player_warning"
    ],
    "region": "wram"
   },
@@ -19731,6 +19830,7 @@
     "src/core/front_end_screens.hpp:gated_pads",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/hunter_ending.cpp:enter_hunter_code",
+    "src/core/league_menu.cpp:league_table_frame",
     "src/core/now_playing.cpp:note_option_bits",
     "src/core/options_menu.cpp:league_slots_frame",
     "src/core/race_result.cpp:hide_result_objects",
@@ -19997,13 +20097,15 @@
     "src/core/front_end.cpp:wipe_cartridge",
     "src/core/front_end.hpp:TourEnding::drop",
     "src/core/front_end.hpp:TrackMenu::marker_step",
-    "src/core/front_end_screens.hpp:store_marker_step",
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/front_end_screens.hpp:turn_markers",
+    "src/core/tour_ending.cpp:drop_word",
     "src/core/tour_ending_right_column.cpp:ball_falls_part",
     "src/core/tour_ending_right_column.cpp:bound_off_part",
     "src/core/tour_ending_right_column.cpp:knock_part",
     "src/core/tour_ending_right_column.cpp:tumble_step",
-    "src/core/tour_ending_scripts.cpp:hit_part"
+    "src/core/tour_ending_scripts.cpp:hit_part",
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "region": "sram"
   },
@@ -22222,6 +22324,14 @@
     "$80:F5C0"
    ]
   },
+  "src/core/front_end.hpp:FrontEndState::warned_name": {
+   "rom": [
+    "$80:C12A"
+   ],
+   "wram": [
+    "$00DE"
+   ]
+  },
   "src/core/front_end.hpp:HighScoresPhase": {
    "rom": [
     "$80:C206",
@@ -23525,6 +23635,19 @@
     "$82:B1DB"
    ]
   },
+  "src/core/front_end_screens.hpp:marker_step_word": {
+   "rom": [
+    "$80:B97A",
+    "$80:BAA6",
+    "$80:BC7B",
+    "$80:E872",
+    "$80:EB23",
+    "$80:EB32"
+   ],
+   "sram": [
+    "$77:10A7"
+   ]
+  },
   "src/core/front_end_screens.hpp:oam_high_table": {
    "wram": [
     "$0A00",
@@ -23712,15 +23835,6 @@
    "wram": [
     "$0748",
     "$0750"
-   ]
-  },
-  "src/core/front_end_screens.hpp:store_marker_step": {
-   "rom": [
-    "$80:E872",
-    "$80:EB32"
-   ],
-   "sram": [
-    "$77:10A7"
    ]
   },
   "src/core/front_end_screens.hpp:store_race_setup": {
@@ -24511,11 +24625,17 @@
   },
   "src/core/league_menu.cpp:league_table_frame": {
    "rom": [
+    "$80:ABC8",
+    "$80:B74A",
     "$80:BE16",
     "$80:BE5F",
+    "$80:C206",
     "$80:E550",
     "$80:E570",
     "$80:EF7B"
+   ],
+   "sram": [
+    "$77:0742"
    ],
    "wram": [
     "$00AC"
@@ -25415,10 +25535,13 @@
   },
   "src/core/options_menu.cpp:enter_define_player_warning": {
    "rom": [
-    "$80:C12A"
+    "$80:9B2F",
+    "$80:C12A",
+    "$80:C603"
    ],
    "wram": [
-    "$00CA"
+    "$00CA",
+    "$00DE"
    ]
   },
   "src/core/options_menu.cpp:enter_league_editor": {
@@ -29744,6 +29867,11 @@
     "$83:A575"
    ]
   },
+  "src/core/tour_ending.cpp:drop_word": {
+   "sram": [
+    "$77:10A7"
+   ]
+  },
   "src/core/tour_ending.cpp:endings": {
    "rom": [
     "$83:B1EB",
@@ -30109,6 +30237,22 @@
   "src/core/tour_ending_scripts.hpp:first_pose_word, second_pose_word, third_pose_word": {
    "rom": [
     "$83:8E3A"
+   ]
+  },
+  "src/core/tour_ending_scripts.hpp:store_drop": {
+   "rom": [
+    "$83:B649",
+    "$83:B667",
+    "$83:B9A3",
+    "$83:BA03",
+    "$83:BA7E",
+    "$83:BAE7",
+    "$83:BB32",
+    "$83:C030",
+    "$83:C0D7"
+   ],
+   "sram": [
+    "$77:10A7"
    ]
   },
   "src/core/tour_ending_scripts.hpp:upload_built_pose": {
@@ -31705,11 +31849,11 @@
   }
  },
  "totals": {
-  "addresses": 2251,
+  "addresses": 2263,
   "io_addresses": 12,
-  "native_symbols": 1632,
-  "rom_addresses": 1786,
+  "native_symbols": 1635,
+  "rom_addresses": 1797,
   "sram_addresses": 71,
-  "wram_addresses": 382
+  "wram_addresses": 383
  }
 }

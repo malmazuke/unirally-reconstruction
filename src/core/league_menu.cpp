@@ -596,6 +596,9 @@ void league_table_frame(FrontEndState& state, const FrontEndContent& content, Fr
     const auto previous = state.league.previous_buttons;
     state.league.previous_buttons = buttons;
     if (!buttons || !previous) return;
+    // `$80:B74A` tests Y and X through the pad gate (`$77:0742` bits 9 and 10); these pads are
+    // ungated, which is the same here: the main menu opens both pads (`$80:ABC8`) and nothing on
+    // the league's path to this table sets a gate (R-0105, R-0117 review 1).
     if (buttons & back_buttons) {
         // $80:BE5F-BE73: `$00AC` = 1, so the slots slide forward (`$80:EF7B`) and PICK TOUR, from
         // `$80:E550` without `$80:BE16`'s loads, back (`$80:E570`; R-0098).
@@ -605,7 +608,9 @@ void league_table_frame(FrontEndState& state, const FrontEndContent& content, Fr
             return_to_tour_menu(state, true);
         return;
     }
-    if (!(buttons & choose_buttons)) return;
+    // Any other button held over the two reads chooses: `$80:C206-C24B` waits for any button of
+    // either pad, and only Y or X (`$80:B74A`) sends the table back (R-0117: Left held from the
+    // race leaves a cycle's last table for the podium).
     if (state.records.league_cycle_complete) {
         enter_league_podium(state);
         return;

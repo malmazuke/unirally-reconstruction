@@ -1440,6 +1440,7 @@
     "src/core/front_end.cpp:lay_out_menu_objects",
     "src/core/front_end.cpp:restore_menu_screen",
     "src/core/lap_result.cpp:print_stream",
+    "src/core/options_menu.cpp:enter_define_player_warning",
     "src/core/text_printer.cpp:record_name"
    ],
    "observed_entries": {},
@@ -1961,7 +1962,8 @@
     "src/core/front_end.cpp:start_main_menu",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
-    "src/core/front_end_screens.hpp:start_main_menu"
+    "src/core/front_end_screens.hpp:start_main_menu",
+    "src/core/league_menu.cpp:league_table_frame"
    ],
    "observed_entries": {},
    "start": "$80:ABC8",
@@ -2619,6 +2621,7 @@
     "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
+    "src/core/league_menu.cpp:league_table_frame",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/options_menu.cpp:keyboard_input",
     "src/core/race_result.cpp:lap_graph_frame",
@@ -2990,6 +2993,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/league_completion.cpp:league_continue_frame",
     "src/core/league_completion.cpp:move_continue_arrow",
     "src/core/local_modes.cpp:last_choice",
@@ -3050,6 +3054,7 @@
     "src/core/front_end_screens.hpp:enter_rider_menu",
     "src/core/front_end_screens.hpp:enter_tour_menu",
     "src/core/front_end_screens.hpp:enter_track_menu",
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/front_end_screens.hpp:return_to_tour_menu",
     "src/core/front_end_screens.hpp:store_saved_mode",
     "src/core/front_end_screens.hpp:store_tour_medal",
@@ -3157,6 +3162,7 @@
     "src/core/hunter_ending.cpp:(file)",
     "src/core/hunter_ending.cpp:first_page_press",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
+    "src/core/league_menu.cpp:league_table_frame",
     "src/core/league_menu.cpp:leave_league_awards",
     "src/core/local_modes.cpp:vs_champions_frame",
     "src/core/local_modes.cpp:vs_rematch_frame",
@@ -4573,7 +4579,7 @@
     "src/core/award.cpp:way_back_frame",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:TrackMenu",
-    "src/core/front_end_screens.hpp:store_marker_step",
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/front_end_screens.hpp:store_tour_medal",
     "src/core/track_menu.cpp:(file)",
     "src/core/track_menu.cpp:choose_track",
@@ -4630,7 +4636,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end_screens.hpp:store_marker_step",
+    "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/front_end_screens.hpp:turn_markers",
     "src/core/league_completion.cpp:league_continue_entry_frame",
     "src/core/local_modes.cpp:local_continue_frame",
@@ -17021,7 +17027,8 @@
     "src/core/tour_ending_scripts.cpp:red_uni_in_part",
     "src/core/tour_ending_scripts.cpp:roll_on_part",
     "src/core/tour_ending_scripts.cpp:walk_in_part",
-    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound",
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "observed_entries": {},
    "start": "$83:B506",
@@ -17078,6 +17085,7 @@
     "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound",
     "src/core/tour_ending_right_column.cpp:scarf_part",
     "src/core/tour_ending_right_column.cpp:walk_step",
+    "src/core/tour_ending_scripts.hpp:store_drop",
     "src/core/tour_ending_scripts.hpp:walk_pose"
    ],
    "observed_entries": {},
@@ -17184,7 +17192,8 @@
     "src/core/tour_ending_right_column.cpp:script",
     "src/core/tour_ending_right_column.cpp:tumble_step",
     "src/core/tour_ending_right_column.cpp:walk_in_part",
-    "src/core/tour_ending_right_column.cpp:wobble_part"
+    "src/core/tour_ending_right_column.cpp:wobble_part",
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "observed_entries": {},
    "start": "$83:BED0",
@@ -19620,19 +19629,19 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2692,
+  "cited_addresses": 2712,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2339,
-   "unknown": 267
+   "observed": 2358,
+   "unknown": 268
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1885,
+   "loc": 1904,
    "mid": 33,
    "sub": 495,
-   "unk": 267
+   "unk": 268
   },
   "conflicts": 0,
   "data": 70,
