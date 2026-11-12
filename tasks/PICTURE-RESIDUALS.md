@@ -128,9 +128,37 @@ Main `local/evidence/picture-residuals/` (40 MB):
   symbols; `coverage native-symbols --check` passed (1,783 ROM addresses, all cited by a record) and the
   tooling tests pass. No new runner option, so no corpus change.
 
+## Review round 1 fixes (worker)
+
+Worker: Claude Opus 5.5 subagent, 12 November 2026, on the review of PR #104 (approve with
+should-fixes; main `local/evidence/picture-residuals/review-1/`).
+1. should-fix, done. `w1-2p-hill` 2881, 2883, 2887 and 2888 (4 pixels each at x 255, lines 180-183)
+   are the lower view's right-edge hide (finding 3), not the objects' priority: R-0116 finding 3, its
+   results and Limits, and Evidence above say so; the right-edge branch is captured, only VS NEON is
+   listing-only.
+2. should-fix, done. `lower_view_left_edge` is `lower_view_edge` (it returns both edges' cases).
+3. note 4, done. R-0116 Limits give the review's every-frame priority probe: 40 corpus runs, 624,727
+   frames, 5 changed pictures all in the `five` drive, the one-view one (101732, 7 pixels) equal to the
+   original on the candidate and 7 pixels off on main.
+4. note 5, done. PICTURE-RESIDUALS-REMAINDER has a line to capture VS NEON.
+5. note 7, done. The NEON palette set's pack entry is checked before `.first` (`std::invalid_argument`
+   "two-view NEON's palette set is short").
+6. note 8, done. The comment at the idle demo's HUD draw now covers every idle demo.
+7. note 9, done. `check.sh`'s header names the league checks' three expected pictures (70040, 11910,
+   95090) and `five-w1`'s cut.
+8. note 6, kept: colour 0 is copied with the set because the original's set load at X = 0
+   (`$82:DCCC`, `$82:DD0A` or `$82:DD48`) writes it too; the race's palette cycle rewrites it, so it
+   never shows. Said in a comment at the copy.
+Builds `lab-release`, `lab-debug`, `app-debug`; `ctest` 41/41 on both debug presets; clang-format
+clean; GCC 13.3 plain and sanitized on `presentation.cpp` (`gcc-r1.out`); `regen.sh` and
+`native-symbols --check` passed (1,786 ROM addresses, all cited by a record). Checks rerun on the clean
+head `f908f38b` with G under the main checkout (a path with a space), `checks-f908f38b.out`:
+`oneview-demos` PASS 124 s, `idle-lap` PASS 20 s, `zzap` PASS 154 s, `league-a` PASS 468 s,
+`league-b` PASS 500 s, the same pictures as before (the three open 8-pixel league pictures only).
+
 ## Handoff
 
-- Commits on `task/picture-residuals`: `3cca204a` (the native change, `src/core/presentation.cpp`,
+- Commits on `task/picture-residuals`: review round 1's `f908f38b` and its checks record; before it `3cca204a` (the native change, `src/core/presentation.cpp`,
   `presentation.hpp`), then the records commit (R-0116, this record, PICTURE-RESIDUALS-REMAINDER and its
   README row, the regenerated static map and native symbols).
 - Done: every item re-measured on main and given a verdict (Results); the four changes; checks,
