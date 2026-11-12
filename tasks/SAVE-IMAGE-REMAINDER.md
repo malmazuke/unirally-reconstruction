@@ -43,12 +43,16 @@ holds the findings.
 - **Item 1, the hunter-effects personal bests:** the original takes no class there because it queues
   no voice: its opponent lands that jump with a z flip only (`$0CEB` takes `0x12` at 1929, the
   consumer `$81:C219` finds the queue empty after). Native's race on these routes started a frame
-  early (R-0077's loading table: tracks 41 and 43 with the song counter 0 take 81 upload frames in
+  early (R-0077's loading table: tracks 41 and 43 with `$10B1` = 0, the race's counter 1, take 81 upload frames in
   the original, the table 80), so the player's held Right came an update late, the player counted
   a track marker the original had not, the opponent's catch-up cap rose at 1820 and its landing at
   1929 counted a roll and two twists. With the capture's race start (`--race-initialization`, as the
-  laboratory's race checks do), the four routes, and `$1116` on four more, are equal. No native
+  laboratory's race checks do, D-0010), the four routes, and `$1116` on four more, are equal. No native
   change; the comparison's corpus gains the captures' race starts (527 track_reference routes).
+  **In play the difference stays and reaches a saved record:** native still starts these races a
+  frame early, so the personal bests (`c175`, `c177`, `c210`, `c220`) and `$1116` (`c209`, `c217`,
+  `c218`, `c272`) can differ in a save a later boot reads. Queued as SAVE-IMAGE-REMAINDER-2 item 5;
+  `check_race_starts.sh` pins native's own start on the 527 runs (review 1).
 - **Item 2, the endings' `$10A7`:** native's ending counter (`TourEnding::drop`) is stored in the
   image at its nine store sites with the original's widths. `all-gold`, `locked-gold`, `walker-gold`
   equal. A saved step of 14 to 0x7FFF at a later boot stays unmodelled (queued).
@@ -67,7 +71,7 @@ holds the findings.
 
 - The race start is taken from the capture in the comparison, not changed in native: the original's
   upload length varies with the sound processor's state (R-0077), which native does not run; moving
-  the table's cells for tracks 41/43/8 at counter 1 would break the six-quits measurements the table
+  the table's cells for tracks 41/43/8 at the race's counter 1 (`$10B1` = 0) would break the six-quits measurements the table
   came from.
 - `$016C-016D`, `$022E-022F` and `$0744-074B` join this task's `residual.txt` (a copy of R-0111's);
   R-0111's own file is unchanged.
@@ -112,7 +116,7 @@ All in main `local/evidence/save-image-remainder/` (13 MB).
 - Commits on `task/save-image-remainder`: `82545231` (native: the endings' `$10A7`, the warned name's
   tail, the table's any button; native symbols and static map), then the records commit (R-0117, this
   record, SAVE-IMAGE-REMAINDER-2 and its README row).
-- Done: items 1 and 2; item 3 but `c385` and `c039`. Not done: SAVE-IMAGE-REMAINDER-2's four items.
+- Done: items 1 and 2; item 3 but `c385` and `c039`. Not done: SAVE-IMAGE-REMAINDER-2's five items (item 5 is item 1's race start in play).
 - Not pushed, no PR, no review yet (tier 1).
 - What the gates should expect (`--task-checks local/evidence/save-image-remainder/checks.list`):
   - this task's `check_image.sh`: PASS on the candidate, FAIL on main (7 routes, toward the original);
@@ -124,3 +128,38 @@ All in main `local/evidence/save-image-remainder/` (13 MB).
     `--records` on `g038`, `g041`, `g045`, `c042`, `c053`, `c054`).
   - SAVE-IMAGE-EXACT's `behaviour_check.sh` (no `g070`): run here, 15 of 15 routes equal on every
     output but the cartridge RAM (`behaviour-check.log`); expected unchanged.
+
+## Review round 1 fixes (worker)
+
+Review round 1 (PR #105, "approve with should-fixes"; main `local/evidence/save-image-remainder/review-1/`),
+fixed 12 November 2026 08:12-08:40 UTC by the same worker (Claude Opus 5.5).
+
+1. should-fix, item 1 closed in the comparison only: R-0117 now cites D-0010 (the laboratory takes a
+   race's start from its capture), says the one-frame start on HUNTER's preloaded tours (two
+   preloaded starts, 42 runs) still reaches a saved record in play (the personal bests on `c175`,
+   `c177`, `c210`, `c220`; `$1116` on `c209`, `c217`, `c218`, `c272`), in its findings and Limits;
+   queued as SAVE-IMAGE-REMAINDER-2 item 5 (README row updated). New check
+   `check_race_starts.sh` in `checks.list`: native's own first race update on the 527
+   track_reference runs must equal `race-starts.json` (484 equal, 42 early, 1 late), so a moved start
+   fails although `check_image.sh` takes the captures'.
+2. note, `$10A7` in two places: one shared `marker_step_word` (`front_end_screens.hpp`), used by
+   `tour_ending.cpp`'s `drop_word`, with a comment on why the markers and the endings cannot conflict
+   within a session (`$80:BC7B-BC7E` before any `$80:EB23` turn; review 1's `g045` run).
+3. note: R-0117's "item 4 below" is now item 3.
+4. note: the table cell is named consistently: the image's `$10B1` = 0, so the race's counter, which
+   indexes R-0077's table, is 1 (R-0117 and this record).
+5. note: `residual.txt` says `$0744-074B` are rewritten by every race setup before any read; R-0117
+   lists the in-session reads and the setup stores that precede them.
+6. note: the warned name is copied from a bounds-checked `subspan` of the rider's 16-byte record,
+   after a range check that refuses a rider past 15 (`options_menu.cpp`), with the `$80:C603` /
+   `$80:9B2F` citation.
+7. note: `league_table_frame` comments why its Y/X test needs no pad gate (`$80:B74A` applies
+   `$0742` bits 9 and 10, which nothing on the league's path sets; `$80:ABC8` opens both pads).
+
+Rerun after the edits: `project.py build` passed on lab-release, lab-debug and app-debug; `ctest`
+41/41 on lab-debug and app-debug; `clang-format` applied; `clang-tidy` clean on the changed `.cpp`;
+GCC 13.3 plain and sanitized OK on the six files (`gcc.sh`, `gcc-r1.out`); `coverage-census/regen.sh`
+regenerated the static map and native symbols (tooling tests OK); `native-symbols --check` passed
+(1,797 addresses, 0 without a record). `checks.list` on the committed head with a `$G` containing a
+space: see `checks-r1.log` in the evidence folder.
+

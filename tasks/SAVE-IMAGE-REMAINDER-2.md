@@ -3,7 +3,7 @@
 - Status: **queued** 12 November 2026 by [SAVE-IMAGE-REMAINDER](SAVE-IMAGE-REMAINDER.md) (R-0117).
 - Milestone: M4. Review tier: **1** (front-end behaviour and cartridge RAM a later boot reads).
 
-[R-0117](../docs/research/R-0117-save-image-remainder.md) closes R-0111's Value list but four items.
+[R-0117](../docs/research/R-0117-save-image-remainder.md) closes R-0111's Value list but five items.
 Each is a native difference from the original over R-0111's corpus (evidence and tools in main
 `local/evidence/save-image-remainder/`; the check is its `check_image.sh`):
 
@@ -25,6 +25,16 @@ Each is a native difference from the original over R-0111's corpus (evidence and
 4. **The league markers' edges** (`c029`, `c032`, `g069`): 1 to 5 write frames each where the
    hidden markers stop or run a frame apart (R-0111's timing class); show they are the same write
    or model the edge.
+
+5. **The race start on HUNTER's preloaded tours** (R-0117 item 1, review 1): native's front end
+   starts the race one frame early on the 42 track_reference runs of tracks 41 and 43 with
+   `$77:10B1` = 0 (two preloaded starts), and one late on the track-8 run (`race-starts.json`: 484
+   equal, 42 early, 1 late), because the original's sound upload took 81 frames where R-0077's
+   table has 80 (D-0010 keeps the table). In play this reaches a save a later boot reads: the
+   personal bests on `c175`, `c177`, `c210`, `c220` (`$085F`/`$085B`) and `$1116` on `c209`, `c217`,
+   `c218`, `c272`, which `check_image.sh` no longer sees (it takes the captures' starts);
+   `check_race_starts.sh` pins native's start. Model what makes the upload a frame longer on these
+   paths (the sound processor's state after the warm boot and HUNTER's tour), or record why not.
 
 Outcome: each item equal at every write frame of the corpus (`check_image.sh`, `expected.json`
 re-recorded) or recorded with why it cannot matter.

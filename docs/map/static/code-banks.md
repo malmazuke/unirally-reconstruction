@@ -49,7 +49,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 
 ## Cited addresses
 
-2695 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1888, mid 33, sub 495, unk 267 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2342, unknown 267.
+2712 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1904, mid 33, sub 495, unk 268 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2358, unknown 268.
 
 Cited addresses in `unknown` bytes:
 
@@ -87,7 +87,7 @@ Cited addresses in `unknown` bytes:
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:9E0F | docs/research/R-0072-options.md, docs/research/R-0097-menu-input.md, tasks/MENU-INPUT.md |
+| $80:9E0F | docs/research/R-0072-options.md, docs/research/R-0097-menu-input.md, docs/research/R-0117-save-image-remainder.md, tasks/MENU-INPUT.md, tasks/SAVE-IMAGE-REMAINDER-2.md |
 | $80:9F74 | docs/research/R-0097-menu-input.md, docs/research/R-0112-census-remainder.md, tasks/MENU-INPUT.md |
 | $80:A096 | docs/research/R-0112-census-remainder.md |
 | $80:A4C9 | docs/research/R-0097-menu-input.md, docs/research/R-0101-name-check.md, tasks/NAME-CHECK.md, tasks/NEXT_SESSION.md |
@@ -170,7 +170,7 @@ Cited addresses in `unknown` bytes:
 | $80:EA35 | docs/research/R-0113-open-branches.md, tasks/OPEN-BRANCHES.md |
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:EB61 | docs/research/R-0056-tour-track-now-playing.md, docs/research/R-0117-save-image-remainder.md, tasks/SAVE-IMAGE-REMAINDER-2.md |
 | $80:ECD1 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
 | $80:ECF7 | docs/research/R-0072-options.md, docs/research/R-0100-record-screens.md |
 | $80:EEDF | docs/research/R-0115-cpu-cycle-timing.md |
@@ -262,8 +262,9 @@ Cited addresses in `unknown` bytes:
 | $83:88F7 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0067-stunt-result.md |
 | $83:88FD | docs/research/R-0057-one-run-result.md, docs/research/R-0059-tour-completion.md, docs/research/R-0062-gold-endings.md, tasks/FRONT-END-ENDINGS.md, tasks/FRONT-END-TOUR-END.md |
 | $83:8971 | docs/research/R-0109-coverage-census.md |
-| $83:89D9 | docs/research/R-0112-census-remainder.md |
+| $83:89D9 | docs/research/R-0112-census-remainder.md, docs/research/R-0117-save-image-remainder.md |
 | $83:89EF | docs/research/R-0090-save-files.md, docs/research/R-0111-save-image-exact.md |
+| $83:8A15 | docs/research/R-0117-save-image-remainder.md |
 | $83:8A59 | docs/research/R-0109-coverage-census.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |

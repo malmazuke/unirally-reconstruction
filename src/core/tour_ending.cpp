@@ -69,7 +69,7 @@ void set_low_byte(std::uint16_t& word, unsigned value) {
 }
 
 namespace {
-constexpr std::size_t drop_word = 0x10a7; // $77:10A7
+constexpr std::size_t drop_word = marker_step_word; // $77:10A7, shared with the markers' step
 }
 
 void store_drop(FrontEndState& state, std::uint16_t value) {

@@ -596,6 +596,9 @@ void league_table_frame(FrontEndState& state, const FrontEndContent& content, Fr
     const auto previous = state.league.previous_buttons;
     state.league.previous_buttons = buttons;
     if (!buttons || !previous) return;
+    // `$80:B74A` tests Y and X through the pad gate (`$77:0742` bits 9 and 10); these pads are
+    // ungated, which is the same here: the main menu opens both pads (`$80:ABC8`) and nothing on
+    // the league's path to this table sets a gate (R-0105, R-0117 review 1).
     if (buttons & back_buttons) {
         // $80:BE5F-BE73: `$00AC` = 1, so the slots slide forward (`$80:EF7B`) and PICK TOUR, from
         // `$80:E550` without `$80:BE16`'s loads, back (`$80:E570`; R-0098).

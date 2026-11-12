@@ -15,10 +15,12 @@ or the ROM's bytes; **[C]** a capture of the original made for this task (R-0111
 ## Question and answer
 
 For each Value item: does native's image equal the original's at every write frame of R-0111's
-corpus (919 runs), and where not, can the difference matter? **Answer:** the hunter-effects personal
-bests, the endings' `$10A7`, `$1116`, the rider names' leftover bytes, the end of
-`league/organic-full-tour` and the league pair's race words are closed (four by native changes, one
-by the corpus's race start, the rest argued unread with a perturbation). Four remain, queued as
+corpus (919 runs), and where not, can the difference matter? **Answer:** the endings' `$10A7`, the
+rider names' leftover bytes, the end of `league/organic-full-tour` and the league pair's race words
+are closed (three by native changes, the rest argued unread with a perturbation). The hunter-effects
+personal bests and `$1116` are explained (a race started a frame early) and closed only in the
+comparison, which takes the captures' race starts (D-0010): in play they still reach a save. Five
+remain, queued as
 [SAVE-IMAGE-REMAINDER-2](../../tasks/SAVE-IMAGE-REMAINDER-2.md).
 
 ## Method
@@ -36,7 +38,8 @@ by the corpus's race start, the rest argued unread with a perturbation). Four re
 
 ### 1. The personal bests on the hunter-effects routes: a race that started a frame early [C, L, R]
 
-`c175`, `c177`, `c210`, `c220` (HUNTER's tour, track 41, preloaded image, the song counter 0):
+`c175`, `c177`, `c210`, `c220` (HUNTER's tour, track 41, preloaded image with `$77:10B1` = 0, so the
+race's song counter, which indexes R-0077's table, is 1):
 native added 1 and 2 to `$77:085F` (`$085B` on `c177`) at frames 1973 and 1991, through the
 opponent's voice class read past rider 1's tallies (R-0098, `count_opponent_voice`).
 
@@ -52,15 +55,23 @@ opponent's voice class read past rider 1's tallies (R-0098, `count_opponent_voic
 - **The player's race differs from its first moving frame**: native's velocity is 0x88, 0xA0, ...
   where the original's `$04BB` is 0x98, 0xB0, ...: the same as Right pressed one update later.
   Native's race started one frame early: its first update follows R-0077's (track, song) loading
-  table (track 41, counter 1: 69 + 80 - 1 frames after the choice), and the original's sound upload
+  table (track 41, the race's counter 1: 69 + 80 - 1 frames after the choice), and the original's sound upload
   took 81 frames here. With `--race-initialization 1391`, the capture's frame, the velocities are
   equal.
 - **Over the corpus** (`race_starts.py`, `race-starts.json`): native's first update equals the
   capture's on 484 of 527 track_reference runs; it is one frame early on all 34 runs of track 41
-  and all 8 of track 43 with the counter at 0 (the preloaded HUNTER tours), and one frame late on
-  the one run of track 8 with counter 0. R-0077 records the upload's variation with the sound
-  processor's state and that native, which runs no sound processor, follows the table; this task
-  does not change the table.
+  and all 8 of track 43 with `$10B1` = 0 in the image (the race's counter 1; the preloaded HUNTER
+  tours, two preloaded starts rather than 42 independent samples), and one frame late on the one run
+  of track 8 with `$10B1` = 0. R-0077 records the upload's variation with the sound processor's
+  state, and [D-0010](../decisions/D-0010-frame-anchored-sound-commands.md) keeps the table in the
+  front end and has the laboratory take a race's start from its capture where they differ; this
+  task follows it and does not change the table.
+- **In play the difference stays.** A player on those tours still starts a frame early natively, so
+  the saved personal bests (`$085F`/`$085B` on `c175`, `c177`, `c210`, `c220`) and the tutorial bits
+  `$1116` (`c209`, `c217`, `c218`, `c272`) can still differ from the original's in a save a later boot
+  reads. The comparison's race starts take these 8 routes out of `check_image.sh`;
+  `check_race_starts.sh` pins native's own start on all 527 runs instead (any move fails), and the
+  item is queued as SAVE-IMAGE-REMAINDER-2 item 5.
 - With the captures' race starts (`routes.json`), the personal-best increments are gone on all
   four routes, and so is `$1116` on `c209`, `c217`, `c218` and `c272` (R-0111 counted three):
   their hints ended a frame apart for the same reason. No class question remains: when a voice is
@@ -86,7 +97,10 @@ A later boot reads a saved `$10A7` as the markers' step (`$80:EB28-EB32`, a word
 becomes 13). A save made during an ending can now hold a step of 14 to 0x7FFF (0x0020 at SPRINTER's
 end); the original then counts it down, reading the marker table `$80:EB61,X` and `$80:EB61 + 7,X`
 past its 14 bytes into code. Native starts such a step from 0, as R-0100 left it (`cartridge_ram.cpp`);
-steps 0x8000 and up behave the same on both sides (13 at the first step). Queued (item 4 below).
+steps 0x8000 and up behave the same on both sides (13 at the first step). Queued (item 3 below).
+Within a session the two users of the word cannot conflict: an ending returns to PICK TOUR, and every
+way out of it stores 0 (`$80:BC7B-BC7E`, `JSR $E84E` to `$80:E872`) before any marker turn (review 1's
+extended `g045` run: 0x20 to 0); native keeps one shared offset (`marker_step_word`).
 
 ### 3. The rest of R-0111's Value list
 
@@ -99,7 +113,10 @@ steps 0x8000 and up behave the same on both sides (13 at the first step). Queued
   unperturbed run at every frame (`perturb-016C-016D.json`, `perturb-022E-022F.json`; the sound
   digests differ from frame 0 in pool processes, R-0111's known limit). Added to the residual.
 - **`$0744-074B`, the race's track, kind and rider words** [R, C] (12 league routes; the league
-  pair's swap `$83:95C4`/`$83:95CA`, which native does not model, and timing): R-0090 found no read;
+  pair's swap `$83:95C4`/`$83:95CA`, which native does not model, and timing): read within a session
+  (NOW PLAYING `$80:B1D1`, `$80:B1E4`; `$83:9975`; the swap `$83:95E3-95F4`), but each read follows a
+  race setup's stores (`$83:9983` from `$80:B18D` and `$80:E9F8`, `$80:99FA`, `$80:9A01`), so every
+  race setup rewrites them before any read; R-0090 found no read by a later boot;
   perturbed on the nine routes, equal at every frame (`perturb-0744-074B.json`). Added to the
   residual. (`$074C-074F` are read and stay checked.)
 - **The rider names after their terminator** (`rv-warn`, `w5`, `warnings`: `c042`, `c053`, `c054`)
@@ -158,9 +175,11 @@ re-recorded result is `expected-save-image-exact.json` here.
 
 ## Limits
 
-- The race start follows the capture only in the comparison; native's front end still starts by
-  R-0077's table, so a player's race on HUNTER's preloaded tours can begin a frame early. Modelling
-  the sound processor's upload time is R-0077's limit, not taken up here.
+- The race start follows the capture only in the comparison (D-0010); native's front end still
+  starts by R-0077's table, so a player's race on HUNTER's preloaded tours begins a frame early and
+  the difference reaches cartridge RAM a later boot reads (the personal bests, `$1116`). Modelling
+  the sound processor's upload time is R-0077's limit; queued as SAVE-IMAGE-REMAINDER-2 item 5, and
+  native's start is pinned by `check_race_starts.sh`.
 - The arguments for `$016C`, `$022E`, `$0744-074B` and the rider name tails rest on the nine warm
   routes' perturbation and the listing; the name tails' only observed readers are copies.
 - The warned name is kept for the define-player path alone; another screen printing a rider name
