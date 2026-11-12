@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **claimed** 12 November 2026 06:45 UTC on main `5c7522ee`, under the user's instruction of
+- Status: **claimed** 12 November 2026 06:24 UTC on main `5c7522ee`, under the user's instruction of
   12 November ("you can continue working on new tasks until you get to 90% weekly usage, or the reset
   happens (7PM tonight)"), after PICTURE-RESIDUALS #104. Queued 9 November 2026 by
   [SAVE-IMAGE-EXACT](SAVE-IMAGE-EXACT.md) (R-0111, review round 1). Claude Code desktop app, Claude
@@ -36,7 +36,7 @@ another class there.
 
 ## Results
 
-Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 12 November 2026 06:24-07:55 UTC (harness
+Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 12 November 2026 06:24-07:52 UTC, 1 h 28 min (harness
 clock), in `.worktrees/save-image-remainder`. [R-0117](../docs/research/R-0117-save-image-remainder.md)
 holds the findings.
 
