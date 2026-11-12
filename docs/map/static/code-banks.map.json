@@ -2619,6 +2619,7 @@
     "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
+    "src/core/league_menu.cpp:league_table_frame",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/options_menu.cpp:keyboard_input",
     "src/core/race_result.cpp:lap_graph_frame",
@@ -3157,6 +3158,7 @@
     "src/core/hunter_ending.cpp:(file)",
     "src/core/hunter_ending.cpp:first_page_press",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
+    "src/core/league_menu.cpp:league_table_frame",
     "src/core/league_menu.cpp:leave_league_awards",
     "src/core/local_modes.cpp:vs_champions_frame",
     "src/core/local_modes.cpp:vs_rematch_frame",
@@ -17021,7 +17023,8 @@
     "src/core/tour_ending_scripts.cpp:red_uni_in_part",
     "src/core/tour_ending_scripts.cpp:roll_on_part",
     "src/core/tour_ending_scripts.cpp:walk_in_part",
-    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound",
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "observed_entries": {},
    "start": "$83:B506",
@@ -17078,6 +17081,7 @@
     "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound",
     "src/core/tour_ending_right_column.cpp:scarf_part",
     "src/core/tour_ending_right_column.cpp:walk_step",
+    "src/core/tour_ending_scripts.hpp:store_drop",
     "src/core/tour_ending_scripts.hpp:walk_pose"
    ],
    "observed_entries": {},
@@ -17184,7 +17188,8 @@
     "src/core/tour_ending_right_column.cpp:script",
     "src/core/tour_ending_right_column.cpp:tumble_step",
     "src/core/tour_ending_right_column.cpp:walk_in_part",
-    "src/core/tour_ending_right_column.cpp:wobble_part"
+    "src/core/tour_ending_right_column.cpp:wobble_part",
+    "src/core/tour_ending_scripts.hpp:store_drop"
    ],
    "observed_entries": {},
    "start": "$83:BED0",
@@ -19620,16 +19625,16 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2692,
+  "cited_addresses": 2695,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2339,
+   "observed": 2342,
    "unknown": 267
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1885,
+   "loc": 1888,
    "mid": 33,
    "sub": 495,
    "unk": 267

@@ -68,6 +68,21 @@ void set_low_byte(std::uint16_t& word, unsigned value) {
     word = static_cast<std::uint16_t>((word & 0xff00U) | (value & 0xffU));
 }
 
+namespace {
+constexpr std::size_t drop_word = 0x10a7; // $77:10A7
+}
+
+void store_drop(FrontEndState& state, std::uint16_t value) {
+    state.ending.drop = value;
+    state.cartridge.at(drop_word) = static_cast<std::uint8_t>(value & 0xffU);
+    state.cartridge.at(drop_word + 1) = static_cast<std::uint8_t>(value >> 8U);
+}
+
+void store_drop_low_byte(FrontEndState& state, unsigned value) {
+    set_low_byte(state.ending.drop, value);
+    state.cartridge.at(drop_word) = static_cast<std::uint8_t>(value & 0xffU);
+}
+
 std::uint8_t table_byte(std::span<const std::uint8_t> table, std::size_t at) {
     if (at >= table.size()) throw std::invalid_argument("ending table is short");
     return table[at];
@@ -268,7 +283,8 @@ bool tour_ending_frame_waits(const FrontEndState& state) {
     using namespace ending;
     const auto& layout = endings[state.ending.tour];
     const auto frame = state.script_frame;
-    if (frame > layout.last_frame) return way_back_frame_waits(frame - layout.last_frame, way_back_delay);
+    if (frame > layout.last_frame)
+        return way_back_frame_waits(frame - layout.last_frame, way_back_delay);
     return frame < sound_upload_frame || frame == reset_frame - 1
         || frame >= layout.fade_in_frame - 1;
 }

@@ -283,10 +283,14 @@ void ball_falls_part(FrontEndState& state, const FrontEndContent& content, unsig
     auto& ending = state.ending;
     if (wait == 1) {
         walk_step(state, content, false);
-        if (ending.step >= ball_falls_from) ++ending.drop;
+        if (ending.step >= ball_falls_from)
+            store_drop(state, static_cast<std::uint16_t>(ending.drop + 1U));
         return;
     }
-    if (step == 0) ending.step = ending.drop = 0;
+    if (step == 0) {
+        ending.step = 0;
+        store_drop(state, 0);
+    }
     ++oam_byte(state, red_uni, 0);
     ++oam_byte(state, ball, 0);
     oam_byte(state, ball, 1) += static_cast<std::uint8_t>(ending.drop);
@@ -319,13 +323,13 @@ void scarf_part(FrontEndState& state, const FrontEndContent& content, unsigned s
 // the second buffer.
 void after_bound_step(FrontEndState& state) {
     auto& ending = state.ending;
-    set_low_byte(ending.drop, ending.drop - 1U);
+    store_drop_low_byte(state, ending.drop - 1U);
     ++ending.step;
     if (ending.step < second_bound || ending.step >= bound_off.steps) return;
     if (ending.step == second_bound) {
         play_screen_sound(state, bound_sound);
         play_screen_sound(state, second_bound_sound);
-        set_low_byte(ending.drop, bound_rise);
+        store_drop_low_byte(state, bound_rise);
     }
     ending.second_pose = static_cast<std::uint16_t>(sink_poses + ending.count);
     if ((ending.count & 0xffU) < last_sink_pose) set_low_byte(ending.count, ending.count + 1U);
@@ -352,7 +356,7 @@ void bound_off_part(FrontEndState& state, const FrontEndContent& content, unsign
     if (step == 0) {
         play_screen_sound(state, bound_sound);
         ending.step = ending.count = 0;
-        set_low_byte(ending.drop, bound_rise);
+        store_drop_low_byte(state, bound_rise);
         oam_byte(state, red_uni, 2) = second_pose_tile;
     }
     oam_byte(state, red_uni, 0) += bound_speed;
@@ -514,7 +518,7 @@ void knock_part(FrontEndState& state, const FrontEndContent& content, unsigned s
     if (wait == 0) {
         if (step == 0) {
             ending.step = ending.count = 0;
-            ending.drop = first_tumble_rise;
+            store_drop(state, first_tumble_rise);
         }
         oam_byte(state, red_uni, 0) += cartwheel_speed;
         if ((ending.step & 0xffU) == red_uni_shown) high_bits(state, 0) = red_uni_high;
@@ -532,7 +536,7 @@ void knock_part(FrontEndState& state, const FrontEndContent& content, unsigned s
     if (ending.step == knocked_from) play_screen_sound(state, knock_sound);
     ++oam_byte(state, uni, 0);
     oam_byte(state, uni, 1) += tumble_step(ending.drop);
-    ++ending.drop;
+    store_drop(state, static_cast<std::uint16_t>(ending.drop + 1U));
     ++ending.count;
 }
 

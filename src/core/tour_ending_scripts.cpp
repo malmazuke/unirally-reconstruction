@@ -243,7 +243,8 @@ void hit_part(FrontEndState& state, const FrontEndContent& content, unsigned ste
     if (wait == 0) {
         if (step != 0) return;
         play_screen_sound(state, hit_sound);
-        ending.step = ending.drop = 0;
+        ending.step = 0;
+        store_drop(state, 0);
         return;
     }
     if (wait == 1) {
@@ -251,7 +252,7 @@ void hit_part(FrontEndState& state, const FrontEndContent& content, unsigned ste
         copy_oam(state);
         return;
     }
-    set_low_byte(ending.drop, ending.drop + 1U); // the fall counter is a byte here
+    store_drop_low_byte(state, ending.drop + 1U); // the fall counter is a byte here
     oam_byte(state, arrow, 1) += static_cast<std::uint8_t>((ending.drop & 0xffU) >> 2);
     oam_byte(state, arrow, 0) -= arrow_drift;
     ending.pose = static_cast<std::uint16_t>(fall_poses + ending.step);

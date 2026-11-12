@@ -150,6 +150,7 @@ void options_menu_frame(FrontEndState& state, const FrontEndContent& content, Fr
     if (state.menu.selection == 1 || state.menu.selection == 2) {
         state.rider_menu.purpose = state.menu.selection == 1 ? RiderMenuPurpose::define_player
                                                              : RiderMenuPurpose::rename_player;
+        state.warned_name_printed = false; // the picker's names come after any warning's
         enter_rider_menu(state);
         return;
     }
@@ -352,6 +353,9 @@ void enter_define_player_warning(FrontEndState& state, const FrontEndContent& co
     // $80:C12A-C1EA: show the warning for the chosen rider. Its F8 operand reads
     // the selected rider from $00CA and that rider's mutable SRAM name.
     state.text.words.fill(cleared_text);
+    std::copy_n(state.records.rider_names.begin() + state.options_rider * 16U, 8,
+                state.warned_name.begin());
+    state.warned_name_printed = true;
     TextVariables variables;
     variables.word = [&](std::uint16_t address) -> std::uint16_t {
         if (address != 0x00ca) throw std::invalid_argument("unknown warning text operand");
@@ -546,10 +550,18 @@ void enter_rename_editor(FrontEndState& state, const FrontEndContent& content) {
     // $80:D468-D47D prints the shared keyboard and the RENAME PLAYER prompt.
     state.keyboard = {};
     state.menu.selection = 0; // $009B in $80:A207
-    // $00DC was the text printer's scratch for the last displayed rider, STEVE on this
-    // picker. The keyboard overwrites from its first byte and deliberately keeps the tail.
+    // $00DC was the text printer's scratch for the last displayed rider: STEVE on the rename
+    // picker, the rider DEFINE PLAYER's warning named on that path (as it was before the
+    // warning's confirm cleared it; R-0117). The keyboard overwrites from its first byte and
+    // deliberately keeps the tail, which a short name's commit copies after its end.
     state.keyboard.scratch[0] = state.keyboard.scratch[1] = 0xfb;
-    std::copy_n(state.records.rider_names.begin() + 15 * 16, 8, state.keyboard.scratch.begin() + 2);
+    if (state.warned_name_printed)
+        std::copy(state.warned_name.begin(), state.warned_name.end(),
+                  state.keyboard.scratch.begin() + 2);
+    else
+        std::copy_n(state.records.rider_names.begin() + 15 * 16, 8,
+                    state.keyboard.scratch.begin() + 2);
+    state.warned_name_printed = false;
     state.keyboard.scratch[10] = state.keyboard.scratch[11] = 0xff;
     state.text.words.fill(cleared_text);
     print_text(state.text, state.printer, content.keyboard_text, content.character_table);

@@ -6251,6 +6251,7 @@
    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
+   "src/core/league_menu.cpp:league_table_frame",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/options_menu.cpp:keyboard_input",
    "src/core/race_result.cpp:lap_graph_frame",
@@ -8417,6 +8418,7 @@
   "comment": "instruction start",
   "label": "loc_80C12A",
   "native": [
+   "src/core/front_end.hpp:FrontEndState::warned_name",
    "src/core/options_menu.cpp:enter_define_player_warning"
   ],
   "source_records": [
@@ -8430,6 +8432,7 @@
   "label": "loc_80C139",
   "native": [
    "src/core/front_end.hpp:FrontEndState::options_rider",
+   "src/core/front_end.hpp:FrontEndState::warned_name",
    "src/core/options_menu.cpp:enter_define_player_warning",
    "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/rider_menu.cpp:take_rider_pick"
@@ -8445,6 +8448,7 @@
   "comment": "instruction start",
   "label": "loc_80C13D",
   "native": [
+   "src/core/front_end.hpp:FrontEndState::warned_name",
    "src/core/options_menu.cpp:enter_define_player_warning",
    "src/core/rider_menu.cpp:pick_plays_select"
   ],
@@ -8458,6 +8462,7 @@
   "comment": "instruction start",
   "label": "loc_80C15C",
   "native": [
+   "src/core/front_end.hpp:FrontEndState::warned_name",
    "src/core/options_menu.cpp:define_player_warning_entry_frame",
    "src/core/options_menu.cpp:enter_define_player_warning"
   ],
@@ -8471,6 +8476,7 @@
   "comment": "instruction start",
   "label": "loc_80C17B",
   "native": [
+   "src/core/front_end.hpp:FrontEndState::warned_name",
    "src/core/options_menu.cpp:WarningAnswer",
    "src/core/options_menu.cpp:enter_define_player_warning"
   ],
@@ -8485,6 +8491,7 @@
   "comment": "instruction start",
   "label": "loc_80C1A8",
   "native": [
+   "src/core/front_end.hpp:FrontEndState::warned_name",
    "src/core/options_menu.cpp:define_player_warning_frame",
    "src/core/options_menu.cpp:enter_define_player_warning"
   ],
@@ -8498,6 +8505,7 @@
   "comment": "unknown",
   "label": "unk_80C1DE",
   "native": [
+   "src/core/front_end.hpp:FrontEndState::warned_name",
    "src/core/options_menu.cpp:enter_define_player_warning"
   ],
   "source_records": [
@@ -8552,6 +8560,7 @@
    "src/core/high_scores.cpp:(file)",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
+   "src/core/league_menu.cpp:league_table_frame",
    "src/core/league_menu.cpp:leave_league_awards",
    "src/core/local_modes.cpp:vs_champions_frame",
    "src/core/local_modes.cpp:vs_rematch_frame",
@@ -8582,9 +8591,31 @@
   "label": "loc_80C20C",
   "native": [
    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HighScoresPhase",
    "src/core/front_end.hpp:HunterEnding::press_seen",
+   "src/core/front_end.hpp:LeagueSetup::awards_press_seen, LeagueSetup::awards_left",
+   "src/core/front_end.hpp:RaceResult::press_seen",
+   "src/core/front_end.hpp:RecordsDetail::press_seen",
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/front_end.hpp:WipeRamMenu",
+   "src/core/front_end.hpp:WipeRamMenu::press_seen",
+   "src/core/front_end_screens.hpp:press_seen_twice",
+   "src/core/front_end_screens.hpp:wait_for_result_press",
+   "src/core/high_scores.cpp:(file)",
    "src/core/hunter_ending.cpp:(file)",
-   "src/core/hunter_ending.cpp:hunter_ending_waits"
+   "src/core/hunter_ending.cpp:first_page_press",
+   "src/core/hunter_ending.cpp:hunter_ending_waits",
+   "src/core/league_menu.cpp:league_table_frame",
+   "src/core/league_menu.cpp:leave_league_awards",
+   "src/core/local_modes.cpp:vs_champions_frame",
+   "src/core/local_modes.cpp:vs_rematch_frame",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:pressed",
+   "src/core/race_result.cpp:wait_for_result_press",
+   "src/core/records_scores.cpp:player_scores_leaving",
+   "src/core/records_scores.cpp:press_seen_twice",
+   "src/core/stunt_result.cpp:after_tally_frame",
+   "src/core/wipe_ram.cpp:waited_for_press"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
@@ -8597,16 +8628,33 @@
   "label": "loc_80C236",
   "native": [
    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HighScoresPhase",
    "src/core/front_end.hpp:HunterEnding::press_seen",
+   "src/core/front_end.hpp:LeagueSetup::awards_press_seen, LeagueSetup::awards_left",
+   "src/core/front_end.hpp:RaceResult::press_seen",
+   "src/core/front_end.hpp:RecordsDetail::press_seen",
+   "src/core/front_end.hpp:ScoresPhase",
+   "src/core/front_end.hpp:WipeRamMenu",
+   "src/core/front_end.hpp:WipeRamMenu::press_seen",
    "src/core/front_end_screens.hpp:press_seen_twice",
+   "src/core/front_end_screens.hpp:wait_for_result_press",
+   "src/core/high_scores.cpp:(file)",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
+   "src/core/league_menu.cpp:league_table_frame",
+   "src/core/league_menu.cpp:leave_league_awards",
    "src/core/local_modes.cpp:vs_champions_frame",
    "src/core/local_modes.cpp:vs_rematch_frame",
+   "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/race_result.cpp:pressed",
+   "src/core/race_result.cpp:wait_for_result_press",
+   "src/core/records_scores.cpp:player_scores_leaving",
    "src/core/records_scores.cpp:press_seen_twice",
-   "src/core/wipe_ram.cpp:hide_entries_30_to_35"
+   "src/core/stunt_result.cpp:after_tally_frame",
+   "src/core/wipe_ram.cpp:hide_entries_30_to_35",
+   "src/core/wipe_ram.cpp:waited_for_press"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -24841,6 +24889,7 @@
   ],
   "source_records": [
    "docs/research/R-0116-picture-residuals.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/PICTURE-RESIDUALS.md"
   ]
  },
@@ -26046,6 +26095,7 @@
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
    "docs/research/R-0116-picture-residuals.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/TRACK-BREADTH.md"
   ]
  },
@@ -26187,6 +26237,48 @@
   ],
   "source_records": [
    "docs/research/R-0116-picture-residuals.md"
+  ]
+ },
+ {
+  "address": "$82:DCCC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DCCC",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content",
+   "src/core/presentation.cpp:race_cgram"
+  ],
+  "source_records": [
+   "tasks/PICTURE-RESIDUALS.md"
+  ]
+ },
+ {
+  "address": "$82:DD0A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DD0A",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content",
+   "src/core/presentation.cpp:race_cgram"
+  ],
+  "source_records": [
+   "tasks/PICTURE-RESIDUALS.md"
+  ]
+ },
+ {
+  "address": "$82:DD48",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DD48",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content",
+   "src/core/presentation.cpp:race_cgram"
+  ],
+  "source_records": [
+   "tasks/PICTURE-RESIDUALS.md"
   ]
  },
  {
@@ -29381,6 +29473,7 @@
   ],
   "source_records": [
    "docs/research/R-0116-picture-residuals.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/PICTURE-RESIDUALS.md"
   ]
  },
@@ -30660,7 +30753,8 @@
   "label": "loc_83B649",
   "native": [
    "src/core/tour_ending_scripts.cpp:hit_part",
-   "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+   "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound",
+   "src/core/tour_ending_scripts.hpp:store_drop"
   ],
   "source_records": [
    "docs/research/R-0111-save-image-exact.md",

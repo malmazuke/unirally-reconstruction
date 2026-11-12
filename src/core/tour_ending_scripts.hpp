@@ -52,6 +52,13 @@ void load_first_objects(FrontEndState& state, std::span<const std::uint8_t> tabl
 void clear_third_pose_tiles(FrontEndState& state);
 // A counter's byte write (`STA` with an 8-bit accumulator): the low byte only.
 void set_low_byte(std::uint16_t& word, unsigned value);
+// The scripts' fall and rise counter (`TourEnding::drop`) is `$77:10A7`, the cartridge RAM word
+// the done-track markers also step through, so each of its nine stores lands in the saved image
+// as the original's does (R-0117): a word store, with a 16-bit accumulator (`$83:B649`,
+// `$83:B9A3`, `$83:BA03`, `$83:C030`, `$83:C0D7`), or a byte store of its low byte (`$83:B667`,
+// `$83:BA7E`, `$83:BAE7`, `$83:BB32`).
+void store_drop(FrontEndState& state, std::uint16_t value);
+void store_drop_low_byte(FrontEndState& state, unsigned value);
 // Byte `at` of a tour's table; throws if the table is short.
 std::uint8_t table_byte(std::span<const std::uint8_t> table, std::size_t at);
 

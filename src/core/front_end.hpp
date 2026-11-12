@@ -688,6 +688,11 @@ struct FrontEndState {
     MenuLatches latches{};
     RiderMenu rider_menu{};
     KeyboardEditor keyboard{};
+    // The rider name DEFINE PLAYER's warning printed (`$80:C12A-C1EA`, its F8 operand): the
+    // printer's scratch keeps it at `$00DE`, the keyboard's buffer, until the name is typed over
+    // it (R-0117). Empty when the warning has not printed since the rename picker.
+    std::array<std::uint8_t, 8> warned_name{};
+    bool warned_name_printed{};
     LeagueSetup league{};
     RecordsDetail records_detail{};
     WipeRamMenu wipe_ram{};
