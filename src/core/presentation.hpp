@@ -525,6 +525,10 @@ struct ClassicRacePresentationContent {
     TrackGeometry geometry{};
     std::string track_name; // Authored result screen only.
     std::span<const std::uint8_t> track, bg1_tiles, bg2_tiles, bg2_map, palette;
+    // Colours 0-95 (the first 192 bytes of a scenery palette) when the race loads them from
+    // another scenery's palette set than `palette`'s: NEON with two views (R-0116). Empty
+    // elsewhere, where they are `palette`'s own.
+    std::span<const std::uint8_t> background_palette_set;
     // Race NMI palette tables ($80:82AB), one ROM table for both tracks.
     std::span<const std::uint8_t> race_palette_cycle;
     // Channel-6 window HDMA family (R-0040), one ROM family for both tracks:
