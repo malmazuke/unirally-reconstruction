@@ -24,7 +24,7 @@ compared picture of the routes involved equal.
 
 ## Results
 
-Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 11 November 2026 22:51 to 00:58 UTC (12 November, clock).
+Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 11 November 2026 22:51 to 01:12 UTC (12 November, clock).
 [R-0116](../docs/research/R-0116-picture-residuals.md) has the causes, the measurements and the limits.
 
 Each item was measured again on main `ce558a3f` first (main's binaries kept in the evidence's
@@ -98,8 +98,8 @@ Main `local/evidence/picture-residuals/` (40 MB):
 - `checks-3cca204a.out`: all nine run in 1,665 s; seven PASS on the first run, and `league-a` and
   `league-b` ran with placeholder counts (-1) because their windows' race-picture counts were taken from
   this run (`fill_league.py`); their saved outputs then pass `verify.py` with the filled counts
-  (`checks-3cca204a-league-reverify.out`), and `reverted.out` ran with them. A whole clean run is the
-  gates' first.
+  (`checks-3cca204a-league-reverify.out`), `reverted.out` ran with them, and both were rerun clean on
+  `1dc2d759` with the filled counts: PASS, 470 s and 500 s (`checks-1dc2d759-league.out`).
 - Main's runner (`reverted.out`, 1,666 s): `oneview-demos`, `idle-lap`, `zzap`, `league-a` and `league-b` FAIL (the numbers in the table above); `two-human`, `league-frozen`, `go-letters` and `line-113` PASS, as main already had those pictures (or, for line 113, the same 14).
 - What moves (main's runner against the candidate's):
   - The gate corpus replay (`replay-3cca204a.json`, `python3 -m tools.unirally_lab.gates.replay`, 536
@@ -135,9 +135,7 @@ Main `local/evidence/picture-residuals/` (40 MB):
   README row, the regenerated static map and native symbols).
 - Done: every item re-measured on main and given a verdict (Results); the four changes; checks,
   revert, builds, ctest, GCC, the static map, the corpus replay and the race sweep as in Evidence.
-- Not done: review, gates, closeout, STATE.md and NEXT_SESSION.md (the coordinator's). A whole clean
-  `checks.list` run with the filled league counts (only `league-a`/`league-b` were re-verified from
-  their saved outputs).
+- Not done: review, gates, closeout, STATE.md and NEXT_SESSION.md (the coordinator's).
 - Open, queued as [PICTURE-RESIDUALS-REMAINDER](PICTURE-RESIDUALS-REMAINDER.md) (tier 2): objects across
   the split at the left edge (R-0116 finding 6), line 113 under wobble mode's mosaic (finding 7), and
   `organic-cycle-exit`'s second race starting late (seen, not a picture residual).
