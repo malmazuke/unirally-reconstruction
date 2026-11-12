@@ -11152,6 +11152,16 @@
    "region": "rom"
   },
   {
+   "address": "$82:B07E",
+   "native": [
+    "src/core/presentation.cpp:LowerViewEdge"
+   ],
+   "range_ends": [
+    "$82:B153"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:B154",
    "native": [
     "src/core/presentation.cpp:invisible_riders"
@@ -11498,6 +11508,13 @@
    "region": "rom"
   },
   {
+   "address": "$82:DC12",
+   "native": [
+    "src/core/presentation.cpp:load_other_track_presentation_content"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:DC20",
    "native": [
     "src/core/content_pack.cpp:tracks_required",
@@ -11524,6 +11541,16 @@
    "address": "$82:DC3D",
    "native": [
     "src/core/presentation.cpp:neon_scenery"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:DCBB",
+   "native": [
+    "src/core/presentation.cpp:load_other_track_presentation_content"
+   ],
+   "range_ends": [
+    "$82:DD84"
    ],
    "region": "rom"
   },
@@ -12864,6 +12891,20 @@
    ],
    "range_ends": [
     "$83:9DA0"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9E1A",
+   "native": [
+    "src/core/presentation.cpp:load_other_track_presentation_content"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:9E1E",
+   "native": [
+    "src/core/presentation.cpp:load_other_track_presentation_content"
    ],
    "region": "rom"
   },
@@ -14899,7 +14940,7 @@
   {
    "address": "$83:D1DC",
    "native": [
-    "src/core/presentation.cpp:draw_race_riders"
+    "src/core/presentation.cpp:layer_rider_object"
    ],
    "range_ends": [
     "$83:D1E3"
@@ -17585,6 +17626,13 @@
    "region": "wram"
   },
   {
+   "address": "$0751",
+   "native": [
+    "src/core/presentation.cpp:load_other_track_presentation_content"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0825",
    "native": [
     "src/core/race_update.cpp:increment_opponent_tally_byte"
@@ -19325,8 +19373,16 @@
   {
    "address": "$150B",
    "native": [
+    "src/core/presentation.cpp:LowerViewEdge",
     "src/core/race_update.cpp:speed_limit_context",
     "src/core/speed_limits.hpp:SpeedLimitContext::pose_byte"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$150F",
+   "native": [
+    "src/core/presentation.cpp:LowerViewEdge"
    ],
    "region": "wram"
   },
@@ -19340,7 +19396,7 @@
   {
    "address": "$1516",
    "native": [
-    "src/core/presentation.cpp:draw_race_riders",
+    "src/core/presentation.cpp:layer_rider_object",
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::raised_priority"
    ],
    "region": "wram"
@@ -19348,7 +19404,7 @@
   {
    "address": "$151A",
    "native": [
-    "src/core/presentation.cpp:draw_race_riders",
+    "src/core/presentation.cpp:layer_rider_object",
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::raised_priority"
    ],
    "region": "wram"
@@ -25634,6 +25690,15 @@
     "$83:D1CA"
    ]
   },
+  "src/core/presentation.cpp:LowerViewEdge": {
+   "rom": [
+    "$82:B07E"
+   ],
+   "wram": [
+    "$150B",
+    "$150F"
+   ]
+  },
   "src/core/presentation.cpp:RaceObjectMath": {
    "rom": [
     "$80:87AC"
@@ -25715,12 +25780,9 @@
     "$00:212D"
    ],
    "rom": [
-    "$82:D789",
-    "$83:D1DC"
+    "$82:D789"
    ],
    "wram": [
-    "$1516",
-    "$151A",
     "$15A3"
    ]
   },
@@ -25735,13 +25797,29 @@
     "$7E:2054"
    ]
   },
+  "src/core/presentation.cpp:layer_rider_object": {
+   "rom": [
+    "$83:D1DC"
+   ],
+   "wram": [
+    "$1516",
+    "$151A"
+   ]
+  },
   "src/core/presentation.cpp:load_other_track_presentation_content": {
    "rom": [
+    "$82:DC12",
     "$82:DC20",
-    "$82:DC22"
+    "$82:DC22",
+    "$82:DCBB",
+    "$83:9E1A",
+    "$83:9E1E"
    ],
    "sram": [
     "$77:0750"
+   ],
+   "wram": [
+    "$0751"
    ]
   },
   "src/core/presentation.cpp:neon_scenery": {
@@ -31599,11 +31677,11 @@
   }
  },
  "totals": {
-  "addresses": 2241,
+  "addresses": 2248,
   "io_addresses": 12,
-  "native_symbols": 1629,
-  "rom_addresses": 1778,
+  "native_symbols": 1631,
+  "rom_addresses": 1783,
   "sram_addresses": 71,
-  "wram_addresses": 380
+  "wram_addresses": 382
  }
 }

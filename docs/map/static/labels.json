@@ -12628,6 +12628,19 @@
   ]
  },
  {
+  "address": "$80:ED74",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ED74",
+  "native": [
+   "src/core/menu_overruns.cpp:hunter_level_check",
+   "src/core/menu_overruns.cpp:second_half_test"
+  ],
+  "source_records": [
+   "tasks/CPU-CYCLE-TIMING.md"
+  ]
+ },
+ {
   "address": "$80:ED7E",
   "class": "observed",
   "comment": "instruction start",
@@ -12636,7 +12649,8 @@
    "src/core/menu_overruns.cpp:hunter_level_check"
   ],
   "source_records": [
-   "docs/research/R-0115-cpu-cycle-timing.md"
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING.md"
   ]
  },
  {
@@ -18399,7 +18413,8 @@
    "docs/research/R-0115-cpu-cycle-timing.md",
    "tasks/CPU-CYCLE-TIMING-REMAINDER.md",
    "tasks/CPU-CYCLE-TIMING.md",
-   "tasks/LEAGUE-TOURS.md"
+   "tasks/LEAGUE-TOURS.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {
@@ -24801,6 +24816,9 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_82B0F8",
+  "native": [
+   "src/core/presentation.cpp:LowerViewEdge"
+  ],
   "source_records": [
    "docs/research/R-0109-coverage-census.md"
   ]
@@ -25372,7 +25390,8 @@
   "label": "loc_82D4A0",
   "source_records": [
    "docs/research/R-0115-cpu-cycle-timing.md",
-   "tasks/CPU-CYCLE-TIMING.md"
+   "tasks/CPU-CYCLE-TIMING.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {
@@ -25988,6 +26007,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_82DC12",
+  "native": [
+   "src/core/presentation.cpp:load_other_track_presentation_content"
+  ],
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
    "tasks/TRACK-BREADTH.md"
@@ -27698,7 +27720,8 @@
   "comment": "instruction start",
   "label": "loc_838DA0",
   "source_records": [
-   "docs/research/R-0115-cpu-cycle-timing.md"
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING.md"
   ]
  },
  {
@@ -27711,7 +27734,8 @@
    "src/core/menu_overruns.cpp:tour_head"
   ],
   "source_records": [
-   "docs/research/R-0115-cpu-cycle-timing.md"
+   "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING.md"
   ]
  },
  {
@@ -29396,6 +29420,7 @@
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0115-cpu-cycle-timing.md",
+   "tasks/CPU-CYCLE-TIMING.md",
    "tasks/TWO-HUMAN-STUNTS.md"
   ]
  },
@@ -32245,7 +32270,7 @@
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
-   "src/core/presentation.cpp:draw_race_riders",
+   "src/core/presentation.cpp:layer_rider_object",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
    "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"

@@ -12414,6 +12414,9 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/presentation.cpp:LowerViewEdge"
+   ],
    "observed_entries": {},
    "start": "$82:B05A",
    "static_entries": {
@@ -17865,7 +17868,7 @@
     "src/core/neon_lighting.cpp:neon_colour",
     "src/core/neon_lighting.cpp:quarter_step",
     "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
-    "src/core/presentation.cpp:draw_race_riders",
+    "src/core/presentation.cpp:layer_rider_object",
     "src/core/presentation.hpp:ClassicRaceHistoryTracker::neon_green_, ClassicRaceHistoryTracker::on_screen_neon_green_",
     "src/core/presentation.hpp:neon_colour",
     "src/core/presentation.hpp:neon_green_step",
@@ -19616,16 +19619,16 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2685,
+  "cited_addresses": 2686,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2334,
+   "observed": 2335,
    "unknown": 265
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1880,
+   "loc": 1881,
    "mid": 33,
    "sub": 495,
    "unk": 265
@@ -19647,9 +19650,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 94637,
-  "routine_bytes_cited_by_native_code": 74416,
+  "routine_bytes_cited_by_native_code": 74666,
   "routines": 762,
-  "routines_cited_by_native_code": 587,
+  "routines_cited_by_native_code": 588,
   "unknown": 31054,
   "unknown_share": 0.2369
  }
