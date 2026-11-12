@@ -171,3 +171,30 @@ head `f908f38b` with G under the main checkout (a path with a space), `checks-f9
   Evidence, each change toward the original. Expect `lt-*`, `checks-checks-22`/`-29` to `-44`,
   `idle-demo`, `two-pad` and `checks4` to report more pictures equal than main; `race-sweep` same as
   main. The v1 contracts pass here; the frozen race gates read rows, which this change does not touch.
+
+## Closeout (coordinator)
+
+- Review: tier 2, one round on PR #104. Round 1 (`087d9a05`): approve with should-fixes. The two
+  should-fixes were `w1-2p-hill`'s four pictures, credited to the objects' priority instead of the
+  lower view's right-edge hide, and the name `lower_view_left_edge` for a function that returns both
+  edges. There were also notes: the reviewer's every-frame priority probe (624,727 frames, 5 changed
+  pictures), VS NEON uncaptured, the NEON palette set's size check, colour 0's copy, two comments and
+  `check.sh`'s header. All were fixed in `f908f38b` and `9f454033` except colour 0, kept with a
+  comment citing `$82:DCCC`, `$82:DD0A` and `$82:DD48`; the coordinator checked the rename, the size
+  check and the checks rerun on the clean head. Replies on the PR.
+- Gates (D-0012) on `9f454033`, TMPDIR `/private/tmp/prg`:
+  - `gates-1` (the selection, 2 h 38 min): 87 steps same-as-main and 20 passed; the nine task checks
+    pass. Changed: `two-pad`, `idle-demo`, `checks4` and 13 league-tour steps (`lt-tours-a-w0`-`w2`,
+    `w5`-`w8`, `lt-tours-b-w0`/`w1`, `lt-odd-tours-w0`/`w1`, `lt-five-w0`/`w1`). The coordinator
+    compared each with its `@main` log: every one has more pictures equal to the original and nothing
+    else differs (`two-pad`'s `zzap` 6,074 of 6,074, main 6,073; `idle-demo` 1,006 of 1,006, main 993;
+    `checks4`'s `w1-2p-hill` 5,050 of 5,050, main 5,046; the league tours 1 to 315 more each, e.g.
+    `lt-tours-a-w2` 2,872 of 3,889, main 2,557). `lt-odd-tours-w0`'s summary traceback is the same on
+    main. `fe-equivalence` is same-as-main.
+  - `gates-2` (`--only` the 16, `--expect-changed` the 16, 45 min): `status=passed`.
+- CI on `9f454033`: macOS and Ubuntu lab jobs pass.
+- Time: claim `1d33d838` 22:50 UTC on 11 November 2026 to merge about 06:00 UTC on 12 November,
+  about 7 h 10 min, over D-0013's 6-hour target by the gates. Worker 2 h 21 min; review and its fixes
+  1 h 39 min (handoff 01:11 to the checks rerun 02:50 UTC); gates 2 h 38 min + 45 min.
+- Evidence: main `local/evidence/picture-residuals/`, 41 MB. Worktrees `picture-residuals` and
+  `picture-residuals-review` and the branch removed after the merge.

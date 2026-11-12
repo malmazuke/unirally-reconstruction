@@ -27,6 +27,25 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**12 November 2026: PICTURE-RESIDUALS is accepted (tier 2, #104) and integrated by merge commit.**
+R-0116 measures again, on main, the pictures earlier records left different from the original's
+(R-0109 item 7):
+- **Already equal (4):** the three league pictures at the frozen 14-pixel limit (59 of 59 at 0),
+  NOW PLAYING's arrow and icons, the result icons and slides, the GO letters at update 272.
+- **Native change (`presentation.cpp`):** a one-view idle demo's HUD and caption are flat ink
+  (`$212D` = 0); the lower view's edges follow `$82:B07E-B153`; the front object's priority alone
+  decides against BG1; track 42's two-view NEON takes colours 0-95 from the set `$82:DC12` picks
+  (`$83:9E1A`). The demos' 4,974 every-frame pictures, `zzap`'s 6,074 and the league windows' race
+  pictures are now equal, but three 8-pixel moments.
+- **Open**, queued as PICTURE-RESIDUALS-REMAINDER (tier 2): an upper-view object at the split's left
+  edge (3 windows, 8 pixels each), line 113 under wobble mode's mosaic (14 pictures, one row), and a
+  VS NEON capture.
+- **Time:** about 7 h 10 min from claim to merge, over D-0013's 6 hours by the gates. Review one
+  round (2 should-fixes, 8 notes; one kept with a reason). Gates: 87 steps same as main; 16 read
+  as expected changes (`two-pad`, `idle-demo`, `checks4`, 13 league tours), each with more pictures
+  equal to the original and nothing else different.
+[R-0116](research/R-0116-picture-residuals.md) and [PICTURE-RESIDUALS](../tasks/PICTURE-RESIDUALS.md) hold the detail.
+
 **11 November 2026: CPU-CYCLE-TIMING is accepted (tier 1, #103) and integrated by merge commit.**
 R-0115 asks whether native can place the race and menu effects that depend on the CPU's cycle
 count (R-0109 item 6):
