@@ -189,8 +189,9 @@ void choose_track(FrontEndState& state, const FrontEndContent& content) {
 // (`$83:B649` on, up to 0x20), counts down to 13 first. Each of those turns reads its tiles at
 // `$80:EB61` + step and + step + 7 (`$80:EB39`, `$80:EB52`), past the pack's 21 bytes into the
 // code after them. The pack holds only the table, so an entry whose tile lies past it keeps its
-// tile: on every screen that turns the markers before PICK TRACK stores 0 (`$80:E872`) they are
-// hidden, and the original's pictures do not change (SAVE-IMAGE-REMAINDER-2's capture).
+// tile. Captured with saved steps 0x0020 and 0x8000 (R-0119): on OPTIONS, the league slots and its
+// warning, the rider picker, the keyboard and RECORDS the entries are hidden and the original's
+// pictures do not change. The league's continue screen and the local modes' loops are unchecked.
 void turn_markers(FrontEndState& state, const FrontEndContent& content) {
     auto& step = state.track_menu.marker_step;
     constexpr std::uint16_t negative = 0x8000;

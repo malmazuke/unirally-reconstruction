@@ -4599,8 +4599,7 @@
     "src/core/track_menu.cpp:print_track_menu",
     "src/core/track_menu.cpp:track_menu_entry_frame",
     "src/core/track_menu.cpp:track_menu_exit_frame",
-    "src/core/track_menu.cpp:track_menu_frame",
-    "src/core/track_menu.cpp:turn_markers"
+    "src/core/track_menu.cpp:track_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:E84E",
@@ -4646,6 +4645,7 @@
    "native": [
     "src/core/cartridge_ram.cpp:insert_cartridge",
     "src/core/front_end_screens.hpp:marker_step_word",
+    "src/core/front_end_screens.hpp:saved_marker_step",
     "src/core/front_end_screens.hpp:turn_markers",
     "src/core/league_completion.cpp:league_continue_entry_frame",
     "src/core/local_modes.cpp:local_continue_frame",
@@ -19651,8 +19651,8 @@
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1920,
-   "mid": 37,
+   "loc": 1921,
+   "mid": 36,
    "sub": 497,
    "unk": 268
   },

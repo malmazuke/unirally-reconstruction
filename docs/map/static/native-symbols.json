@@ -6520,8 +6520,7 @@
    "address": "$80:E872",
    "native": [
     "src/core/front_end_screens.hpp:marker_step_word",
-    "src/core/track_menu.cpp:enter_track_menu",
-    "src/core/track_menu.cpp:turn_markers"
+    "src/core/track_menu.cpp:enter_track_menu"
    ],
    "region": "rom"
   },
@@ -6690,6 +6689,7 @@
    "address": "$80:EB28",
    "native": [
     "src/core/cartridge_ram.cpp:insert_cartridge",
+    "src/core/front_end_screens.hpp:saved_marker_step",
     "src/core/track_menu.cpp:turn_markers"
    ],
    "range_ends": [
@@ -23887,6 +23887,11 @@
     "$00AC"
    ]
   },
+  "src/core/front_end_screens.hpp:saved_marker_step": {
+   "rom": [
+    "$80:EB28"
+   ]
+  },
   "src/core/front_end_screens.hpp:send_arrow_off": {
    "rom": [
     "$80:98A4"
@@ -30707,7 +30712,6 @@
   },
   "src/core/track_menu.cpp:turn_markers": {
    "rom": [
-    "$80:E872",
     "$80:EB23",
     "$80:EB28",
     "$80:EB32",
@@ -32018,7 +32022,7 @@
  "totals": {
   "addresses": 2274,
   "io_addresses": 12,
-  "native_symbols": 1640,
+  "native_symbols": 1641,
   "rom_addresses": 1807,
   "sram_addresses": 71,
   "wram_addresses": 384

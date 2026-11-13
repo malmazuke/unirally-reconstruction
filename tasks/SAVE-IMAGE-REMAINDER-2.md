@@ -70,10 +70,12 @@ native changes and tests, the rest records and checks.
   - Native now keeps the last marker's two characters. `c039`: 170 to 1 (the league pair's 3-frame
     write at 1,970).
 - **Item 3, a saved marker step of 14 or more: fixed for the image.**
-  - Warm-boot captures from c175's image with `$10A7` set, on an OPTIONS path. The step is a word
+  - Warm-boot captures from c175's image with `$10A7` set, on OPTIONS paths. The step is a word
     counted down to 13, reading tiles past the table into code. 0x8000 counts on from 0x7FFF; R-0117
     said 13.
-  - The tiles go only to hidden entries: the pictures are equal on every frame.
+  - The tiles go only to hidden entries: the pictures are equal on every frame on OPTIONS, the
+    league slots, the rider picker, the keyboard and RECORDS (review 1 added RECORDS and the
+    longer runs). The league's continue screen and the local modes' loops are not checked.
   - Native loads and stores the whole word and counts it as `$80:EB28-EB32` does. A tile past the
     pack's 21 bytes leaves its hidden entry unchanged.
   - Six warm boots are equal to the original at every frame (`check_marker_step.sh`).
@@ -83,6 +85,9 @@ native changes and tests, the rest records and checks.
   - The cause is the title-return sound session (`$80:A0F7`), requested at the same clock but about
     31,000 master clocks behind at the same step of its sample upload on `c032` against `g066`.
   - Native's sound model does not separate the routes. Queued.
+  - A later boot: a save made after the continue screen holds a step one off the original's (both
+    0-13). The boot's list loops turn their hidden markers one step apart until PICK TRACK stores 0
+    before its first turn; nothing else reads the word.
 - **Item 5, HUNTER's preloaded race start: explained, checked, left open.**
   - The warm boot changes the sound processor's phase. The upload's polls end 2,256 clocks before
     the frame's end, and the race setup's tail (5,214 clocks to the frame wait `$00:8587`) slips the
@@ -198,3 +203,31 @@ All in main `local/evidence/save-image-remainder-2/` (2.3 MB).
     frames above;
   - **audio steps:** unchanged. `race_audio_runner` behaves as before unless the new environment
     variables are set, and `load_times.py`'s format is the same.
+
+## Review round 1 fixes (worker)
+
+Review round 1 on PR #107 (no blocking findings), fixed 13 November 2026 07:03-07:10 UTC by the same
+worker (Claude Opus 5.5).
+
+1. R-0119 cites `$80:9D3E-9D49` (the copy starts at `LDY #7`) and says it copies 9 bytes to
+   `$00DC-00E4` in 16-bit words. The regenerated `labels.json` has `loc_809D3E` in place of
+   `mid_809D3F`.
+2. `turn_markers`' comment and the records now name only the captured screens. Review 1's captures
+   (`marker-step/pictures-8000-*.json`, saved step 0x8000 against 0) add the league slots and their
+   warning, the rider picker, the keyboard (`c039`'s pads, 2,600 frames) and RECORDS (`c075`'s,
+   1,700): 0 differing pictures. On `c078`'s and `c081`'s pads (two-player and VS menus) no turn ran.
+   The league's continue screen and the local modes' loops are recorded as unchecked.
+3. `cartridge_ram.cpp` reads the step with `front_end_screens::saved_marker_step`, beside
+   `store_marker_step`; the local constant is gone.
+4. `front_end_tests.cpp`: OPTIONS with Y and Select leaves for the main menu with the arrow on 0, and
+   Select alone moves it; the league slots outside a league with Y and Down go back to OPTIONS from
+   the slot the arrow is on.
+5. R-0119 item 4 and this record say what item 4 does to a later boot: a save after the continue
+   screen holds a step one off (both 0-13), which turns hidden markers one step apart until PICK
+   TRACK stores 0.
+
+Rerun: `project.py build` passed on lab-release and lab-debug; `ctest` 41/41 on lab-debug;
+`clang-format` applied; `clang-tidy` clean on the two changed `.cpp`; GCC 13.3 plain and sanitized
+OK (`gcc-r1.out`); `coverage-census/regen.sh` regenerated the static map and native symbols (tooling
+tests OK); `native-symbols --check` passed (1,807 addresses, 0 without a record). `checks.list` not
+rerun (the gates run it): the native changes are a refactor of the load and comments, so its outputs do not change.

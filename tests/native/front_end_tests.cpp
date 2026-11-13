@@ -2654,8 +2654,11 @@ void save_image_remainder_2_tests() {
   storage.emplace_back(1,
                        0xff); // an empty text: the editor's prints end at once
   content.keyboard_text = content.league_prompt = storage.back();
-  storage.emplace_back(5, 0); // RECORDS' five arrow columns
-  content.records_arrow_columns = storage.back();
+  content.main_menu_text = storage.back();
+  storage.emplace_back(5, 0xff); // OPTIONS' five choices, each empty
+  content.options_menu_text = storage.back();
+  storage.emplace_back(5, 0); // RECORDS' and OPTIONS' five arrow columns
+  content.records_arrow_columns = content.options_arrow_columns = storage.back();
   // A later boot reads the whole word `$77:10A7` (`$80:EB28`).
   auto image = unirally::power_on_cartridge();
   auto booted = unirally::start_front_end();
@@ -2722,6 +2725,25 @@ void save_image_remainder_2_tests() {
   records_menu_frame(records, content, {0x0800, 0});
   require(records.screen == FrontEndScreen::records_menu &&
           records.menu.selection == 4);
+  // OPTIONS: Y with Select leaves for the main menu with the arrow unmoved;
+  // Select alone moves it.
+  auto options = unirally::start_front_end();
+  options.screen = FrontEndScreen::options_menu;
+  options_menu_frame(options, content, {0x4000 | 0x2000, 0});
+  require(options.screen == FrontEndScreen::main_menu_return &&
+          options.menu.selection == 0);
+  options.screen = FrontEndScreen::options_menu;
+  options_menu_frame(options, content, {0x2000, 0});
+  require(options.screen == FrontEndScreen::options_menu &&
+          options.menu.selection == 1);
+  // The league slots outside a league: Y with Down goes back to OPTIONS from
+  // the slot the arrow is on.
+  auto slots = unirally::start_front_end();
+  slots.screen = FrontEndScreen::league_slots;
+  slots.menu.selection = 2;
+  league_slots_frame(slots, content, {0x4000 | 0x0400, 0});
+  require(slots.screen == FrontEndScreen::options_return &&
+          slots.menu.selection == 2);
 }
 
 int main() try {

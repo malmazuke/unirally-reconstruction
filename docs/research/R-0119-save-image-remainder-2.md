@@ -67,7 +67,8 @@ pad 1 presses B, Right and Up together (`$72` = 0x8900).
 ### 2. `c039`: the league editor's buffer tail [C, L]
 
 - **What the bytes are.** A league's membership picker prints each mark through the text printer's
-  scratch `$00DC` (`$80:9D3F-9D49` copies the 8-byte stream `$80:9E0F` there). `$80:9E3C` then sets
+  scratch `$00DC` (`$80:9D3E-9D49` copies the stream `$80:9E0F` there in 16-bit words, 9 bytes
+  to `$00DC-00E4`). `$80:9E3C` then sets
   its column and row. An unmarking stores two underscores at `$00E1-00E2` (`$80:9D66-9D6A`) where
   the stream has the X and its stop (0xFB).
 - **Why they reach the image.** The league editor (`$80:9E57`) types over the scratch from its first
@@ -102,14 +103,19 @@ of `c039`, which go from the main menu to OPTIONS):
   loops before a PICK TRACK.
 - The entries 64-68 are hidden there. Booted with 0x0020 and with 0, the original's pictures are
   equal on every frame to 1,100 (`marker-step/pictures-c039-pads.json`); its OAM buffer and
-  `$10A7` differ.
+  `$10A7` differ. Review 1 added boots with 0x8000, which keeps the step past the table for the
+  whole run, against 0: pictures equal on every frame on `c039`'s pads to 2,600 (OPTIONS, the
+  league slots and their warning, the rider picker, the keyboard) and on `c075`'s to 1,700
+  (RECORDS and a detail) (`marker-step/pictures-8000-*.json`). On `c078`'s and `c081`'s pads (the
+  two-player and VS menus, to 1,550) no turn ran. The league's continue screen and the local modes'
+  loops are not checked.
 
 **The change.** Native loaded the step only when its low byte was below 14, and stored a byte.
 
 - `TrackMenu::marker_step` is now the word. A boot loads it whole (`cartridge_ram.cpp`).
 - Each turn decrements it as `$80:EB28-EB32` does and stores both bytes (`store_marker_step`).
 - A tile index past the pack's 21-byte `front-end.marker-tiles` leaves that entry's tile unchanged
-  (`turn_markers`). Those entries are hidden wherever such a step is turned, as the capture shows.
+  (`turn_markers`). Those entries are hidden on every screen the captures turn such a step on.
 
 **Result.** Six warm boots (`marker-step/routes.json`: 0x0014, 0x0020 and 0x8000 past the table;
 0x000E, 0xFFF4 and 0x0020 on PICK TRACK as controls) are equal to the original's change logs at
@@ -154,6 +160,11 @@ frame later.
 The upload's length here depends on something before the session that native's cues do not carry:
 the CPU's work around the request or the sound processor's state after the anchored scenes (D-0010
 says the product's sound is not exact after the first anchored command). Left open.
+
+**What it does to a later boot.** From the continue screen on, the image's `$10A7` is one step off
+the original's, so a save made after it holds a step one off (both within 0-13). A later boot turns
+its hidden markers one step apart on the list loops until PICK TRACK stores 0 (`$80:E872`) before
+its first turn; nothing else reads the word, and the markers are hidden there (item 3's captures).
 
 ### 5. The race start on HUNTER's preloaded tours [C, N, L]
 
@@ -243,7 +254,9 @@ and `g079` only.
     there for up to 19 frames after such a boot.
   - Adding the bytes would need pack profile v42, which every gate and session would pick up as
     the newest pack.
-  - Pictures are checked equal on the OPTIONS path only.
+  - Pictures are checked equal on OPTIONS, the league slots and their warning, the rider picker,
+    the keyboard and RECORDS; the league's continue screen and the local modes' loops are not
+    checked.
   - Steps 0x0021-0x7FFF other than the ending's are not written by the game. They count down
     the same way and leave hidden tiles stale until 13.
 - **Item 1**: the loop order is changed on OPTIONS, the league slots and RECORDS. Other loops on

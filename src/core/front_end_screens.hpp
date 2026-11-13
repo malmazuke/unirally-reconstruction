@@ -63,6 +63,11 @@ inline void gate_pads(FrontEndState& state, bool pad_one, bool pad_two) {
 // any marker turn (`$80:EB23`, called only from `$80:B97A` and `$80:BAA6`; R-0117 review 1's
 // extended `g045` run: 0x20 to 0). Only a later boot reads an ending's value (SAVE-IMAGE-REMAINDER-2).
 inline constexpr std::size_t marker_step_word = 0x10a7;
+// The saved step as a later boot reads it (`$80:EB28`): the whole word, an ending's counter included.
+inline std::uint16_t saved_marker_step(const FrontEndState& state) {
+    return static_cast<std::uint16_t>(state.cartridge.at(marker_step_word)
+                                      | (state.cartridge.at(marker_step_word + 1) << 8U));
+}
 inline void store_marker_step(FrontEndState& state) {
     const auto step = state.track_menu.marker_step;
     state.cartridge.at(marker_step_word) = static_cast<std::uint8_t>(step & 0xffU);

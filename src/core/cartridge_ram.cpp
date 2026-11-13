@@ -1,4 +1,5 @@
 #include "cartridge_ram.hpp"
+#include "front_end_screens.hpp"
 
 #include "audio_cpu_clock.hpp"
 #include "audio_cpu_scene.hpp"
@@ -251,9 +252,7 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
     // holds: a save made during a gold ending leaves the ending's counter there (0xFFF4 to 0x0020,
     // R-0117), which the first turns count down (`$80:EB28-EB32`, `turn_markers`). Only a cold
     // start's wipe resets it.
-    constexpr std::size_t marker_step_word = 0x10a7;
-    state.track_menu.marker_step = static_cast<std::uint16_t>(
-        state.cartridge[marker_step_word] | (state.cartridge[marker_step_word + 1] << 8U));
+    state.track_menu.marker_step = front_end_screens::saved_marker_step(state);
 }
 
 void store_race_mode_from_option_byte(FrontEndState& state) {
