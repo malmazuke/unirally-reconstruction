@@ -4966,6 +4966,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:CF43",
+   "native": [
+    "src/core/race_result.cpp:print_rows"
+   ],
+   "range_ends": [
+    "$80:CF4E"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:CF5B",
    "native": [
     "src/core/race_result.cpp:print_rows"
@@ -4999,6 +5009,16 @@
    ],
    "range_ends": [
     "$80:D00F"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D011",
+   "native": [
+    "src/core/race_result.cpp:print_rows"
+   ],
+   "range_ends": [
+    "$80:D014"
    ],
    "region": "rom"
   },
@@ -11277,7 +11297,18 @@
     "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
     "src/core/presentation.cpp:colour_math_size",
     "src/core/presentation.cpp:colour_math_subtracts",
-    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math"
+    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
+    "src/core/presentation.hpp:rider_colour_math_entry"
+   ],
+   "range_ends": [
+    "$82:D51B"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:D51C",
+   "native": [
+    "src/core/presentation.hpp:rider_colour_math_entry"
    ],
    "region": "rom"
   },
@@ -11292,6 +11323,30 @@
    "range_ends": [
     "$82:D5FB",
     "$82:D607"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:D5BE",
+   "native": [
+    "src/core/presentation.hpp:lower_view_colour_math"
+   ],
+   "range_ends": [
+    "$82:D5CC"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:D5C6",
+   "native": [
+    "src/core/presentation.cpp:lower_view_colour_math"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:D5CC",
+   "native": [
+    "src/core/presentation.cpp:lower_view_colour_math"
    ],
    "region": "rom"
   },
@@ -19856,6 +19911,8 @@
    "address": "$77:0748",
    "native": [
     "src/core/presentation.cpp:apply_neon_colours",
+    "src/core/presentation.cpp:lower_view_colour_math",
+    "src/core/presentation.hpp:lower_view_colour_math",
     "src/core/race_result.cpp:count_versus_result",
     "src/core/race_result.cpp:update_records",
     "src/core/split_demo_runner.cpp:main",
@@ -19867,6 +19924,8 @@
    "address": "$77:0749",
    "native": [
     "src/core/presentation.cpp:apply_neon_colours",
+    "src/core/presentation.cpp:lower_view_colour_math",
+    "src/core/presentation.hpp:lower_view_colour_math",
     "src/core/race_result.cpp:count_versus_result",
     "src/core/race_result.cpp:update_records",
     "src/core/split_demo_runner.cpp:main",
@@ -19929,6 +19988,7 @@
     "src/core/league_menu.cpp:choose_league_pair",
     "src/core/presentation.cpp:invisible_riders",
     "src/core/presentation.cpp:load_other_track_presentation_content",
+    "src/core/presentation.hpp:lower_view_colour_math",
     "src/core/race_setup.cpp:neon_lighting_on",
     "src/core/race_update.cpp:loop_top_step, cartridge_options, split_demo_options",
     "src/core/reward_queue.cpp:push_front_player_announcement",
@@ -25966,6 +26026,16 @@
     "$0751"
    ]
   },
+  "src/core/presentation.cpp:lower_view_colour_math": {
+   "rom": [
+    "$82:D5C6",
+    "$82:D5CC"
+   ],
+   "sram": [
+    "$77:0748",
+    "$77:0749"
+   ]
+  },
   "src/core/presentation.cpp:neon_scenery": {
    "rom": [
     "$82:DC3D"
@@ -26372,6 +26442,16 @@
     "$000F"
    ]
   },
+  "src/core/presentation.hpp:lower_view_colour_math": {
+   "rom": [
+    "$82:D5BE"
+   ],
+   "sram": [
+    "$77:0748",
+    "$77:0749",
+    "$77:0750"
+   ]
+  },
   "src/core/presentation.hpp:neon_colour": {
    "rom": [
     "$83:D24A"
@@ -26389,6 +26469,12 @@
     "$12CF",
     "$12D1",
     "$12D3"
+   ]
+  },
+  "src/core/presentation.hpp:rider_colour_math_entry": {
+   "rom": [
+    "$82:D4DC",
+    "$82:D51C"
    ]
   },
   "src/core/presentation.hpp:split_stunt_score_cells": {
@@ -27032,9 +27118,11 @@
   },
   "src/core/race_result.cpp:print_rows": {
    "rom": [
+    "$80:CF43",
     "$80:CF5B",
     "$80:CFA3",
-    "$80:D009"
+    "$80:D009",
+    "$80:D011"
    ],
    "wram": [
     "$00B2"
@@ -31849,10 +31937,10 @@
   }
  },
  "totals": {
-  "addresses": 2263,
+  "addresses": 2269,
   "io_addresses": 12,
-  "native_symbols": 1635,
-  "rom_addresses": 1797,
+  "native_symbols": 1638,
+  "rom_addresses": 1803,
   "sram_addresses": 71,
   "wram_addresses": 383
  }

@@ -49,7 +49,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 23.7%**.
 
 ## Cited addresses
 
-2712 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1904, mid 33, sub 495, unk 268 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2358, unknown 268.
+2724 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 1913, mid 35, sub 496, unk 268 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 74, observed 2370, unknown 268.
 
 Cited addresses in `unknown` bytes:
 
@@ -245,7 +245,7 @@ Cited addresses in `unknown` bytes:
 | $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0089-coverage-gaps.md, docs/research/R-0093-data-coverage.md, docs/research/R-0112-census-remainder.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
 | $82:B549 | docs/research/R-0109-coverage-census.md |
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0093-data-coverage.md, docs/research/R-0112-census-remainder.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/M4-03.md, tasks/NEXT_SESSION.md |
-| $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
+| $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, docs/research/R-0118-opponent-pose-bounds.md, tasks/OPPONENT-POSE-BOUNDS.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0116-picture-residuals.md, tasks/NEXT_SESSION.md, tasks/TRACK-BREADTH.md |
 | $82:E19D | docs/research/R-0112-census-remainder.md |
 | $82:E35C | docs/research/R-0109-coverage-census.md |
