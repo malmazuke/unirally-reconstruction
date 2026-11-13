@@ -165,8 +165,9 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
         case RowKind::opponent: {
             state.options_rider = state.now_playing.opponent; // $80:D009-D00F
             // $80:D011-D014: a computer opponent's row (its time 0xEA62, $80:CF43-CF4E, sorted
-            // after the records) prints nothing: no rider, best time, markers or colours. Its
-            // rider (16 and up) would index past the best times (R-0118).
+            // after the records) prints nothing: no rider, best time, markers or colours. The
+            // best time below is indexed by `second_rider`: 0 in 1P, but 16 (SOMEONE) in a
+            // league against the computer, past the 800 best times (R-0118).
             if (state.now_playing.opponent >= someone) continue;
             rider = state.second_rider;
             auto& best = personal_best(records, rider, track);
