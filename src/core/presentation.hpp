@@ -565,7 +565,9 @@ struct ClassicRacePresentationContent {
     // ($82:DD90-DD9A) and 4 the opponent's ($82:DDB0-DDBC; R-0052, R-0061).
     std::span<const std::uint8_t> rider_palette, opponent_palette;
     // The player's four bytes of `$82:D4DC`: COLDATA's writes and CGADSUB, the colour math
-    // HDMA channel 5 applies to the BG3 ink ($82:D57F-D5FB, R-0061).
+    // HDMA channel 5 applies to the BG3 ink ($82:D57F-D5FB, R-0061). The opponent's are empty
+    // for a computer opponent (16 and up), which has no entry (R-0118); see
+    // `lower_view_colour_math` for the entry the lower lines take.
     std::span<const std::uint8_t> rider_colour_math;
     std::span<const std::uint8_t> opponent_colour_math;
     // NEON (R-0068): the green levels by palette (`$83:D1C3`, eight bytes); empty elsewhere.
@@ -599,6 +601,18 @@ std::uint16_t subtract_colour(std::uint16_t object, std::uint16_t below);
 // enabled the race's ink is CGRAM 27 (`ink`) plus, or minus, that fixed colour, clamped per
 // channel (R-0061): MIKE's (13,0,0) + (15,0,0), TONY's black.
 std::uint16_t classic_race_ink(std::uint16_t ink, std::span<const std::uint8_t> colour_math);
+// $82:D4DC-D51B: a rider character's four bytes of the colour math table, one entry for each of
+// the 16 rider characters. A computer opponent (BRONSEN 0x11 to ANTI-UNI 0x14) has none: the
+// table ends where `$82:D51C`'s code begins, and the original never indexes it with one
+// (R-0118). Empty for such a character.
+std::span<const std::uint8_t> rider_colour_math_entry(std::span<const std::uint8_t> table,
+                                                      unsigned character);
+// $82:D5BE-D5CC: the entry channel 5 gives the lower lines (from line 111): the second rider's
+// (`$77:0749`) only in a race with two views (`$77:0750` bit 3), otherwise the player's
+// (`$77:0748`) again, so a race against a computer opponent never reads its entry (R-0118).
+// Refuses two views whose second rider has no entry.
+std::span<const std::uint8_t> lower_view_colour_math(const ClassicRacePresentationContent& content,
+                                                     bool two_views);
 // The content of MIKE's race against the track's usual opponent.
 ClassicRacePresentationContent classic_race_presentation_content(const ClassicContentPack& pack,
                                                                  ClassicRaceTrack track);

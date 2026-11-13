@@ -69,6 +69,22 @@ std::uint16_t classic_race_ink(std::uint16_t ink, std::span<const std::uint8_t> 
     return static_cast<std::uint16_t>(word);
 }
 
+std::span<const std::uint8_t> rider_colour_math_entry(std::span<const std::uint8_t> table,
+                                                      unsigned character) {
+    if (table.size() < colour_math_size * rider_characters)
+        throw std::invalid_argument("the riders' colour math table is short");
+    if (character >= rider_characters) return {};
+    return table.subspan(colour_math_size * character, colour_math_size);
+}
+
+std::span<const std::uint8_t> lower_view_colour_math(const ClassicRacePresentationContent& content,
+                                                     bool two_views) {
+    if (!two_views) return content.rider_colour_math; // $82:D5CC: `$77:0748`
+    if (content.opponent_colour_math.empty())
+        throw std::invalid_argument("a race with two views needs two rider characters");
+    return content.opponent_colour_math; // $82:D5C6: `$77:0749`
+}
+
 namespace {
 
 // The decoded track a race runs on: the engine's own entry.
@@ -249,12 +265,10 @@ classic_race_presentation_content(const ClassicContentPack& pack,
     content.rider_palette = character_palette(pack, scenario.pairing.rider);
     content.opponent_palette = character_palette(pack, scenario.pairing.opponent);
     const auto colour_math = pack.entry("race.rider-colour-math");
-    if (colour_math.size() < colour_math_size * rider_characters)
-        throw std::invalid_argument("the riders' colour math table is short");
-    content.rider_colour_math =
-        colour_math.subspan(colour_math_size * scenario.pairing.rider, colour_math_size);
-    content.opponent_colour_math =
-        colour_math.subspan(colour_math_size * scenario.pairing.opponent, colour_math_size);
+    content.rider_colour_math = rider_colour_math_entry(colour_math, scenario.pairing.rider);
+    content.opponent_colour_math = rider_colour_math_entry(colour_math, scenario.pairing.opponent);
+    if (content.rider_colour_math.empty())
+        throw std::invalid_argument("the player's rider is not a rider character");
     // One ROM table serves both tracks (R-0037); its accepted entry name
     // predates DRAGSTER reading it and cannot be renamed.
     content.race_palette_cycle = pack.entry("presentation.zoom.race-palette-cycle.v1");
@@ -367,16 +381,17 @@ std::array<std::uint8_t, 65536> race_vram(const ClassicRacePresentationContent& 
     return vram;
 }
 
-// The BG3 ink at `brightness`: CGRAM 27 through the rider's colour math, then faded, as the
+// The BG3 ink at `brightness`: CGRAM 27 through the view's colour math, then faded, as the
 // PPU fades the colour math's result.
 std::array<std::uint8_t, 3> race_ink_rgb(const ClassicRacePresentationContent& content,
-                                         unsigned brightness, bool opponent = false) {
+                                         unsigned brightness,
+                                         std::span<const std::uint8_t> colour_math) {
     const auto colours =
         content.background_palette_set.empty() ? content.palette : content.background_palette_set;
     auto ink = classic_race_ink(
         static_cast<std::uint16_t>(colours[2U * bg3_ink_colour]
                                    | (unsigned(colours[2U * bg3_ink_colour + 1U]) << 8U)),
-        opponent ? content.opponent_colour_math : content.rider_colour_math);
+        colour_math);
     if (brightness < 15U) ink = apply_snes_brightness(ink, brightness);
     return colour_word_rgb(ink);
 }
@@ -600,7 +615,7 @@ RaceObjectMath race_object_math(const std::bitset<256 * 224>& caption_ink,
             neon_vram,
             &scroll,
             colour_math_subtracts(content.rider_colour_math),
-            colour_math_subtracts(content.opponent_colour_math),
+            colour_math_subtracts(lower_view_colour_math(content, split)),
             split};
 }
 
@@ -953,8 +968,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     const auto& cgram = colours.shown;
     // NEON's NMI turns channel 5, the rider's colour math on the ink, off ($80:87A7) and its
     // colour math leaves BG3 out: the ink is colour 27 itself (R-0068).
-    const auto bg3_ink =
-        neon_green ? colour(cgram, bg3_ink_colour) : race_ink_rgb(content, brightness);
+    const auto bg3_ink = neon_green ? colour(cgram, bg3_ink_colour)
+                                    : race_ink_rgb(content, brightness, content.rider_colour_math);
     const auto scroll = race_scroll(state, content, previous_update, history);
     const auto second_scroll =
         state.split_screen
@@ -973,7 +988,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     const auto menu_cells = classic_pause_shows_message(state)
                               ? classic_pause_message_cells(state.pause.lower_view)
                               : classic_pause_menu_cells(state.pause.lower_view);
-    const auto lower_ink = race_ink_rgb(content, brightness, true);
+    const auto lower_ink =
+        race_ink_rgb(content, brightness, lower_view_colour_math(content, state.split_screen));
     const auto draw_hud = [&] {
         draw_classic_caption(frame, rider_source, content, hud, bg3_ink, caption_ink);
         draw_classic_hud(frame, rider_source, content,

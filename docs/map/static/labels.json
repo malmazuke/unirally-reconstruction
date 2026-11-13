@@ -2863,7 +2863,9 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0058-lap-result.md"
+   "docs/research/R-0058-lap-result.md",
+   "tasks/NEXT_SESSION.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },
  {
@@ -4236,6 +4238,15 @@
   ]
  },
  {
+  "address": "$80:A688",
+  "class": "observed",
+  "comment": "inside the instruction at $80:A686",
+  "label": "mid_80A688",
+  "source_records": [
+   "tasks/NEXT_SESSION.md"
+  ]
+ },
+ {
   "address": "$80:A68D",
   "class": "unknown",
   "comment": "unknown",
@@ -4731,7 +4742,8 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0105-cartridge-option-words.md",
    "tasks/COVERAGE-ROADMAP.md",
-   "tasks/FRONT-END-MAIN-MENU.md"
+   "tasks/FRONT-END-MAIN-MENU.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },
  {
@@ -6316,7 +6328,9 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0098-league-tours.md",
-   "docs/research/R-0117-save-image-remainder.md"
+   "docs/research/R-0117-save-image-remainder.md",
+   "tasks/NEXT_SESSION.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },
  {
@@ -7311,7 +7325,8 @@
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0117-save-image-remainder.md"
+   "docs/research/R-0117-save-image-remainder.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },
  {
@@ -9034,6 +9049,19 @@
   ]
  },
  {
+  "address": "$80:C603",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C603",
+  "native": [
+   "src/core/options_menu.cpp:enter_define_player_warning"
+  ],
+  "source_records": [
+   "tasks/NEXT_SESSION.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
+  ]
+ },
+ {
   "address": "$80:C620",
   "class": "unknown",
   "comment": "unknown",
@@ -9807,6 +9835,24 @@
   ]
  },
  {
+  "address": "$80:CF43",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CF43",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:RowKind",
+   "src/core/race_result.cpp:print_rows",
+   "src/core/race_result.cpp:rider_mark_tile, rider_mark_attributes, opponent_mark_attributes, rider_marks_high",
+   "src/core/race_result.cpp:sorted_rows",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0118-opponent-pose-bounds.md"
+  ]
+ },
+ {
   "address": "$80:CF56",
   "class": "observed",
   "comment": "instruction start",
@@ -9837,6 +9883,18 @@
   ],
   "source_records": [
    "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:CF68",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CF68",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0118-opponent-pose-bounds.md"
   ]
  },
  {
@@ -9898,7 +9956,8 @@
    "src/core/race_result.cpp:print_rows"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0118-opponent-pose-bounds.md"
   ]
  },
  {
@@ -9924,6 +9983,42 @@
   "source_records": [
    "docs/research/R-0097-menu-input.md",
    "tasks/RECORD-SCREENS.md"
+  ]
+ },
+ {
+  "address": "$80:D011",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D011",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "tasks/OPPONENT-POSE-BOUNDS.md"
+  ]
+ },
+ {
+  "address": "$80:D01A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D01A",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0118-opponent-pose-bounds.md"
+  ]
+ },
+ {
+  "address": "$80:D071",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D071",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0118-opponent-pose-bounds.md"
   ]
  },
  {
@@ -9992,7 +10087,8 @@
    "src/core/race_result.cpp:rows_palettes"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0118-opponent-pose-bounds.md"
   ]
  },
  {
@@ -12537,7 +12633,8 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
-   "tasks/MENU-INPUT.md"
+   "tasks/MENU-INPUT.md",
+   "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },
  {
@@ -25626,13 +25723,38 @@
    "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
    "src/core/presentation.cpp:colour_math_size",
    "src/core/presentation.cpp:colour_math_subtracts",
-   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math"
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
+   "src/core/presentation.hpp:rider_colour_math_entry"
   ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
    "docs/research/R-0080-split-hud.md",
+   "docs/research/R-0118-opponent-pose-bounds.md",
+   "tasks/OPPONENT-POSE-BOUNDS.md",
    "tasks/RACE-RIDERS-OPPONENTS.md",
    "tasks/SPLIT-HUD-GAPS.md"
+  ]
+ },
+ {
+  "address": "$82:D51C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D51C",
+  "native": [
+   "src/core/presentation.hpp:rider_colour_math_entry"
+  ],
+  "source_records": [
+   "docs/research/R-0118-opponent-pose-bounds.md",
+   "tasks/OPPONENT-POSE-BOUNDS.md"
+  ]
+ },
+ {
+  "address": "$82:D52C",
+  "class": "observed",
+  "comment": "inside the instruction at $82:D52B",
+  "label": "mid_82D52C",
+  "source_records": [
+   "docs/research/R-0118-opponent-pose-bounds.md"
   ]
  },
  {
@@ -25679,7 +25801,25 @@
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
    "docs/research/R-0080-split-hud.md",
+   "docs/research/R-0118-opponent-pose-bounds.md",
    "tasks/SPLIT-HUD-GAPS.md"
+  ]
+ },
+ {
+  "address": "$82:D5BE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D5BE",
+  "native": [
+   "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
+   "src/core/presentation.cpp:split_view_line",
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
+   "src/core/presentation.hpp:classic_race_ink",
+   "src/core/presentation.hpp:lower_view_colour_math"
+  ],
+  "source_records": [
+   "docs/research/R-0118-opponent-pose-bounds.md",
+   "tasks/OPPONENT-POSE-BOUNDS.md"
   ]
  },
  {
@@ -25691,10 +25831,46 @@
    "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
    "src/core/presentation.cpp:split_view_line",
    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
-   "src/core/presentation.hpp:classic_race_ink"
+   "src/core/presentation.hpp:classic_race_ink",
+   "src/core/presentation.hpp:lower_view_colour_math"
   ],
   "source_records": [
    "docs/research/R-0105-cartridge-option-words.md"
+  ]
+ },
+ {
+  "address": "$82:D5C6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D5C6",
+  "native": [
+   "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
+   "src/core/presentation.cpp:lower_view_colour_math",
+   "src/core/presentation.cpp:split_view_line",
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
+   "src/core/presentation.hpp:classic_race_ink",
+   "src/core/presentation.hpp:lower_view_colour_math"
+  ],
+  "source_records": [
+   "docs/research/R-0118-opponent-pose-bounds.md",
+   "tasks/OPPONENT-POSE-BOUNDS.md"
+  ]
+ },
+ {
+  "address": "$82:D5CC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D5CC",
+  "native": [
+   "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
+   "src/core/presentation.cpp:lower_view_colour_math",
+   "src/core/presentation.cpp:split_view_line",
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
+   "src/core/presentation.hpp:classic_race_ink",
+   "src/core/presentation.hpp:lower_view_colour_math"
+  ],
+  "source_records": [
+   "tasks/OPPONENT-POSE-BOUNDS.md"
   ]
  },
  {
@@ -29070,7 +29246,8 @@
    "src/core/menu_overruns.cpp:percentage_clocks"
   ],
   "source_records": [
-   "docs/research/R-0111-save-image-exact.md"
+   "docs/research/R-0111-save-image-exact.md",
+   "docs/research/R-0118-opponent-pose-bounds.md"
   ]
  },
  {
@@ -29636,7 +29813,8 @@
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0118-opponent-pose-bounds.md"
   ]
  },
  {
@@ -30894,6 +31072,7 @@
   "source_records": [
    "docs/research/R-0111-save-image-exact.md",
    "docs/research/R-0117-save-image-remainder.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
  },

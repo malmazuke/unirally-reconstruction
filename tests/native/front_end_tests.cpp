@@ -876,6 +876,28 @@ void race_result_tests() {
   unirally::return_from_race(computer, content, 5000, {3357, 0xea62});
   run(computer, content, 104);
   require(computer.screen != FrontEndScreen::race_restart);
+  // R-0118 ($80:D011-D014): the computer opponent's row (0xEA62, sorted fifth
+  // after the three records) prints nothing: the new-best markers 97 and 99
+  // stay off the fifth row's line (0x58 + 4 x 24) and the 2P marks 101 and 103
+  // keep their attributes. In a league against the computer `$017F` is 16
+  // (SOMEONE), which would index past the 800 best times.
+  for (const std::uint8_t second : {std::uint8_t{0}, std::uint8_t{16}}) {
+    auto fifth = to_race();
+    fifth.second_rider = second;
+    const auto best = fifth.records.best;
+    unirally::return_from_race(fifth, content, 5000, {3357, 4000});
+    require(run_to(fifth, content, FrontEndScreen::race_result, {}, 104));
+    run(fifth, content, 12);
+    const auto y = [&](unsigned entry) { return fifth.oam_buffer[entry * 4 + 1]; };
+    const auto attributes = [&](unsigned entry) {
+      return fifth.oam_buffer[entry * 4 + 3];
+    };
+    require(fifth.now_playing.opponent == 0x11 && y(97) != 0xb8 &&
+            y(99) != 0xb8 && attributes(101) != 0x19 &&
+            attributes(103) != 0x19);
+    for (std::size_t k = 0; k < best.size(); ++k)
+      require(fifth.records.best[k] == best[k] || k == 0);
+  }
   // R-0061: a race whose tutorial hints ended sets its rider's bit ($83:CE2C).
   auto hints_over = to_race();
   unirally::RaceTimes over_times{0xea61, 0xea60};

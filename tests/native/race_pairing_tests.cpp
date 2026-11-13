@@ -9,7 +9,9 @@
 #include "reward_queue.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <stdexcept>
 
 static void require(bool value) {
@@ -149,6 +151,31 @@ void ink_colour_math() {
     require(classic_race_ink(colour_27, dave) == 0x7fff);
     require(classic_race_ink(colour_27, tony) == 0x0000);
     rejects([] { (void)classic_race_ink(colour_27, {}); });
+}
+
+// R-0118: `$82:D4DC` holds the 16 rider characters' entries and nothing for a computer opponent,
+// whose race takes the player's entry for the lower lines ($82:D5BE-D5CC), as the original's
+// HUNTER race against ANTI-UNI shows.
+void computer_opponents_have_no_colour_math() {
+    std::array<std::uint8_t, 64> table{};
+    for (std::size_t i = 0; i < table.size(); ++i)
+        table[i] = static_cast<std::uint8_t>(i);
+    const auto entry = [&](unsigned character) { return rider_colour_math_entry(table, character); };
+    require(entry(0).size() == 4 && entry(0)[0] == 0 && entry(15).size() == 4 && entry(15)[3] == 63);
+    for (const unsigned character :
+         {16U, unsigned(opponent::bronsen), unsigned(opponent::silvia), unsigned(opponent::goldwyn),
+          unsigned(opponent::anti_uni), 0xffU})
+        require(entry(character).empty());
+    rejects([&] { (void)rider_colour_math_entry(std::span(table).first(60), 0); });
+
+    ClassicRacePresentationContent content;
+    content.rider_colour_math = entry(0);
+    content.opponent_colour_math = entry(opponent::anti_uni);
+    require(lower_view_colour_math(content, false).data() == content.rider_colour_math.data());
+    rejects([&] { (void)lower_view_colour_math(content, true); });
+    content.opponent_colour_math = entry(14);
+    require(lower_view_colour_math(content, true).data() == table.data() + 56);
+    require(lower_view_colour_math(content, false).data() == table.data());
 }
 
 void menus_pass_the_tutorial_bit() {
@@ -323,6 +350,7 @@ int main() {
     launches_by_level();
     voices();
     ink_colour_math();
+    computer_opponents_have_no_colour_math();
     menus_pass_the_tutorial_bit();
     restarts_keep_the_pairing();
     paired_states_read_back();

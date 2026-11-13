@@ -13414,9 +13414,12 @@
    ],
    "native": [
     "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
+    "src/core/presentation.cpp:lower_view_colour_math",
     "src/core/presentation.cpp:split_view_line",
     "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
-    "src/core/presentation.hpp:classic_race_ink"
+    "src/core/presentation.hpp:classic_race_ink",
+    "src/core/presentation.hpp:lower_view_colour_math",
+    "src/core/presentation.hpp:rider_colour_math_entry"
    ],
    "observed_entries": {},
    "start": "$82:D51C",
@@ -19629,18 +19632,18 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2712,
+  "cited_addresses": 2724,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2358,
+   "observed": 2370,
    "unknown": 268
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1904,
-   "mid": 33,
-   "sub": 495,
+   "loc": 1913,
+   "mid": 35,
+   "sub": 496,
    "unk": 268
   },
   "conflicts": 0,
