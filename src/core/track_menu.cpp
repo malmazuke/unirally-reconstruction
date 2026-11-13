@@ -184,15 +184,26 @@ void choose_track(FrontEndState& state, const FrontEndContent& content) {
 } // namespace
 
 // $80:EB23, before each frame wait: the markers turn, entries 64, 66 and 68 half a cycle from
-// 65 and 67.
+// 65 and 67. The step is a word (`$80:EB28-EB32`): it counts down and becomes 13 once the count
+// goes negative (bit 15), so a step past the table, which a save made during a gold ending leaves
+// (`$83:B649` on, up to 0x20), counts down to 13 first. Each of those turns reads its tiles at
+// `$80:EB61` + step and + step + 7 (`$80:EB39`, `$80:EB52`), past the pack's 21 bytes into the
+// code after them. The pack holds only the table, so an entry whose tile lies past it keeps its
+// tile. Captured with saved steps 0x0020 and 0x8000 (R-0119): on OPTIONS, the league slots and its
+// warning, the rider picker, the keyboard and RECORDS the entries are hidden and the original's
+// pictures do not change. The league's continue screen and the local modes' loops are unchecked.
 void turn_markers(FrontEndState& state, const FrontEndContent& content) {
     auto& step = state.track_menu.marker_step;
-    step = step == 0 ? marker_steps - 1 : static_cast<std::uint8_t>(step - 1);
+    constexpr std::uint16_t negative = 0x8000;
+    const auto counted = static_cast<std::uint16_t>(step - 1U);
+    step = (counted & negative) != 0 ? std::uint16_t{marker_steps - 1} : counted;
     store_marker_step(state); // $80:EB32
-    for (const unsigned entry : {64U, 66U, 68U})
-        oam_byte(state, entry, 2) = content.marker_tiles[step];
-    for (const unsigned entry : {65U, 67U})
-        oam_byte(state, entry, 2) = content.marker_tiles[step + marker_half_cycle];
+    const auto put = [&](unsigned entry, std::size_t index) {
+        if (index < content.marker_tiles.size())
+            oam_byte(state, entry, 2) = content.marker_tiles[index];
+    };
+    for (const unsigned entry : {64U, 66U, 68U}) put(entry, step);
+    for (const unsigned entry : {65U, 67U}) put(entry, std::size_t{step} + marker_half_cycle);
 }
 
 void enter_track_menu(FrontEndState& state, bool returning) {

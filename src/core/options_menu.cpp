@@ -44,6 +44,14 @@ void aim_choice(FrontEndState& state, std::span<const std::uint8_t> columns) {
     state.arrow.target_y = static_cast<std::uint16_t>(first_row + row * row_step);
 }
 
+// `$80:B983-B99E`, the generic list loop's pass: Y or X (`$80:B74A`) and B, Start or A (`$80:B71D`)
+// leave the loop with the entry the arrow is on before Down or Select (`$80:B794`) and Up
+// (`$80:B76F`) are read, so a press that comes with a direction chooses without moving
+// (`c385`, SAVE-IMAGE-REMAINDER-2). Callers test their exits first and move only without one.
+bool leaves_list(FrontEndPads pads) {
+    return (static_cast<std::uint16_t>(pads.one | pads.two) & (back_buttons | choose_buttons)) != 0;
+}
+
 void move_choice(FrontEndState& state, std::span<const std::uint8_t> columns, FrontEndPads pads,
                  unsigned count = choice_count) {
     const auto pad = static_cast<std::uint16_t>(pads.one | pads.two);
@@ -133,7 +141,7 @@ void options_return_frame(FrontEndState& state, const FrontEndContent& content) 
 
 void options_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state);
-    move_choice(state, content.options_arrow_columns, pads);
+    if (!leaves_list(pads)) move_choice(state, content.options_arrow_columns, pads);
     const auto pad = static_cast<std::uint16_t>(pads.one | pads.two);
     if (pad & back_buttons || ((pad & choose_buttons) && state.menu.selection == 4)) {
         return_to_main(state, content);
@@ -188,7 +196,7 @@ void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& conte
 
 void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state);
-    move_choice(state, league_slot_columns, pads, league_slot_count);
+    if (!leaves_list(pads)) move_choice(state, league_slot_columns, pads, league_slot_count);
     const auto pad = static_cast<std::uint16_t>(pads.one | pads.two);
     // $80:9F18-9F21: leaving the slots either way clears `$77:0742` bit 13, so a podium still
     // owed when the league was left is never shown (R-0105).
@@ -290,7 +298,7 @@ void reopen_records_menu(FrontEndState& state, const FrontEndContent& content) {
 
 void records_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state);
-    move_choice(state, content.records_arrow_columns, pads);
+    if (!leaves_list(pads)) move_choice(state, content.records_arrow_columns, pads);
     const auto pad = static_cast<std::uint16_t>(pads.one | pads.two);
     if ((pad & choose_buttons) && state.menu.selection == 4) {
         return_to_main(state, content);
@@ -584,6 +592,10 @@ void enter_league_editor(FrontEndState& state, const FrontEndContent& content) {
     // $80:9E3C-9E54; R-0073: retain the last marker's column/row, including bytes after FF FF.
     state.keyboard.scratch[3] = state.league.marker_column;
     state.keyboard.scratch[4] = state.league.marker_row;
+    // `$80:9D66-9D6A`: an unmarking leaves two underscores where `$80:9E0F` has the X and its
+    // stop; a one-letter name's commit copies them (`$00E1-00E2`, `c039`).
+    state.keyboard.scratch[5] = state.league.marker_characters[0];
+    state.keyboard.scratch[6] = state.league.marker_characters[1];
     // $00E8-$00EE held underscores in every capture of a league's naming (R-0097; their writer is
     // not identified): a long name's commit copies them after its end.
     std::fill(state.keyboard.scratch.begin() + 12, state.keyboard.scratch.end(), std::uint8_t{'_'});

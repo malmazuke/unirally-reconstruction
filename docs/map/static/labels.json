@@ -362,7 +362,9 @@
    "docs/research/R-0009-m1-acceptance.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0114-sound-processor-timing.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/M1-01.md",
+   "tasks/SAVE-IMAGE-REMAINDER-2.md",
    "tasks/SOUND-PROCESSOR-TIMING-REMAINDER.md"
   ]
  },
@@ -3096,10 +3098,10 @@
   ]
  },
  {
-  "address": "$80:9D66",
+  "address": "$80:9D3E",
   "class": "observed",
   "comment": "instruction start",
-  "label": "loc_809D66",
+  "label": "loc_809D3E",
   "native": [
    "src/core/front_end.hpp:LeagueSetup",
    "src/core/rider_menu.cpp:mark_league_member",
@@ -3107,7 +3109,26 @@
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0119-save-image-remainder-2.md"
+  ]
+ },
+ {
+  "address": "$80:9D66",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809D66",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/front_end.hpp:LeagueSetup::marker_characters",
+   "src/core/options_menu.cpp:enter_league_editor",
+   "src/core/rider_menu.cpp:mark_league_member",
+   "src/core/rider_menu.cpp:read_league_members_pad",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
+   "tasks/SAVE-IMAGE-REMAINDER-2.md"
   ]
  },
  {
@@ -3185,6 +3206,7 @@
    "docs/research/R-0072-options.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0117-save-image-remainder.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/MENU-INPUT.md",
    "tasks/SAVE-IMAGE-REMAINDER-2.md"
   ]
@@ -3203,7 +3225,8 @@
   ],
   "source_records": [
    "docs/research/R-0073-league.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -3217,7 +3240,8 @@
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -3569,7 +3593,10 @@
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0096-demo-audio.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
+   "tasks/SAVE-IMAGE-REMAINDER-2.md",
+   "tasks/SAVE-IMAGE-REMAINDER-3.md"
   ]
  },
  {
@@ -6283,6 +6310,7 @@
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/options_menu.cpp:keyboard_input",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/race_result.cpp:lap_graph_frame",
    "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
@@ -6294,7 +6322,8 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -6316,6 +6345,7 @@
    "src/core/league_menu.cpp:league_table_frame",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/options_menu.cpp:keyboard_input",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/race_result.cpp:lap_graph_frame",
    "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
@@ -6329,6 +6359,7 @@
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0098-league-tours.md",
    "docs/research/R-0117-save-image-remainder.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/NEXT_SESSION.md",
    "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
@@ -6349,6 +6380,7 @@
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/race_result.cpp:lap_graph_frame",
    "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
@@ -6358,7 +6390,8 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0075-title-menu-audio.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -6378,6 +6411,7 @@
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/race_result.cpp:lap_graph_frame",
    "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
@@ -6389,6 +6423,7 @@
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0091-mode-audio.md",
    "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/MENU-INPUT.md"
   ]
  },
@@ -6593,7 +6628,9 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0098-league-tours.md",
-   "docs/research/R-0100-record-screens.md"
+   "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
+   "tasks/SAVE-IMAGE-REMAINDER-2.md"
   ]
  },
  {
@@ -6645,18 +6682,36 @@
   ]
  },
  {
+  "address": "$80:B97A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B97A",
+  "native": [
+   "src/core/front_end_screens.hpp:marker_step_word",
+   "src/core/options_menu.cpp:league_slots_frame",
+   "src/core/options_menu.cpp:options_menu_frame",
+   "src/core/options_menu.cpp:records_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md"
+  ]
+ },
+ {
   "address": "$80:B983",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B983",
   "native": [
    "src/core/league_completion.cpp:league_continue_frame",
-   "src/core/local_modes.cpp:move_continue_cursor"
+   "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list"
   ],
   "source_records": [
    "docs/research/R-0092-wipe-ram.md",
    "docs/research/R-0095-two-human-stunts.md",
-   "docs/research/R-0097-menu-input.md"
+   "docs/research/R-0097-menu-input.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
+   "tasks/SAVE-IMAGE-REMAINDER-2.md"
   ]
  },
  {
@@ -6666,7 +6721,8 @@
   "label": "loc_80B988",
   "native": [
    "src/core/league_completion.cpp:league_continue_frame",
-   "src/core/local_modes.cpp:move_continue_cursor"
+   "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list"
   ],
   "source_records": [
    "docs/research/R-0092-wipe-ram.md"
@@ -6679,7 +6735,8 @@
   "label": "loc_80B992",
   "native": [
    "src/core/league_completion.cpp:league_continue_frame",
-   "src/core/local_modes.cpp:move_continue_cursor"
+   "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list"
   ],
   "source_records": [
    "docs/research/R-0092-wipe-ram.md"
@@ -6692,7 +6749,8 @@
   "label": "loc_80B997",
   "native": [
    "src/core/league_completion.cpp:league_continue_frame",
-   "src/core/local_modes.cpp:move_continue_cursor"
+   "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list"
   ],
   "source_records": [
    "docs/research/R-0092-wipe-ram.md"
@@ -6706,6 +6764,7 @@
   "native": [
    "src/core/league_completion.cpp:league_continue_frame",
    "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/wipe_ram.cpp:move_entry"
   ],
   "source_records": [
@@ -6720,6 +6779,7 @@
   "native": [
    "src/core/league_completion.cpp:league_continue_frame",
    "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/wipe_ram.cpp:move_entry"
   ],
   "source_records": [
@@ -6735,6 +6795,7 @@
    "src/core/league_completion.cpp:league_continue_frame",
    "src/core/league_completion.cpp:move_continue_arrow",
    "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/options_menu.cpp:move_choice",
    "src/core/wipe_ram.cpp:move_entry"
   ],
@@ -6750,6 +6811,7 @@
   "native": [
    "src/core/league_completion.cpp:league_continue_frame",
    "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/wipe_ram.cpp:aim_at_entry",
    "src/core/wipe_ram.cpp:move_entry"
   ],
@@ -6766,6 +6828,7 @@
    "src/core/league_completion.cpp:league_continue_frame",
    "src/core/league_completion.cpp:move_continue_arrow",
    "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/options_menu.cpp:move_choice",
    "src/core/wipe_ram.cpp:aim_at_entry",
    "src/core/wipe_ram.cpp:move_entry"
@@ -6783,6 +6846,7 @@
    "src/core/league_completion.cpp:league_continue_frame",
    "src/core/local_modes.cpp:last_choice",
    "src/core/local_modes.cpp:move_continue_cursor",
+   "src/core/options_menu.cpp:leaves_list",
    "src/core/wipe_ram.cpp:aim_at_entry",
    "src/core/wipe_ram.cpp:move_entry"
   ],
@@ -9994,6 +10058,7 @@
    "src/core/race_result.cpp:print_rows"
   ],
   "source_records": [
+   "tasks/NEXT_SESSION.md",
    "tasks/OPPONENT-POSE-BOUNDS.md"
   ]
  },
@@ -12321,7 +12386,8 @@
   ],
   "source_records": [
    "docs/research/R-0111-save-image-exact.md",
-   "docs/research/R-0117-save-image-remainder.md"
+   "docs/research/R-0117-save-image-remainder.md",
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -12633,6 +12699,7 @@
    "docs/research/R-0095-two-human-stunts.md",
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/MENU-INPUT.md",
    "tasks/SAVE-IMAGE-REMAINDER.md"
   ]
@@ -12642,8 +12709,14 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80EB28",
+  "native": [
+   "src/core/cartridge_ram.cpp:insert_cartridge",
+   "src/core/front_end_screens.hpp:saved_marker_step",
+   "src/core/track_menu.cpp:turn_markers"
+  ],
   "source_records": [
    "docs/research/R-0117-save-image-remainder.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/SAVE-IMAGE-REMAINDER-2.md"
   ]
  },
@@ -12653,7 +12726,9 @@
   "comment": "instruction start",
   "label": "loc_80EB32",
   "native": [
+   "src/core/cartridge_ram.cpp:insert_cartridge",
    "src/core/front_end_screens.hpp:marker_step_word",
+   "src/core/front_end_screens.hpp:saved_marker_step",
    "src/core/track_menu.cpp:turn_markers"
   ],
   "source_records": [
@@ -12661,13 +12736,41 @@
   ]
  },
  {
+  "address": "$80:EB39",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EB39",
+  "native": [
+   "src/core/track_menu.cpp:turn_markers"
+  ],
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md"
+  ]
+ },
+ {
+  "address": "$80:EB52",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EB52",
+  "native": [
+   "src/core/track_menu.cpp:turn_markers"
+  ],
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md"
+  ]
+ },
+ {
   "address": "$80:EB61",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80EB61",
+  "native": [
+   "src/core/track_menu.cpp:turn_markers"
+  ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0117-save-image-remainder.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/SAVE-IMAGE-REMAINDER-2.md"
   ]
  },
@@ -12682,6 +12785,7 @@
   "source_records": [
    "docs/research/R-0072-options.md",
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/RECORD-SCREENS.md"
   ]
  },
@@ -12708,6 +12812,45 @@
   ],
   "source_records": [
    "docs/research/R-0100-record-screens.md"
+  ]
+ },
+ {
+  "address": "$80:EB7F",
+  "class": "observed",
+  "comment": "inside the instruction at $80:EB7D",
+  "label": "mid_80EB7F",
+  "native": [
+   "src/core/track_records.cpp:copy_grid_tables",
+   "src/core/track_records.cpp:open_grid"
+  ],
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md"
+  ]
+ },
+ {
+  "address": "$80:EB80",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EB80",
+  "native": [
+   "src/core/track_records.cpp:copy_grid_tables",
+   "src/core/track_records.cpp:open_grid"
+  ],
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md"
+  ]
+ },
+ {
+  "address": "$80:EB85",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EB85",
+  "native": [
+   "src/core/track_records.cpp:copy_grid_tables",
+   "src/core/track_records.cpp:open_grid"
+  ],
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -14616,7 +14759,8 @@
   "label": "sub_80FBD5",
   "source_records": [
    "docs/research/R-0073-league.md",
-   "docs/research/R-0098-league-tours.md"
+   "docs/research/R-0098-league-tours.md",
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -14645,6 +14789,7 @@
    "docs/research/R-0097-menu-input.md",
    "docs/research/R-0098-league-tours.md",
    "docs/research/R-0100-record-screens.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/MENU-INPUT.md",
    "tasks/NEXT_SESSION.md",
    "tasks/README.md",
@@ -22079,6 +22224,7 @@
    "docs/research/M4-16-persistent-input-ledger.md",
    "docs/research/R-0074-audio-foundation.md",
    "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0119-save-image-remainder-2.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
   ]
@@ -22109,6 +22255,15 @@
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
    "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$82:8150",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828150",
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -22177,7 +22332,8 @@
   "source_records": [
    "docs/research/R-0099-podium-audio.md",
    "docs/research/R-0102-menu-frame-overruns.md",
-   "docs/research/R-0112-census-remainder.md"
+   "docs/research/R-0112-census-remainder.md",
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -25730,6 +25886,7 @@
    "docs/research/R-0061-riders-and-opponents.md",
    "docs/research/R-0080-split-hud.md",
    "docs/research/R-0118-opponent-pose-bounds.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/OPPONENT-POSE-BOUNDS.md",
    "tasks/RACE-RIDERS-OPPONENTS.md",
    "tasks/SPLIT-HUD-GAPS.md"
@@ -25746,6 +25903,15 @@
   "source_records": [
    "docs/research/R-0118-opponent-pose-bounds.md",
    "tasks/OPPONENT-POSE-BOUNDS.md"
+  ]
+ },
+ {
+  "address": "$82:D51E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D51E",
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md"
   ]
  },
  {
@@ -25819,6 +25985,7 @@
   ],
   "source_records": [
    "docs/research/R-0118-opponent-pose-bounds.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/OPPONENT-POSE-BOUNDS.md"
   ]
  },
@@ -31067,7 +31234,8 @@
   "native": [
    "src/core/tour_ending_scripts.cpp:hit_part",
    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound",
-   "src/core/tour_ending_scripts.hpp:store_drop"
+   "src/core/tour_ending_scripts.hpp:store_drop",
+   "src/core/track_menu.cpp:turn_markers"
   ],
   "source_records": [
    "docs/research/R-0111-save-image-exact.md",
@@ -32001,6 +32169,21 @@
   ]
  },
  {
+  "address": "$83:CA77",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CA77",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:start_race_music"
+  ],
+  "source_records": [
+   "docs/research/R-0119-save-image-remainder-2.md",
+   "tasks/SAVE-IMAGE-REMAINDER-2.md"
+  ]
+ },
+ {
   "address": "$83:CAAE",
   "class": "observed",
   "comment": "instruction start",
@@ -32051,7 +32234,9 @@
   "comment": "routine start",
   "label": "sub_83CBF2",
   "source_records": [
-   "tasks/AUDIO-ONE-PLAYER.md"
+   "docs/research/R-0119-save-image-remainder-2.md",
+   "tasks/AUDIO-ONE-PLAYER.md",
+   "tasks/SAVE-IMAGE-REMAINDER-2.md"
   ]
  },
  {
