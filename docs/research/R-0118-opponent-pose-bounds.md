@@ -37,11 +37,12 @@ it too. No other out-of-bounds access remains on the corpus.
 - A race with two views is a race between two humans (2P, VS, a league's human pair, the split idle
   demo), so `$0749` is a rider character whenever the original reads its entry [R: R-0071, R-0105,
   `league_menu.cpp` `$83:98F1-98F7`].
-- **The original's HUNTER race against ANTI-UNI** (`hunter-effects/review-withheld/w-rev-buttons`, the
-  only retained capture of a race against a computer opponent with work and cartridge RAM per frame):
-  at frames 1395, 1400, 1500 and 2500, `$77:0748` = 0 (MIKE), `$0749` = 0x14, `$0750` = 0, and the
-  channel-5 table `$7E:2084-2095` is `01 04 2F 01 04 40 6D 04 80` twice: both halves MIKE's entry
-  `2F 40 80 04` [C].
+- **The original's HUNTER race against ANTI-UNI** (`hunter-effects/review-withheld/w-rev-buttons`,
+  read by `colour_math_original.py` into `colour-math-original.txt`; the only retained capture of
+  a race against a computer opponent with work and cartridge RAM per frame): at frames 1395, 1400,
+  1500 and 2500, `$77:0748` = 0 (MIKE), `$0749` = 0x14, `$0750` = 0, and the channel-5 table
+  `$7E:2084-2095` is `01 04 2F 01 04 40 6D 04 80` twice: both halves MIKE's entry `2F 40 80 04`
+  [C].
 
 ### 2. Native read past the table on every race against a computer opponent [C]
 
@@ -71,23 +72,25 @@ it too. No other out-of-bounds access remains on the corpus.
   `second_rider` is 0 and the index stays in bounds, but the row is still not the original's. The
   best time itself was never written: no row's 0xEA62 is below a stored time.
 - **The original's OAM at the result** (`oam-cont-win`, `oam-cont-loss`: front-end-1p-continuation's
-  manifests, MIKE against BRONSEN on CRAWLER's first track, won and lost, `$0A00-$0C1F` every frame
-  of a new capture; `result_oam.py`): main's OAM differs on 241 of 243 and 760 of 762 result frames
+  manifests, MIKE against BRONSEN on CRAWLER's first track, won and lost: a new capture of
+  `$0A00-$162F` every frame (0xC20-byte rows), of which `result_oam.py` compares the OAM buffer
+  `$0A00-$0C1F`): main's OAM differs on 241 of 243 and 760 of 762 result frames
   (`$0B85`, `$0B8D`: entries 97 and 99's y, 184 against the original's 1; `$0B97`, `$0B9F`: 101 and
   103's attributes 25 against 0); the candidate's equals the original's on every result frame [C].
   CGRAM is not in the capture; the colours follow the listing [L].
 - **Main against the candidate** (`replay-main-vs-candidate.json`, the gates' replay of the whole
   corpus, 23.9 million frames, 474,666 pictures): 408 of 1,924 cases differ, all in stdout only, no
   picture, cartridge RAM, cue or timeline; the fields are the OAM buffer (entries 97 and 99's y, 101
-  and 103's attributes) and CGRAM bytes 0x180-0x19F, colours 0xC0-0xCF (`stdout-fields.json`), from the result screen
-  until a later screen rewrites them.
+  and 103's attributes) and CGRAM bytes 0x180-0x19F, colours 0xC0-0xCF (`stdout-fields.json`), from
+  the result screen until a later screen rewrites them.
 
 ### 4. The rest of the corpus [C]
 
-- After both fixes the hardened runner (`sweep-cand2-pics-*.json`, every case with its pictures on
-  the frames the checks compare) exits 0 on every case except 11 (`expected-refusals.json`), which
-  exit 1 with the runner's own refusals (`--record-write: unsupported record offset`, 3; `split race
-  state requires ...`, 8), as main's hardened runner does on the same 11 with the same messages.
+- After both fixes the hardened runner (`sweep-final-pics.json`: all 1,924 cases, each with its
+  pictures drawn on the frames the checks compare) exits 0 on every case except 11
+  (`expected-refusals.json`), which exit 1 with the runner's own refusals (`--record-write:
+  unsupported record offset`, 3; `split race state requires ...`, 8), as main's hardened runner does
+  on the same 11 with the same messages.
 - Other indexing by a pairing's opponent in `src/core` (read for this task): `character_palette`
   (asset 6 + character, a bounded pack lookup: 0x11-0x14 are assets 23-26, the computer opponents'
   palettes), `asset()` lookups in NOW PLAYING and the stunt result (bounded, `front_end.cpp`),

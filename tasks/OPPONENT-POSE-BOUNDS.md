@@ -46,9 +46,10 @@ Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 12 November 2026 23:07 UTC
   new-best markers 97 and 99 on a fifth row and loading its colours. Native now skips it: its OAM
   equals the original's on all 243 + 762 result frames of `cont-win` and `cont-loss` (main differs
   on 241 + 760).
-- **The hardened corpus:** main aborts on 1,238 of 1,924 cases (the colour maths); the candidate on
-  none, with pictures drawn on the checks' frames; 11 cases exit 1 with the runner's own refusals on
-  both.
+- **The hardened corpus:** main aborts on 1,238 of 1,924 cases (the colour maths, no pictures
+  drawn). The final runner (both fixes, review round 1) aborts on none of the 1,924 with the pictures
+  drawn on every frame the checks compare (`sweep-final-pics.json`, 22 min); 11 cases exit 1 with the
+  runner's own refusals on both.
 - **Main against the candidate** (the gates' replay of the whole corpus): 408 of 1,924 cases differ,
   in stdout only (the OAM buffer's entries 97, 99, 101 and 103 and CGRAM colours 0xC0-0xCF, from a
   one-run result against the computer until a later screen rewrites them); no picture, cartridge
@@ -68,8 +69,10 @@ Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 12 November 2026 23:07 UTC
   opponent past a table), the listing and the census decide it, and a capture of the original shows
   native moving to the original's OAM.
 - Unit tests are ROM-free (`race_pairing_tests`: the entry for 0-15, none for 16 and 0x11-0x14, the
-  lower view's choice); the result skip is pinned by `check_result_oam.sh` against the original
-  rather than a synthetic-content test.
+  lower view's choice; `front_end_tests`, review round 1: a one-run result against BRONSEN with
+  `second_rider` 0 and 16 leaves entries 97 and 99 off the fifth row's line, 101 and 103's
+  attributes alone and every other best time unchanged; it fails with the skip removed). The
+  result skip is also pinned against the original by `check_result_oam.sh`.
 - The hardened build is a throwaway (`build/hardened`, removed); `check_hardened.sh` builds its own in
   `$G`.
 
@@ -80,13 +83,16 @@ All in main `local/evidence/opponent-pose-bounds/` (102 MB, most of it the two O
 - `hardened_sweep.py`: every corpus case through one runner. Main hardened, no pictures:
   `sweep-main-nopics-p0..3.json` (1,249 failing: 1,238 subspan aborts, 11 refusals). Candidate after
   the colour-maths fix, with pictures: `sweep-cand-pics-p0..2.json` (16 `std::array` aborts in
-  `personal_best`, three eighths swept); after both fixes: `sweep-cand2-pics-rerun012.json`,
-  `sweep-cand2-pics-p3..7.json` (only the 11 refusals, `expected-refusals.json`).
+  `personal_best`, three eighths swept); after both fixes, with pictures on 1,224 cases:
+  `sweep-cand2-pics-rerun012.json` (the 23 earlier failures), `sweep-cand2-pics-p3..7.json` (only the
+  refusals). Review round 1: the final runner hardened, with pictures, on all 1,924 cases:
+  `sweep-final-pics.json` (only the 11 refusals of `expected-refusals.json`, same messages).
 - The original's colour maths: `hunter-effects/review-withheld/w-rev-buttons` (existing capture),
-  `$0748-0750` and `$7E:2084-2095` read at frames 1300, 1395, 1400, 1500, 2500 (command in R-0118).
+  `$0748-0750` and `$7E:2084-2095` read at frames 1300, 1395, 1400, 1500, 2500
+  (`colour_math_original.py`, `colour-math-original.txt`).
 - The original's result OAM: `oam-cont-win`, `oam-cont-loss` (`access capture` of
-  front-end-1p-continuation's manifests, copied here, `$0A00-$162F` every frame), compared by
-  `result_oam.py`.
+  front-end-1p-continuation's manifests, copied here, `$0A00-$162F` every frame, 0xC20-byte
+  rows), of which `result_oam.py` compares the OAM buffer `$0A00-$0C1F`.
 - `replay-main-vs-candidate.json`: the gates' replay (`tools.unirally_lab.gates.replay`) of the whole
   corpus, main's lab-release runner (`main-bin/front_end_runner`, built at the claim `272990e6`)
   against the candidate's.
@@ -127,3 +133,26 @@ All in main `local/evidence/opponent-pose-bounds/` (102 MB, most of it the two O
     original (as `check_result_oam.sh` shows); one that reads only pictures, cues or cartridge RAM
     should be unchanged.
   - no pack or profile change.
+
+## Review round 1 fixes (worker)
+
+Review: [PR #106 round 1](https://github.com/malmazuke/unirally-reconstruction/pull/106#pullrequestreview-5884256682)
+(no must-fix, one should-fix, four notes).
+
+1. Should-fix, the "with pictures" claim: the final runner, built hardened, ran all 1,924 corpus cases
+   with their pictures (`sweep-final-pics.json`, through `heavy-run.sh`, 22 min): only the 11 expected
+   refusals. Results, Evidence and R-0118 item 4 now say exactly what each sweep ran.
+2. The capture range: `$0A00-$162F` captured (0xC20-byte rows), `$0A00-$0C1F` compared, in R-0118,
+   this record, `result_oam.py` and `check_result_oam.sh`. The colour-maths read of `w-rev-buttons`
+   is now a script (`colour_math_original.py`, output `colour-math-original.txt`).
+3. `race_result.cpp`'s comment now says the best time is indexed by `second_rider` (0 in 1P, 16 in a
+   league against the computer).
+4. A ROM-free unit test in `front_end_tests` (`race_result_tests`): a one-run result against BRONSEN
+   with `second_rider` 0 and 16; it fails with the skip removed (checked locally).
+5. The two-view branch stays a recorded limit.
+
+Checks after the fixes: lab-release and lab-debug `status=passed`, `ctest` 41/41 on lab-debug;
+clang-format on `race_result.cpp`; GCC 13.3 plain and sanitized OK on the four changed files
+(`gcc.out`, now with `front_end_tests.cpp`); `regen.sh` left the static map and native symbols
+unchanged, `native-symbols --check` `status=passed`. The fixes change no runner output: the native
+change is a comment, the rest is tests, records and evidence scripts.
