@@ -1,6 +1,17 @@
 # SAVE-IMAGE-REMAINDER-2 - the saved image's differences R-0117 leaves open
 
-- Status: **queued** 12 November 2026 by [SAVE-IMAGE-REMAINDER](SAVE-IMAGE-REMAINDER.md) (R-0117).
+## Assignment
+
+- Status: **claimed** 13 November 2026 05:47 UTC on main `aa647f41`, on the user's instruction ("next
+  task", after OPPONENT-POSE-BOUNDS #106). Queued 12 November 2026 by
+  [SAVE-IMAGE-REMAINDER](SAVE-IMAGE-REMAINDER.md) (R-0117). Claude Code desktop app, Claude Opus 5.5
+  (`claude-opus-5-5`): coordinator and integrator; a worker subagent captures and implements, a fresh
+  subagent reviews. Run under [D-0013](../docs/decisions/D-0013-task-time-and-disk-budget.md): claim
+  to merge against the 6-hour target, new evidence under 1 GB. Usage at the claim: 5-hour 9%,
+  weekly 7%.
+- Branch `task/save-image-remainder-2` in `.worktrees/save-image-remainder-2`; evidence in main
+  `local/evidence/save-image-remainder-2/`.
+- Task provider: Anthropic.
 - Milestone: M4. Review tier: **1** (front-end behaviour and cartridge RAM a later boot reads).
 
 [R-0117](../docs/research/R-0117-save-image-remainder.md) closes R-0111's Value list but five items.
@@ -38,3 +49,7 @@ Each is a native difference from the original over R-0111's corpus (evidence and
 
 Outcome: each item equal at every write frame of the corpus (`check_image.sh`, `expected.json`
 re-recorded) or recorded with why it cannot matter.
+
+## Handoff
+
+Not started.
