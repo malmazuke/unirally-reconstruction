@@ -27,6 +27,22 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**13 November 2026: OPPONENT-POSE-BOUNDS is accepted (tier 1, #106) and integrated by merge commit.**
+R-0118 removes native's two reads past a table in a race against a computer opponent (rider 16 and
+up), which a bounds-checked build (as on Linux) aborted on:
+- **Colour maths:** the original's per-rider table (`$82:D4DC`) holds the 16 riders only, and the
+  lower view uses the second rider's entry only in a two-view race (`$82:D5BE-D5CC`, `$0750` bit 3).
+  Native now does the same; no picture changes.
+- **Result row:** the one-run result skips a computer opponent's row (`$80:D011-D014`). Native
+  printed a fifth row (OAM markers and colours; in a league it read a best time past the array).
+  The result screen's OAM now equals new captures of the original on every frame.
+- **Checks:** a libc++-hardened runner runs every corpus case without an abort (main's aborts on
+  1,238 of 1,924); unit tests on computer opponents and the row skip.
+- **Time:** about 5 h 25 min from claim to merge. Review one round (1 should-fix, 4 notes, all
+  addressed). Gates: 98 steps same as main; 5 read as expected changes (front-end stdout, and three
+  checks' OAM moving toward the original).
+[R-0118](research/R-0118-opponent-pose-bounds.md) and [OPPONENT-POSE-BOUNDS](../tasks/OPPONENT-POSE-BOUNDS.md) hold the detail.
+
 **12 November 2026: SAVE-IMAGE-REMAINDER is accepted (tier 1, #105) and integrated by merge commit.**
 R-0117 closes most of the saved image's differences R-0111 left (the cartridge RAM a later boot reads):
 - **Native change:** the endings' counter `$77:10A7` is stored in the image at the original's nine

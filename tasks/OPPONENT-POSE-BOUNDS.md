@@ -98,8 +98,9 @@ All in main `local/evidence/opponent-pose-bounds/` (102 MB, most of it the two O
   against the candidate's.
 - Checks (`checks.list`, `$G` with a space): `check_hardened.sh` PASS on the candidate (built from
   the checkout, 1,924 cases, 11 expected refusals; `check-hardened-candidate.log`), FAIL on main's
-  hardened runner `main-bin/front_end_runner.hardened` (1,238 unexpected aborts;
-  `check-hardened-main.log`); `check_result_oam.sh` PASS on the candidate (0 of 243 and 0 of 762
+  hardened runner (1,238 unexpected aborts; `check-hardened-main.log`). Since the gates it sweeps the
+  corpus's catalogue cases only (Closeout): PASS on the candidate (444 cases), FAIL on main built
+  hardened from `e11cbe11` (104 aborts, all the colour maths' `subspan`); `check_result_oam.sh` PASS on the candidate (0 of 243 and 0 of 762
   result frames differ), FAIL on main's `main-bin/front_end_runner` (241 and 760;
   `check-result-oam/`).
 - Builds: `project.py build` `status=passed` for lab-release, lab-debug and app-debug; `ctest` 41/41
@@ -156,3 +157,35 @@ clang-format on `race_result.cpp`; GCC 13.3 plain and sanitized OK on the four c
 (`gcc.out`, now with `front_end_tests.cpp`); `regen.sh` left the static map and native symbols
 unchanged, `native-symbols --check` `status=passed`. The fixes change no runner output: the native
 change is a comment, the rest is tests, records and evidence scripts.
+
+## Closeout (coordinator)
+
+- Review: tier 1, one round on PR #106. Round 1 (`25d284ad`): no must-fix, one should-fix (the "with
+  pictures" claim covered 1,224 of the 1,924 cases) and four notes (the capture range written three
+  ways, the `race_result.cpp` comment, no ROM-free test of the row skip, the unobserved two-view
+  branch). All handled in `ef3327e8` and `d1c9d6c4`: a hardened run with pictures on all 1,924 cases,
+  the range made consistent, the comment fixed, a new `front_end_tests` case; the two-view branch
+  stays a limit. The only `src/core` change after review is a comment. Replies on the PR.
+- Gates (D-0012) on `d1c9d6c4`, TMPDIR `/private/tmp/opbg`:
+  - A first start failed in 0 s: `build-base` found no isolated toolchain, because the review
+    checkout's bootstrap had pointed the shared manifest at itself and was then removed. Main's
+    bootstrap rerun fixed it.
+  - `gates-1` (2 h 47 min): 98 steps same-as-main, 20 passed, 103 against the original. Changed, all
+    read: `fe-equivalence` with `fe-classify` (27 of 179 cases, the stdout differences the handoff
+    lists), and three moving toward the original in OAM: `lt-odd-tours-w0` (frames differing in OAM
+    3,177 to 549), `lt-odd-tours-w1` (9,912 to 8,325), `rs-review-wr-1p-ca` (642 to 1); nothing else
+    in those steps changed (`lt-odd-tours-w0`'s main-side traceback is the same on both).
+    `check_result_oam.sh` passed. `check_hardened.sh` failed: it required exactly 1,924 cases, but
+    the corpus's `checks-checks-NN` entries hold the last task's own checks and each gate run replaces
+    them (1,446 cases while it ran, 539 after). The check now sweeps only the catalogue's cases
+    (`--catalogue`, 444) and asks for at least 400; it passes on the candidate and fails on main
+    built hardened (104 aborts).
+  - `gates-2` (`--only` and `--expect-changed` the five, 6 min): `status=passed`. `gates-3` (the two
+    task checks, 2.4 min): both PASS.
+- CI on `25d284ad`: macOS and Ubuntu lab jobs pass.
+- Time: claim `272990e6` 23:06 UTC on 12 November 2026 to merge about 04:30 UTC on 13 November,
+  about 5 h 25 min, inside D-0013's 6-hour target. Worker 1 h 14 min plus 26 min of review fixes;
+  review 10 min; gates 2 h 47 min + 6 min + 2.4 min, after two false starts.
+- Evidence: main `local/evidence/opponent-pose-bounds/`, 10 MB after `compact_evidence.py` (the unusable `main-bin/front_end_runner.hardened`,
+  whose DSP library was in a removed build tree, deleted). Worktrees `opponent-pose-bounds` and
+  `opponent-pose-bounds-review` and the branch removed after the merge.
