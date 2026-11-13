@@ -26,8 +26,8 @@ pictures unchanged.
 
 ## Results
 
-Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 12 November 2026 23:07 UTC - 13 November 00:25 UTC,
-about 1 h 20 min (harness clock), in `.worktrees/opponent-pose-bounds`.
+Worker: Claude Opus 5.5 (`claude-opus-5-5`) subagent, 12 November 2026 23:07 UTC - 13 November 00:21 UTC,
+1 h 14 min (harness-measured), in `.worktrees/opponent-pose-bounds`.
 [R-0118](../docs/research/R-0118-opponent-pose-bounds.md) holds the findings.
 
 - **What the original does:** `$82:D4DC` has entries for the 16 rider characters only (64 bytes;
