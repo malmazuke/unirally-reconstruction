@@ -64,8 +64,9 @@ inline void gate_pads(FrontEndState& state, bool pad_one, bool pad_two) {
 // extended `g045` run: 0x20 to 0). Only a later boot reads an ending's value (SAVE-IMAGE-REMAINDER-2).
 inline constexpr std::size_t marker_step_word = 0x10a7;
 inline void store_marker_step(FrontEndState& state) {
-    state.cartridge.at(marker_step_word) = state.track_menu.marker_step;
-    state.cartridge.at(marker_step_word + 1) = 0;
+    const auto step = state.track_menu.marker_step;
+    state.cartridge.at(marker_step_word) = static_cast<std::uint8_t>(step & 0xffU);
+    state.cartridge.at(marker_step_word + 1) = static_cast<std::uint8_t>(step >> 8U);
 }
 // `$77:10D1`, the medal PICK TRACK shows (`$80:E6D5`, `$80:EACF`), and `$77:10D2`, its line
 // stepped on this press (`$80:E853`, `$80:EAFE`, `$80:BABE`): bytes of cartridge RAM the image

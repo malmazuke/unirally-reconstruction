@@ -1457,6 +1457,8 @@
   {
    "address": "$80:9D66",
    "native": [
+    "src/core/front_end.hpp:LeagueSetup::marker_characters",
+    "src/core/options_menu.cpp:enter_league_editor",
     "src/core/rider_menu.cpp:mark_league_member"
    ],
    "range_ends": [
@@ -3172,6 +3174,7 @@
     "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/options_menu.cpp:keyboard_input",
+    "src/core/options_menu.cpp:leaves_list",
     "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
    ],
    "region": "rom"
@@ -3184,6 +3187,7 @@
     "src/core/league_menu.cpp:league_table_frame",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/options_menu.cpp:keyboard_input",
+    "src/core/options_menu.cpp:leaves_list",
     "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
    ],
    "region": "rom"
@@ -3191,7 +3195,8 @@
   {
    "address": "$80:B76F",
    "native": [
-    "src/core/audio_cpu_menu_input.cpp:test_menu_input"
+    "src/core/audio_cpu_menu_input.cpp:test_menu_input",
+    "src/core/options_menu.cpp:leaves_list"
    ],
    "region": "rom"
   },
@@ -3199,7 +3204,8 @@
    "address": "$80:B794",
    "native": [
     "src/core/audio_cpu_menu_input.cpp:test_menu_input",
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_start, pad_a, pad_r",
+    "src/core/options_menu.cpp:leaves_list"
    ],
    "region": "rom"
   },
@@ -3304,9 +3310,11 @@
    "address": "$80:B983",
    "native": [
     "src/core/league_completion.cpp:league_continue_frame",
-    "src/core/local_modes.cpp:move_continue_cursor"
+    "src/core/local_modes.cpp:move_continue_cursor",
+    "src/core/options_menu.cpp:leaves_list"
    ],
    "range_ends": [
+    "$80:B99E",
     "$80:BA5E"
    ],
    "region": "rom"
@@ -6512,7 +6520,8 @@
    "address": "$80:E872",
    "native": [
     "src/core/front_end_screens.hpp:marker_step_word",
-    "src/core/track_menu.cpp:enter_track_menu"
+    "src/core/track_menu.cpp:enter_track_menu",
+    "src/core/track_menu.cpp:turn_markers"
    ],
    "region": "rom"
   },
@@ -6678,9 +6687,41 @@
    "region": "rom"
   },
   {
+   "address": "$80:EB28",
+   "native": [
+    "src/core/cartridge_ram.cpp:insert_cartridge",
+    "src/core/track_menu.cpp:turn_markers"
+   ],
+   "range_ends": [
+    "$80:EB32"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:EB32",
    "native": [
     "src/core/front_end_screens.hpp:marker_step_word",
+    "src/core/track_menu.cpp:turn_markers"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EB39",
+   "native": [
+    "src/core/track_menu.cpp:turn_markers"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EB52",
+   "native": [
+    "src/core/track_menu.cpp:turn_markers"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EB61",
+   "native": [
     "src/core/track_menu.cpp:turn_markers"
    ],
    "region": "rom"
@@ -13831,7 +13872,8 @@
   {
    "address": "$83:B649",
    "native": [
-    "src/core/tour_ending_scripts.hpp:store_drop"
+    "src/core/tour_ending_scripts.hpp:store_drop",
+    "src/core/track_menu.cpp:turn_markers"
    ],
    "region": "rom"
   },
@@ -17080,6 +17122,17 @@
    "native": [
     "src/core/front_end.hpp:FrontEndState::warned_name",
     "src/core/options_menu.cpp:enter_define_player_warning"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00E1",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup::marker_characters",
+    "src/core/options_menu.cpp:enter_league_editor"
+   ],
+   "range_ends": [
+    "$00E2"
    ],
    "region": "wram"
   },
@@ -21430,6 +21483,7 @@
   "src/core/cartridge_ram.cpp:insert_cartridge": {
    "rom": [
     "$80:A0A5",
+    "$80:EB28",
     "$80:F55F",
     "$83:91FB"
    ],
@@ -22511,6 +22565,14 @@
   "src/core/front_end.hpp:LeagueSetup::awards_press_seen, LeagueSetup::awards_left": {
    "rom": [
     "$80:C206"
+   ]
+  },
+  "src/core/front_end.hpp:LeagueSetup::marker_characters": {
+   "rom": [
+    "$80:9D66"
+   ],
+   "wram": [
+    "$00E1"
    ]
   },
   "src/core/front_end.hpp:LeagueSetup::marker_column, LeagueSetup::marker_row": {
@@ -25606,12 +25668,14 @@
   },
   "src/core/options_menu.cpp:enter_league_editor": {
    "rom": [
+    "$80:9D66",
     "$80:9E0F",
     "$80:9E3C",
     "$80:9E57",
     "$80:9E78"
    ],
    "wram": [
+    "$00E1",
     "$00E8"
    ]
   },
@@ -25742,6 +25806,15 @@
    "rom": [
     "$80:9C46",
     "$80:9D11"
+   ]
+  },
+  "src/core/options_menu.cpp:leaves_list": {
+   "rom": [
+    "$80:B71D",
+    "$80:B74A",
+    "$80:B76F",
+    "$80:B794",
+    "$80:B983"
    ]
   },
   "src/core/options_menu.cpp:move_choice": {
@@ -30634,8 +30707,14 @@
   },
   "src/core/track_menu.cpp:turn_markers": {
    "rom": [
+    "$80:E872",
     "$80:EB23",
-    "$80:EB32"
+    "$80:EB28",
+    "$80:EB32",
+    "$80:EB39",
+    "$80:EB52",
+    "$80:EB61",
+    "$83:B649"
    ]
   },
   "src/core/track_progress.cpp:observe_track_markers": {
@@ -31937,11 +32016,11 @@
   }
  },
  "totals": {
-  "addresses": 2269,
+  "addresses": 2274,
   "io_addresses": 12,
-  "native_symbols": 1638,
-  "rom_addresses": 1803,
+  "native_symbols": 1640,
+  "rom_addresses": 1807,
   "sram_addresses": 71,
-  "wram_addresses": 383
+  "wram_addresses": 384
  }
 }

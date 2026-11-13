@@ -289,6 +289,7 @@ void mark_league_member(FrontEndState& state, const FrontEndContent& content, un
     constexpr std::uint8_t attribute = 0xf9, place = 0xfe, nothing = 0xfb, underscore = 0x5f;
     std::array<std::uint8_t, 8> marker{attribute, 0x07, place, column, row, 'X', nothing, 0xff};
     if (!(state.league.members & bit)) marker[5] = marker[6] = underscore;
+    state.league.marker_characters = {marker[5], marker[6]};
     print_text(state.text, state.printer, marker, content.character_table);
 }
 

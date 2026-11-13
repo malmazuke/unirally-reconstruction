@@ -215,6 +215,10 @@ struct LeagueSetup {
     std::uint16_t previous_buttons{};
     // $80:9E3C; R-0073: the last membership marker's text position survives into name scratch.
     std::uint8_t marker_column{3}, marker_row{4};
+    // `$80:9D66-9D6A`: the last marker's two characters, an X and a print stop (0xFB) for a
+    // member, two underscores once unmarked; the league's name keeps them after a short name
+    // (`$00E1-00E2`, SAVE-IMAGE-REMAINDER-2).
+    std::array<std::uint8_t, 2> marker_characters{'X', 0xfb};
     bool editor_active{};
     std::array<unsigned, 8> award_rows{};
     std::array<std::uint8_t, 8> award_riders{};
@@ -524,10 +528,12 @@ struct RaceResult {
 // PICK TRACK ($80:E84E): the tour's five tracks, then (in 1P) the medal line, which steps the
 // medal to race for.
 struct TrackMenu {
-    std::uint8_t cursor{};      // $009B: 0-4 the tracks, 5 the medal line
-    bool medal_latched{};       // $77:10D2: the medal line has stepped on this press
-    bool medal_stepped{};       // it stepped this frame: the next frame shows it ($80:EA8F)
-    std::uint8_t marker_step{}; // $77:10A7: the done-track markers' animation, 13 down to 0
+    std::uint8_t cursor{}; // $009B: 0-4 the tracks, 5 the medal line
+    bool medal_latched{};  // $77:10D2: the medal line has stepped on this press
+    bool medal_stepped{};  // it stepped this frame: the next frame shows it ($80:EA8F)
+    // $77:10A7, a word: the done-track markers' animation, 13 down to 0; a later boot goes on
+    // from any saved word, an ending's fall counter included (SAVE-IMAGE-REMAINDER-2).
+    std::uint16_t marker_step{};
     bool back{};
     bool returning{}; // entered back from NOW PLAYING ($00AC == 2): slides back in
 };

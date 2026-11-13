@@ -2639,6 +2639,91 @@ void menu_overrun_tests() {
   require(grid_half_steps_in_frame(grid) == 174);
 }
 
+// SAVE-IMAGE-REMAINDER-2 (R-0119): the markers' step word, the league marker's
+// characters in the league editor's buffer, and the list loop's exits before
+// its moves.
+void save_image_remainder_2_tests() {
+  using namespace unirally::front_end_screens;
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  auto content = synthetic_content(storage);
+  storage.emplace_back(21, 0);
+  for (std::size_t i = 0; i < storage.back().size(); ++i)
+    storage.back()[i] = static_cast<std::uint8_t>(0xe0 + i);
+  content.marker_tiles = storage.back();
+  storage.emplace_back(1,
+                       0xff); // an empty text: the editor's prints end at once
+  content.keyboard_text = content.league_prompt = storage.back();
+  storage.emplace_back(5, 0); // RECORDS' five arrow columns
+  content.records_arrow_columns = storage.back();
+  // A later boot reads the whole word `$77:10A7` (`$80:EB28`).
+  auto image = unirally::power_on_cartridge();
+  auto booted = unirally::start_front_end();
+  image[0x10a7] = 0x20;
+  image[0x10a8] = 0x00;
+  unirally::insert_cartridge(booted, image);
+  require(booted.track_menu.marker_step == 0x20);
+  image[0x10a7] = 0xf4;
+  image[0x10a8] = 0xff;
+  unirally::insert_cartridge(booted, image);
+  require(booted.track_menu.marker_step == 0xfff4);
+  // `$80:EB28-EB32`: a step past the table counts down to 13; a tile past the
+  // pack's 21 bytes leaves its entry as it was.
+  auto state = unirally::start_front_end();
+  state.track_menu.marker_step = 0x20;
+  for (const unsigned entry : {64U, 65U, 66U, 67U, 68U})
+    oam_byte(state, entry, 2) = 0x55;
+  turn_markers(state, content);
+  require(state.track_menu.marker_step == 0x1f &&
+          state.cartridge[0x10a7] == 0x1f && state.cartridge[0x10a8] == 0);
+  require(oam_byte(state, 64, 2) == 0x55 && oam_byte(state, 65, 2) == 0x55);
+  for (unsigned turn = 0; turn < 11; ++turn)
+    turn_markers(state, content);
+  require(state.track_menu.marker_step == 20);
+  require(oam_byte(state, 64, 2) == 0xe0 + 20 &&
+          oam_byte(state, 65, 2) == 0x55);
+  for (unsigned turn = 0; turn < 7; ++turn)
+    turn_markers(state, content);
+  require(state.track_menu.marker_step == 13 &&
+          oam_byte(state, 66, 2) == 0xe0 + 13 &&
+          oam_byte(state, 67, 2) == 0xe0 + 20);
+  // Below 0 (bit 15) the step is 13; 0x8000 counts to 0x7FFF.
+  state.track_menu.marker_step = 0;
+  turn_markers(state, content);
+  require(state.track_menu.marker_step == 13);
+  state.track_menu.marker_step = 0xfff4;
+  turn_markers(state, content);
+  require(state.track_menu.marker_step == 13);
+  state.track_menu.marker_step = 0x8000;
+  turn_markers(state, content);
+  require(state.track_menu.marker_step == 0x7fff &&
+          state.cartridge[0x10a7] == 0xff && state.cartridge[0x10a8] == 0x7f);
+  // `$80:9D66-9D6A`: an unmarking leaves two underscores at `$00E1-00E2`,
+  // which the league editor keeps; a marking the X and its stop.
+  auto league = unirally::start_front_end();
+  require(league.league.marker_characters[0] == 'X' &&
+          league.league.marker_characters[1] == 0xfb);
+  league.league.marker_characters = {'_', '_'};
+  enter_league_editor(league, content);
+  require(league.keyboard.scratch[5] == '_' &&
+          league.keyboard.scratch[6] == '_');
+  league.league.marker_characters = {'X', 0xfb};
+  enter_league_editor(league, content);
+  require(league.keyboard.scratch[5] == 'X' &&
+          league.keyboard.scratch[6] == 0xfb);
+  // `$80:B983-B99E`: B with Up chooses the entry the arrow is on, unmoved
+  // (`c385`); Up alone moves.
+  auto records = unirally::start_front_end();
+  reopen_records_menu(records, content);
+  records_menu_frame(records, content, {0x8000 | 0x0800, 0});
+  require(records.screen == FrontEndScreen::records_detail_entry &&
+          records.records_detail.category == 0 && records.menu.selection == 0);
+  reopen_records_menu(records, content);
+  records_menu_frame(records, content, {0x0800, 0});
+  require(records.screen == FrontEndScreen::records_menu &&
+          records.menu.selection == 4);
+}
+
 int main() try {
   text_printer_tests();
   text_variable_tests();
@@ -2672,6 +2757,7 @@ int main() try {
   demo_sound_tests();
   name_check_tests();
   menu_overrun_tests();
+  save_image_remainder_2_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

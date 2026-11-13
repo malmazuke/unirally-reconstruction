@@ -247,13 +247,13 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
     load_gate.bit(0x0742, 0x0200, state.pad_one_ignored); // the pad gate, as saved
     load_gate.bit(0x0742, 0x0400, state.pad_two_ignored);
     state.one_player = state.cartridge[one_player_mode] == 1;
-    // `$77:10A7`, the done-track markers' step, goes on from the saved value (R-0100); only a cold
-    // start's wipe resets it. A value past the 14 steps, which the menus do not write, is not
-    // modelled and starts from 0.
-    constexpr std::size_t marker_step_byte = 0x10a7;
-    constexpr std::uint8_t marker_steps = 14;
-    if (state.cartridge[marker_step_byte] < marker_steps)
-        state.track_menu.marker_step = state.cartridge[marker_step_byte];
+    // `$77:10A7`, the done-track markers' step, goes on from the saved word (R-0100), whatever it
+    // holds: a save made during a gold ending leaves the ending's counter there (0xFFF4 to 0x0020,
+    // R-0117), which the first turns count down (`$80:EB28-EB32`, `turn_markers`). Only a cold
+    // start's wipe resets it.
+    constexpr std::size_t marker_step_word = 0x10a7;
+    state.track_menu.marker_step = static_cast<std::uint16_t>(
+        state.cartridge[marker_step_word] | (state.cartridge[marker_step_word + 1] << 8U));
 }
 
 void store_race_mode_from_option_byte(FrontEndState& state) {

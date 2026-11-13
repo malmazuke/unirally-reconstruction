@@ -10,6 +10,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <span>
 
 namespace {
 class Controllers final : public unirally::AudioControllerSource {
@@ -191,6 +192,16 @@ int main(int argc, char **argv) {
         throw std::invalid_argument("saved audio is not in a cued scene");
       first = audio.cued_frame() + 1;
     } else {
+      // SAVE-IMAGE-REMAINDER-2: with UNIRALLY_CARTRIDGE_IN=FILE, the 8 KiB
+      // cartridge RAM image power-on finds (a warm boot, as the app's save
+      // file), so the boot skips the defaults' work.
+      if (const char *path = std::getenv("UNIRALLY_CARTRIDGE_IN")) {
+        const auto image = audio_test::read(path);
+        if (image.size() != 8192)
+          throw std::invalid_argument("cartridge image is not 8 KiB");
+        audio.insert_cartridge(
+            std::span<const std::uint8_t, 8192>(image.data(), 8192));
+      }
       audio.initialize_title();
       while (audio.phase() == unirally::TitleMenuAudioPhase::title_hold) {
         audio.title_frame();
@@ -209,9 +220,14 @@ int main(int argc, char **argv) {
     }
     // AUDIO-UPLOAD-SPEED: with UNIRALLY_LOAD_TIMES=FILE, each frame with a
     // load cue writes "FRAME WALL_NS CPU_TICKS" (its upload session's cost).
+    // SAVE-IMAGE-REMAINDER-2: with UNIRALLY_LOAD_ENDS=FILE, "FRAME END_CLOCK",
+    // the CPU clock each such frame's session leaves (its polls' end).
     std::ofstream load_times;
     if (const char *path = std::getenv("UNIRALLY_LOAD_TIMES"))
       load_times.open(path);
+    std::ofstream load_ends;
+    if (const char *path = std::getenv("UNIRALLY_LOAD_ENDS"))
+      load_ends.open(path);
     for (auto frame = first; frame <= last; ++frame) {
       const auto found = cues.find(frame);
       const auto &frame_cues =
@@ -231,6 +247,12 @@ int main(int argc, char **argv) {
                           std::chrono::steady_clock::now() - wall_before)
                           .count()
                    << ' ' << audio.cpu_ticks() - ticks_before << '\n';
+      if (load_ends.is_open() &&
+          std::any_of(frame_cues.begin(), frame_cues.end(),
+                      [](const auto &cue) {
+                        return cue.kind == unirally::AudioCueKind::load;
+                      }))
+        load_ends << frame << ' ' << audio.cpu_ticks() << '\n';
       drain();
       if (frame == save_frame) {
         const auto state =

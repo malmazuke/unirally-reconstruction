@@ -1531,7 +1531,9 @@
    ],
    "native": [
     "src/core/front_end.hpp:LeagueSetup",
+    "src/core/front_end.hpp:LeagueSetup::marker_characters",
     "src/core/front_end.hpp:RiderMenu::choice_latched",
+    "src/core/options_menu.cpp:enter_league_editor",
     "src/core/options_menu.cpp:league_warning_frame",
     "src/core/rider_menu.cpp:mark_league_member",
     "src/core/rider_menu.cpp:open_rider_menu",
@@ -2548,6 +2550,7 @@
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/options_menu.cpp:keyboard_input",
+    "src/core/options_menu.cpp:leaves_list",
     "src/core/race_result.cpp:lap_graph_frame",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
@@ -2624,6 +2627,7 @@
     "src/core/league_menu.cpp:league_table_frame",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/options_menu.cpp:keyboard_input",
+    "src/core/options_menu.cpp:leaves_list",
     "src/core/race_result.cpp:lap_graph_frame",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
@@ -2664,6 +2668,7 @@
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:leaves_list",
     "src/core/race_result.cpp:lap_graph_frame",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
@@ -2704,6 +2709,7 @@
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:leaves_list",
     "src/core/race_result.cpp:lap_graph_frame",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
@@ -2999,6 +3005,7 @@
     "src/core/local_modes.cpp:last_choice",
     "src/core/local_modes.cpp:move_continue_cursor",
     "src/core/options_menu.cpp:league_slots_frame",
+    "src/core/options_menu.cpp:leaves_list",
     "src/core/options_menu.cpp:move_choice",
     "src/core/options_menu.cpp:options_menu_frame",
     "src/core/options_menu.cpp:records_menu_frame",
@@ -4592,7 +4599,8 @@
     "src/core/track_menu.cpp:print_track_menu",
     "src/core/track_menu.cpp:track_menu_entry_frame",
     "src/core/track_menu.cpp:track_menu_exit_frame",
-    "src/core/track_menu.cpp:track_menu_frame"
+    "src/core/track_menu.cpp:track_menu_frame",
+    "src/core/track_menu.cpp:turn_markers"
    ],
    "observed_entries": {},
    "start": "$80:E84E",
@@ -4636,6 +4644,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/cartridge_ram.cpp:insert_cartridge",
     "src/core/front_end_screens.hpp:marker_step_word",
     "src/core/front_end_screens.hpp:turn_markers",
     "src/core/league_completion.cpp:league_continue_entry_frame",
@@ -17031,7 +17040,8 @@
     "src/core/tour_ending_scripts.cpp:roll_on_part",
     "src/core/tour_ending_scripts.cpp:walk_in_part",
     "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound",
-    "src/core/tour_ending_scripts.hpp:store_drop"
+    "src/core/tour_ending_scripts.hpp:store_drop",
+    "src/core/track_menu.cpp:turn_markers"
    ],
    "observed_entries": {},
    "start": "$83:B506",
@@ -19632,18 +19642,18 @@
    "call returns in the calling mode": 2490
   },
   "bytes": 131072,
-  "cited_addresses": 2724,
+  "cited_addresses": 2734,
   "cited_by_class": {
    "data": 12,
    "inferred": 74,
-   "observed": 2370,
+   "observed": 2380,
    "unknown": 268
   },
   "cited_by_position": {
    "dat": 12,
-   "loc": 1913,
-   "mid": 35,
-   "sub": 496,
+   "loc": 1920,
+   "mid": 37,
+   "sub": 497,
    "unk": 268
   },
   "conflicts": 0,
