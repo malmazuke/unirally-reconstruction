@@ -50,6 +50,151 @@ Each is a native difference from the original over R-0111's corpus (evidence and
 Outcome: each item equal at every write frame of the corpus (`check_image.sh`, `expected.json`
 re-recorded) or recorded with why it cannot matter.
 
+## Results
+
+Worker: Claude Opus 5.5 (claude-opus-5-5) subagent, 05:48-06:52 UTC (harness clock), 1 h 04 min, 13 November
+2026, in `.worktrees/save-image-remainder-2`. About 45 min of captures and analysis, 15 min of
+native changes and tests, the rest records and checks.
+[R-0119](../docs/research/R-0119-save-image-remainder-2.md) holds the findings.
+
+- **Item 1, `c385`'s menus: fixed.**
+  - On 3,527 pad 1 presses B, Right and Up together on RECORDS. The original chooses the entry the
+    arrow is on, because its list loop tests Y/X and B/Start/A before Down/Select and Up
+    (`$80:B983-B99E`). Native moved up to EXIT first and went back to the main menu.
+  - Native's OPTIONS, league-slot and RECORDS loops now move only when no exit button is down.
+  - `c385`: 119 differing write frames to 4 (`$0743`'s known bit timing). `c434`: 1 to 0.
+  - `g078` and `g079` change menu state only: `$009B` stays 0, as in the original.
+- **Item 2, `c039`'s league name tail: fixed.**
+  - An unmarking in the league picker leaves two underscores at `$00E1-00E2` (`$80:9D66-9D6A`), and
+    the editor keeps them. Native kept only the X.
+  - Native now keeps the last marker's two characters. `c039`: 170 to 1 (the league pair's 3-frame
+    write at 1,970).
+- **Item 3, a saved marker step of 14 or more: fixed for the image.**
+  - Warm-boot captures from c175's image with `$10A7` set, on an OPTIONS path. The step is a word
+    counted down to 13, reading tiles past the table into code. 0x8000 counts on from 0x7FFF; R-0117
+    said 13.
+  - The tiles go only to hidden entries: the pictures are equal on every frame.
+  - Native loads and stores the whole word and counts it as `$80:EB28-EB32` does. A tile past the
+    pack's 21 bytes leaves its hidden entry unchanged.
+  - Six warm boots are equal to the original at every frame (`check_marker_step.sh`).
+- **Item 4, the league markers' edges: localized, left open.**
+  - The original's continue screen after the league's podium starts a frame after native's on
+    `c029`, `c032`, `g069`, `c100` and `c101` (11 other routes are equal).
+  - The cause is the title-return sound session (`$80:A0F7`), requested at the same clock but about
+    31,000 master clocks behind at the same step of its sample upload on `c032` against `g066`.
+  - Native's sound model does not separate the routes. Queued.
+- **Item 5, HUNTER's preloaded race start: explained, checked, left open.**
+  - The warm boot changes the sound processor's phase. The upload's polls end 2,256 clocks before
+    the frame's end, and the race setup's tail (5,214 clocks to the frame wait `$00:8587`) slips the
+    first update a frame.
+  - Native's own sound model, run from power-on with the run's image, predicts the original's start
+    on all 527 track_reference runs (R-0077's table: 484).
+  - The front end does not consult the sound model (D-0010), and changing that is a design decision.
+    Queued as [SAVE-IMAGE-REMAINDER-3](SAVE-IMAGE-REMAINDER-3.md). In play the personal bests and
+    `$1116` on the 8 routes can still differ.
+- **Totals.** Write frames from 406 differing outside the residual: main 11,879 (724 of 916 routes
+  equal), candidate 11,594 (725).
+
+## Decisions (worker)
+
+- **Item 5: no table change, no product change.**
+  - The table's cells are right for the cold six-quits measurements. The warm-boot cells would hold
+    only for these exact frames.
+  - Following the sound model needs D-0010 amended and the sound model run beside every front end:
+    about 1.8 s of CPU per 1,400 frames.
+  - Recorded and queued instead of a hack. `check_audio_starts.sh` pins the evidence: the sound
+    model's rule on all 527 runs, and the table off on 43.
+- **Item 3: no pack profile v42 for the 18 code bytes past the marker table.**
+  - The gate runner and every session take the newest `local/` pack, and main's runner cannot load
+    a v42 pack. The bytes reach only hidden OAM entries.
+  - Native leaves those entries' tiles unchanged. Recorded as a limit.
+- **Item 4: localized, not fixed.** The two routes' sessions differ in the original with identical
+  native cues, so a fix needs a capture of the original's port writes on `c032` and `g066`. That is
+  beyond this task's budget.
+- **Item 1: the loop order is fixed on all three loops native runs on `$80:B93C`** (OPTIONS, the
+  league slots, RECORDS), not only RECORDS. The listing is the same routine for all three.
+- **Two environment options for `race_audio_runner`** (a test tool), not new arguments, so that
+  `load_times.py`'s parsing and the gate scripts that call it are unchanged.
+- **Expected results.** This task's `expected.json` is this corpus's re-recorded result. It equals
+  what `save-image-remainder/check_image.sh` now gives; `expected-save-image-exact.json` is
+  SAVE-IMAGE-EXACT's re-recorded result. Neither shared file is overwritten while this branch is in
+  review.
+
+## Evidence
+
+All in main `local/evidence/save-image-remainder-2/` (2.3 MB).
+
+- **Item 5:**
+  - `audio_starts.py` and `audio-starts.json`: 527 runs, the session end, margin and frames.
+  - `traces/c175.vtrace.txt` and `traces/c175-1311.vtrace.txt` (`vtrace.py`): the request at
+    `$83:CA77` on 1,311 line 70; the polls' end `$83:CBF2` on 1,390 line 223 dot 472; the frame wait
+    `$00:8587` on 1,391 line 227.
+- **Item 4:**
+  - `traces/c029*.vtrace.txt`, `traces/c032-pod.vtrace.txt`, `traces/g066-pod.vtrace.txt`,
+    `traces/c032-all.vtrace.txt`, `traces/g066-all.vtrace.txt`;
+  - `traces/item4-continue-visits.txt`: the 16 routes reaching the continue screen;
+  - `traces/item4-native-session-ends.txt`: `ends.py`, native's sound model.
+- **Items 1 and 2:** `traces/c385-wram-009B-0072.txt` and `traces/c039-wram-00DC.txt`
+  (`wram_watch.py`).
+- **Item 3:**
+  - `orig_markers.py`;
+  - `marker_routes.py`, with `marker-step/routes.json` and `marker-step/original/` (R-0111's change
+    logs, `original_trace.py`);
+  - `marker-step/pictures-c039-pads.json` (`orig_marker_pictures.py`): 0 differing pictures in
+    1,101 frames, 386 OAM-buffer frames.
+- **Behaviour:** `stdout-main-vs-candidate.json` (`stdout_same.py`, 919 routes). Four differ: `c385`
+  from 3,527, `c434` from 4,368, `g078` from 1,950, `g079` from 1,750.
+- **Checks** (`checks.list`, run with `$G` containing a space):
+  - all three PASS on the candidate (`checks-candidate.log`);
+  - all three FAIL with main's runners `base/front_end_runner` and `base/race_audio_runner`
+    (`checks-main.log`). The failures: `check_image` on `c039`, `c385`, `c434`; `check_marker_step`
+    on three routes; `check_audio_starts` on all runs, since main's `race_audio_runner` has no
+    `UNIRALLY_LOAD_ENDS`.
+- **The previous tasks' checks** on the candidate:
+  - `save-image-remainder/check_race_starts.sh` PASS;
+  - `save-image-remainder/check_image.sh` FAIL on `c039`, `c385`, `c434` (toward the original);
+  - `save-image-exact/check_image.sh` FAIL on the same three.
+- **Builds and tests:**
+  - `project.py build` `status=passed` for lab-release, lab-debug and app-debug;
+  - `ctest` on lab-debug: 41 of 41;
+  - `clang-format` applied to `src/core`;
+  - `clang-tidy -p build/lab-debug` clean on the four changed `.cpp`;
+  - GCC 13.3 (`ubuntu:24.04`, CI's warnings as errors) plain and sanitized OK on the six changed
+    files and `front_end_tests.cpp` (`gcc.sh`, `gcc.out`);
+  - `coverage-census/regen.sh` regenerated the static map and native symbols; tooling tests OK;
+  - `coverage native-symbols --check` `status=passed` (1,807 addresses, 0 without a record).
+  - ASan presets not run (they hang on this host).
+
 ## Handoff
 
-Not started.
+- **Commits on `task/save-image-remainder-2`:**
+  - `4d5f2d48`: native, tests, the test runner's options, native symbols and the static map;
+  - then the records commit: R-0119, this record, SAVE-IMAGE-REMAINDER-3 and its README row.
+- **Done:** items 1, 2 and 3. Items 4 and 5 are explained and queued
+  ([SAVE-IMAGE-REMAINDER-3](SAVE-IMAGE-REMAINDER-3.md)). Not pushed, no PR, no review yet (tier 1).
+- **At merge:** replace
+  - `local/evidence/save-image-remainder/expected.json` with this task's `expected.json`;
+  - `local/evidence/save-image-exact/expected.json` with `expected-save-image-exact.json`, keeping
+    the old ones beside them.
+- **What the gates should expect**
+  (`--task-checks local/evidence/save-image-remainder-2/checks.list`):
+  - **this task's three checks:** PASS on the candidate, FAIL on main;
+  - **SAVE-IMAGE-REMAINDER's `check_image.sh`:** FAIL on the candidate on `c039`, `c385`, `c434`,
+    each toward the original, until its `expected.json` is replaced. Its `check_race_starts.sh`
+    passes (native's race start is unchanged);
+  - **SAVE-IMAGE-EXACT's `check_image.sh`:** FAIL on the same three routes. Its re-recorded result
+    is `expected-save-image-exact.json` here;
+  - **front-end steps (`fe-equivalence` and its classifier) and any check replaying a
+    `front_end_runner` invocation:** outputs change only where the invocation has one of:
+    - a frame on OPTIONS, the league slots or RECORDS where an exit button (Y, X, B, Start, A) and
+      Down, Select or Up are down together: the arrow no longer moves before the exit;
+    - a league named with one or two letters after an unmarking: the record's bytes after its
+      terminator;
+    - an image whose `$10A7-10A8` holds 14 or more, or a nonzero high byte, before any PICK TRACK:
+      the step and the hidden markers' OAM tiles.
+
+    On R-0111's 919 routes this is the menu state of `c385`, `c434`, `g078`, `g079`, and the
+    cartridge RAM of those and `c039`. Pictures can change only on those four routes, from the
+    frames above;
+  - **audio steps:** unchanged. `race_audio_runner` behaves as before unless the new environment
+    variables are set, and `load_times.py`'s format is the same.
