@@ -231,3 +231,40 @@ Rerun: `project.py build` passed on lab-release and lab-debug; `ctest` 41/41 on 
 OK (`gcc-r1.out`); `coverage-census/regen.sh` regenerated the static map and native symbols (tooling
 tests OK); `native-symbols --check` passed (1,807 addresses, 0 without a record). `checks.list` not
 rerun (the gates run it): the native changes are a refactor of the load and comments, so its outputs do not change.
+
+## Closeout (coordinator)
+
+- Review: tier 1, one round on PR #107 at `f21b8865`. No blocking findings; five non-blocking (a
+  citation starting mid-instruction, a code comment claiming screens the captures did not cover, a
+  duplicated `$10A7` constant, no OPTIONS or league-slot test of exit before move, item 4's effect on
+  a later boot unstated). All fixed in `67bd4eea` (replies on the PR). The reviewer reran the three
+  task checks (PASS; `audio-starts.json` byte-identical) and the lab-debug ctest (41/41).
+- Gates (D-0012) on `67bd4eea`, TMPDIR `/private/tmp/sir2g`:
+  - `gates-1` (2 h 35 min): 101 steps same-as-main, 20 passed, 103 against the original, 19 skipped;
+    the three task checks PASS (`check_image`: 11,594 differing write frames, 725 routes equal;
+    `check_marker_step`: 6 of 6; `check_audio_starts`: 527 runs, 0 unlike the original).
+  - Changed, both read: `fe-equivalence` and `fe-classify`. Main's and the candidate's runners
+    differ on `league/organic-slot-selector` and `league/organic-slot-two`, which press Select, Y and A
+    together on the league slots (frames 1,950 and 1,750). Main moved the arrow to the second slot
+    before leaving; the candidate leaves from the first. The original's snapshot at 2,000
+    (`organic-slot-selector/snapshots/wram-02000.bin`) has the arrow at x 1,211, y 1,408, spin 7:
+    the candidate's values (main's: x 1,135, y 1,444). `organic-slot-two` is the same press on the
+    same screen and the runners agree again from frame 1,815.
+  - `fe-replay` also showed three corpus cases (`mi-cues`, `mi-rv-pick`, `rs-mi-review-rv-pick`)
+    differing in the cartridge RAM dump only, at frame 2,091: offsets `0x173-0x174` hold `__` (item 2's
+    league-name tail) and `0x22E-0x22F` the checksum. No step reads that stream; R-0111's corpus
+    (`check_image`) is equal to the original there.
+  - `gates-2` (`--only` and `--expect-changed` the two, 53 s): `status=passed`.
+- CI on `67bd4eea`: macOS and Ubuntu lab jobs pass.
+- Registered as **accepted in part**: items 1-3 are done; items 4 and 5 are explained and queued as
+  [SAVE-IMAGE-REMAINDER-3](SAVE-IMAGE-REMAINDER-3.md) (item 5 needs a D-0010 amendment).
+- Time: claim `e51bc84b` 05:47 UTC on 13 November 2026. Worker 1 h 04 min plus 7 min of review
+  fixes, review 11 min, gates 2 h 35 min + 53 s; the gates finished at 10:05 UTC. The coordinator's
+  reading of the gate changes then stopped from about 10:20 until the user's "Continue" at about
+  21:30 UTC, so claim to merge is about 16 h on the clock but about 4 h 50 min of work, inside
+  D-0013's 6-hour target only if the idle stretch is left out.
+- At merge, `local/evidence/save-image-remainder/expected.json` and
+  `local/evidence/save-image-exact/expected.json` are replaced by this task's `expected.json` and
+  `expected-save-image-exact.json` (the old ones kept as `expected-before-sir2.json`).
+- Evidence: main `local/evidence/save-image-remainder-2/`, 2.3 MB after `compact_evidence.py`. Worktree and
+  branch removed after the merge; gate reports in main `artifacts/sir2-integration/`.

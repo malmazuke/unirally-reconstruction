@@ -27,6 +27,21 @@ Recorded limits:
 
 [GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) holds the detail.
 
+**13 November 2026: SAVE-IMAGE-REMAINDER-2 is accepted in part (tier 1, #107) and integrated by merge
+commit.** [R-0119](research/R-0119-save-image-remainder-2.md) settles three of the five differences R-0117 left in the saved
+image:
+- **Menus choose before they move:** OPTIONS, the league slots and RECORDS leave with the entry the
+  arrow is on when an exit button and a direction come together (`$80:B983-B99E`); native moved
+  first. Fixes the fuzz route `c385` and the league slots' Select-with-Y press.
+- **The league editor's tail:** the last marker's two characters stay at `$00E1-00E2`
+  (`$80:9D66-9D6A`), so a short league name saves the original's bytes after its terminator (`c039`).
+- **The saved marker step is a word** (`$77:10A7`, `$80:EB28-EB32`): a saved step of 14 or more
+  counts down as the original's does; six warm boots are equal at every frame.
+- **Open:** HUNTER's preloaded race starting a frame early (native's sound model predicts the
+  original on all 527 runs, but the front end may not consult it under D-0010) and the league
+  continue screen a frame late after a longer title-return sound session. Both are queued as
+  [SAVE-IMAGE-REMAINDER-3](../tasks/SAVE-IMAGE-REMAINDER-3.md).
+
 **13 November 2026: OPPONENT-POSE-BOUNDS is accepted (tier 1, #106) and integrated by merge commit.**
 R-0118 removes native's two reads past a table in a race against a computer opponent (rider 16 and
 up), which a bounds-checked build (as on Linux) aborted on:
